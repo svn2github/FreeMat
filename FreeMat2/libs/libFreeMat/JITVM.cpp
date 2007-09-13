@@ -1,5 +1,9 @@
 // Still need:
-
+//
+//  Function calls - 
+//   The most general approach would be to just bridge calls to built in functions.
+//   But that seems suboptimal.
+//
 //  Dynamic array resizing.  The current approach is not the best.  Since we no longer cache the
 //  addresses and sizes of the arrays in local variables, the best approach is to have the
 //  v_resize function use the actual Array class interface to resize the arrays.  This avoids
@@ -19,13 +23,88 @@
 #ifdef HAVE_LLVM
 #include "llvm/Analysis/Verifier.h"
 #include "llvm/Bitcode/ReaderWriter.h"
+#if 0
 #include "llvm/Pass.h"
 #include "llvm/PassManager.h"
 #include "llvm/LinkAllPasses.h"
+#endif
 #include "llvm/Target/TargetData.h"
 #include <fstream>
 
+// We want some basic functions to be available to the JIT
+// such as sin, cos, abs, x^n, tan
+// we also need division to work.
+
 using namespace llvm;
+
+llvm::FunctionType *ddFuncTy;
+llvm::FunctionType *ffFuncTy;
+llvm::FunctionType *iiFuncTy;
+
+static llvm::FunctionType* GetScalarFunctionType(const Type* arg, 
+						 const Type* ret) {
+  std::vector<const Type*> tArgs;
+  tArgs.push_back(arg);
+  llvm::FunctionType* fret = llvm::FunctionType::get(ret,tArgs,false,
+						     (ParamAttrsList*) 0);
+  return fret;
+}
+
+class JITFunction {
+  const Type *retType;
+  const Type *argType;
+  llvm::FunctionType *funcType;
+  Function *funcAddress;
+public:
+  JITFunction(const Type *ret, const Type *arg, string fun, Module* mod) {
+    retType = ret;
+    argType = arg;
+    funcType = GetScalarFunctionType(arg,ret);
+    funcAddress = new Function(funcType,GlobalValue::ExternalLinkage,fun,mod);
+  }
+};
+
+::SymbolTable<JITFunction> JITDoubleFuncs;
+::SymbolTable<JITFunction> JITFloatFuncs;
+::SymbolTable<JITFunction> JITIntFuncs;
+
+typedef double (*double_fun) (double);
+typedef float (*float_fun) (float);
+typedef int32 (*int32_fun) (int32);
+
+static inline void AddSimpleJITDoubleFun(string name, string fun, const Type* arg, 
+					 const Type* ret, Module* mod) {
+  JITDoubleFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
+}
+
+static inline void AddSimpleJITFloatFun(string name, float_fun fun, const Type* arg,
+					const Type* ret, Module* mod) {
+  JITFloatFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
+}
+
+static inline void AddSimpleJITInt32Fun(string name, int32_fun fun, const Type* arg,
+					const Type* ret, Module* mod) {
+  JITIntFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
+}
+
+static void InitializeJITFunctions() {
+  // SIN
+  AddSimpleJITDoubleFun("sin",sin,Type::getPrimitiveType(Type::DoubleTyID),
+			Type::getPrimitiveType(Type::DoubleTyID));
+  AddSimpleJITFloatFun("sin",sinf,Type::getPrimitiveType(Type::FloatTyID),
+		       Type::getPrimitiveType(Type::FloatTyID));
+  // COS
+  AddSimpleJITDoubleFun("cos",cos,Type::getPrimitiveType(Type::DoubleTyID),
+			Type::getPrimitiveType(Type::DoubleTyID));
+  AddSimpleJITFloatFun("cos",cosf,Type::getPrimitiveType(Type::FloatTyID),
+		       Type::getPrimitiveType(Type::FloatTyID));
+  // ABS
+  AddSimpleJITDoubleFun("abs",fabs,Type::getPrimitiveType(Type::DoubleTyID),
+			Type::getPrimitiveType(Type::DoubleTyID));
+  AddSimpleJITFloatFun("abs",fabsf,Type::getPrimitiveType(Type::FloatTyID),
+		       Type::getPrimitiveType(Type::FloatTyID));
+  AddSimpleJITInt32Fun("abs",abs,IntegerType::get(32),IntegerType::get(32));
+}
 
 static inline bool isi(JITScalar arg) {
   return arg->getType()->isInteger();
@@ -114,6 +193,7 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
       v = add_argument_scalar(symname,m_eval,rhs,false);
     else
       v = add_argument_array(symname,m_eval);
+    if (!v) throw Exception("Undefined variable reference:" + symname);
   }
   if (s.numchildren() == 1) {
     if (v->data_value->getType() != PointerType::get(rhs->getType()))
@@ -312,7 +392,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
   Class aclass = FM_FUNCPTR_ARRAY;
   if (!ptr.valid())
-      throw Exception("Undefined (array) variable reference:" + name);
+    return NULL;
   if (!ptr->is2D())
     throw Exception("Cannot JIT multi-dimensional array:" + name);
   if (ptr->isString() || ptr->isReferenceType())
@@ -338,7 +418,6 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   copy_value(r_arg,r,func_prolog);
   copy_value(c_arg,c,func_prolog);
   new StoreInst(p_arg,p,func_prolog);
-  //  copy_value(p_arg,p,func_prolog);
   new StoreInst(BinaryOperator::create(Instruction::Mul,
 				       new LoadInst(c, "", false, func_prolog),
 				       new LoadInst(r, "", false, func_prolog),
@@ -347,64 +426,9 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
 					  r,c,l,p,aclass,false));  
   argument_count++;
   return symbols.findSymbol(name);
-#if 0
-  Value* t, *s;
-  Value* r_in, *c_in;
-  Value* r_val, *c_val;
-  Value* r, *c, *l;
-  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count+1),"",func_prolog);
-  s = new LoadInst(s, "", false, func_prolog);
-  r_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,
-	      name+"_rows_in");
-  r_val = new LoadInst(r_in, "", false, func_prolog);
-  //   r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
-  //   new StoreInst(r_val, r, false, func_prolog);
-  //   new StoreInst(new LoadInst(r, "", false, func_prolog), r_in, false, func_epilog);
-  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count+2),"",func_prolog);
-  s = new LoadInst(s, "", false, func_prolog);
-  c_in = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
-  c_val = new LoadInst(c_in, "", false, func_prolog);
-  //   c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
-  //   new StoreInst(c_val, c, false, func_prolog);
-  //   new StoreInst(new LoadInst(c, "", false, func_prolog), c_in, false, func_epilog);
-  l = new AllocaInst(IntegerType::get(32),name+"_count",func_prolog);
-  new StoreInst(BinaryOperator::create(Instruction::Mul,c_val,r_val,"",func_prolog),
-		l,false,func_prolog);
-  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count),"",func_prolog);
-  
-  s = new LoadInst(s, "", false, func_prolog);
-  Type* ctype;
-  switch (aclass) {
-  case FM_FUNCPTR_ARRAY:
-  case FM_CELL_ARRAY:
-  case FM_STRUCT_ARRAY:
-  case FM_LOGICAL:
-  case FM_UINT8:
-  case FM_INT8:
-  case FM_UINT16:
-  case FM_INT16:
-  case FM_UINT32:
-  case FM_UINT64:
-  case FM_INT64:
-  case FM_COMPLEX:
-  case FM_DCOMPLEX:
-  case FM_STRING:
-    throw Exception("JIT does not support");
-  case FM_INT32:
-    ctype = PointerType::get(IntegerType::get(32)); break;
-  case FM_FLOAT:
-    ctype = PointerType::get(Type::FloatTy); break;
-  case FM_DOUBLE:
-    ctype = PointerType::get(Type::DoubleTy); break;
-  }
-
-  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
-					  r_in,c_in,l,t,aclass,false));
-  argument_count++;
-  return symbols.findSymbol(name);
-#endif
 }
 
+// FIXME - Simplify
 JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITScalar val, bool override) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
   Class aclass = FM_FUNCPTR_ARRAY;
@@ -424,46 +448,53 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
       throw Exception("Cannot JIT complex arrays:" + name);
     aclass = ptr->dataClass();
   }
-  Value* t, *s;
-  Value* r, *c;
-  s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count),"",func_prolog);
+  Value *s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count),"",func_prolog);
   s = new LoadInst(s, "", false, func_prolog);
-  Type* ctype;
-  switch (aclass) {
-  case FM_FUNCPTR_ARRAY:
-  case FM_CELL_ARRAY:
-  case FM_STRUCT_ARRAY:
-  case FM_LOGICAL:
-  case FM_UINT8:
-  case FM_INT8:
-  case FM_UINT16:
-  case FM_INT16:
-  case FM_UINT32:
-  case FM_UINT64:
-  case FM_INT64:
-  case FM_COMPLEX:
-  case FM_DCOMPLEX:
-  case FM_STRING:
-    throw Exception("JIT does not support");
-  case FM_INT32:
-    r = cast(s,PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_in");
-    t = new AllocaInst(IntegerType::get(32),name,func_prolog);
-    break;
-  case FM_FLOAT:
-    r = cast(s,PointerType::get(Type::FloatTy),false,func_prolog,name);
-    t = new AllocaInst(Type::FloatTy,name,func_prolog);
-    break;
-  case FM_DOUBLE:
-    r = cast(s,PointerType::get(Type::DoubleTy),false,func_prolog,name);
-    t = new AllocaInst(Type::DoubleTy,name,func_prolog);
-    break;
-  }
+  const Type* ctype(map_dataclass_type(aclass));
+  Value *r = cast(s,PointerType::get(ctype),false,func_prolog,name+"_in");
+  Value *t = new AllocaInst(ctype,name,func_prolog);
   new StoreInst(new LoadInst(r, "", false, func_prolog), t, false, func_prolog);
   new StoreInst(new LoadInst(t, "", false, func_epilog), r, false, func_epilog);
   symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,
 					  NULL,NULL,t,aclass,false));
   argument_count++;
   return symbols.findSymbol(name);
+}
+
+JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
+  // First, make sure it is a function
+  string symname(t.first().text());
+  FuncPtr funcval;
+  if (!m_eval->lookupFunction(symname,funcval)) 
+    throw Exception("Couldn't find function " + symname);
+  if (funcval->type() != FM_BUILT_IN_FUNCTION)
+    throw Exception("Can only JIT built in functions - not " + symname);
+  if (t.numchildren() != 2)
+    throw Exception("Cannot JIT functions with no arguments");
+  // Evaluate the argument
+  tree s(t.second());
+  if (!s.is(TOK_PARENS))
+    throw Exception("Expecting function arguments.");
+  if (s.numchildren() != 1)
+    throw Exception("Cannot JIT functions that do not take exactly one argument");
+  JITScalar arg = compile_expression(s.first(),m_eval);
+  // First look up direct functions - also try double arg functions, as type
+  // promotion means sin(int32) --> sin(double)
+  JITFunction *fun;
+  if (isi(arg)) {
+    fun = JITIntFuncs.findSymbol(symname);
+    if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
+  } else if (isf(arg)) {
+    fun = JITFloatFuncs.findSymbol(symname);
+    if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
+  } else if (isd(arg)) {
+    fun = JITDoubleFuncs.findSymbol(symname);
+  }
+  if (!fun) throw Exception("No JIT version of function " + symname);
+  //The function exists and is defined - call it
+  return new CallInst(fun->
+  
+  
 }
 
 JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
@@ -474,6 +505,8 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
       v = add_argument_scalar(symname,m_eval);
     else
       v = add_argument_array(symname,m_eval);
+    if (!v)
+      return compile_function_call(t,m_eval);
   }
   if (t.numchildren() == 1) {
     if (!v->is_scalar)
@@ -812,7 +845,7 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   new ReturnInst(new LoadInst(return_val, "", false, func_epilog),func_epilog);
 
   std::cout << (*M);
-
+#if 0
   if (0) {
   PassManager PM;
   PM.add(new TargetData(M));
@@ -871,6 +904,7 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   PM.run(*M);
   }
   std::cout << *M;
+#endif
 }
 
 void JITVM::run(Interpreter *m_eval) {

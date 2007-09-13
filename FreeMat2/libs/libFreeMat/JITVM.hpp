@@ -78,6 +78,7 @@ public:
   JITScalar compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst);
   JITScalar compile_expression(tree t, Interpreter* m_eval);
   JITScalar compile_rhs(tree t, Interpreter* m_eval);
+  JITScalar compile_function_call(tree t, Interpreter* m_eval);
   void compile_if_statement(tree t, Interpreter* m_eval);
   void compile_for_block(tree t, Interpreter *m_eval);
   void compile_assignment(tree t, Interpreter *m_eval);

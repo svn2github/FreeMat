@@ -18,6 +18,30 @@
 // Just for fun, mind you....
 //
 
+// List of reasonable functions to JIT
+//
+// true
+// false
+// sec
+// csc
+// tan
+// atan
+// atan2
+// cot
+// exp
+// expm1
+// ceil
+// floor
+// round
+// pi, e
+// float
+// single
+// double
+// int32
+// nan/NaN/inf/Inf
+// IsNaN/isnan/IsInf/isinf
+// eps/feps
+//
 
 #include "JITVM.hpp"
 #ifdef HAVE_LLVM

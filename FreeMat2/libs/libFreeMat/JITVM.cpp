@@ -492,7 +492,7 @@ JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
   }
   if (!fun) throw Exception("No JIT version of function " + symname);
   //The function exists and is defined - call it
-  return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""));
+  return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""),"",ip);
 }
 
 JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
@@ -789,6 +789,7 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
   M = new Module("test");
+  InitializeJITFunctions(M);
   std::vector<const Type*> DispatchFuncArgs;
   PointerType* void_pointer = PointerType::get(IntegerType::get(8));
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);

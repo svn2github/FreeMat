@@ -267,14 +267,17 @@ AC_ARG_WITH([llvm],
 	    use_llvm="yes",
 	    use_llvm="no")
 
-
 if (test "$use_llvm" = "yes"); then
-   CXXFLAGS="`llvm-config --cxxflags` $CXXFLAGS"
-   LIBS="`llvm-config --libs all bitwriter jit engine interpreter` $LIBS";
-   LDFLAGS="`llvm-config --ldflags` $LDFLAGS";
+   AC_PATH_PROG(LLVM_CONFIG, llvm-config, no)
+   if test "$LLVM_CONFIG" = "no" ; then
+      AC_MSG_NOTICE([Unable to find llvm-config.  JIT support disabled.])
+   else
+      CXXFLAGS="`$LLVM_CONFIG --cxxflags` $CXXFLAGS"
+      LIBS="`$LLVM_CONFIG --libs jit engine interpreter` $LIBS";
+      LDFLAGS="`$LLVM_CONFIG --ldflags` $LDFLAGS";
+   fi
    AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
 fi
-
 
 AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 

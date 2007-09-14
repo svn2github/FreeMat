@@ -51,11 +51,11 @@ static llvm::FunctionType* GetScalarFunctionType(const Type* arg,
 }
 
 class JITFunction {
+public:
   const Type *retType;
   const Type *argType;
   llvm::FunctionType *funcType;
   Function *funcAddress;
-public:
   JITFunction(const Type *ret, const Type *arg, string fun, Module* mod) {
     retType = ret;
     argType = arg;
@@ -77,33 +77,33 @@ static inline void AddSimpleJITDoubleFun(string name, string fun, const Type* ar
   JITDoubleFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
 }
 
-static inline void AddSimpleJITFloatFun(string name, float_fun fun, const Type* arg,
+static inline void AddSimpleJITFloatFun(string name, string fun, const Type* arg,
 					const Type* ret, Module* mod) {
   JITFloatFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
 }
 
-static inline void AddSimpleJITInt32Fun(string name, int32_fun fun, const Type* arg,
+static inline void AddSimpleJITInt32Fun(string name, string fun, const Type* arg,
 					const Type* ret, Module* mod) {
   JITIntFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
 }
 
-static void InitializeJITFunctions() {
+static void InitializeJITFunctions(Module* mod) {
   // SIN
-  AddSimpleJITDoubleFun("sin",sin,Type::getPrimitiveType(Type::DoubleTyID),
-			Type::getPrimitiveType(Type::DoubleTyID));
-  AddSimpleJITFloatFun("sin",sinf,Type::getPrimitiveType(Type::FloatTyID),
-		       Type::getPrimitiveType(Type::FloatTyID));
+  AddSimpleJITDoubleFun("sin","sin",Type::getPrimitiveType(Type::DoubleTyID),
+			Type::getPrimitiveType(Type::DoubleTyID),mod);
+  AddSimpleJITFloatFun("sin","sinf",Type::getPrimitiveType(Type::FloatTyID),
+		       Type::getPrimitiveType(Type::FloatTyID),mod);
   // COS
-  AddSimpleJITDoubleFun("cos",cos,Type::getPrimitiveType(Type::DoubleTyID),
-			Type::getPrimitiveType(Type::DoubleTyID));
-  AddSimpleJITFloatFun("cos",cosf,Type::getPrimitiveType(Type::FloatTyID),
-		       Type::getPrimitiveType(Type::FloatTyID));
+  AddSimpleJITDoubleFun("cos","cos",Type::getPrimitiveType(Type::DoubleTyID),
+			Type::getPrimitiveType(Type::DoubleTyID),mod);
+  AddSimpleJITFloatFun("cos","cosf",Type::getPrimitiveType(Type::FloatTyID),
+		       Type::getPrimitiveType(Type::FloatTyID),mod);
   // ABS
-  AddSimpleJITDoubleFun("abs",fabs,Type::getPrimitiveType(Type::DoubleTyID),
-			Type::getPrimitiveType(Type::DoubleTyID));
-  AddSimpleJITFloatFun("abs",fabsf,Type::getPrimitiveType(Type::FloatTyID),
-		       Type::getPrimitiveType(Type::FloatTyID));
-  AddSimpleJITInt32Fun("abs",abs,IntegerType::get(32),IntegerType::get(32));
+  AddSimpleJITDoubleFun("abs","fabs",Type::getPrimitiveType(Type::DoubleTyID),
+			Type::getPrimitiveType(Type::DoubleTyID),mod);
+  AddSimpleJITFloatFun("abs","fabsf",Type::getPrimitiveType(Type::FloatTyID),
+		       Type::getPrimitiveType(Type::FloatTyID),mod);
+  AddSimpleJITInt32Fun("abs","abs",IntegerType::get(32),IntegerType::get(32),mod);
 }
 
 static inline bool isi(JITScalar arg) {
@@ -492,9 +492,7 @@ JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
   }
   if (!fun) throw Exception("No JIT version of function " + symname);
   //The function exists and is defined - call it
-  return new CallInst(fun->
-  
-  
+  return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""));
 }
 
 JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {

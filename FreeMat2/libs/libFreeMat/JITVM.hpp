@@ -4,8 +4,6 @@
 
 #ifdef HAVE_LLVM
 
-#define __STDC_LIMIT_MACROS
-
 #include "llvm/Module.h"
 #include "llvm/Constants.h"
 #include "llvm/DerivedTypes.h"

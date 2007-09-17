@@ -48,8 +48,21 @@ class JITSymbolInfo {
   friend class JITVM;
 };
 
+class JITFunction {
+  const llvm::Type *retType;
+  const llvm::Type *argType;
+  llvm::FunctionType *funcType;
+  llvm::Function *funcAddress;
+  JITFunction(string fun, const llvm::Type *ret, const llvm::Type *arg, llvm::Module* mod);
+  friend class JITVM;
+};
+
 class JITVM {
   SymbolTable<JITSymbolInfo> symbols;
+  SymbolTable<JITFunction> JITDoubleFuncs;
+  SymbolTable<JITFunction> JITFloatFuncs;
+  SymbolTable<JITFunction> JITIntFuncs;
+  SymbolTable<JITScalar> JITScalars;
   int argument_count;
   vector<Array*> array_inputs;
   llvm::Value *ptr_inputs, *v_resize_func_ptr, *m_resize_func_ptr, *this_ptr;
@@ -65,6 +78,7 @@ class JITVM {
 		 llvm::BasicBlock* wh, string name="");
   JITScalar get_input_argument(int arg, llvm::BasicBlock* where);
   const llvm::Type* map_dataclass_type(Class aclass);
+  void initialize_JIT_functions();
 public:
   static JITScalar int32_const(int32 x);
   static JITScalar bool_const(int32 x);

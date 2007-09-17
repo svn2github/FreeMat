@@ -26,7 +26,6 @@
 // csc
 // tan
 // atan
-// atan2
 // cot
 // exp
 // expm1
@@ -42,6 +41,17 @@
 // IsNaN/isnan/IsInf/isinf
 // eps/feps
 //
+//  What happens with something like:
+//    if (t>0)
+//      pi = 3.5;
+//    else
+//      a = pi;
+//    end
+//  In this case, we assign to PI in the first block, and
+//  read from it in the second.  This should be avoided - 
+//  it will not compile correctly -- assignment to a variable 
+//  that has the name of a JIT function should disable the JIT
+//  mechanism
 
 #include "JITVM.hpp"
 #ifdef HAVE_LLVM
@@ -65,6 +75,7 @@ llvm::FunctionType *ddFuncTy;
 llvm::FunctionType *ffFuncTy;
 llvm::FunctionType *iiFuncTy;
 
+
 static llvm::FunctionType* GetScalarFunctionType(const Type* arg, 
 						 const Type* ret) {
   std::vector<const Type*> tArgs;
@@ -74,60 +85,35 @@ static llvm::FunctionType* GetScalarFunctionType(const Type* arg,
   return fret;
 }
 
-class JITFunction {
-public:
-  const Type *retType;
-  const Type *argType;
-  llvm::FunctionType *funcType;
-  Function *funcAddress;
-  JITFunction(const Type *ret, const Type *arg, string fun, Module* mod) {
-    retType = ret;
-    argType = arg;
-    funcType = GetScalarFunctionType(arg,ret);
-    funcAddress = new Function(funcType,GlobalValue::ExternalLinkage,fun,mod);
-  }
-};
-
-::SymbolTable<JITFunction> JITDoubleFuncs;
-::SymbolTable<JITFunction> JITFloatFuncs;
-::SymbolTable<JITFunction> JITIntFuncs;
-
-typedef double (*double_fun) (double);
-typedef float (*float_fun) (float);
-typedef int32 (*int32_fun) (int32);
-
-static inline void AddSimpleJITDoubleFun(string name, string fun, const Type* arg, 
-					 const Type* ret, Module* mod) {
-  JITDoubleFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
+JITFunction::JITFunction(string fun, const llvm::Type *ret, const llvm::Type *arg, llvm::Module* mod) {
+  retType = ret;
+  argType = arg;
+  funcType = GetScalarFunctionType(arg,ret);
+  funcAddress = new llvm::Function(funcType,GlobalValue::ExternalLinkage,fun,mod);
 }
 
-static inline void AddSimpleJITFloatFun(string name, string fun, const Type* arg,
-					const Type* ret, Module* mod) {
-  JITFloatFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
-}
-
-static inline void AddSimpleJITInt32Fun(string name, string fun, const Type* arg,
-					const Type* ret, Module* mod) {
-  JITIntFuncs.insertSymbol(name,JITFunction(ret,arg,fun,mod));
-}
-
-static void InitializeJITFunctions(Module* mod) {
+void JITVM::initialize_JIT_functions() {
+  JITScalars.insertSymbol("pi",ConstantFP::get(Type::DoubleTy,4.0*atan(1.0)));
+  JITScalars.insertSymbol("e",ConstantFP::get(Type::DoubleTy,exp(1.0)));
+  JITScalars.insertSymbol("true",int32_const(1));
+  JITScalars.insertSymbol("false",int32_const(0));
   // SIN
-  AddSimpleJITDoubleFun("sin","sin",Type::getPrimitiveType(Type::DoubleTyID),
-			Type::getPrimitiveType(Type::DoubleTyID),mod);
-  AddSimpleJITFloatFun("sin","sinf",Type::getPrimitiveType(Type::FloatTyID),
-		       Type::getPrimitiveType(Type::FloatTyID),mod);
+  JITDoubleFuncs.insertSymbol("sin",JITFunction("sin",Type::getPrimitiveType(Type::DoubleTyID),
+						Type::getPrimitiveType(Type::DoubleTyID),M));
+  JITFloatFuncs.insertSymbol("sin",JITFunction("sinf",Type::getPrimitiveType(Type::FloatTyID),
+					      Type::getPrimitiveType(Type::FloatTyID),M));
   // COS
-  AddSimpleJITDoubleFun("cos","cos",Type::getPrimitiveType(Type::DoubleTyID),
-			Type::getPrimitiveType(Type::DoubleTyID),mod);
-  AddSimpleJITFloatFun("cos","cosf",Type::getPrimitiveType(Type::FloatTyID),
-		       Type::getPrimitiveType(Type::FloatTyID),mod);
+  JITDoubleFuncs.insertSymbol("cos",JITFunction("cos",Type::getPrimitiveType(Type::DoubleTyID),
+						Type::getPrimitiveType(Type::DoubleTyID),M));
+  JITFloatFuncs.insertSymbol("cos",JITFunction("cosf",Type::getPrimitiveType(Type::FloatTyID),
+					       Type::getPrimitiveType(Type::FloatTyID),M));
   // ABS
-  AddSimpleJITDoubleFun("abs","fabs",Type::getPrimitiveType(Type::DoubleTyID),
-			Type::getPrimitiveType(Type::DoubleTyID),mod);
-  AddSimpleJITFloatFun("abs","fabsf",Type::getPrimitiveType(Type::FloatTyID),
-		       Type::getPrimitiveType(Type::FloatTyID),mod);
-  AddSimpleJITInt32Fun("abs","abs",IntegerType::get(32),IntegerType::get(32),mod);
+  JITDoubleFuncs.insertSymbol("abs",JITFunction("fabs",Type::getPrimitiveType(Type::DoubleTyID),
+						Type::getPrimitiveType(Type::DoubleTyID),M));
+  JITFloatFuncs.insertSymbol("abs",JITFunction("fabsf",Type::getPrimitiveType(Type::FloatTyID),
+					       Type::getPrimitiveType(Type::FloatTyID),M));
+  JITIntFuncs.insertSymbol("abs",JITFunction("abs",IntegerType::get(32),
+					     IntegerType::get(32),M));
 }
 
 static inline bool isi(JITScalar arg) {
@@ -499,24 +485,33 @@ JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
   tree s(t.second());
   if (!s.is(TOK_PARENS))
     throw Exception("Expecting function arguments.");
-  if (s.numchildren() != 1)
+  if (s.numchildren() > 1)
     throw Exception("Cannot JIT functions that do not take exactly one argument");
-  JITScalar arg = compile_expression(s.first(),m_eval);
-  // First look up direct functions - also try double arg functions, as type
-  // promotion means sin(int32) --> sin(double)
-  JITFunction *fun;
-  if (isi(arg)) {
-    fun = JITIntFuncs.findSymbol(symname);
-    if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
-  } else if (isf(arg)) {
-    fun = JITFloatFuncs.findSymbol(symname);
-    if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
-  } else if (isd(arg)) {
-    fun = JITDoubleFuncs.findSymbol(symname);
+  if (s.numchildren() == 0) {
+    // Look up the function in the set of scalars
+    JITScalar *val;
+    val = JITScalars.findSymbol(symname);
+    if (!val) throw Exception("No JIT version of function " + symname);
+    return *val;
+  } else {
+    JITScalar arg = compile_expression(s.first(),m_eval);
+    // First look up direct functions - also try double arg functions, as type
+    // promotion means sin(int32) --> sin(double)
+    JITFunction *fun;
+    if (isi(arg)) {
+      fun = JITIntFuncs.findSymbol(symname);
+      if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
+    } else if (isf(arg)) {
+      fun = JITFloatFuncs.findSymbol(symname);
+      if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
+    } else if (isd(arg)) {
+      fun = JITDoubleFuncs.findSymbol(symname);
+    }
+    if (!fun) throw Exception("No JIT version of function " + symname);
+    if (!fun->argType) throw Exception("JIT version of function " + symname + " takes no arguments");
+    //The function exists and is defined - call it
+    return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""),"",ip);
   }
-  if (!fun) throw Exception("No JIT version of function " + symname);
-  //The function exists and is defined - call it
-  return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""),"",ip);
 }
 
 JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
@@ -813,7 +808,7 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
   M = new Module("test");
-  InitializeJITFunctions(M);
+  //  InitializeJITFunctions(M);
   std::vector<const Type*> DispatchFuncArgs;
   PointerType* void_pointer = PointerType::get(IntegerType::get(8));
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);

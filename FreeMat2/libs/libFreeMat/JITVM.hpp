@@ -4,6 +4,10 @@
 
 #ifdef HAVE_LLVM
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+
 #include "llvm/Module.h"
 #include "llvm/Constants.h"
 #include "llvm/DerivedTypes.h"
@@ -91,6 +95,7 @@ public:
   JITScalar compile_expression(tree t, Interpreter* m_eval);
   JITScalar compile_rhs(tree t, Interpreter* m_eval);
   JITScalar compile_function_call(tree t, Interpreter* m_eval);
+  JITScalar compile_scalar_function(string symname, Interpreter* m_eval);
   void compile_if_statement(tree t, Interpreter* m_eval);
   void compile_for_block(tree t, Interpreter *m_eval);
   void compile_assignment(tree t, Interpreter *m_eval);

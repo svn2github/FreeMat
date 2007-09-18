@@ -20,8 +20,6 @@
 
 // List of reasonable functions to JIT
 //
-// true
-// false
 // sec
 // csc
 // tan
@@ -114,6 +112,11 @@ void JITVM::initialize_JIT_functions() {
 					       Type::getPrimitiveType(Type::FloatTyID),M));
   JITIntFuncs.insertSymbol("abs",JITFunction("abs",IntegerType::get(32),
 					     IntegerType::get(32),M));
+  // SEC
+  //   JITDoubleFuncs.insertSymbol("sec",JITFunction("sec",Type::getPrimitiveType(Type::DoubleTyID),
+  // 						Type::getPrimitiveType(Type::DoubleTyID),M));
+  //   JITFloatFuncs.insertSymbol("sec",JITFunction("secf",Type::getPrimitiveType(Type::FloatTyID),
+  // 					       Type::getPrimitiveType(Type::FloatTyID),M));
 }
 
 static inline bool isi(JITScalar arg) {
@@ -442,6 +445,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
 JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITScalar val, bool override) {
   ArrayReference ptr(m_eval->getContext()->lookupVariable(name));
   Class aclass = FM_FUNCPTR_ARRAY;
+  if (!val && !ptr.valid()) return NULL;
   if (!ptr.valid() || override) {
     if (isi(val))
       aclass = FM_INT32;
@@ -471,6 +475,14 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
   return symbols.findSymbol(name);
 }
 
+JITScalar JITVM::compile_scalar_function(string symname, Interpreter* m_eval) {
+  // Look up the function in the set of scalars
+  JITScalar *val;
+  val = JITScalars.findSymbol(symname);
+  if (!val) throw Exception("No JIT version of function " + symname);
+  return *val;
+}
+
 JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
   // First, make sure it is a function
   string symname(t.first().text());
@@ -479,21 +491,17 @@ JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
     throw Exception("Couldn't find function " + symname);
   if (funcval->type() != FM_BUILT_IN_FUNCTION)
     throw Exception("Can only JIT built in functions - not " + symname);
-  if (t.numchildren() != 2)
-    throw Exception("Cannot JIT functions with no arguments");
+  if (t.numchildren() != 2) 
+    return compile_scalar_function(symname,m_eval);
   // Evaluate the argument
   tree s(t.second());
   if (!s.is(TOK_PARENS))
     throw Exception("Expecting function arguments.");
   if (s.numchildren() > 1)
-    throw Exception("Cannot JIT functions that do not take exactly one argument");
-  if (s.numchildren() == 0) {
-    // Look up the function in the set of scalars
-    JITScalar *val;
-    val = JITScalars.findSymbol(symname);
-    if (!val) throw Exception("No JIT version of function " + symname);
-    return *val;
-  } else {
+    throw Exception("Cannot JIT functions that take more than one argument");
+  if (s.numchildren() == 0) 
+    return compile_scalar_function(symname,m_eval);
+  else {
     JITScalar arg = compile_expression(s.first(),m_eval);
     // First look up direct functions - also try double arg functions, as type
     // promotion means sin(int32) --> sin(double)
@@ -518,6 +526,7 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   string symname(t.first().text());
   JITSymbolInfo *v = symbols.findSymbol(symname);
   if (!v) {
+    
     if (t.numchildren() == 1)
       v = add_argument_scalar(symname,m_eval);
     else
@@ -630,15 +639,27 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
 			     compile_expression(t.first(),m_eval),
 			     compile_expression(t.second(),m_eval),"mul");
   case '/': 
-  case TOK_DOTRDIV: 
-    //     return binary_div(expression(t.first(),m_eval),
-    // 		      expression(t.second(),m_eval));
-    throw Exception("Division is not supported yet.");
+  case TOK_DOTRDIV:
+    {
+      JITScalar arg1 = compile_expression(t.first(),m_eval);
+      JITScalar arg2 = compile_expression(t.second(),m_eval);
+      if (!(isf(arg1) && isf(arg2))) {
+	arg1 = cast(arg1,Type::DoubleTy,true,ip);
+	arg2 = cast(arg2,Type::DoubleTy,true,ip);
+      }
+      return compile_binary_op(Instruction::FDiv,arg1,arg2,"div");
+    }
   case '\\': 
   case TOK_DOTLDIV: 
-    //     return binary_div(expression(t.second(),m_eval),
-    // 		      expression(t.first(),m_eval));
-    throw Exception("Division is not supported yet.");
+    {
+      JITScalar arg1 = compile_expression(t.first(),m_eval);
+      JITScalar arg2 = compile_expression(t.second(),m_eval);
+      if (!(isf(arg1) && isf(arg2))) {
+	arg1 = cast(arg1,Type::DoubleTy,true,ip);
+	arg2 = cast(arg2,Type::DoubleTy,true,ip);
+      }
+      return compile_binary_op(Instruction::FDiv,arg2,arg1,"div");
+    }
     // FIXME: Are shortcuts handled correctly here?
   case TOK_SOR: 
   case '|':
@@ -804,10 +825,12 @@ void JITVM::m_resize(void* base, int argnum, int r_new, int c_new) {
   *((int*)(this_ptr->args[3*argnum+2])) = this_ptr->array_inputs[argnum]->columns();
 }
 
+
 void JITVM::compile(tree t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
   M = new Module("test");
+  initialize_JIT_functions();
   //  InitializeJITFunctions(M);
   std::vector<const Type*> DispatchFuncArgs;
   PointerType* void_pointer = PointerType::get(IntegerType::get(8));

@@ -256,6 +256,7 @@ if (test x"$found_cycle" == xyes); then
 echo \
 "    CYCLE COUNTER   Profiling Functions                   Found"
 else
+echo \
 "    CYCLE COUNTER   Profiling Functions                   Not Found"
 fi
 

@@ -17,11 +17,13 @@
 %@<
 %x = linspace(0,1,5)
 %@>
+%@@Tests
+%@$"y=linspace(0,60000,60001)(end)","60000","exact"
 %!
 % Copyright (c) 2002, 2003 Samit Basu
 function y = linspace(a,b,len)
   if (nargin < 3)
     len = 100;
   end
-  y = a + (b-a)*(0:(len-1))/(len-1);
+  y = a + (b-a)*((0:(len-1))/(len-1));
 

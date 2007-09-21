@@ -2,7 +2,7 @@ AC_INIT(src/main.cpp)
 
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 3.4)
+AM_INIT_AUTOMAKE(FreeMat, 3.5)
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -250,6 +250,13 @@ echo \
 else
 echo \
 "    PORTAUDIO       Audio I/O                             Not Found"
+fi
+
+if (test x"$found_cycle" == xyes); then
+echo \
+"    CYCLE COUNTER   Profiling Functions                   Found"
+else
+"    CYCLE COUNTER   Profiling Functions                   Not Found"
 fi
 
 echo \

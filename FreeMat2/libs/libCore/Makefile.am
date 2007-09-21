@@ -14,8 +14,7 @@ RanLib.hpp \
 Utils.hpp \
 MatIO.hpp \
 XML.hpp \
-RPC.hpp \
-Cstruct.hpp
+RPC.hpp 
 
 libCore_a_SOURCES = Analyze.cpp \
 Cast.cpp \

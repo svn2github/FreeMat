@@ -447,4 +447,26 @@ if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"
 fi
 
+AC_CHECK_HEADERS([libintl.h malloc.h stddef.h stdlib.h string.h strings.h sys/time.h unistd.h limits.h c_asm.h intrinsics.h stdint.h mach/mach_time.h sys/sysctl.h])
+AC_CHECK_FUNCS([BSDgettimeofday gettimeofday gethrtime read_real_time time_base_to_time drand48 sqrt memset posix_memalign memalign _mm_malloc _mm_free clock_gettime mach_absolute_time sysctl abort])
+AC_MSG_CHECKING([for _rtc intrinsic])
+rtc_ok=yes
+AC_TRY_LINK([#ifdef HAVE_INTRINSICS_H
+#include <intrinsics.h>
+#endif], [_rtc()], [AC_DEFINE(HAVE__RTC,1,[Define if you have the UNICOS _rtc() intrinsic.])], [rtc_ok=no])
+AC_MSG_RESULT($rtc_ok)
+AC_MSG_CHECKING([whether a cycle counter is available])
+save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS -I$srcdir/libs/libFreeMat"
+AC_TRY_CPP([#include "fftw_cycle.h"
+#ifndef HAVE_TICK_COUNTER
+#  error No cycle counter
+#endif], [ok=yes], [ok=no])
+CPPFLAGS=$save_CPPFLAGS
+AC_MSG_RESULT($ok)
+found_cycle=$ok
+if test x"$found_cycle" == xyes; then
+   AC_DEFINE(HAVE_PROFILE, 1, [Set to 1 if you have a cycle counter])
+fi
+
 ])

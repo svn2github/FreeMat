@@ -3091,7 +3091,7 @@ void TRealSort(const T* sp, T* dp, int32 *ip, int planes, int planesize, int lin
 	buf[k].x = sp[i*planesize*linesize + j + k*planesize];
 	buf[k].n = k+1;
       }
-      std::sort(buf,buf+linesize);
+      std::stable_sort(buf,buf+linesize);
       for (k=0;k<linesize;k++) {
 	dp[i*planesize*linesize + j + k*planesize] = buf[k].x;
 	ip[i*planesize*linesize + j + k*planesize] = buf[k].n;
@@ -3147,7 +3147,7 @@ void TComplexSort(const T* sp, T* dp, int32 *ip, int planes, int planesize, int 
 	buf[k].xi = sp[2*(i*planesize*linesize + j + k*planesize)+1];
 	buf[k].n = k+1;
       }
-      std::sort(buf,buf+linesize);
+      std::stable_sort(buf,buf+linesize);
       for (k=0;k<linesize;k++) {
 	dp[2*(i*planesize*linesize + j + k*planesize)] = buf[k].xr;
 	dp[2*(i*planesize*linesize + j + k*planesize)+1] = buf[k].xi;
@@ -3198,7 +3198,7 @@ void StringSort(const Array* sp, Array* dp, int32 *ip,
 	buf[k].x = sp[i*planesize*linesize + j + k*planesize].getContentsAsString();
 	buf[k].n = k+1;
       }
-      std::sort(buf,buf+linesize);
+      std::stable_sort(buf,buf+linesize);
       for (k=0;k<linesize;k++) {
 	dp[i*planesize*linesize + j + k*planesize] = 
 	  sp[i*planesize*linesize + j + (buf[k].n-1)*planesize];
@@ -3349,7 +3349,7 @@ ArrayVector UniqueFunctionRowModeComplex(int nargout, Array& input) {
     sp[i].stride = rows;
     sp[i].data = dp + 2*i;
   }
-  std::sort(sp,sp+len);
+  std::stable_sort(sp,sp+len);
   i = 1;
   cnt = 1;
   while (i < len) {
@@ -3427,7 +3427,7 @@ ArrayVector UniqueFunctionRowModeReal(int nargout, Array& input) {
     sp[i].stride = rows;
     sp[i].data = dp + i;
   }
-  std::sort(sp,sp+len);
+  std::stable_sort(sp,sp+len);
   i = 1;
   cnt = 1;
   while (i < len) {
@@ -3493,7 +3493,7 @@ ArrayVector UniqueFunctionString(int nargout, Array& input) {
     buf[i].n = i;
   }
   sortreverse = false;
-  std::sort(buf,buf+len);
+  std::stable_sort(buf,buf+len);
   i = 1;
   int cnt = 1;
   while (i < len) {

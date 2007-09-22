@@ -3651,8 +3651,8 @@ ArrayVector EvalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
 //@Module DIARY Create a Log File of Console
 //@@Section FREEMAT
 //@@Usage
-//The @|diary| function controls the creation of a log file containing the 
-//output of FreeMat commands that would normally appear on the console.
+//The @|diary| function controls the creation of a log file that duplicates
+//the text that would normally appear on the console.
 //The simplest syntax for the command is simply:
 //@[
 //   diary

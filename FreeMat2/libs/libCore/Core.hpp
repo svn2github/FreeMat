@@ -99,6 +99,7 @@ ArrayVector FwriteFunction(int, const ArrayVector& arg);
 ArrayVector FcloseFunction(int, const ArrayVector& arg);
 ArrayVector FseekFunction(int, const ArrayVector& arg);
 ArrayVector FtellFunction(int, const ArrayVector& arg);
+ArrayVector FflushFunction(int, const ArrayVector& arg);
 ArrayVector FeofFunction(int, const ArrayVector& arg);
 ArrayVector FgetlineFunction(int, const ArrayVector& arg);
 ArrayVector MinFunction(int, const ArrayVector& arg);

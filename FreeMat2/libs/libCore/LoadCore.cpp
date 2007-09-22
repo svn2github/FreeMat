@@ -167,6 +167,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("fread",FreadFunction,3,2,"handle","size","precision",NULL);
   context->addFunction("fseek",FseekFunction,3,0,"handle","offset","style",NULL);
   context->addFunction("ftell",FtellFunction,1,1,"handle",NULL);
+  context->addFunction("fflush",FflushFunction,1,1,"handle",NULL);
   context->addFunction("fgetline",FgetlineFunction,1,1,"handle",NULL);
   context->addFunction("feof",FeofFunction,1,1,"handle",NULL);
   context->addSpecialFunction("printf",PrintfFunction,-1,0,NULL);

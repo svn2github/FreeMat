@@ -1262,6 +1262,26 @@ ArrayVector FwriteFunction(int nargout, const ArrayVector& arg) {
 }
 
 //!
+//@Module FFLUSH Force File Flush
+//@@Section IO
+//@@Usage
+//Flushes any pending output to a given file.  The general use of
+//this function is
+//@[
+//   fflush(handle)
+//@]
+//where @|handle| is an active file handle (as returned by @|fopen|).
+//!
+ ArrayVector FflushFunction(int nargout, const ArrayVector& arg) {
+   if (arg.size() != 1)
+     throw Exception("fflush requires an argument, the file handle.");
+   int handle = ArrayToInt32(arg[0]);
+   FilePtr *fptr = (fileHandles.lookupHandle(handle+1));
+   fflush(fptr->fp);
+   return ArrayVector();
+ }
+
+//!
 //@Module FTELL File Position Function
 //@@Section IO
 //@@Usage

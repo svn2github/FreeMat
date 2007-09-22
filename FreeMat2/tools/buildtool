@@ -1213,6 +1213,7 @@ END
     my $baseDir="cross/$freemat_pkg{'root'}-Win32";
     my $buildDir="cross/$freemat_pkg{'root'}/build";
     my $srcDir="cross/$freemat_pkg{'root'}";
+    my $buildVer="$freemat_pkg{'version'}";
     make_directory("$baseDir");
     make_directory("$baseDir/Contents");
     make_directory("$baseDir/Contents/bin");
@@ -1266,7 +1267,7 @@ END
     open(FREEMATNSI,"$srcDir/tools/freemat_nsi.in") or die "Unable to open NSI file: $!\n";
     open(FREEMATNSIOUT,">$baseDir/freemat.nsi") or die "Unable to open output NSI file: $!\n";
     while (my $line = <FREEMATNSI>) {
-	$line =~ s/<VERSION_NUMBER>/3.5/g;
+	$line =~ s/<VERSION_NUMBER>/"$buildVer"/g;
 	$line =~ s/<BUNDLE FILES>/$installation_list/g;
 	$line =~ s/<DELLIST>/$delete_list/g;
 	print FREEMATNSIOUT "$line";
@@ -1293,8 +1294,9 @@ sub job_rpm_freemat  {
     copy_file("files/$freemat_pkg{'file'}","build/rpm/SOURCES");
     open(FREEMATSPECIN,"build/$freemat_pkg{'root'}/tools/freemat_spec.in") or die "Unable to open SPEC file: $!\n";
     open(FREEMATSPECOUT,">build/rpm/SPECS/freemat.spec") or die "Unable to open output .SPEC file: $!\n";
+    my $buildVer="$freemat_pkg{'version'}";
     while (my $line = <FREEMATSPECIN>) {
-	$line =~ s/<VERSION_NUMBER>/3.5/g;	
+	$line =~ s/<VERSION_NUMBER>/"$buildVer"/g;	
 	print FREEMATSPECOUT "$line";
     }
     close(FREEMATSPECIN);

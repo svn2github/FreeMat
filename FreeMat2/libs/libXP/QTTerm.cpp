@@ -41,6 +41,20 @@ QTTerm::QTTerm() {
   fnt = QFont("Courier",10);
 }
 
+int QTTerm::getScrollbackLimit() {
+  return scrollback;
+}
+
+void QTTerm::setScrollbackLimit(int m) {
+  scrollback = m;
+  while (buffer.size() > scrollback) {
+    buffer.pop_front();
+    cursor_y = qMax(0,cursor_y-1);
+  }
+  setCursor();
+  updateScrollbarSettings();
+}
+
 void QTTerm::blink() {
   if (!blinkEnable) return;
   if (m_blink_skip) {
@@ -409,6 +423,10 @@ void QTTerm::resizeEvent(QResizeEvent *e) {
   calcGeometry();
   clearSelection();
   ensureCursorVisible();
+  updateScrollbarSettings();
+}
+
+void QTTerm::updateScrollbarSettings() {
   // If we are in a full buffer situation, put the scroller in the right spot
   if (buffer.size() >= scrollback) {
     verticalScrollBar()->setRange(0,buffer.size()-m_term_height);

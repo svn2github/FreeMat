@@ -36,6 +36,7 @@ class ApplicationWindow : public QMainWindow {
   QMenu *fileMenu, *editMenu, *toolsMenu, *historyMenu, *helpMenu, *debugMenu;
   QToolBar *editToolBar, *debugToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
+  QAction *scrollbackAct;
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
   QAction *pathAct, *filetoolAct, *historyAct, *cleanHistoryAct;
   QAction *pauseAct, *continueAct, *stopAct, *clearAct;
@@ -73,6 +74,7 @@ private slots:
   void copy();
   void paste();
   void font();
+  void scrollback();
   void about();
   void editor();
   void path();

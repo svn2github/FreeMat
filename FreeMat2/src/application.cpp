@@ -89,6 +89,8 @@ void ApplicationWindow::createActions() {
   connect(pasteAct,SIGNAL(triggered()),this,SLOT(paste()));
   fontAct = new QAction("&Font",this);
   connect(fontAct,SIGNAL(triggered()),this,SLOT(font()));
+  scrollbackAct = new QAction("&Scrollback Size",this);
+  connect(scrollbackAct,SIGNAL(triggered()),this,SLOT(scrollback()));
   aboutAct = new QAction("&About",this);
   connect(aboutAct,SIGNAL(triggered()),this,SLOT(about()));
   manualAct = new QAction("Online &Manual",this);
@@ -113,7 +115,9 @@ void ApplicationWindow::createMenus() {
   editMenu = menuBar()->addMenu("&Edit");
   editMenu->addAction(copyAct);
   editMenu->addAction(pasteAct);
-  editMenu->addAction(fontAct);
+  QMenu* configMenu = editMenu->addMenu("&Preferences");
+  configMenu->addAction(fontAct);
+  configMenu->addAction(scrollbackAct);
   debugMenu = menuBar()->addMenu("&Debug");
   debugMenu->addAction(pauseAct);
   debugMenu->addAction(continueAct);
@@ -279,6 +283,20 @@ void ApplicationWindow::paste() {
   if (!text.isNull()) {
     m_keys->QueueMultiString(text);
     m_term->clearSelection();
+  }
+}
+
+void ApplicationWindow::scrollback() {
+  int scroll_limit = m_term->getScrollbackLimit();
+  bool ok;
+  int new_limit = QInputDialog::getInteger(this, 
+					   "Change Scrollback of Command Window",
+					   "Lines:",scroll_limit,100,10000,
+					   1,&ok);
+  if (ok) {
+    QSettings settings("FreeMat","FreeMat");
+    settings.setValue("console/scrollback",new_limit);
+    m_term->setScrollbackLimit(new_limit);
   }
 }
 

@@ -75,6 +75,9 @@ public:
   void setFont(QFont font);
   QFont getFont();
   void clearSelection();
+  int getScrollbackLimit();
+  void setScrollbackLimit(int m);
+  void updateScrollbarSettings();
 protected:
   void ensureCursorVisible();
   void setChar(char t, bool flush);

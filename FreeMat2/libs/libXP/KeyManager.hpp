@@ -34,6 +34,7 @@
 #define KM_CTRLE     0x05
 #define KM_TAB       0x09
 #define KM_CTRLK     0x0b
+#define KM_CTRLW     0x17
 #define KM_CTRLY     0x19
 #define KM_BACKSPACE 0x08
 #define KM_BACKSPACEALT 0x7f
@@ -95,6 +96,7 @@ public:
   void AddStringToLine(string s);
   void SearchPrefix(string aline, int alen);
   void Yank();
+  void ClearCurrentLine();
   void ListCompletions(vector<string> completions);
   void CompleteWord();
  protected:

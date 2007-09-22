@@ -610,6 +610,13 @@ void KeyManager::EndOfLine() {
   PlaceCursor(ntotal);
 }
 
+void KeyManager::ClearCurrentLine() {
+  PlaceCursor(0);
+  ntotal = 0;
+  lineData.clear();
+  TruncateDisplay();
+}
+
 void KeyManager::KillLine() {
   cutbuf = string(lineData,buff_curpos);
   ntotal = buff_curpos;
@@ -1014,6 +1021,9 @@ void KeyManager::OnChar( int c ) {
     break;
   case KM_CTRLY:
     Yank();
+    break;
+  case KM_CTRLW:
+    ClearCurrentLine();
     break;
   case KM_CTRLK:
     KillLine();

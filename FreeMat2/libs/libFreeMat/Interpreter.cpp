@@ -5045,6 +5045,7 @@ void Interpreter::ExecuteLine(std::string txt) {
   cmd_buffer.push_back(txt);
   bufferNotEmpty.wakeAll();
   mutex.unlock();
+  if (m_diaryState) diaryMessage(txt);
 }
 
 //PORT
@@ -5132,6 +5133,7 @@ void Interpreter::sleepMilliseconds(unsigned long msecs) {
 
 string Interpreter::getLine(string prompt) {
   emit SetPrompt(prompt);
+  if (m_diaryState) diaryMessage(prompt);
   string retstring;
   emit EnableRepaint();
   mutex.lock();
@@ -5165,8 +5167,10 @@ void Interpreter::evalCLI() {
     }
     if (m_captureState) 
       m_capture += prompt;
-    else
+    else {
       emit SetPrompt(prompt);
+      if (m_diaryState) diaryMessage(prompt);
+    }
     //     qDebug() << "IP: " << QString::fromStdString(ip_detailname) << ", " << (ip_context & 0xffff) << "";
     emit ShowActiveLine();
     string cmdset;

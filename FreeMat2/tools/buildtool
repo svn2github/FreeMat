@@ -1323,6 +1323,7 @@ sub job_linux_release {
     my $svn_path = shift;
     my $buildtool_path = Cwd::cwd();
     change_directory($svn_path . '/build');
+    system_check('make clean');
     system_check('make');
     change_directory($svn_path);
     system_check('build/src/FreeMat -nogui -f "source tools/svn_path.m; helpgen(pwd);"');

@@ -102,7 +102,7 @@ my %libz_pkg =  ('url' => 'http://downloads.sourceforge.net/libpng/',
 		  'root' => 'zlib-1.2.3');
 my %freemat_pkg = ('url' => 'http://downloads.sourceforge.net/freemat/',
 		   'file' => 'FreeMat-3.5.tar.gz',
-		   'md5' => '',
+		   'md5' => '4cc41c1f9265a86134fd338076d1a65f',
 		   'root' => 'FreeMat-3.5',
 		   'version' => '3.5');
 

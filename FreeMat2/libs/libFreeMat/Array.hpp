@@ -26,7 +26,6 @@
 #include "Dimensions.hpp"
 #include "Types.hpp"
 #include "Data.hpp"
-#include "RefVec.hpp"
 #include <QVector>
 #include "List.hpp"
 #include <QStringList>
@@ -145,9 +144,9 @@ public:
   /**
    * Create an Array with the specified contents.
    */
-  inline Array(Class type, const Dimensions& dims, void* data, bool sparse = false, 
-	       rvstring fieldNames = rvstring(), rvstring classname = rvstring()) {
-    dp = new Data(type, dims, data, sparse, fieldNames, classname);
+  inline Array(Class type, const Dimensions& dims, void* t_data, bool t_sparse = false, 
+	       rvstring t_fieldNames = rvstring(), rvstring classname = rvstring()) {
+    dp = new Data(type, dims, t_data, t_sparse, t_fieldNames, classname);
   }
   /**
    * Create an Array with a default allocation of space - only useful for P.O.D. arrays
@@ -161,7 +160,7 @@ public:
    * Get the length of the array as a vector.  This is equivalent
    * to computing length(this(:)).
    */
-  inline int getLength() const {
+  inline size_t getLength() const {
     if (dp)
       return dp->dimensions().getElementCount();
     else
@@ -214,7 +213,7 @@ public:
   /**
    * Get our length along the given dimension.
    */
-  inline int getDimensionLength(int t) const {
+  inline size_t getDimensionLength(size_t t) const {
     if (dp)
       return dp->dimensions().get(t);
     else
@@ -310,7 +309,7 @@ public:
    * For an arbitrarily dimensioned array, this(n) makes the array into 
    * a row vector of length n.
    */
-  void vectorResize(int);
+  void vectorResize(size_t);
   /** Reshape an array.
    * Reshape the array along a new set of dimensions.  Valid provided that
    * setting the dimensions of the array to a does not change the number of
@@ -494,7 +493,7 @@ public:
    * we assume that the permutation vector is of the correct size and is a
    * valid permutation.
    */
-  void permute(const int32* permutation);
+  void permute(const uint32* permutation);
   /**
    * Diagonal constructor - construct an array from a given vector, with
    * the contents of the vector stored into the specified diagonal of the

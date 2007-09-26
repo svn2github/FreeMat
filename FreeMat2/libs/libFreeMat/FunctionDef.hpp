@@ -156,7 +156,7 @@ public:
   AnonymousFunctionDef();
   ~AnonymousFunctionDef();
   virtual const FunctionType type() {return FM_ANONYMOUS_FUNCTION;}
-  void printMe(Interpreter* io) {}
+  void printMe(Interpreter*) {}
   virtual int inputArgCount();
   virtual int outputArgCount();
   virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector&, int);

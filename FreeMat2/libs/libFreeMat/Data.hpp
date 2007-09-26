@@ -72,7 +72,7 @@ public:
 	      bool sparseflag = false, 
 	      rvstring fields = rvstring(), 
 	      rvstring classname = rvstring()) : 
-    cp(s), m_dimensions(dims), m_dataClass(aClass) {
+    m_dataClass(aClass), cp(s), m_dimensions(dims)  {
     m_sparse = sparseflag;
     m_fieldNames = fields;
     m_sparse = sparseflag;
@@ -80,8 +80,8 @@ public:
   } 
   inline Data(const Data& copy) :
     m_dataClass(copy.m_dataClass),
-    m_dimensions(copy.m_dimensions),
     m_sparse(copy.m_sparse),
+    m_dimensions(copy.m_dimensions),
     m_fieldNames(copy.m_fieldNames),
     m_className(copy.m_className) {
     cp = copyDataBlock(copy.cp);

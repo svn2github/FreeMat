@@ -36,7 +36,7 @@ typedef qint32    int32;
 typedef quint32   uint32;
 typedef qint64    int64;
 typedef quint64   uint64;
-typedef unsigned int   indexType;
+typedef size_t   indexType;
 typedef const indexType * constIndexPtr;
 
 typedef enum {

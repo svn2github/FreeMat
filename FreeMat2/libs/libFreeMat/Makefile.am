@@ -41,9 +41,9 @@ Token.hpp \
 Parser.hpp \
 Scanner.hpp \
 Tree.hpp \
-RefVec.hpp \
 JITVM.hpp \
-List.hpp
+List.hpp \
+fftw_cycle.h
 
 libFreeMat_a_SOURCES = Array.cpp \
 Interpreter.cpp \

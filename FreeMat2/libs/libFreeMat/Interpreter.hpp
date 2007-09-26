@@ -119,6 +119,10 @@ class Interpreter : public QThread {
    */
   bool autostop;
   /**
+   * in try block flag
+   */
+  bool intryblock;
+  /**
    * jit control flag
    */
   bool jitcontrol;

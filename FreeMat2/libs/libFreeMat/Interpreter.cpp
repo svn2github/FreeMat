@@ -1229,6 +1229,8 @@ void Interpreter::tryStatement(const tree &t) {
   // Turn off autostop for this statement block
   bool autostop_save = autostop;
   autostop = false;
+  bool intryblock_save = intryblock;
+  intryblock = true;
   // Get the state of the IDnum stack and the
   // contextStack and the cnameStack
   int stackdepth;
@@ -1243,6 +1245,7 @@ void Interpreter::tryStatement(const tree &t) {
     }
   } 
   autostop = autostop_save;
+  intryblock = intryblock_save;
 }
 
 
@@ -3068,7 +3071,7 @@ void Interpreter::statement(const tree &t) {
       stackTrace(true);
       doDebugCycle();
     } else  {
-      if (!e.wasHandled() && !InCLI) {
+      if (!e.wasHandled() && !InCLI && !intryblock) {
 	stackTrace(true);
 	e.markAsHandled();
       }
@@ -4951,6 +4954,7 @@ Interpreter::Interpreter(Context* aContext) {
   depth = 0;
   printLimit = 1000;
   autostop = false;
+  intryblock = false;
   jitcontrol = false;
   InCLI = false;
   stopoverload = false;

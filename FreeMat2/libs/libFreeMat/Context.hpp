@@ -66,6 +66,7 @@ public:
     m_ptr = ptr;
     m_global = false;
     m_scope = NULL;
+    return *this;
   }
   inline ArrayReference& operator=(const ArrayReference& copy) {
     if (m_global)
@@ -314,7 +315,7 @@ public:
    * Flush temporary function definitions from the global context
    */
   inline void flushTemporaryGlobalFunctions() {
-    for (int i=0;i<tempFunctions.size();i++)
+    for (size_t i=0;i<tempFunctions.size();i++)
       deleteFunction(tempFunctions[i]);
     tempFunctions.clear();
   }
@@ -474,9 +475,9 @@ public:
     stringVector global_completions = topScope->getCompletions(prefix);
     stringVector code_completions = codeTab.getCompletions(prefix);
     stringVector completions(local_completions);
-    for (int i=0;i<global_completions.size();i++)
+    for (size_t i=0;i<global_completions.size();i++)
       completions.push_back(global_completions[i]);
-    for (int i=0;i<code_completions.size();i++)
+    for (size_t i=0;i<code_completions.size();i++)
       completions.push_back(code_completions[i]);
     return completions;
   }

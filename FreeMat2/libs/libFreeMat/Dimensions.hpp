@@ -44,18 +44,18 @@ private:
   /**
    * The data array of dimensions.
    */
-  int data[maxDims];
+  size_t data[maxDims];
   /**
    * The number of dimensions currently allocated.
    */
-  int length;
+  size_t length;
   /**
    * Cache values for frequently called functions.
    */
-  int m_cache_getElementCount;
+  size_t m_cache_getElementCount;
   bool m_cache_isScalar;
-  int m_cache_getRows;
-  int m_cache_getColumns;
+  size_t m_cache_getRows;
+  size_t m_cache_getColumns;
   bool m_cache_is2D;
   bool m_cache_isVector;
 public:
@@ -76,10 +76,10 @@ public:
    * and all contents set to zero.
    * Throws an Exception if the dimension count is negative.
    */
-  inline Dimensions(int dimCount) {
+  inline Dimensions(size_t dimCount) {
     if (dimCount < 0) 
       throw Exception("Illegal argument to Dimensions constructor");
-    memset(data, 0, sizeof(int)*dimCount);
+    memset(data, 0, sizeof(size_t)*dimCount);
     length = dimCount;
     updateCacheVariables();
   }
@@ -87,7 +87,7 @@ public:
    * Return a 2-D dimension object with the specified number of
    * rows and columns.
    */
-  inline Dimensions(int rows, int cols) {
+  inline Dimensions(size_t rows, size_t cols) {
     data[0] = rows;
     data[1] = cols;
     length = 2;
@@ -102,7 +102,7 @@ public:
    * Return a 3-D dimension object with the specified number of 
    * rows and columns and slices.
    */
-  inline Dimensions(int rows, int cols, int slices) {
+  inline Dimensions(size_t rows, size_t cols, size_t slices) {
     data[0] = rows;
     data[1] = cols;
     data[2] = slices;
@@ -127,7 +127,7 @@ public:
   /**
    * Get the number of currently allocated dimensions.
    */
-  inline int getLength() const {
+  inline size_t getLength() const {
     return length;
   }
   /**
@@ -144,7 +144,7 @@ public:
    * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
    * of length, and $$a_i$$ is equivalent to data[i].
    */
-  inline int getElementCount() const {
+  inline size_t getElementCount() const {
     return m_cache_getElementCount;
   }
   /**
@@ -156,19 +156,19 @@ public:
    *   - any of the arguments are outside the valid range, i.e., 
    *     $$b_i < 0$$ or $$b_i >= a_i$$.
    */
-  int mapPoint(const Dimensions& point) const;
+  size_t mapPoint(const Dimensions& point) const;
   /**
    * Returns the first dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  inline int getRows() const {
+  inline size_t getRows() const {
     return m_cache_getRows;    
   }
   /**
    * Returns the second dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  inline int getColumns() const {
+  inline size_t getColumns() const {
     return m_cache_getColumns;
   }
   /**
@@ -177,7 +177,7 @@ public:
    * the access operator, this call does not modify the contents of
    * the class.
    */
-  inline int getDimensionLength(int arg) const {
+  inline size_t getDimensionLength(size_t arg) const {
     if (length <= arg)
       return 1;
     else
@@ -186,17 +186,17 @@ public:
   /**
    * Less verbose synonym
    */
-  inline int get(int arg) const {
+  inline size_t get(size_t arg) const {
     return getDimensionLength(arg);
   }
   /**
    * A synonym for (*this)[dim] = len.
    */
-  void setDimensionLength(int dim, int len);
+  void setDimensionLength(size_t dim, size_t len);
   /**
    * Less verbose synonym
    */
-  inline void set(int dim, int len) {
+  inline void set(size_t dim, size_t len) {
     setDimensionLength(dim,len);
   }
   /**
@@ -218,7 +218,7 @@ public:
    * the limit $$b_n$$.  If $$a_n >= b_n$$, then $$a_n \leftarrow 0$$,
    * and the algorithm is repeated with ordinal+1.
    */
-  void incrementModulo(const Dimensions& limit, int ordinal);
+  void incrementModulo(const Dimensions& limit, size_t ordinal);
   /**
    * Returns comparison of $$a_n < b_n$$, where $$n$$ is the maximum defined
    * dimension in $$a$$ (this object), and $$b$$ is the given argument.
@@ -262,7 +262,7 @@ public:
   /**
    * Get the largest dimension value, i.e., $$\max_{i=1,\ldots,n} \{a_i\}$$.
    */
-  int getMax();
+  size_t getMax();
   /**
    * Returns true if and only if we are equal to $$[1,1]$$.
    */
@@ -285,7 +285,7 @@ public:
   /**
    * Applies a permutation (assumed legal) to this dimension vector, and returns the permuted vector
    */
-  Dimensions permute(const int32* permutation) const;
+  Dimensions permute(const uint32* permutation) const;
 };
 
 #endif

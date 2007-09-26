@@ -50,7 +50,7 @@ public:
   inline tree child(unsigned n) const {if (valid()) return tptr->children.at(n); else return tree();}
   inline Token& node() {return tptr->node;}
   inline const Token& node() const {return tptr->node;}
-  inline void addChild(const tree &child) {tptr->children.push_back(child);}
+  inline void addChild(const tree &t_child) {tptr->children.push_back(t_child);}
 };
 
 tree mkLeaf(const Token& tok);

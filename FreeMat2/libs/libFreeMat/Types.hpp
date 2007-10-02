@@ -64,6 +64,8 @@ typedef QList<std::string> rvstring;
 
 inline size_t ByteSize(Class t) {
   switch(t) {
+  default:
+    throw Exception("Illegal argument to ByteSize function");
   case FM_CELL_ARRAY:
     return sizeof(void*);
   case FM_STRUCT_ARRAY:

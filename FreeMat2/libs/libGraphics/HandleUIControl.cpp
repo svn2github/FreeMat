@@ -106,7 +106,7 @@ void HandleUIControl::UpdateState() {
       string txt(StringPropertyLookup("string"));
       vector<string> data;
       Tokenize(txt,data,"|");
-      for (int i=0;i<data.size();i++)
+      for (size_t i=0;i<data.size();i++)
 	((QComboBox*)widget)->addItem(QString::fromStdString(data[i]));
     }
     if (StringCheck("style","listbox")) {
@@ -114,7 +114,7 @@ void HandleUIControl::UpdateState() {
       string txt(StringPropertyLookup("string"));
       vector<string> data;
       Tokenize(txt,data,"|");
-      for (int i=0;i<data.size();i++)
+      for (size_t i=0;i<data.size();i++)
 	((QListWidget*)widget)->addItem(QString::fromStdString(data[i]));
     }
     if (StringCheck("style","text")) {
@@ -222,7 +222,6 @@ void HandleUIControl::UpdateState() {
   if (HasChanged("value") || newwidget) {
     if (StringCheck("style","slider")) {
       double min(ScalarPropertyLookup("min"));
-      double max(ScalarPropertyLookup("max"));
       std::vector<double> steps(VectorPropertyLookup("sliderstep"));
       std::vector<double> value(VectorPropertyLookup("value"));
       if (value.size() > 0)
@@ -235,7 +234,7 @@ void HandleUIControl::UpdateState() {
     if (StringCheck("style","listbox")) {
       std::vector<double> value(VectorPropertyLookup("value"));
       ((QListWidget*)widget)->clearSelection();
-      for (int i=0;i<value.size();i++) 
+      for (size_t i=0;i<value.size();i++) 
 	((QListWidget*)widget)->setItemSelected(((QListWidget*)widget)->item((int)(value[i]-1)),true);
     }
     ClearChanged("value");
@@ -264,7 +263,6 @@ void HandleUIControl::ConstructWidget(HandleWindow *f) {
 void HandleUIControl::clicked() {
   if (StringCheck("style","slider") && widget) {
     double min(ScalarPropertyLookup("min"));
-    double max(ScalarPropertyLookup("max"));
     std::vector<double> steps(VectorPropertyLookup("sliderstep"));
     ((HPVector*) LookupProperty("value"))->Data(min+steps[0]*((QSlider*)widget)->value());
     // No infinite loops, please

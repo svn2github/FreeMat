@@ -157,7 +157,6 @@ lineset HandleContour::ContourCDriver(Array m, double val, Array x, Array y) {
   lineset bundledLines;
   m.promoteType(FM_DOUBLE);
   const double *func = (const double *) m.getDataPointer();
-  int outcnt = 0;
   int numy = m.rows();
   int numx = m.columns();
   for (int row=1;row<numy;row++)
@@ -220,7 +219,6 @@ lineset HandleContour::ContourCDriver(Array m, double val, Array x, Array y) {
       }
     }
   // Now we link the line segments into longer lines.
-  int allcount = allLines.size();
   while (!allLines.empty()) {
     // Start a new line segment
     cline current(allLines.takeAt(0));
@@ -302,8 +300,8 @@ void HandleContour::RebuildContourMatrix() {
 Array HandleContour::GetCoordinateMatrix(std::string name, bool isXcoord) {
   // Get the elevation data from the object
   Array zdata(ArrayPropertyLookup("zdata"));
-  int zrows(zdata.rows());
-  int zcols(zdata.columns());
+  size_t zrows(zdata.rows());
+  size_t zcols(zdata.columns());
   if (StringCheck(name+"mode","manual")) {
     // not auto mode...
     Array cdata(ArrayPropertyLookup(name));
@@ -314,8 +312,8 @@ Array HandleContour::GetCoordinateMatrix(std::string name, bool isXcoord) {
       const double *qp = (const double*) cdata.getDataPointer();
       Array mat(Array::doubleMatrixConstructor(zrows,zcols));
       double *dp = (double*) mat.getReadWriteDataPointer();
-      for (int i=0;i<zcols;i++)
-	for (int j=0;j<zrows;j++) {
+      for (size_t i=0;i<zcols;i++)
+	for (size_t j=0;j<zrows;j++) {
 	  if (isXcoord)
 	    *dp = qp[i];
 	  else
@@ -331,8 +329,8 @@ Array HandleContour::GetCoordinateMatrix(std::string name, bool isXcoord) {
   // In auto mode, or the given data is bogus...
   Array mat(Array::doubleMatrixConstructor(zrows,zcols));
   double *dp = (double*) mat.getReadWriteDataPointer();
-  for (int i=0;i<zcols;i++)
-    for (int j=0;j<zrows;j++) {
+  for (size_t i=0;i<zcols;i++)
+    for (size_t j=0;j<zrows;j++) {
       if (isXcoord)
 	*dp = i+1;
       else
@@ -364,7 +362,7 @@ void HandleContour::UpdateState() {
     hp->ClearModified();
   } else {
     std::vector<double> ulevels(VectorPropertyLookup("levellist"));
-    for (int i=0;i<ulevels.size();i++)
+    for (size_t i=0;i<ulevels.size();i++)
       levels.push_back(ulevels[i]);
   }
   pset.clear();

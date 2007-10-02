@@ -36,7 +36,7 @@ void HandleObject::ToManual(std::string name) {
 
 bool HandleObject::HasChanged(std::vector<std::string> names) {
   HandleProperty *hp;
-  for (int i=0;i<names.size();i++) {
+  for (size_t i=0;i<names.size();i++) {
     hp = LookupProperty(names[i]);
     if (hp->isModified()) return true;
   }
@@ -56,7 +56,7 @@ void HandleObject::ClearAllChanged() {
 
 void HandleObject::ClearChanged(std::vector<std::string> names) {
   HandleProperty *hp;
-  for (int i=0;i<names.size();i++) {
+  for (size_t i=0;i<names.size();i++) {
     hp = LookupProperty(names[i]);
     hp->ClearModified();
   }    
@@ -77,7 +77,7 @@ HandleObject::~HandleObject() {
   HPHandles *hp = (HPHandles*) LookupProperty("children");
   HandleObject *gp;
   std::vector<unsigned> my_children(hp->Data());
-  for (int i=0;i<my_children.size();i++) {
+  for (size_t i=0;i<my_children.size();i++) {
     unsigned handle = my_children[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
@@ -91,7 +91,7 @@ HandleObject::~HandleObject() {
   }
   // Delete our properties also
   stringVector propSet(m_properties.getCompletions(""));
-  for (int i=0;i<propSet.size();i++) {
+  for (size_t i=0;i<propSet.size();i++) {
     HandleProperty** hp = m_properties.findSymbol(propSet[i]);
     if (hp) delete (*hp);
   }
@@ -265,7 +265,7 @@ bool HandleObject::StringCheck(std::string name, std::string value) {
 double VecMin(std::vector<double> &v) {
   double min = 0;
   bool first = true;
-  for (int i=0;i<v.size();i++) {
+  for (size_t i=0;i<v.size();i++) {
     if (IsFinite(v[i]))
       if (first) {
 	first = false;
@@ -280,7 +280,7 @@ double VecMin(std::vector<double> &v) {
 double VecMax(std::vector<double> &v) {
   double max = 0;
   bool first = true;
-  for (int i=0;i<v.size();i++) {
+  for (size_t i=0;i<v.size();i++) {
     if (IsFinite(v[i]))
       if (first) {
 	first = false;

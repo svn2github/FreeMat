@@ -55,6 +55,8 @@ void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
   gc.lineWidth(width);
   gc.setLineStyle("-");
   switch (symb) {
+  case RenderEngine::None :
+    break;
   case RenderEngine:: Plus:
     if (stroke) {
       gc.color(edgecolor);

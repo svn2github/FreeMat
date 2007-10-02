@@ -89,7 +89,7 @@ HandleList<HandleObject*> objectset;
 void NotifyFigureClosed(unsigned figNum) {
   //    delete Hfigs[figNum];
   Hfigs[figNum] = NULL;
-  if (figNum == HcurrentFig)
+  if (((int)figNum) == HcurrentFig)
     HcurrentFig = -1;
   // Check for all figures closed
   bool allClosed = true;
@@ -262,7 +262,7 @@ void AddToCurrentFigChildren(unsigned handle) {
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
   std::vector<unsigned> children(cp->Data());
   // Check to make sure that children does not contain our handle already
-  int i=0;
+  size_t i=0;
   while (i<children.size()) {
     if (children[i] == handle)
       children.erase(children.begin()+i);
@@ -336,13 +336,13 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
   children.promoteType(FM_UINT32);
   const unsigned *dp = (const unsigned*) children.getDataPointer();
   // make sure they are all valid handles
-  for (int i=0;i<children.getLength();i++) 
+  for (size_t i=0;i<children.getLength();i++) 
     ValidateHandle(dp[i]);
   // Retrieve the current list of children
   HandleObject *gp;
   HPHandles *hp = (HPHandles*) fp->LookupProperty("children");
   std::vector<unsigned> my_children(hp->Data());
-  for (int i=0;i<my_children.size();i++) {
+  for (size_t i=0;i<my_children.size();i++) {
     unsigned handle = my_children[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
@@ -350,7 +350,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
     }
   }
   // Loop through the new list of children
-  for (int i=0;i<children.getLength();i++) {
+  for (size_t i=0;i<children.getLength();i++) {
     unsigned handle = dp[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
@@ -359,7 +359,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
   }
   // Check for anyone with a zero reference count - it should
   // be deleted
-  for (int i=0;i<my_children.size();i++) {
+  for (size_t i=0;i<my_children.size();i++) {
     unsigned handle = my_children[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);

@@ -26,7 +26,7 @@ HistoryWidget::HistoryWidget(QWidget *parent) : QWidget(parent) {
   layout->addWidget(m_flist);
   setLayout(layout);
   readSettings();
-  QListWidgetItem *p = new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
+  new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
   connect(m_flist,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
 	  this,SLOT(doubleClicked(QListWidgetItem*)));
   setObjectName("history");
@@ -67,7 +67,7 @@ void HistoryWidget::addCommand(QString t) {
       QListWidgetItem *p = m_flist->takeItem(0);
       delete p;
     }
-    QListWidgetItem *d = new QListWidgetItem(t,m_flist);
+    new QListWidgetItem(t,m_flist);
     m_flist->scrollToBottom();
   }
 }

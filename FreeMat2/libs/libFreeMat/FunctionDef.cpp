@@ -52,14 +52,14 @@ void VariableReferencesList(const tree & t, stringVector& idents) {
   if (t.is(TOK_NEST_FUNC)) return;
   if (t.is(TOK_VARIABLE)) {
     bool exists = false;
-    for (int i=0;(i<idents.size());i++) {
+    for (size_t i=0;(i<idents.size());i++) {
       exists = (idents[i] == t.first().text());
       if (exists) break;
     }
     if (!exists)
       idents.push_back(t.first().text());
   }
-  for (int i=0;i<t.numchildren();i++)
+  for (size_t i=0;i<t.numchildren();i++)
     VariableReferencesList(t.child(i),idents);
 }
 
@@ -84,10 +84,11 @@ ArrayVector AnonymousFunctionDef::evaluateFunction(Interpreter *eval, ArrayVecto
   context->pushScope("anonymous");
   eval->pushDebug("anonymous","anonymous");
   stringVector workspaceVars(workspace.getCompletions(""));
-  for (int i=0;i<workspaceVars.size();i++)
+  for (size_t i=0;i<workspaceVars.size();i++)
     context->insertVariableLocally(workspaceVars[i],*workspace.findSymbol(workspaceVars[i]));
-  int minCount = (inputs.size() < arguments.size()) ? inputs.size() : arguments.size();
-  for (int i=0;i<minCount;i++)
+  size_t minCount = (((size_t)inputs.size()) < arguments.size()) ? 
+    inputs.size() : arguments.size();
+  for (size_t i=0;i<minCount;i++)
     context->insertVariableLocally(arguments[i],inputs[i]);
   try {
     try {
@@ -119,7 +120,7 @@ void AnonymousFunctionDef::initialize(const tree &t, Interpreter *eval) {
   graphicsFunction = false;
   stringVector vars;
   VariableReferencesList(t.second(),vars);
-  for (int i=0;i<vars.size();i++) {
+  for (size_t i=0;i<vars.size();i++) {
     ArrayReference ptr(eval->getContext()->lookupVariable(vars[i]));
     if (ptr.valid()) {
       //      cout << "Captured VAR: " << vars[i] << "\r\n";
@@ -133,7 +134,6 @@ MFunctionDef::MFunctionDef() {
   timeStamp = 0;
   localFunction = false;
   pcodeFunction = false;
-#warning - check pcode
   nestedFunction = false;
   capturedFunction = false;
 }
@@ -165,7 +165,7 @@ void MFunctionDef::printMe(Interpreter*eval) {
   eval->outputMessage("Function class: Compiled M function\n");
   eval->outputMessage("returnVals: ");
   tmp = returnVals;
-  int i;
+  size_t i;
   for (i=0;i<tmp.size();i++) {
     snprintf(msgBuffer,MSGBUFLEN,"%s ",tmp[i].c_str());
     eval->outputMessage(msgBuffer);
@@ -182,7 +182,6 @@ void MFunctionDef::printMe(Interpreter*eval) {
 }
 
 
-#warning - This design causes an unneccesary copy - should use readonly pass first
 void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker, 
 			    MFunctionDef *parent, ScopePtr &workspace) {
   if (val->type() == FM_M_FUNCTION) {
@@ -197,7 +196,7 @@ void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker,
       context->restoreScope(1);
       if (!Scope::nests(parentScope,myScope)) {
 	// Now capture the variables in our current scope
-	for (int i=0;i<optr->variablesAccessed.size();i++) {
+	for (size_t i=0;i<optr->variablesAccessed.size();i++) {
 	  ArrayReference ptr(context->lookupVariable(optr->variablesAccessed[i]));
 	  if (ptr.valid()) {
 	    if (!workspace)
@@ -217,10 +216,10 @@ void CaptureFunctionPointers(ArrayVector& outputs, Interpreter *walker,
 			     MFunctionDef *parent) {
   ScopePtr workspace = NULL;
   // First check for any 
-  for (int i=0;i<outputs.size();i++) {
+  for (size_t i=0;i<((size_t)outputs.size());i++) {
     if (outputs[i].dataClass() == FM_FUNCPTR_ARRAY) {
       FuncPtr *dp = (FuncPtr*) outputs[i].getReadWriteDataPointer();
-      for (int j=0;j<outputs[i].getLength();j++)
+      for (size_t j=0;j<outputs[i].getLength();j++)
 	CaptureFunctionPointer(dp[j],walker,parent,workspace);
     }
   }
@@ -241,8 +240,9 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   context->setLocalVariablesList(returnVals);
   if (capturedFunction && workspace) {
     stringVector workspaceVars(workspace->getCompletions(""));
-    for (int i=0;i<workspaceVars.size();i++)
-      context->insertVariableLocally(workspaceVars[i],*workspace->lookupVariable(workspaceVars[i]));
+    for (size_t i=0;i<workspaceVars.size();i++)
+      context->insertVariableLocally(workspaceVars[i],
+				     *workspace->lookupVariable(workspaceVars[i]));
   }
   walker->pushDebug(fileName,name);
   // When the function is called, the number of inputs is
@@ -251,7 +251,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   // argument function, then use the following logic:
   minCount = 0;
   if (inputArgCount() != -1) {
-    minCount = (inputs.size() < arguments.size()) ? 
+    minCount = (((size_t)inputs.size()) < arguments.size()) ? 
       inputs.size() : arguments.size();
     for (int i=0;i<minCount;i++) {
       std::string arg(arguments[i]);
@@ -301,22 +301,22 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
       // special case - if nargout == 0, and none of the
       // outputs are predefined, we don't do anything
       bool nonpredefed = true;
-      for (int i=0;i<returnVals.size()&&nonpredefed;i++) {
+      for (size_t i=0;i<returnVals.size()&&nonpredefed;i++) {
 	Array *ptr = context->lookupVariableLocally(returnVals[i]);
 	nonpredefed = nonpredefed && (!ptr);
       }
       if ((nargout > 0) || 
 	  ((nargout == 0) && (!nonpredefed))) {
 	outputs = ArrayVector();
-	for (int i=0;i<returnVals.size();i++) outputs.push_back(Array());
+	for (size_t i=0;i<returnVals.size();i++) outputs.push_back(Array());
 	//	outputs = ArrayVector(returnVals.size());
-	for (int i=0;i<returnVals.size();i++) {
+	for (size_t i=0;i<returnVals.size();i++) {
 	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
 	  if (!ptr)
 	    outputs[i] = Array::emptyConstructor();
 	  else
 	    outputs[i] = *ptr;
-	  if (!ptr && (i < nargout))
+	  if (!ptr && (i < ((size_t)nargout)))
 	    if (!warningIssued) {
 	      walker->warningMessage("one or more outputs not assigned in call (1)");
 	      warningIssued = true;
@@ -391,7 +391,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     CaptureFunctionPointers(outputs,walker,this);
     if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
-      for (int i=0;i<workspaceVars.size();i++) {
+      for (size_t i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
       }
@@ -402,7 +402,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   } catch (Exception& e) {
     if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
-      for (int i=0;i<workspaceVars.size();i++) {
+      for (size_t i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
       }
@@ -414,7 +414,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   catch (InterpreterRetallException& e) {
     if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
-      for (int i=0;i<workspaceVars.size();i++) {
+      for (size_t i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
       }
@@ -483,7 +483,7 @@ void RegisterNested(const tree &t, Interpreter *m_eval, MFunctionDef *parent) {
     m_eval->getContext()->insertFunction(fp,false);
     RegisterNested(fp->code,m_eval,fp);
   } else
-    for (int i=0;i<t.numchildren();i++)
+    for (size_t i=0;i<t.numchildren();i++)
       RegisterNested(t.child(i),m_eval,parent);
 }
 
@@ -551,7 +551,7 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	RegisterNested(code,m_eval,this);
 	localFunction = false;
 	// Process the local functions
-	for (int index = 1;index < pcode.numchildren();index++) {
+	for (size_t index = 1;index < pcode.numchildren();index++) {
 	  tree LocalFuncCode = pcode.child(index);
 	  MFunctionDef *fp = new MFunctionDef;
 	  fp->localFunction = true;
@@ -607,7 +607,7 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
     if ((myLine >= lineTarget) && (myLine < bestLine))
       bestLine = myLine;
   }
-  for (int i=0;i<t.numchildren();i++)
+  for (size_t i=0;i<t.numchildren();i++)
     TreeLine(t.child(i),bestLine,lineTarget);
 }
 
@@ -686,7 +686,6 @@ void BuiltInFunctionDef::printMe(Interpreter *eval) {
 ArrayVector BuiltInFunctionDef::evaluateFunction(Interpreter *walker, ArrayVector& inputs, 
 						 int nargout) {
   ArrayVector outputs;
-  int i;
   walker->pushDebug(name,"built in");
   try {
     outputs = fptr(nargout,inputs);
@@ -858,7 +857,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
 	  ret.promoteType(FM_INT32);
 	  int len;
 	  len = ret.getContentsAsIntegerScalar();
-	  if (len != inputs[i].getLength()) {
+	  if (len != (int)(inputs[i].getLength())) {
 	    throw Exception("array input " + arguments[i] + 
 			    " length different from computed bounds" + 
 			    " check length");
@@ -941,7 +940,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
     throw Exception("Unsupported return type " + retType + " in imported function call");
     
   // Second pass - Loop through the arguments
-  for (int i=0;i<types.size();i++) {
+  for (size_t i=0;i<types.size();i++) {
     if (arguments[i][0] == '&' || types[i] == "string" ||
 	sizeCheckExpressions[i].valid())
       av_ptr(alist,void*,*((void**)values[i]));

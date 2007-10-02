@@ -65,7 +65,6 @@ string ComplexNumericCellEntry(const T* data, Dimensions dims, string name,
 }
 
 string SummarizeArrayCellEntry(Array dp)  {
-  char msgBuffer[MSGBUFLEN];
   if (dp.isEmpty()) 
     return ("[]");
   else {
@@ -119,6 +118,7 @@ string SummarizeArrayCellEntry(Array dp)  {
 				     "complex","[%lg+%lgi]",dp.sparse());
     }
   }
+  return string("?");
 }
  
 template <class T>
@@ -165,7 +165,7 @@ int GetNominalWidthUnsignedInteger(const T*array, int count) {
  
 template <class T>
 void ComputeScaleFactor(const T* array, int count, ArrayFormatInfo& format) {
-  T max_amplitude;
+  T max_amplitude = 0;
   if (count == 0) return;
   if (format.expformat) return;
   bool finiteElementFound = false;
@@ -193,6 +193,7 @@ void ComputeScaleFactor(const T* array, int count, ArrayFormatInfo& format) {
 
 ArrayFormatInfo ComputeArrayFormatInfo(const void *dp, int length, Class aclass) {
   switch (aclass) {
+  default: throw Exception("unexpected class for ComputeArrayFormatInfo");    
   case FM_INT8:    
     return ArrayFormatInfo(GetNominalWidthSignedInteger((const int8*)dp,length));
   case FM_UINT8:   
@@ -337,6 +338,7 @@ void emitComplex(Interpreter* io, T real, T imag, const ArrayFormatInfo &format)
 void emitFormattedElement(Interpreter* io, const void *dp, 
 			  const ArrayFormatInfo &format, int num, Class dcls) {
   switch (dcls) {
+  default: throw Exception("unexpected class for emitFormattedElement");
   case FM_INT8:   
     emitSignedInteger(io,((const int8*) dp)[num],format);
     return;
@@ -517,7 +519,7 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io) {
       int offset = 0;
       while (wdims.inside(Adims)) {
 	io->outputMessage("(:,:");
-	for (int m=2;m<Adims.getLength();m++) 
+	for (size_t m=2;m<Adims.getLength();m++) 
 	  io->outputMessage(",%d",wdims.get(m)+1);
 	io->outputMessage(") = \n");
 	PrintSheet(io,format,rows,columns,offset,
@@ -545,6 +547,8 @@ string ArrayToPrintableString(const Array& a) {
     return string("");
   const void *dp = a.getDataPointer();
   switch (a.dataClass()) {
+  default:
+    return string("?");
   case FM_INT8: {
     const int8 *ap;
     ap = (const int8*) dp;

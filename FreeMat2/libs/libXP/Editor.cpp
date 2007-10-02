@@ -399,7 +399,7 @@ FMEditPane::FMEditPane(Interpreter* eval) : QWidget() {
   FMIndent *ind = new FMIndent;
 
   connect(tEditor,SIGNAL(indent()),ind,SLOT(update()));
-  Highlighter *highlight = new Highlighter(tEditor->document());
+  new Highlighter(tEditor->document());
   ind->setDocument(tEditor);
 }
 

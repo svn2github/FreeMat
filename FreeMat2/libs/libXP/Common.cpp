@@ -30,7 +30,7 @@ QStringList GetRecursiveDirList(QString basedir) {
   QDir dir(basedir);
   dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
-  for (unsigned i=0;i<list.size();i++) {
+  for (size_t i=0;i<((size_t)list.size());i++) {
     QFileInfo fileInfo = list.at(i);
     ret += GetRecursiveDirList(fileInfo.absoluteFilePath());
   }
@@ -46,7 +46,7 @@ stringVector GetCompletionList(string pattern) {
     QFileInfo t(Pattern);
     if (!dir.cd(t.path())) return stringVector();
     QFileInfoList list = dir.entryInfoList(QStringList() << (t.fileName() + "*"));
-    for (unsigned i=0;i<list.size();i++) {
+    for (size_t i=0;i<((size_t)list.size());i++) {
       QFileInfo fileInfo = list.at(i);
       if (fileInfo.isDir()) 
 	if (!t.path().endsWith(QDir::separator())) 
@@ -61,7 +61,7 @@ stringVector GetCompletionList(string pattern) {
     }
   } else {
     QFileInfoList list = dir.entryInfoList(QStringList() << (QString::fromStdString(pattern) + "*"));
-    for (unsigned i=0;i<list.size();i++) {
+    for (size_t i=0;i<((size_t)list.size());i++) {
       QFileInfo fileInfo = list.at(i);
       if (fileInfo.isDir())
 	completions.push_back((fileInfo.fileName() + QDir::separator()).toStdString());

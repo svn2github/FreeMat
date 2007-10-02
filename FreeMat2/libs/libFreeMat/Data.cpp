@@ -30,12 +30,12 @@ void * Data::copyDataBlock(void *dp) {
   DataMakeCount++;
   if (m_dataClass == FM_FUNCPTR_ARRAY) {
     FuncPtr *cp = new FuncPtr[m_dimensions.getElementCount()];
-    for (int i=0;i<m_dimensions.getElementCount();i++)
+    for (size_t i=0;i<m_dimensions.getElementCount();i++)
       cp[i] = ((FuncPtr*) dp)[i];
     return (void*)cp;
   } else if (m_dataClass == FM_CELL_ARRAY) {
     Array *cp = new Array[m_dimensions.getElementCount()];
-    for (int i=0;i<m_dimensions.getElementCount();i++)
+    for (size_t i=0;i<m_dimensions.getElementCount();i++)
       cp[i] = ((Array*)dp)[i];
     return (void*)cp;
   } else if (m_dataClass == FM_STRUCT_ARRAY) {

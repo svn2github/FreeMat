@@ -32,8 +32,8 @@ HandleText::~HandleText() {
 }
 
 void HandleText::UpdateState() {
-  QFont::Style fstyle;
-  QFont::Weight fweight;
+  QFont::Style fstyle = QFont::StyleNormal;
+  QFont::Weight fweight = QFont::Normal;
   HPString *fontname = (HPString*) LookupProperty("fontname");
   HPFontAngle *fontangle = (HPFontAngle*) LookupProperty("fontangle");
   HPFontWeight *fontweight = (HPFontWeight*) LookupProperty("fontweight");

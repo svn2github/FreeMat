@@ -827,13 +827,14 @@ bool ClassSearchOverload(Interpreter* eval, ArrayVector t,
 			 std::vector<int> userset, FuncPtr &val,
 			 std::string name) {
   bool overload = false;
-  int k = 0;
+  size_t k = 0;
   while (k<userset.size() && !overload) {
     overload = eval->getContext()->lookupFunction(ClassMangleName(t[userset[k]].className().back(),name),val);
     if (!overload) k++;
   }
   if (!overload)
     throw Exception(std::string("Unable to find overloaded '") + name + "' for user defined classes");
+  return overload;
 }
 
 Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
@@ -853,6 +854,8 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
       FuncPtr val;
       bool horzcat_overload = ClassSearchOverload(eval,m[i],userset,
 						  val,"horzcat");
+      if (!horzcat_overload)
+	throw Exception("no overloaded version of horzcat found");
       // scan through the list of user defined classes - look
       // for one that has "horzcat" overloaded
       val->updateCode(eval);
@@ -886,6 +889,8 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
     FuncPtr val;
     bool vertcat_overload = ClassSearchOverload(eval,rows,userset,
 						val,"vertcat");
+    if (!vertcat_overload)
+	throw Exception("no overloaded version of vertcat found");
     val->updateCode(eval);
     ArrayVector p;
     p = val->evaluateFunction(eval,rows,1);
@@ -981,6 +986,7 @@ Array ClassTrinaryOperator(Array a, Array b, Array c, std::string funcname,
       return ClassTriOp(a,b,c,val,eval);
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.className().back());
   }
+  throw Exception("unexpected argument types for classtrinaryoperator");
 }
 
 Array ClassBinaryOperator(Array a, Array b, std::string funcname,
@@ -995,6 +1001,7 @@ Array ClassBinaryOperator(Array a, Array b, std::string funcname,
       return ClassBiOp(a,b,val,eval);
     throw Exception("Unable to find a definition of " + funcname + " for arguments of class " + b.className().back());
   }
+  throw Exception("unexpected argument types for classbinaryoperator");
 }
 
 // void AdjustColonCalls(ArrayVector& m, treeVector t) {
@@ -1071,10 +1078,6 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
  tree s;
  Array q;
  Array n, p;
- int peerCnt;
- int dims;
- bool isVar;
- bool isFun;
  FuncPtr val;
     
  // Try and look up subsref, _unless_ we are already in a method 

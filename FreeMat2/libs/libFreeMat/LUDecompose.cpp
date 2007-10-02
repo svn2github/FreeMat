@@ -280,6 +280,8 @@ ArrayVector LUDecompose(int nargout, Array A) {
     A.promoteType(FM_DOUBLE);
   ArrayVector retval;
   switch (A.dataClass()) {
+  default:
+    throw Exception("unhandled input type for lu function");
   case FM_FLOAT: {
     float *l = (float*) Malloc(sizeof(float)*nrows*p);
     float *u = (float*) Malloc(sizeof(float)*p*ncols);

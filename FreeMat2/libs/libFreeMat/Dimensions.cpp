@@ -36,10 +36,10 @@
 //quantities from Data to Dimensions.  And to have Dimensions be
 //responsible for cacheing the quantities of interest.
 
-int Dimensions::getMax() {
-  int maxL;
+size_t Dimensions::getMax() {
+  size_t maxL;
   maxL = 0;
-  for (int i=0;i<length;i++)
+  for (size_t i=0;i<length;i++)
     maxL = (maxL > data[i]) ? maxL : data[i];
   return maxL;
 }
@@ -50,7 +50,7 @@ void Dimensions::updateCacheVariables() {
     m_cache_getElementCount = 0;
   else {
     m_cache_getElementCount = 1;
-    for (int i=0;i<length;i++)
+    for (size_t i=0;i<length;i++)
       m_cache_getElementCount *= data[i];
   }
   m_cache_isScalar = (m_cache_getElementCount == 1);
@@ -70,12 +70,13 @@ void Dimensions::updateCacheVariables() {
     (m_cache_getColumns == m_cache_getElementCount);
 }
 
-void Dimensions::setDimensionLength(int dim, int len) {
+void Dimensions::setDimensionLength(size_t dim, size_t len) {
   if (dim >= maxDims )
-    throw Exception("Too many dimensions! Current limit is 6.");
+    throw Exception(string("Too many dimensions! Current limit is ") + 
+		    maxDims + ".");
   if (dim >= length) {
-    int new_length = dim+1;
-    for (int j=length;j<new_length;j++)
+    size_t new_length = dim+1;
+    for (size_t j=length;j<new_length;j++)
       data[j] = 1;
     length = new_length;
   }
@@ -83,21 +84,21 @@ void Dimensions::setDimensionLength(int dim, int len) {
   updateCacheVariables();
 }
 
-int Dimensions::mapPoint(const Dimensions& point) const {
-  int retval;
-  int nextCoeff;
-  int testableDims;
+size_t Dimensions::mapPoint(const Dimensions& point) const {
+  size_t retval;
+  size_t nextCoeff;
+  size_t testableDims;
 
   retval = 0;
   nextCoeff = 1;
   testableDims = (point.length < length) ? point.length : length;
-  for (int i=0;i<testableDims;i++) {
+  for (size_t i=0;i<testableDims;i++) {
     if ((point.data[i] < 0) || (point.data[i] >= data[i]))
       throw Exception("Array index out of bounds");
     retval += nextCoeff*point.data[i];
     nextCoeff *= data[i];
   }
-  for (int j=testableDims;j<point.length;j++) {
+  for (size_t j=testableDims;j<point.length;j++) {
     if (point.data[j] != 0)
       throw Exception("Array index out of bounds");
   }
@@ -105,8 +106,8 @@ int Dimensions::mapPoint(const Dimensions& point) const {
 }
 
 void Dimensions::expandToCover(const Dimensions& a) {
-  int sze;
-  int i;
+  size_t sze;
+  size_t i;
   Dimensions dimensions(*this);
 
   /**
@@ -145,8 +146,8 @@ void Dimensions::expandToCover(const Dimensions& a) {
   }
 }
 
-void Dimensions::incrementModulo(const Dimensions& limit, int ordinal) {
-  int n;
+void Dimensions::incrementModulo(const Dimensions& limit, size_t ordinal) {
+  size_t n;
 
   data[ordinal]++;
   for (n=ordinal;n<length-1;n++)
@@ -159,7 +160,6 @@ void Dimensions::incrementModulo(const Dimensions& limit, int ordinal) {
 
 void Dimensions::simplify() {
   if (length <= 2) return;
-  int trimcount = 0;
   int i = length-1;
   while (i>1 && data[i] == 1) i--;
   length = i+1;
@@ -169,7 +169,7 @@ void Dimensions::simplify() {
 bool Dimensions::equals(const Dimensions &alt) const {
   bool retval;
   retval = (length == alt.length);
-  for (int i=0;i<length;i++)
+  for (size_t i=0;i<length;i++)
     retval = retval && (data[i] == alt.data[i]);
   return retval;
 }
@@ -178,12 +178,12 @@ std::string Dimensions::asString() const {
   char msgBuffer[MSGBUFLEN];
   std::string output;
   output.append("[");
-  for (int i=0;i<length-1;i++) {
-    snprintf(msgBuffer,MSGBUFLEN,"%d ",data[i]);
+  for (size_t i=0;i<length-1;i++) {
+    snprintf(msgBuffer,MSGBUFLEN,"%zu ",data[i]);
     output.append(msgBuffer);;
   }
   if (length >= 1)
-    snprintf(msgBuffer,MSGBUFLEN,"%d]",data[length-1]);
+    snprintf(msgBuffer,MSGBUFLEN,"%zu]",data[length-1]);
   else
     snprintf(msgBuffer,MSGBUFLEN,"]");
   output.append(msgBuffer);
@@ -194,12 +194,12 @@ void Dimensions::printMe(Interpreter* eval) const {
   char msgBuffer[MSGBUFLEN];
   snprintf(msgBuffer,MSGBUFLEN,"[");
   eval->outputMessage(msgBuffer);
-  for (int i=0;i<length-1;i++) {
-    snprintf(msgBuffer,MSGBUFLEN,"%d ",data[i]);
+  for (size_t i=0;i<length-1;i++) {
+    snprintf(msgBuffer,MSGBUFLEN,"%zu ",data[i]);
     eval->outputMessage(msgBuffer);
   }
   if (length >= 1)
-    snprintf(msgBuffer,MSGBUFLEN,"%d]",data[length-1]);
+    snprintf(msgBuffer,MSGBUFLEN,"%zu]",data[length-1]);
   else
     snprintf(msgBuffer,MSGBUFLEN,"]");
   eval->outputMessage(msgBuffer);
@@ -212,7 +212,7 @@ void Dimensions::reset() {
 }
 
 void Dimensions::zeroOut() {
-  for (int i=0;i<length;i++)
+  for (size_t i=0;i<length;i++)
     data[i] = 0;
   updateCacheVariables();
 }
@@ -225,9 +225,9 @@ void Dimensions::makeScalar() {
   updateCacheVariables();
 }
 
-Dimensions Dimensions::permute(const int32* permutation) const {
+Dimensions Dimensions::permute(const uint32* permutation) const {
   Dimensions out(length);
-  for (int i=0;i<length;i++)
+  for (size_t i=0;i<length;i++)
     out.data[i] = data[permutation[i]-1];
   return out;
 }

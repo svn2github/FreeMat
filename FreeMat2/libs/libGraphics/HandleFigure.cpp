@@ -170,7 +170,7 @@ void HandleFigure::PaintMe(RenderEngine &gc) {
     }
     HPHandles *children = (HPHandles*) LookupProperty("children");
     std::vector<unsigned> handles(children->Data());
-    for (int i=0;i<handles.size();i++) {
+    for (size_t i=0;i<handles.size();i++) {
       HandleObject *fp = LookupHandleObject(handles[i]);
       fp->PaintMe(gc);
     }
@@ -184,13 +184,12 @@ void HandleFigure::resizeGL(int width, int height) {
   m_width = width;
   m_height = height;
   SetTwoVectorDefault("figsize",width,height);
-  HPColor *color = (HPColor*) LookupProperty("color");
   resized = true;
   UpdateState();
   // Change to be recursive...
   HPHandles *children = (HPHandles*) LookupProperty("children");
   std::vector<unsigned> handles(children->Data());
-  for (int i=0;i<handles.size();i++) {
+  for (size_t i=0;i<handles.size();i++) {
     HandleObject *fp = LookupHandleObject(handles[i]);
     fp->UpdateState();
   }

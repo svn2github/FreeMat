@@ -26,7 +26,7 @@ void Scanner::SetToken(byte tok, string text) {
 }
 
 bool Scanner::Done() {
-  return (m_ptr >= m_text.size());
+  return (m_ptr >= (int)(m_text.size()));
 }
 
 bool Scanner::Peek(int chars, byte tok) {
@@ -344,7 +344,7 @@ void Scanner::PopWSFlag() {
 }
 
 byte Scanner::ahead(int n) {
-  if ((m_ptr+n) >= m_text.size()) 
+  if ((m_ptr+n) >= (int)(m_text.size()))
     return 0;
   else
     return m_text.at(m_ptr+n);

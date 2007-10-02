@@ -97,7 +97,7 @@ void Serialize::checkSignature(char type, int count) {
   rcount = ntohl(rcount);
   if (!((type == rtype) && (count == rcount))) {
     char buffer[1000];
-    sprintf(buffer,"Serialization Mismatch: expected <%c,%d>, got <%c,%d>",
+    sprintf(buffer,"Serialization Mismatch: expected <%c,%d>, got <%c,%ld>",
 	    type,count,rtype,rcount);
     throw Exception(buffer);
   }
@@ -112,6 +112,11 @@ void Serialize::putBytes(const char *ptr, int count) {
 void Serialize::putShorts(const short *ptr, int count) {
   sendSignature('s',count);
   s->writeBytes(ptr,count*sizeof(short));
+}
+
+void Serialize::putI64s(const int64 *ptr, int count) {
+  sendSignature('z',count);
+  s->writeBytes(ptr,count*sizeof(int64));
 }
 
 void Serialize::putInts(const int *ptr, int count) {
@@ -157,8 +162,7 @@ void Serialize::putByte(char t) {
 void Serialize::putStringVector(stringVector t) {
   sendSignature('S',1);
   putInt(t.size());
-  int i;
-  for (i=0;i<t.size();i++)
+  for (size_t i=0;i<t.size();i++)
     putString(t[i].c_str());
 }
 
@@ -202,6 +206,21 @@ void Serialize::getShorts(short *ptr, int count) {
     char tmp;
     for (int i=0;i<2*count;i+=2)
       SWAP(cptr[i],cptr[i+1]);
+  }
+}
+
+void Serialize::getI64s(int64 *ptr, int count) {
+  checkSignature('z',count);
+  s->readBytes(ptr,count*sizeof(int64));
+  if (endianSwap) {
+    char *cptr = (char *) ptr;
+    char tmp;
+    for (int i=0;i<8*count;i+=8) {
+      SWAP(cptr[i],cptr[i+7]);
+      SWAP(cptr[i+1],cptr[i+6]);
+      SWAP(cptr[i+2],cptr[i+5]);
+      SWAP(cptr[i+3],cptr[i+4]);
+    }
   }
 }
 
@@ -348,6 +367,8 @@ void Serialize::putDataClass(Class cls, bool issparse,
   sparseval = issparse ? 16 : 0;
   sendSignature('a',1);
   switch (cls) {
+  default:
+    throw Exception("Unhandled type in putDataClass.");
   case FM_CELL_ARRAY:
     putByte(1);
     return;
@@ -409,7 +430,7 @@ void Serialize::putDataClass(Class cls, bool issparse,
 void Serialize::putDimensions(const Dimensions& dim) {
   sendSignature('D',1);
   putInt(dim.getLength());
-  for (int i=0;i<dim.getLength();i++)
+  for (size_t i=0;i<dim.getLength();i++)
     putInt(dim.getDimensionLength(i));
 }
 
@@ -431,6 +452,7 @@ void Serialize::putArray(const Array& dat) {
   int elCount(dat.getLength());
   if (dat.isEmpty()) return;
   switch(dclass) {
+  default: throw Exception("unhandled type in putArray");
   case FM_CELL_ARRAY: {
     const Array *dp=((const Array *) dat.getDataPointer());
     for (int i=0;i<elCount;i++)
@@ -470,6 +492,11 @@ void Serialize::putArray(const Array& dat) {
     putInts((const int*) dp,elCount);
     return;
   }
+  case FM_UINT64: {
+    const uint64 *dp = ((const uint64 *)dat.getDataPointer());
+    putI64s((const int64*) dp, elCount);
+    return;
+  }
   case FM_INT8: {
     const int8 *dp=((const int8 *)dat.getDataPointer());
     putBytes((const char*) dp,elCount);
@@ -486,11 +513,16 @@ void Serialize::putArray(const Array& dat) {
       putInts((const int*) dp,elCount);
     } else {
       const int32 **dp = ((const int32 **) dat.getSparseDataPointer());
-      for (int i=0;i<dat.getDimensionLength(1);i++) {
+      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
 	putInt(1+dp[i][0]);
 	putInts((const int*) dp[i],1+dp[i][0]);
       }
     }
+    return;
+  }
+  case FM_INT64: {
+    const int64 *dp = ((const int64 *)dat.getDataPointer());
+    putI64s((const int64*) dp, elCount);
     return;
   }
   case FM_FLOAT: {      
@@ -499,7 +531,7 @@ void Serialize::putArray(const Array& dat) {
       putFloats(dp,elCount);
     } else {
       const float **dp = ((const float **) dat.getSparseDataPointer());
-      for (int i=0;i<dat.getDimensionLength(1);i++) {
+      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
 	putFloat(1+dp[i][0]);
 	putFloats((const float*) dp[i],(int)(1+dp[i][0]));
       }
@@ -512,7 +544,7 @@ void Serialize::putArray(const Array& dat) {
       putDoubles(dp,elCount);
     } else {
       const double **dp = ((const double **) dat.getSparseDataPointer());
-      for (int i=0;i<dat.getDimensionLength(1);i++) {
+      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
 	putDouble(1+dp[i][0]);
 	putDoubles((const double*) dp[i],(int)(1+dp[i][0]));
       }
@@ -525,7 +557,7 @@ void Serialize::putArray(const Array& dat) {
       putFloats(dp,elCount*2);
     } else {
       const float **dp = ((const float **) dat.getSparseDataPointer());
-      for (int i=0;i<dat.getDimensionLength(1);i++) {
+      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
 	putFloat(1+dp[i][0]);
 	putFloats((const float*) dp[i],(int)(1+dp[i][0]));
       }
@@ -538,7 +570,7 @@ void Serialize::putArray(const Array& dat) {
       putDoubles(dp,elCount*2);
     } else {
       const double **dp = ((const double **) dat.getSparseDataPointer());
-      for (int i=0;i<dat.getDimensionLength(1);i++) {
+      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
 	putDouble(1+dp[i][0]);
 	putDoubles((const double*) dp[i],(int)(1+dp[i][0]));
       }
@@ -560,6 +592,8 @@ void Serialize::getArray(Array& dat) {
     return;
   }
   switch(dclass) {
+  default:
+    throw Exception("Unhandled type in getArray");
   case FM_CELL_ARRAY: {
     Array *dp = new Array[elCount];
     for (int i=0;i<elCount;i++)
@@ -610,6 +644,18 @@ void Serialize::getArray(Array& dat) {
     dat = Array(dclass,dims,dp);
     return;
   }
+  case FM_INT64: {
+    int64 *dp = (int64*) Malloc(sizeof(int64)*elCount);
+    getI64s((int64*) dp,elCount);
+    dat = Array(dclass,dims,dp);
+    return;
+  }
+  case FM_UINT64: {
+    uint64 *dp = (uint64*) Malloc(sizeof(uint64)*elCount);
+    getI64s((int64*) dp,elCount);
+    dat = Array(dclass,dims,dp);
+    return;
+  }
   case FM_UINT32: {
     uint32 *dp = (uint32*) Malloc(sizeof(uint32)*elCount);
     getInts((int*) dp,elCount);
@@ -623,7 +669,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       int32 **dp = new int32*[dims.getColumns()];
-      for (int i=0;i<dims.getColumns();i++) {
+      for (size_t i=0;i<dims.getColumns();i++) {
 	int len = getInt();
 	dp[i] = new int32[len];
 	getInts(dp[i],len);
@@ -639,7 +685,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       float **dp = new float*[dims.getColumns()];
-      for (int i=0;i<dims.getColumns();i++) {
+      for (size_t i=0;i<dims.getColumns();i++) {
 	int len = (int) getFloat();
 	dp[i] = new float[len];
 	getFloats(dp[i],len);
@@ -655,7 +701,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       double **dp = new double*[dims.getColumns()];
-      for (int i=0;i<dims.getColumns();i++) {
+      for (size_t i=0;i<dims.getColumns();i++) {
 	int len = (int) getDouble();
 	dp[i] = new double[len];
 	getDoubles(dp[i],len);
@@ -671,7 +717,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       float **dp = new float*[dims.getColumns()];
-      for (int i=0;i<dims.getColumns();i++) {
+      for (size_t i=0;i<dims.getColumns();i++) {
 	int len = (int) getFloat();
 	dp[i] = new float[len];
 	getFloats(dp[i],len);
@@ -687,7 +733,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       double **dp = new double*[dims.getColumns()];
-      for (int i=0;i<dims.getColumns();i++) {
+      for (size_t i=0;i<dims.getColumns();i++) {
 	int len = (int) getDouble();
 	dp[i] = new double[len];
 	getDoubles(dp[i],len);

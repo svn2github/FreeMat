@@ -46,7 +46,7 @@ void VariablesTool::refresh() {
   m_flist->setRowCount(varnames.size());
   m_flist->setColumnCount(5);
   m_flist->setHorizontalHeaderLabels(QStringList() << "Name" << "Type" << "Flags" << "Size" << "Value");
-  for (int i=0;i<varnames.size();i++) {
+  for (size_t i=0;i<varnames.size();i++) {
     QString varname(QString::fromStdString(varnames[i]));
     QString type;
     QString flags;

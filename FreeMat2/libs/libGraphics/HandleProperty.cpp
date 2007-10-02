@@ -96,7 +96,7 @@ HPHandles::HPHandles() {
 Array HPHandles::Get() {
   Array ret(Array::uint32VectorConstructor(data.size()));
   unsigned *dp = (unsigned*) ret.getReadWriteDataPointer();
-  for (int i=0;i<data.size();i++)
+  for (size_t i=0;i<data.size();i++)
     dp[i] = data[i];
   return ret;
 }
@@ -112,10 +112,10 @@ void HPHandles::Set(Array arg) {
   arg.promoteType(FM_UINT32);
   const unsigned *dp = (const unsigned*) arg.getDataPointer();
   // make sure they are all valid handles
-  for (int i=0;i<arg.getLength();i++) 
+  for (size_t i=0;i<arg.getLength();i++) 
     ValidateHandle(dp[i]);
   data.clear();
-  for (int i=0;i<arg.getLength();i++) 
+  for (size_t i=0;i<arg.getLength();i++) 
     data.push_back(dp[i]);
   HandleProperty::Set(arg); 
 }
@@ -134,7 +134,7 @@ void HPString::Set(Array arg) {
 Array HPVector::Get() {
   Array ret(Array::doubleVectorConstructor(data.size()));    
   double *dp = (double*) ret.getReadWriteDataPointer();
-  for (int i=0;i<data.size();i++)
+  for (size_t i=0;i<data.size();i++)
     dp[i] = data[i];
   return ret;
 }
@@ -144,7 +144,7 @@ void HPVector::Set(Array num) {
   num.promoteType(FM_DOUBLE);
   const double *dp = (const double*) num.getDataPointer();
   data.clear();
-  for (int i=0;i<num.getLength();i++)
+  for (size_t i=0;i<num.getLength();i++)
     data.push_back(dp[i]);
 }
   
@@ -153,7 +153,7 @@ void HPFixedVector::Set(Array num) {
   num.promoteType(FM_DOUBLE);
   const double *dp = (const double*) num.getDataPointer();
   data.clear();
-  for (int i=0;i<qMin(m_len,(unsigned int)num.getLength());i++)
+  for (size_t i=0;i<qMin(m_len,(unsigned int)num.getLength());i++)
     data.push_back(dp[i]);
 }
 
@@ -374,7 +374,7 @@ void HPConstrainedStringSet::Set(Array arg) {
   HandleProperty::Set(arg);
   HPStringSet::Set(arg);
   // Validate the result
-  for (int i=0;i<data.size();i++)
+  for (size_t i=0;i<data.size();i++)
     if (find(m_dictionary.begin(),m_dictionary.end(),data[i]) == m_dictionary.end())
       throw Exception("illegal selection for property");
 }

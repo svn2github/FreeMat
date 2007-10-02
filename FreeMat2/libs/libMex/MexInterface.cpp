@@ -57,6 +57,8 @@ Array ArrayFromMexArrayReal(mxArray *array_ptr) {
     dim.set(i,array_ptr->dims[i]);
   int count = mxGetNumberOfElements(array_ptr);
   switch (array_ptr->classID) {
+  default:
+    throw Exception("Unhandled type for mex array conversion");
   case mxUINT32_CLASS:
     cls = FM_UINT32;
     dp = Array::allocateArray(cls,count);
@@ -118,6 +120,8 @@ Array ArrayFromMexArrayComplex(mxArray *array_ptr) {
   if (array_ptr->classID != mxDOUBLE_CLASS) {
     cls = FM_COMPLEX;
     switch(array_ptr->classID) {
+    default:
+      throw Exception("Unhandled type for mex array conversion");
     case mxUINT32_CLASS:
       dp = Array::allocateArray(FM_COMPLEX,count);
       MexComplexToArrayComplex<uint32,float>((uint32*)array_ptr->realdata,
@@ -243,6 +247,8 @@ mxArray* MexArrayFromCellArray(Array array) {
 
 mxArray* MexArrayFromArray(Array array) {
   switch(array.dataClass()) {
+  default:
+    throw Exception("Unhandled type for mex array conversion");
   case FM_FUNCPTR_ARRAY:
     return NULL;
   case FM_CELL_ARRAY:

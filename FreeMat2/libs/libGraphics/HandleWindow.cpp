@@ -350,7 +350,7 @@ HandleAxis* GetContainingAxis(HandleFigure *fig, int x, int y) {
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
   std::vector<unsigned> children(cp->Data());
   //  qDebug() << "Click " << x << "," << y;
-  for (int i=0;i<children.size();i++) {
+  for (size_t i=0;i<children.size();i++) {
     HandleObject* hp = LookupHandleObject(children[i]);
     if (hp->IsType("axes")) {
       // Get the axis extents

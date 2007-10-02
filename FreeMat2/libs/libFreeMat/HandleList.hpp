@@ -42,7 +42,7 @@ public:
 
   unsigned int assignHandle(T val) {
     QMutexLocker locker(&mutex);
-    int nxt = 0;
+    size_t nxt = 0;
     bool freeHandleFound = false;
     while ((nxt < max_handle) && !freeHandleFound) {
       freeHandleFound = (handles.count(nxt) == 0);

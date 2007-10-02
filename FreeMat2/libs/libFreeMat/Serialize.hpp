@@ -42,6 +42,7 @@ public:
   void putBytes(const char* ptr, int count);
   void putShorts(const short* ptr, int count);
   void putInts(const int* ptr, int count);
+  void putI64s(const int64* ptr, int count);
   void putFloats(const float* ptr, int count);
   void putDoubles(const double* ptr, int count);
   // Send a scalar object
@@ -57,6 +58,7 @@ public:
   void getBytes(char* ptr, int count);
   void getShorts(short* ptr, int count);
   void getInts(int* ptr, int count);
+  void getI64s(int64* ptr, int count);
   void getFloats(float* ptr, int count);
   void getDoubles(double* ptr, int count);
   // Get a scalar object

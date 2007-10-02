@@ -28,7 +28,6 @@
 #include <QDialog>
 #include <QCheckBox>
 #include <QGroupBox>
-#include "highlighter.hpp"
 #include "findform.ui.h"
 #include "replaceform.ui.h"
 #include "Interpreter.hpp"

@@ -64,7 +64,7 @@ PathTool::PathTool() {
   connect(up,SIGNAL(clicked()),this,SLOT(up()));
   connect(down,SIGNAL(clicked()),this,SLOT(down()));
   connect(save,SIGNAL(clicked()),this,SLOT(save()));
-  connect(done,SIGNAL(clicked()),this,SLOT(done()));
+  connect(done,SIGNAL(clicked()),this,SLOT(alldone()));
   // Populate the list based on the current path...
   QSettings settings("FreeMat","FreeMat");
   QStringList path = settings.value("interpreter/path").toStringList();
@@ -153,7 +153,7 @@ void PathTool::save() {
   modified = false;
 }
 
-void PathTool::done() {
+void PathTool::alldone() {
   if (modified) {
     int ret = QMessageBox::warning(this, tr("FreeMat"),
 				   "The path list has been modified.\n"

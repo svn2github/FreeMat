@@ -283,8 +283,8 @@ void HandleSurface::UpdateState() {
 Array HandleSurface::GetCoordinateMatrix(std::string name, bool isXcoord) {
   // Get the elevation data from the object
   Array zdata(ArrayPropertyLookup("zdata"));
-  int zrows(zdata.rows());
-  int zcols(zdata.columns());
+  size_t zrows(zdata.rows());
+  size_t zcols(zdata.columns());
   if (StringCheck(name+"mode","manual")) {
     // not auto mode...
     Array cdata(ArrayPropertyLookup(name));
@@ -295,8 +295,8 @@ Array HandleSurface::GetCoordinateMatrix(std::string name, bool isXcoord) {
       const double *qp = (const double*) cdata.getDataPointer();
       Array mat(Array::doubleMatrixConstructor(zrows,zcols));
       double *dp = (double*) mat.getReadWriteDataPointer();
-      for (int i=0;i<zcols;i++)
-	for (int j=0;j<zrows;j++) {
+      for (size_t i=0;i<zcols;i++)
+	for (size_t j=0;j<zrows;j++) {
 	  if (isXcoord)
 	    *dp = qp[i];
 	  else
@@ -312,8 +312,8 @@ Array HandleSurface::GetCoordinateMatrix(std::string name, bool isXcoord) {
   // In auto mode, or the given data is bogus...
   Array mat(Array::doubleMatrixConstructor(zrows,zcols));
   double *dp = (double*) mat.getReadWriteDataPointer();
-  for (int i=0;i<zcols;i++)
-    for (int j=0;j<zrows;j++) {
+  for (size_t i=0;i<zcols;i++)
+    for (size_t j=0;j<zrows;j++) {
       if (isXcoord)
 	*dp = i+1;
       else
@@ -346,7 +346,7 @@ std::vector<std::vector<cpoint> > HandleSurface::BuildQuadsNoTexMap(HPConstraine
   if (cp->Is("flat") && ((img.height() < rows-1) || (img.width() < cols-1))) return retval;
   if (ap->Is("flat") && ((img.height() < rows-1) || (img.width() < cols-1))) return retval;
   if (cp->Is("none")) return retval;
-  QRgb *dummyline;
+  QRgb *dummyline = NULL;
   if (cp->Is("colorspec") || ap->Is("scalar")) {
     dummyline = new QRgb[cols];
     double r = 0;
@@ -367,7 +367,10 @@ std::vector<std::vector<cpoint> > HandleSurface::BuildQuadsNoTexMap(HPConstraine
 			   (int)(255*alphaval));
   }
   for (int i=0;i<rows-1;i++) {
-    QRgb *cbits1, *cbits2, *abits1, *abits2;
+    QRgb *cbits1 = NULL;
+    QRgb *cbits2 = NULL;
+    QRgb *abits1 = NULL;
+    QRgb *abits2 = NULL;
     int col_lim, alp_lim;
     if (cp->Is("interp")) {
       cbits1 = (QRgb*) img.scanLine(i);
@@ -432,10 +435,6 @@ void HandleSurface::PaintMe(RenderEngine& gc) {
   Array zdata(ArrayPropertyLookup("zdata"));
   zdata.promoteType(FM_DOUBLE);
   if (zdata.isEmpty()) return;
-  double *xdp = (double*) xdata.getDataPointer();
-  double *ydp = (double*) ydata.getDataPointer();
-  double *zdp = (double*) zdata.getDataPointer();
-  int rows = zdata.rows();   int cols = zdata.columns();
   // There are many render styles...
   // edgealpha, edgecolor, facealpha, facecolor
   // facecolor

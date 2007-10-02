@@ -77,7 +77,9 @@ class HPFixedVector : public HPVector {
 protected:
   unsigned m_len;
 public:
-  HPFixedVector(unsigned len) : m_len(len) {for (int i=0;i<len;i++) data.push_back(0);}
+  HPFixedVector(unsigned len) : m_len(len) {
+    for (size_t i=0;i<len;i++) data.push_back(0);
+  }
   virtual ~HPFixedVector() {}
   virtual void Set(Array);    
 };

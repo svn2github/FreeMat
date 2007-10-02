@@ -57,7 +57,6 @@ void getNDimSubsetNumericNoColonReal(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -97,7 +96,6 @@ void setNDimSubsetNumericNoColonReal(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -139,7 +137,6 @@ void getNDimSubsetNumericNoColonBurst(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -182,7 +179,6 @@ void setNDimSubsetNumericNoColonBurst(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -228,7 +224,6 @@ void getNDimSubsetNumericFirstColonReal(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -271,7 +266,6 @@ void setNDimSubsetNumericFirstColonReal(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -316,7 +310,6 @@ void getNDimSubsetNumericFirstColonBurst(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -361,7 +354,6 @@ void setNDimSubsetNumericFirstColonBurst(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -408,7 +400,6 @@ void getNDimSubsetNumericAnyColonReal(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -457,7 +448,6 @@ void setNDimSubsetNumericAnyColonReal(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -504,7 +494,6 @@ void getNDimSubsetNumericAnyColonBurst(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -552,7 +541,6 @@ void setNDimSubsetNumericAnyColonBurst(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -605,7 +593,6 @@ void getNDimSubsetNumericSliceReal(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -660,7 +647,6 @@ void setNDimSubsetNumericSliceReal(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -711,7 +697,6 @@ void getNDimSubsetNumericSliceBurst(const T *sp, T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)
@@ -763,7 +748,6 @@ void setNDimSubsetNumericSliceBurst(T *sp, const T* destp,
   int ndxptr[maxDims];
   for (int j=0;j<numDims;j++) 
     ndxptr[j] = 0;
-  int ndxval[maxDims];
   int srcfact[maxDims];
   srcfact[0] = 1;
   for (int j=1;j<numDims;j++)

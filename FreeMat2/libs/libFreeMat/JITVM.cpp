@@ -145,7 +145,7 @@ JITScalar JITVM::compile_boolean_op(Instruction::BinaryOps op, JITScalar arg1, J
 // constant folding, but for now, leave it in.
 JITScalar JITVM::compile_binary_op(BinaryOperator::BinaryOps opcode, 
 				   JITScalar arg1, JITScalar arg2, string inst) {
-  const Type* outType;
+  const Type* outType = NULL;
   if (arg1->getType() == arg2->getType()) 
     outType = arg1->getType();
   else if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))
@@ -158,7 +158,7 @@ JITScalar JITVM::compile_binary_op(BinaryOperator::BinaryOps opcode,
 }
 
 JITScalar JITVM::compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst) {
-  const Type* outType;
+  const Type* outType = NULL;
   if (arg1->getType() == arg2->getType())
     outType = arg1->getType();
   else if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))
@@ -505,7 +505,7 @@ JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
     JITScalar arg = compile_expression(s.first(),m_eval);
     // First look up direct functions - also try double arg functions, as type
     // promotion means sin(int32) --> sin(double)
-    JITFunction *fun;
+    JITFunction *fun = NULL;
     if (isi(arg)) {
       fun = JITIntFuncs.findSymbol(symname);
       if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
@@ -835,7 +835,6 @@ void JITVM::compile(tree t, Interpreter *m_eval) {
   std::vector<const Type*> DispatchFuncArgs;
   PointerType* void_pointer = PointerType::get(IntegerType::get(8));
   PointerType* void_pointer_pointer = PointerType::get(void_pointer);
-  PointerType* int32_pointer = PointerType::get(IntegerType::get(32));
   std::vector<const Type*> vResizeFuncArgs;
   vResizeFuncArgs.push_back(void_pointer);         //this pointer
   vResizeFuncArgs.push_back(IntegerType::get(32)); //array index
@@ -955,7 +954,7 @@ void JITVM::run(Interpreter *m_eval) {
   args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
   // For each argument in the array, retrieve it from the interpreter
   array_inputs.reserve(argumentList.size());
-  for (int i=0;i<argumentList.size();i++) {
+  for (size_t i=0;i<argumentList.size();i++) {
     JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
     if (v) {
       ArrayReference ptr(m_eval->getContext()->lookupVariable(argumentList[i]));

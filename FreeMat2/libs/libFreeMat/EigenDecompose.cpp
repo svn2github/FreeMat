@@ -993,7 +993,6 @@ void doubleEigenDecompose(int n, double *v, double *d, double *a,
   //*                and WI contain eigenvalues which have converged.
 
   int INFO;
-  double WORKSZE;
 
   //     LWORK = -1;
   //     dgeevx_( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, WR, WI,
@@ -1722,7 +1721,7 @@ bool complexGenEigenDecomposeSymmetric(int n, float *v, float *d,
   int LWORK;
   LWORK = MAX(1,2*N-1);
   float *WORK = (float*) Malloc(2*LWORK*sizeof(float));
-  chegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORK,
+  chegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, WORK,
 	 &LWORK, RWORK, &INFO );    
   if (INFO>N) return false;
   if (eigenvectors)
@@ -2110,10 +2109,9 @@ bool dcomplexGenEigenDecomposeSymmetric(int n, double *v, double *d,
   double *RWORK = (double*) Malloc(MAX(1,3*N-2)*sizeof(double));
   int INFO;
   int LWORK;
-  double WORKSZE[2];
   LWORK = MAX(1,2*N-1);
   double *WORK = (double*) Malloc(LWORK*sizeof(double)*2);
-  zhegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, d, WORK,
+  zhegv_(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, WORK,
 	 &LWORK, RWORK, &INFO );    
   Free(WORK);
   Free(RWORK);

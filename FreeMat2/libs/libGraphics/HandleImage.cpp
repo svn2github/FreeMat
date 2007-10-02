@@ -218,7 +218,7 @@ std::vector<double> HandleImage::GetAlphaMap(int rows, int cols) {
     for (int i=0;i<rows*cols;i++)
       alphaout.push_back(1);
     return alphaout;
-  } else if (alphain.size() != rows*cols) {
+  } else if (alphain.size() != (size_t)(rows*cols)) {
     increment = 0;
   } else
     increment = 1;

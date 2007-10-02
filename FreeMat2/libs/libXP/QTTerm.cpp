@@ -405,7 +405,7 @@ void QTTerm::keyPressEvent(QKeyEvent *e) {
 }
 
 void QTTerm::OutputRawString(string txt) {
-  for (int i=0;i<txt.size();i++)
+  for (size_t i=0;i<txt.size();i++)
     setChar(txt[i],true);
 }
 

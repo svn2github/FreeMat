@@ -22,6 +22,7 @@
 
 class Stream {
 public:
+  virtual ~Stream() {}
   virtual void writeBytes(const void* data, int len) = 0;
   virtual void readBytes(void* data, int len) = 0;
 };

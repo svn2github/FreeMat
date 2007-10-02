@@ -144,7 +144,7 @@ void Interpreter::scanDirectory(std::string scdir, bool tempfunc,
   dir.setNameFilters(QStringList() << "*.m" << "*.p" 
 		     << "@*" << "private" << "*."+mexExtension());
   QFileInfoList list(dir.entryInfoList());
-  for (unsigned i=0;i<list.size();i++) {
+  for (size_t i=0;i<((size_t)list.size());i++) {
     QFileInfo fileInfo(list.at(i));
     std::string fileSuffix(fileInfo.suffix().toStdString());
     std::string fileBaseName(fileInfo.baseName().toStdString());
@@ -636,10 +636,10 @@ Array Interpreter::matrixDefinition(const tree &t) {
   ArrayMatrix m;
   if (t.numchildren() == 0) 
     return Array::emptyConstructor();
-  for (int i=0;i<t.numchildren();i++) {
+  for (size_t i=0;i<t.numchildren();i++) {
     const tree &s(t.child(i));
     ArrayVector n;
-    for (int j=0;j<s.numchildren();j++)
+    for (size_t j=0;j<s.numchildren();j++)
       multiexpr(s.child(j),n);
     m.push_back(n);
   }
@@ -704,10 +704,10 @@ Array Interpreter::cellDefinition(const tree & t) {
     a.promoteType(FM_CELL_ARRAY);
     return a;
   }
-  for (int i=0;i<t.numchildren();i++) {
+  for (size_t i=0;i<t.numchildren();i++) {
     const tree &s(t.child(i));
     ArrayVector n;
-    for (int j=0;j<s.numchildren();j++) 
+    for (size_t j=0;j<s.numchildren();j++) 
       multiexpr(s.child(j),n);
     m.push_back(n);
   }
@@ -1174,7 +1174,6 @@ Array Interpreter::doubleColon(const tree &t) {
  * this is applied on an element-by-element basis also.
  */
 bool Interpreter::testCaseStatement(const tree &t, Array s) {
-  int ctxt = t.context();
   Array r(expression(t.first()));
   bool caseMatched = s.testForCaseMatch(r);
   if (caseMatched)
@@ -1233,7 +1232,7 @@ void Interpreter::tryStatement(const tree &t) {
   intryblock = true;
   // Get the state of the IDnum stack and the
   // contextStack and the cnameStack
-  int stackdepth;
+  size_t stackdepth;
   stackdepth = cstack.size();
   try {
     block(t.first());
@@ -1442,7 +1441,6 @@ void Interpreter::tryStatement(const tree &t) {
 //Works
 void Interpreter::switchStatement(const tree &t) {
   Array switchVal;
-  int ctxt = t.context();
   // First, extract the value to perform the switch on.
   switchVal = expression(t.first());
   // Assess its type to determine if this is a scalar switch
@@ -1543,9 +1541,6 @@ void Interpreter::switchStatement(const tree &t) {
 //!
 //Works
 void Interpreter::ifStatement(const tree &t) {
-  bool elseifMatched;
-  int ctxt = t.context();
-    
   bool condtest = !(expression(t.first()).isRealAllZeros());
   if (condtest) {
     block(t.second());
@@ -1642,7 +1637,6 @@ void Interpreter::ifStatement(const tree &t) {
 //!
 //Works
 void Interpreter::whileStatement(const tree &t) {
-  int ctxt = t.context();
   tree testCondition(t.first());
   tree codeBlock(t.second());
   bool breakEncountered = false;
@@ -1820,7 +1814,6 @@ void ForLoopHelperComplex(const tree &codeBlock, Class indexClass,
 void Interpreter::forStatement(const tree &t) {
   Array indexSet;
   string indexVarName;
-  int ctxt = t.context();
 
   // Try to compile this for statement to an instruction stream
   if (jitcontrol) {
@@ -2934,7 +2927,7 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
 }
 
 void Interpreter::processBreakpoints(const tree &t) {
-  for (int i=0;i<bpStack.size();i++) {
+  for (size_t i=0;i<bpStack.size();i++) {
     if ((bpStack[i].cname == ip_funcname) && 
 	((ip_context & 0xffff) == bpStack[i].tokid)) {
       doDebugCycle();
@@ -3066,7 +3059,6 @@ void Interpreter::statement(const tree &t) {
   } catch (Exception& e) {
     if (autostop && !InCLI) {
       errorCount++;
-      char buffer[4096];
       e.printMe(this);
       stackTrace(true);
       doDebugCycle();
@@ -3150,7 +3142,7 @@ int Interpreter::countLeftHandSides(const tree &t) {
     }
   }
   if (t.last().is('.')) 
-    return std::max(1,lhs.getLength());
+    return std::max((size_t)1,lhs.getLength());
   return 1;
 }
 
@@ -3168,7 +3160,7 @@ void Interpreter::specialFunctionCall(const tree &t, bool printIt) {
     args.push_back(t.child(index).text());
   if (args.empty()) return;
   ArrayVector n;
-  for (int i=1;i<args.size();i++)
+  for (size_t i=1;i<args.size();i++)
     n.push_back(Array::stringConstructor(args[i].c_str()));
   FuncPtr val;
   if (!lookupFunction(args[0],val,n))
@@ -3215,7 +3207,7 @@ void Interpreter::addBreakpoint(stackentry bp) {
 }
 
 void Interpreter::refreshBreakpoints() {
-  for (int i=0;i<bpStack.size();i++)
+  for (size_t i=0;i<bpStack.size();i++)
     setBreakpoint(bpStack[i],true);
 }
 
@@ -3251,13 +3243,13 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
   // being requested. 
   // Calculate how many lhs objects there are
   lhsCount = 0;
-  for (unsigned index=0;index<s.size();index++) 
+  for (size_t index=0;index<((size_t)s.size());index++) 
     lhsCount += countLeftHandSides(s[index]);
 
   multiexpr(t.second(),m,lhsCount);
 
-  unsigned index;
-  for (index=0;(index<s.size()) && (m.size() > 0);index++) {
+  size_t index;
+  for (index=0;(index<((size_t)s.size())) && (m.size() > 0);index++) {
     const tree &var(s[index]);
     string name(var.first().text());
     ArrayReference ptr(context->lookupVariable(name));
@@ -3310,7 +3302,7 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
       displayArray(*ptr);
     }
   }
-  if (index < s.size())
+  if (index < ((size_t)s.size()))
     warningMessage("one or more outputs not assigned in call.");
 }
 
@@ -3908,7 +3900,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
   int maxndx;
   maxndx = 0;
   // Map each keyword to an argument number
-  for (int i=0;i<keywords.size();i++) {
+  for (size_t i=0;i<keywords.size();i++) {
     int ndx;
     ndx = getArgumentIndex(arguments,keywords[i]);
     if (ndx == -1)
@@ -3942,7 +3934,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
   }
   // Finally...
   // Copy the keyword values in
-  for (int i=0;i<keywords.size();i++) {
+  for (size_t i=0;i<keywords.size();i++) {
     toFill[keywordNdx[i]] = keyvals[i];
     filled[keywordNdx[i]] = true;
     argTypeMap[keywordNdx[i]] = i;
@@ -3981,10 +3973,10 @@ void Interpreter::handlePassByReference(const tree &q, stringVector arguments,
 					treeVector keyexpr, int* argTypeMap) {
   tree p;
   // M functions can modify their arguments
-  int maxsearch = m.size(); 
+  size_t maxsearch = m.size(); 
   if (maxsearch > arguments.size()) maxsearch = arguments.size();
-  int qindx = 0;
-  for (int i=0;i<maxsearch;i++) {
+  size_t qindx = 0;
+  for (size_t i=0;i<maxsearch;i++) {
     // Was this argument passed out of order?
     if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
     if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
@@ -4006,12 +3998,6 @@ void Interpreter::handlePassByReference(const tree &q, stringVector arguments,
   }
 }
 
-static ArrayVector mergeVecs(ArrayVector a, ArrayVector b) {
-  for (int i=0;i<b.size();i++)
-    a.push_back(b[i]);
-  return a;
-}
-
 //Test
 void Interpreter::functionExpression(const tree &t, 
 				     int narg_out, 
@@ -4021,14 +4007,10 @@ void Interpreter::functionExpression(const tree &t,
   stringVector keywords;
   ArrayVector keyvals;
   treeVector keyexpr;
-  int i;
   FuncPtr funcDef;
   int* argTypeMap;
   bool CLIFlagsave;
   CLIFlagsave = InCLI;
-  int ctxt = t.context();
-
-    
   try {
     // Because of the introduction of user-defined classes, we have to 
     // first evaluate the keywords and the arguments, before we know
@@ -4131,7 +4113,7 @@ void Interpreter::functionExpression(const tree &t,
 void Interpreter::toggleBP(QString fname, int lineNumber) {
   if (isBPSet(fname,lineNumber)) {
     string fname_string(fname.toStdString());
-    for (int i=0;i<bpStack.size();i++) 
+    for (size_t i=0;i<bpStack.size();i++) 
       if ((bpStack[i].cname == fname_string) &&
 	  ((bpStack[i].tokid & 0xffff) == lineNumber)) {
 	//	qDebug() << "Deleting bp " << i << " w/number " << bpStack[i].number << "";
@@ -4146,8 +4128,9 @@ void Interpreter::toggleBP(QString fname, int lineNumber) {
 MFunctionDef* Interpreter::lookupFullPath(string fname) {
   stringVector allFuncs(context->listAllFunctions());
   FuncPtr val;
-  for (int i=0;i<allFuncs.size();i++) {
+  for (size_t i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
+    if (!isFun || !val) return NULL;
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr;
       mptr = (MFunctionDef *) val;
@@ -4172,8 +4155,9 @@ void Interpreter::addBreakpoint(string name, int line) {
   stringVector allFuncs(context->listAllFunctions());
   // We make one pass through the functions, and update 
   // those functions that belong to the given filename
-  for (int i=0;i<allFuncs.size();i++) {
+  for (size_t i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
+    if (!isFun || !val) throw Exception("Cannot add breakpoint to " + name + " :  it does not appear to be a valid M file.");
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr = (MFunctionDef *) val;
       if (mptr->fileName == fullFileName)
@@ -4186,9 +4170,10 @@ void Interpreter::addBreakpoint(string name, int line) {
   // record the line number closest to it
   MemBlock<int> line_dist_block(allFuncs.size());
   int *line_dist = &line_dist_block;
-  for (int i=0;i<allFuncs.size();i++) line_dist[i] = 2*max_line_count;
-  for (int i=0;i<allFuncs.size();i++) {
+  for (size_t i=0;i<allFuncs.size();i++) line_dist[i] = 2*max_line_count;
+  for (size_t i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
+    if (!isFun || !val) throw Exception("Cannot add breakpoint to " + name + " :  it does not appear to be a valid M file.");
     if (val->type() == FM_M_FUNCTION) {
       MFunctionDef *mptr = (MFunctionDef *) val;
       if (mptr->fileName == fullFileName) {
@@ -4204,7 +4189,7 @@ void Interpreter::addBreakpoint(string name, int line) {
   // desired one, but not less than it
   int best_func = -1;
   int best_dist = 2*max_line_count;
-  for (int i=0;i<allFuncs.size();i++) {
+  for (size_t i=0;i<allFuncs.size();i++) {
     if ((line_dist[i] >= line) && ((line_dist[i]-line) < best_dist)) {
       best_func = i;
       best_dist = line_dist[i]-line;
@@ -4219,7 +4204,7 @@ void Interpreter::addBreakpoint(string name, int line) {
 
 bool Interpreter::isBPSet(QString fname, int lineNumber) {
   string fname_string(fname.toStdString());
-  for (int i=0;i<bpStack.size();i++) 
+  for (size_t i=0;i<bpStack.size();i++) 
     if ((bpStack[i].cname == fname_string) &&
 	((bpStack[i].tokid & 0xffff) == lineNumber)) return true;
   return false;
@@ -4230,7 +4215,7 @@ bool Interpreter::isInstructionPointer(QString fname, int lineNumber) {
 }
 
 void Interpreter::listBreakpoints() {
-  for (int i=0;i<bpStack.size();i++) {
+  for (size_t i=0;i<bpStack.size();i++) {
     //    if (bpStack[i].number > 0) {
     char buffer[2048];
     snprintf(buffer,2048,"%d   %s line %d\n",bpStack[i].number,
@@ -4241,7 +4226,7 @@ void Interpreter::listBreakpoints() {
 }
 
 void Interpreter::deleteBreakpoint(int number) {
-  for (int i=0;i<bpStack.size();i++) 
+  for (size_t i=0;i<bpStack.size();i++) 
     if (bpStack[i].number == number) {
       //      setBreakpoint(bpStack[i],false);
       bpStack.erase(bpStack.begin()+i);
@@ -4254,7 +4239,7 @@ void Interpreter::deleteBreakpoint(int number) {
 }
 
 void Interpreter::stackTrace(bool includeCurrent) {
-  for (int i=0;i<cstack.size();i++) {
+  for (size_t i=0;i<cstack.size();i++) {
     std::string cname_trim(TrimExtension(TrimFilename(cstack[i].cname)));
     outputMessage(string("In ") + cname_trim + "("
 		  + cstack[i].detail + ") on line " +
@@ -4301,7 +4286,6 @@ void Interpreter::popDebug() {
 }
 
 bool Interpreter::isUserClassDefined(std::string classname) {
-  UserClass *ret;
   return (classTable.findSymbol(classname)!=NULL);
 }
   
@@ -5197,7 +5181,7 @@ void Interpreter::evalCLI() {
       m_interrupt = false;
       continue;
     }
-    int stackdepth = cstack.size();
+    size_t stackdepth = cstack.size();
     InCLI = true;
     evaluateString(cmdset);
     while (cstack.size() > stackdepth) cstack.pop_back();
@@ -5219,6 +5203,6 @@ Array Interpreter::subsindex(const Array &m) {
 }
 
  void Interpreter::subsindex(ArrayVector& m) {
-   for (unsigned p=0;p<m.size();p++)
+   for (size_t p=0;p<((size_t)m.size());p++)
      m[p] = subsindex(m[p]);
  }

@@ -32,12 +32,12 @@ stringVector DynamicFunctions;
 
 void ClearLibs(Interpreter* eval) {
   stringVector libnames(libPointers.getCompletions(""));
-  for (int i=0;i<libnames.size();i++) {
+  for (size_t i=0;i<libnames.size();i++) {
     DynLib **ptr = libPointers.findSymbol(libnames[i]);
     libPointers.deleteSymbol(libnames[i]);
     delete *ptr;
   }
-  for (int i=0;i<DynamicFunctions.size();i++) {
+  for (size_t i=0;i<DynamicFunctions.size();i++) {
     eval->getContext()->deleteFunction(DynamicFunctions[i]);
   }
   DynamicFunctions.clear();
@@ -120,28 +120,28 @@ const char* matchTest(const char* &cp, const char* tmplate) {
 const char* parseTypeName(const char* &cp) {
   const char* rp;
   skipWS(cp);
-  if (rp = matchTest(cp,"int8"))
-    return rp;
-  if (rp = matchTest(cp,"uint8"))
-    return rp;
-  if (rp = matchTest(cp,"int16"))
-    return rp;
-  if (rp = matchTest(cp,"uint16"))
-    return rp;
-  if (rp = matchTest(cp,"int32"))
-    return rp;
-  if (rp = matchTest(cp,"uint32"))
-    return rp;
-  if (rp = matchTest(cp,"float"))
-    return rp;
-  if (rp = matchTest(cp,"complex"))
-    return rp;
-  if (rp = matchTest(cp,"double"))
-    return rp;
-  if (rp = matchTest(cp,"dcomplex"))
-    return rp;
-  if (rp = matchTest(cp,"string"))
-    return rp;
+  rp = matchTest(cp,"int8");
+  if (rp) return rp;
+  rp = matchTest(cp,"uint8");
+  if (rp) return rp;
+  rp = matchTest(cp,"int16");
+  if (rp) return rp;
+  rp = matchTest(cp,"uint16");
+  if (rp) return rp;
+  rp = matchTest(cp,"int32");
+  if (rp) return rp;
+  rp = matchTest(cp,"uint32");
+  if (rp) return rp;
+  rp = matchTest(cp,"float");
+  if (rp) return rp;
+  rp = matchTest(cp,"complex");
+  if (rp) return rp;
+  rp = matchTest(cp,"double");
+  if (rp) return rp;
+  rp = matchTest(cp,"dcomplex");
+  if (rp) return rp;
+  rp = matchTest(cp,"string");
+  if (rp) return rp;
   return NULL;
 }
 

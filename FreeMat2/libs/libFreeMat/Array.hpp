@@ -787,13 +787,13 @@ public:
   /**
    * Return the number of rows.
    */
-  inline int rows() const {
+  inline size_t rows() const {
     return getDimensionLength(0);
   }
   /**
    * Return the number of columns.
    */
-  inline int columns() const {
+  inline size_t columns() const {
     return getDimensionLength(1);
   }
   /**

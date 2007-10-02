@@ -79,7 +79,7 @@ public:
   inline Dimensions(size_t dimCount) {
     if (dimCount < 0) 
       throw Exception("Illegal argument to Dimensions constructor");
-    memset(data, 0, sizeof(size_t)*dimCount);
+    memset(data, 0, sizeof(size_t)*maxDims);
     length = dimCount;
     updateCacheVariables();
   }
@@ -88,6 +88,7 @@ public:
    * rows and columns.
    */
   inline Dimensions(size_t rows, size_t cols) {
+    memset(data, 0, sizeof(size_t)*maxDims);
     data[0] = rows;
     data[1] = cols;
     length = 2;
@@ -103,6 +104,7 @@ public:
    * rows and columns and slices.
    */
   inline Dimensions(size_t rows, size_t cols, size_t slices) {
+    memset(data, 0, sizeof(size_t)*maxDims);
     data[0] = rows;
     data[1] = cols;
     data[2] = slices;

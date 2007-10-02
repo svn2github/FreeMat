@@ -170,7 +170,7 @@ void KeyManager::EraseCharacters(int pos, int cnt) {
 }
 
 void KeyManager::SetCharacter(int pos, char c) {
-  if (pos < lineData.size())
+  if (pos < (int)(lineData.size()))
     lineData[pos] = c;
   else {
     int topad = (pos-lineData.size()+1);
@@ -667,7 +667,7 @@ void KeyManager::AddHistory(string mline) {
 }
 
 void KeyManager::HistoryFindForwards() {
-  unsigned int i;
+  int i;
   bool found;
   if (startsearch >= (history.size()-1)) {
     ResetLineBuffer();
@@ -677,12 +677,12 @@ void KeyManager::HistoryFindForwards() {
   }
   i = startsearch+1;
   found = false;
-  while (i<history.size() && !found) {
+  while (i<((int)history.size()) && !found) {
     found = (prefix_len == 0) || 
       (history[i].compare(0,prefix_len,prefix) == 0);
     if (!found) i++;
   }
-  if (!found && (i >= history.size())) {
+  if (!found && (i >= ((int)history.size()))) {
     startsearch = history.size();
     ResetLineBuffer();
     AddStringToLine(prefix);
@@ -1213,12 +1213,12 @@ vector<string> KeyManager::GetCompletions(string line,
   if (!context) return completions;
   if (start[-1] != '\'') {
     vector<string> local_completions(context->getCompletions(string(start)));
-    for (int i=0;i<local_completions.size();i++) 
+    for (size_t i=0;i<local_completions.size();i++) 
       if (local_completions[i].find("private:") == local_completions[i].npos)
 	completions.push_back(local_completions[i]);
   }
   stringVector comp(GetCompletionList(tmp));
-  for (int i=0;i<comp.size();i++) 
+  for (size_t i=0;i<comp.size();i++) 
     if (comp[i].find("private:") == comp[i].npos)
       completions.push_back(comp[i]);
   sort(completions.begin(),completions.end());

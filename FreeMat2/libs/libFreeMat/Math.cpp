@@ -1006,10 +1006,7 @@ Array MatrixPowerSparse(Array a, Array b, Interpreter* m_eval) {
 #define MAPOP(o,a,b,c,f) case o: return doPowerAssist(A,a,B,b,c,f);
 inline Array DoPowerTwoArgFunction(Array A, Array B){
   Array C;
-  double *Cp;
   bool Anegative;
-  bool Bnoninteger;
-  bool complexResult;
   stringVector dummySV;
   Class AClass, BClass;
   int opType;
@@ -1030,6 +1027,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
   opType = 0;
   if (AClass == FM_COMPLEX) {
     switch (BClass) {
+    default: throw Exception("Unhandled type for second argument to A^B");
       OPCASE(FM_INT32,1);
       OPCASE(FM_FLOAT,2);
       OPCASE(FM_DOUBLE,3);
@@ -1038,6 +1036,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
     }
   } else if (AClass == FM_DCOMPLEX) {
     switch(BClass) {
+    default: throw Exception("Unhandled type for second argument to A^B");
       OPCASE(FM_INT32,6);
       OPCASE(FM_FLOAT,3);
       OPCASE(FM_DOUBLE,3);
@@ -1046,6 +1045,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
     }
   } else if (AClass == FM_DOUBLE && Anegative) {
     switch(BClass) {
+    default: throw Exception("Unhandled type for second argument to A^B");
       OPCASE(FM_INT32,7);
       OPCASE(FM_FLOAT,5);
       OPCASE(FM_DOUBLE,5);
@@ -1054,6 +1054,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
     }      
   } else if (AClass == FM_DOUBLE && (!Anegative)){
     switch(BClass) {
+    default: throw Exception("Unhandled type for second argument to A^B");
       OPCASE(FM_INT32,7);
       OPCASE(FM_FLOAT,8);
       OPCASE(FM_DOUBLE,8);
@@ -1062,6 +1063,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
     }      
   } else if (AClass == FM_FLOAT && Anegative) {
     switch(BClass) {
+    default: throw Exception("Unhandled type for second argument to A^B");
       OPCASE(FM_INT32,9);
       OPCASE(FM_FLOAT,4);
       OPCASE(FM_DOUBLE,5);
@@ -1070,6 +1072,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
     }      
   } else if (AClass == FM_FLOAT && (!Anegative)){
     switch(BClass) {
+    default: throw Exception("Unhandled type for second argument to A^B");
       OPCASE(FM_INT32,9);
       OPCASE(FM_FLOAT,10);
       OPCASE(FM_DOUBLE,8);
@@ -1079,6 +1082,7 @@ inline Array DoPowerTwoArgFunction(Array A, Array B){
   }
   // Invoke the appropriate case
   switch(opType) {
+    default: throw Exception("Unhandled type combination for A^B");
     MAPOP(1,FM_COMPLEX,FM_INT32,FM_COMPLEX,(vvfun) cicpower);
     MAPOP(2,FM_COMPLEX,FM_FLOAT,FM_COMPLEX,(vvfun) cfcpower);
     MAPOP(3,FM_DCOMPLEX,FM_DOUBLE,FM_DCOMPLEX,(vvfun) zdzpower);
@@ -1331,6 +1335,7 @@ Array Add(Array A, Array B, Interpreter* m_eval) {
     sparse = false;
     Cp = Malloc(Clen*B.getElementSize());
     switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A+B");
     case FM_INT32:
       addfullreal<int32>(Clen,(int32*) Cp, 
 			 (int32*) A.getDataPointer(), Astride,
@@ -1566,6 +1571,7 @@ Array Subtract(Array A, Array B, Interpreter* m_eval) {
     sparse = false;
     Cp = Malloc(Clen*B.getElementSize());
     switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A-B");
     case FM_INT32:
       subtractfullreal<int32>(Clen,(int32*) Cp, 
 			      (int32*) A.getDataPointer(), Astride,
@@ -1829,6 +1835,7 @@ Array DotMultiply(Array A, Array B, Interpreter* m_eval) {
       sparse = false;
       Cp = Malloc(Clen*B.getElementSize());
       switch(B.dataClass()) {
+      default: throw Exception("Unhandled type for second argument to A.*B");
       case FM_INT32:
 	multiplyfullreal<int32>(Clen,(int32*) Cp, 
 				(int32*) A.getDataPointer(), Astride,
@@ -1963,6 +1970,7 @@ Array DotRightDivide(Array A, Array B, Interpreter* m_eval) {
   }
   Cp = Malloc(Clen*B.getElementSize());
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A./B");
   case FM_INT32:
     dividefullreal<int32>(Clen,(int32*) Cp, 
 			  (int32*) A.getDataPointer(), Astride,
@@ -2649,6 +2657,7 @@ Array LessThan(Array A, Array B, Interpreter* m_eval) {
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A<B");
   case FM_INT32:
     lessthanfuncreal<int32>(Clen,(logical*) Cp, 
 			    (int32*) A.getDataPointer(), Astride,
@@ -2743,6 +2752,7 @@ Array LessEquals(Array A, Array B, Interpreter* m_eval) {
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A<=B");
   case FM_INT32:
     lessequalsfuncreal<int32>(Clen,(logical*) Cp, 
 			      (int32*) A.getDataPointer(), Astride,
@@ -2837,6 +2847,7 @@ Array GreaterThan(Array A, Array B, Interpreter* m_eval) {
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A>B");
   case FM_INT32:
     greaterthanfuncreal<int32>(Clen,(logical*) Cp, 
 			       (int32*) A.getDataPointer(), Astride,
@@ -2931,6 +2942,7 @@ Array GreaterEquals(Array A, Array B, Interpreter* m_eval) {
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A>=B");
   case FM_INT32:
     greaterequalsfuncreal<int32>(Clen,(logical*) Cp, 
 				 (int32*) A.getDataPointer(), Astride,
@@ -3025,6 +3037,7 @@ Array Equals(Array A, Array B, Interpreter* m_eval) {
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A==B");
   case FM_INT32:
     equalsfuncreal<int32>(Clen,(logical*) Cp, 
 			  (int32*) A.getDataPointer(), Astride,
@@ -3119,6 +3132,7 @@ Array NotEquals(Array A, Array B, Interpreter* m_eval) {
   Clen = Cdim.getElementCount();
   Cp = Malloc(Clen*sizeof(logical));
   switch(B.dataClass()) {
+    default: throw Exception("Unhandled type for second argument to A~=B");
   case FM_INT32:
     notequalsfuncreal<int32>(Clen,(logical*) Cp, 
 			     (int32*) A.getDataPointer(), Astride,
@@ -3415,6 +3429,7 @@ Array Negate(Array A, Interpreter* m_eval){
   C = Array(Aclass,A.dimensions(),NULL);
   void *Cp = Malloc(A.getLength()*C.getElementSize());
   switch (Aclass) {
+  default: throw Exception("Unhandled type for -A");
   case FM_INT32:
     neg<int32>(A.getLength(),(int32*)Cp,(int32*)A.getDataPointer());
     break;
@@ -3658,7 +3673,7 @@ Array Multiply(Array A, Array B, Interpreter* m_eval){
     throw Exception("Requested matrix multiplication requires arguments to be conformant.");
 
   int Arows, Acols;
-  int Brows, Bcols;
+  int Bcols;
   
   Arows = A.getDimensionLength(0);
   Acols = A.getDimensionLength(1);
@@ -4002,6 +4017,7 @@ void EigenDecomposeCompactSymmetric(Array A, Array& D, Interpreter* m_eval) {
   // Select the eigenvector decomposition routine based on A's type
   Dimensions VDims(N,1);
   switch (Aclass) {
+  default: throw Exception("Unhandled type for symmetric eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4078,6 +4094,7 @@ void EigenDecomposeFullSymmetric(Array A, Array& V, Array& D, Interpreter* m_eva
 
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4179,6 +4196,7 @@ void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag, In
 
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4349,7 +4367,7 @@ void EigenDecomposeFullGeneral(Array A, Array& V, Array& D, bool balanceFlag, In
  * eigenvalues only in a vector
  */
 void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag, Interpreter* m_eval) {
-  int i, j;
+  int i;
   Class Aclass;
 
   // Test for numeric
@@ -4376,6 +4394,7 @@ void EigenDecomposeCompactGeneral(Array A, Array& D, bool balanceFlag, Interpret
 
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4467,6 +4486,7 @@ bool GeneralizedEigenDecomposeCompactSymmetric(Array A, Array B, Array& D, Inter
   // Select the eigenvector decomposition routine based on A's type
   Dimensions Vdims(N,1);
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4542,6 +4562,7 @@ bool GeneralizedEigenDecomposeFullSymmetric(Array A, Array B, Array& V, Array& D
   Dimensions Vdims(N,N);
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4646,6 +4667,7 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D, 
   Dimensions Vdims(N,N);
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -4816,13 +4838,14 @@ void GeneralizedEigenDecomposeFullGeneral(Array A, Array B, Array& V, Array& D, 
  * eigenvalues only in a vector
  */
 void GeneralizedEigenDecomposeCompactGeneral(Array A, Array B, Array& D, Interpreter* m_eval) {
-  int i, j;
+  int i;
   Class Aclass(A.dataClass());
   int N = A.getDimensionLength(0);
   // Create one square matrix to store the eigenvectors
   Dimensions Vdims(N,1);
   // Select the eigenvector decomposition routine based on A's type
   switch (Aclass) {
+  default: throw Exception("Unhandled type for eigendecomposition");
   case FM_FLOAT: 
     {
       // A temporary vector to store the eigenvalues
@@ -5076,34 +5099,22 @@ inline Array PowerMatrixScalar(Array A, Array B, Interpreter* m_eval) {
 //@@Function Internals
 //In the first case that @|a| is a scalar, and @|b| is a square matrix, the matrix power is defined in terms of the eigenvalue decomposition of @|b|.  Let @|b| have the following eigen-decomposition (problems arise with non-symmetric matrices @|b|, so let us assume that @|b| is symmetric):
 //\[
-//  b = E \begin{bmatrix} \lambda_1 & 0          & \cdots  & 0 \\
-//                              0   & \lambda_2  &  \ddots & \vdots \\
-//                              \vdots & \ddots & \ddots & 0 \\
-//                              0   & \hdots & 0 & \lambda_n \end{bmatrix}
+//  b = E \begin{bmatrix} \lambda_1 & 0          & \cdots  & 0 \\                            0   & \lambda_2  &  \ddots & \vdots \\                                         \vdots & \ddots & \ddots & 0 \\                                                 0   & \hdots & 0 & \lambda_n \end{bmatrix}
 //      E^{-1}
 //\]
 //Then @|a| raised to the power @|b| is defined as
 //\[
-//  a^{b} = E \begin{bmatrix} a^{\lambda_1} & 0          & \cdots  & 0 \\
-//                              0   & a^{\lambda_2}  &  \ddots & \vdots \\
-//                              \vdots & \ddots & \ddots & 0 \\
-//                              0   & \hdots & 0 & a^{\lambda_n} \end{bmatrix}
+//  a^{b} = E \begin{bmatrix} a^{\lambda_1} & 0          & \cdots  & 0 \\                                0   & a^{\lambda_2}  &  \ddots & \vdots \\                                    \vdots & \ddots & \ddots & 0 \\                                             0   & \hdots & 0 & a^{\lambda_n} \end{bmatrix}
 //      E^{-1}
 //\]
 //Similarly, if @|a| is a square matrix, then @|a| has the following eigen-decomposition (again, suppose @|a| is symmetric):
 //\[
-//  a = E \begin{bmatrix} \lambda_1 & 0          & \cdots  & 0 \\
-//                              0   & \lambda_2  &  \ddots & \vdots \\
-//                              \vdots & \ddots & \ddots & 0 \\
-//                              0   & \hdots & 0 & \lambda_n \end{bmatrix}
+//  a = E \begin{bmatrix} \lambda_1 & 0          & \cdots  & 0 \\                                0   & \lambda_2  &  \ddots & \vdots \\                                         \vdots & \ddots & \ddots & 0 \\                                          0   & \hdots & 0 & \lambda_n \end{bmatrix}
 //      E^{-1}
 //\]
 //Then @|a| raised to the power @|b| is defined as
 //\[
-//  a^{b} = E \begin{bmatrix} \lambda_1^b & 0          & \cdots  & 0 \\
-//                              0   & \lambda_2^b  &  \ddots & \vdots \\
-//                              \vdots & \ddots & \ddots & 0 \\
-//                              0   & \hdots & 0 & \lambda_n^b \end{bmatrix}
+//  a^{b} = E \begin{bmatrix} \lambda_1^b & 0          & \cdots  & 0 \\                              0   & \lambda_2^b  &  \ddots & \vdots \\                              \vdots & \ddots & \ddots & 0 \\                              0   & \hdots & 0 & \lambda_n^b \end{bmatrix}
 //      E^{-1}
 //\]
 //@@Examples
@@ -5155,7 +5166,6 @@ Array Power(Array A, Array B, Interpreter* m_eval){
     return MatrixPowerSparse(A,B,m_eval);
 
   // OK - check for A a scalar - if so, do a decomposition of B
-  int i;
   if (A.isScalar())
     return PowerScalarMatrix(A,B,m_eval);
   else if (B.isScalar())
@@ -5179,6 +5189,7 @@ Array UnitColon(Array A, Array B) {
   A.promoteType(Cclass);
   B.promoteType(Cclass);
   switch (Cclass) {
+  default: throw Exception("Unhandled type for A:B");
   case FM_INT32:
     C = Array::int32RangeConstructor(*((int32*)A.getDataPointer()),
 				     1,
@@ -5225,6 +5236,7 @@ Array DoubleColon(Array A, Array B, Array C){
   B.promoteType(Dclass);
   C.promoteType(Dclass);
   switch (Dclass) {
+  default: throw Exception("Unhandled type for A:B:C");
   case FM_INT32:
     D = Array::int32RangeConstructor(*((int32*)A.getDataPointer()),
 				     *((int32*)B.getDataPointer()),

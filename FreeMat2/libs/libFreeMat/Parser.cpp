@@ -72,7 +72,7 @@
 //
 bool HasNestedFunctions(const tree &root) {
   if (root.is(TOK_NEST_FUNC)) return true;
-  for (int i=0;i<root.numchildren();i++)
+  for (size_t i=0;i<root.numchildren();i++)
     if (HasNestedFunctions(root.child(i))) return true;
   return false;
 }
@@ -670,6 +670,7 @@ tree Parser::PrimaryExpression() {
     else
       serror("unrecognized token");
   }
+  return tree();
 }
 
 tree Parser::Exp(unsigned p) {

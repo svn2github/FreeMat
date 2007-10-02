@@ -23,9 +23,6 @@
 #include <string>
 
 static std::set<void*> memlist;
-static int m_alloc = 0;
-static int m_count = 0;
-static void* m_dict = NULL;
 
 typedef char int8;
 typedef unsigned char uint8;
@@ -190,14 +187,14 @@ mxArray *mxCreateCharMatrixFromStrings(int m, const char **str) {
   mxChar *ptr;
 
   for (i=0;i<m;i++) {
-    maxlen = MAX(maxlen,strlen(str[i]));
+    maxlen = MAX(maxlen,(int)(strlen(str[i])));
   }
   dims[0] = m;
   dims[1] = maxlen;
   a = mxCreateCharArray(2,dims);
   ptr = (mxChar*) a->realdata;
   for (i=0;i<m;i++)
-    for (j=0;j<strlen(str[i]);j++)
+    for (j=0;j<((int)strlen(str[i]));j++)
       ptr[i+j*m] = str[i][j];
   return a;
 }

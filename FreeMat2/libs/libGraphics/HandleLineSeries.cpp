@@ -59,11 +59,11 @@ void HandleLineSeries::UpdateState() {
   std::vector<double> zs(VectorPropertyLookup("zdata"));
   if (IsAuto("xdatamode")) {
     xs.clear();
-    for (int i=0;i<ys.size();i++)
+    for (size_t i=0;i<ys.size();i++)
       xs.push_back(i+1.0);
   }
   if (zs.size() == 0)
-    for (int i=0;i<ys.size();i++)
+    for (size_t i=0;i<ys.size();i++)
       zs.push_back(0.0);
   HPVector *sp;
   sp = (HPVector*) LookupProperty("xdata");
@@ -92,7 +92,7 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
     gc.color(lc->Data());
     gc.setLineStyle(StringPropertyLookup("linestyle"));
     // Partition it into segments of finite entries..
-    int n = 0;
+    size_t n = 0;
     while (n < mxs.size()) {
       std::vector<double> local_mxs, local_mys, local_mzs;
       while ((n < mxs.size()) && IsFinite(mxs[n]) && IsFinite(mys[n]) && (IsFinite(mzs[n]))) {
@@ -115,7 +115,7 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
     // Calculate the u/v coordinates (pixels)
     std::vector<double> uc;
     std::vector<double> vc;
-    for (int i=0;i<mxs.size();i++) {
+    for (size_t i=0;i<mxs.size();i++) {
       double u, v;
       bool clipped;
       gc.toPixels(mxs[i],mys[i],mzs[i],u,v,clipped);
@@ -124,7 +124,7 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
       }
     }
     gc.setupDirectDraw();
-    for (int i=0;i<uc.size();i++) 
+    for (size_t i=0;i<uc.size();i++) 
       DrawSymbol(gc,typ,uc[i],vc[i],0,sze,ec->Data(),fc->Data(),width);
     gc.releaseDirectDraw();
   }

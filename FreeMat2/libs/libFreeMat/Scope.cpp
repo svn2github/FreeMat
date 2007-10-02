@@ -51,12 +51,12 @@ ScopePtr ThawScope(Serialize *s) {
   Scope *q = new Scope(name,isNested);
   q->setVariablesAccessed(variablesAccessed);
   q->setLocalVariables(localVariables);
-  for (int i=0;i<persistentVars.size();i++)
+  for (size_t i=0;i<persistentVars.size();i++)
     q->addPersistentVariablePointer(persistentVars[i]);
-  for (int i=0;i<globalVars.size();i++)
+  for (size_t i=0;i<globalVars.size();i++)
     q->addGlobalVariablePointer(globalVars[i]);
   stringVector names(s->getStringVector());
-  for (int i=0;i<names.size();i++) {
+  for (size_t i=0;i<names.size();i++) {
     bool arrayDefed = s->getBool();
     if (arrayDefed) {
       Array t;
@@ -76,7 +76,7 @@ void FreezeScope(ScopePtr scope, Serialize *s) {
   s->putBool(scope->isnested());
   stringVector names(scope->getCompletions(""));
   s->putStringVector(names);
-  for (int i=0;i<names.size();i++) {
+  for (size_t i=0;i<names.size();i++) {
     Array* p = scope->lookupVariable(names[i]);
     if (p) {
       s->putBool(true);

@@ -46,7 +46,7 @@ FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/
 
 FreeMat_LDFLAGS = $(QT_CXXFLAGS)
 
-AUTOMAKE_OPTIONS 	= foreign
+AUTOMAKE_OPTIONS = foreign
 
 CLEANFILES = $(FreeMat_MOC) $(FreeMat_QRC)
 

@@ -621,7 +621,7 @@ ArrayVector RegExpCoreFunction(rvstring stringed_args, bool defaultMatchCase) {
 static bool IsCellStrings(Array t) {
   if (t.dataClass() != FM_CELL_ARRAY) return false;
   const Array *dp = (const Array *) t.getDataPointer();
-  for (int j=0;j<t.getLength();j++)
+  for (size_t j=0;j<t.getLength();j++)
     if (!dp[j].isString()) return false;
   return true;
 }
@@ -661,7 +661,7 @@ ArrayVector RegExpWrapperFunction(int nargout, const ArrayVector& arg,
   } else if (IsCellStrings(arg[0]) && arg[1].isString()) {
     const Array *dp = (const Array *) arg[0].getDataPointer();
     QList<ArrayVector> results;
-    for (int j=0;j<arg[0].getLength();j++) {
+    for (size_t j=0;j<arg[0].getLength();j++) {
       rvstring stringed_args;
       stringed_args << ArrayToString(dp[j]);
       for (int i=1;i<arg.size();i++) 
@@ -672,7 +672,7 @@ ArrayVector RegExpWrapperFunction(int nargout, const ArrayVector& arg,
   } else if (arg[0].isString() && IsCellStrings(arg[1])) {
     const Array *dp = (const Array *) arg[1].getDataPointer();
     QList<ArrayVector> results;
-    for (int j=0;j<arg[1].getLength();j++) {
+    for (size_t j=0;j<arg[1].getLength();j++) {
       rvstring stringed_args;
       stringed_args << ArrayToString(arg[0]);
       stringed_args << ArrayToString(dp[j]);
@@ -687,7 +687,7 @@ ArrayVector RegExpWrapperFunction(int nargout, const ArrayVector& arg,
     const Array *dp = (const Array *) arg[0].getDataPointer();
     const Array *sp = (const Array *) arg[1].getDataPointer();
     QList<ArrayVector> results;
-    for (int j=0;j<arg[0].getLength();j++) {
+    for (size_t j=0;j<arg[0].getLength();j++) {
       rvstring stringed_args;
       stringed_args << ArrayToString(dp[j]);
       stringed_args << ArrayToString(sp[j]);
@@ -726,9 +726,7 @@ string RegExpRepCoreFunction(string subject,
   pcre *re;
   const char *error;
   int erroffset;
-  int namecount;
-  int name_entry_size;
-  int rc, i;
+  int rc;
 
   for (int j=0;j<modes.size();j++) {
     if (modes[j]=="once")
@@ -855,7 +853,7 @@ string RegExpRepCoreFunction(string subject,
   if (replacements.size() > 1)
     nextReplacement++;
   
-  if (globalMatch && (ovector[1] < subject.size())) {
+  if (globalMatch && (ovector[1] < (int)subject.size())) {
     for (;;)
       {
 	int options = 0;                 /* Normally no options */
@@ -867,7 +865,7 @@ string RegExpRepCoreFunction(string subject,
 	
 	if (ovector[0] == ovector[1])
 	  {
-	    if (ovector[0] == subject.size()) break;
+	    if (ovector[0] == (int) subject.size()) break;
 	    options = PCRE_NOTEMPTY | PCRE_ANCHORED;
 	  }
 	
@@ -959,7 +957,7 @@ string RegExpRepCoreFunction(string subject,
       }      /* End of loop to find second and subsequent matches */
   }
 
-  while (inputPointer < subject.size()) 
+  while (inputPointer < (int) subject.size()) 
     outputString += subject[inputPointer++];
   
   pcre_free(re);
@@ -984,7 +982,7 @@ ArrayVector RegExpRepDriverFunction(int nargout, const ArrayVector& arg) {
     replist << ArrayToString(arg[2]);
   else if (IsCellStrings(arg[2])) {
     const Array *dp = (const Array *) arg[2].getDataPointer();
-    for (int i=0;i<arg[2].getLength();i++)
+    for (size_t i=0;i<arg[2].getLength();i++)
       replist << ArrayToString(dp[i]);
   }
   return ArrayVector() << Array::stringConstructor(RegExpRepCoreFunction(subject,

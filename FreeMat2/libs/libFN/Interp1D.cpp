@@ -262,6 +262,7 @@ void DoLinearInterpolationReal(const T* x1, const T* y1,
 
 bool TestForMonotonic(Array x) {
   switch (x.dataClass()) {
+  default: throw Exception("unhandled type in argument to testformonotonic");
   case FM_FLOAT:
     return TestForMonotonicReal<float>((const float*) x.getDataPointer(),
 				       x.getLength());
@@ -376,6 +377,7 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
   Array retval;
   char *dp;
   switch(y1.dataClass()) {
+  default: throw Exception("unhandled type as argument to interplin1");
   case FM_FLOAT: {
     dp = (char*) Malloc(sizeof(float)*xi.getLength());
     DoLinearInterpolationReal<float>((const float*) x1.getDataPointer(),

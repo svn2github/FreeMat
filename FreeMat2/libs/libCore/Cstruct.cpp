@@ -121,13 +121,13 @@ public:
   }
   void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
     s.promoteType(dataClass);
-    if (s.getLength() > length)
+    if ((int) s.getLength() > length)
       throw Exception("field length overflow");
     const char *cp = (const char*) s.getDataPointer();
     int s_len = s.getLength();
-    for (int i=0;i<s_len*t_size;i++)
+    for (size_t i=0;i<s_len*t_size;i++)
       out.push_back(cp[i]);
-    for (int i=s_len*t_size;i<length*t_size;i++)
+    for (size_t i=s_len*t_size;i<length*t_size;i++)
       out.push_back((char) 0);
   }
   Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
@@ -169,7 +169,8 @@ public:
       m_eval->outputMessage("  %-30s    : %d\n",i->second.c_str(),i->first);
   }
   void freeze(QByteArray& out, Array s, int length, Interpreter* m_eval) {
-    if (s.isIntegerClass() && !s.isString() && (s.getLength() == length)) {
+    if (s.isIntegerClass() && !s.isString() && 
+	(s.getLength() == (size_t)length)) {
       CtypeTable.lookup("int32")->freeze(out,s,length,m_eval);
       return;
     }
@@ -180,7 +181,7 @@ public:
     } else {
       if (s.dataClass() != FM_CELL_ARRAY) 
 	throw Exception("Expected a cell array of strings for enumerated type");
-      if (s.getLength() != length)
+      if (s.getLength() != (size_t)length)
 	throw Exception("Length mismatch between cell array of strings and requested enumerated type");
       const Array *dp = (const Array *) s.getDataPointer();
       for (int i=0;i<length;i++) {
@@ -230,14 +231,14 @@ class Cstruct : public Ctype {
   vector<CstructField*> fields;
 public:
   ~Cstruct() {
-    for (int i=0;i<fields.size();i++) delete fields[i];
+    for (size_t i=0;i<fields.size();i++) delete fields[i];
   }
   int getFieldCount() {return fields.size();}
   CstructField* getField(int num) {return fields[num];}
   void addField(CstructField* fld) {fields.push_back(fld);}
   void print(Interpreter *m_eval) {
     m_eval->outputMessage("struct\n");
-    for (int i=0;i<fields.size();i++) {
+    for (size_t i=0;i<fields.size();i++) {
       m_eval->outputMessage("  %-30s    %s",fields[i]->getName().c_str(),
 			    fields[i]->getType().c_str());
       if (fields[i]->getLength() > 1) 
@@ -252,7 +253,7 @@ public:
     for (int m=0;m<s_count;m++) {
       Array m_index(Array::int32Constructor(m+1));
       Array s_el(s.getVectorSubset(m_index,m_eval));
-      for (int i=0;i<fields.size();i++) 
+      for (size_t i=0;i<fields.size();i++) 
 	try {
 	  CtypeTable.lookup(fields[i]->getType())->freeze(out,s_el.getField(fields[i]->getName()),
 							  fields[i]->getLength(),m_eval);
@@ -264,24 +265,24 @@ public:
   Array thaw(QByteArray& input, int& pos, int length, Interpreter* m_eval) {
     // Set up a set of vectors
     ArrayMatrix mat;
-    for (int i=0;i<fields.size();i++) 
+    for (size_t i=0;i<fields.size();i++) 
       mat.push_back(ArrayVector());
     // collect the field names
     rvstring names;
-    for (int i=0;i<fields.size();i++) 
+    for (size_t i=0;i<fields.size();i++) 
       names << fields[i]->getName();
     // Populate the matrix
     for (int m=0;m<length;m++) 
-      for (int i=0;i<fields.size();i++) 
+      for (size_t i=0;i<fields.size();i++) 
 	mat[i] << CtypeTable.lookup(fields[i]->getType())->thaw(input,pos,fields[i]->getLength(),m_eval);
     ArrayVector t;
-    for (int i=0;i<fields.size();i++)
+    for (size_t i=0;i<fields.size();i++)
       t << Array::cellConstructor(mat[i]);
     return Array::structConstructor(names,t);
   }
   size_t size(int length) {
     size_t accum = 0;
-    for (int i=0;i<fields.size();i++)
+    for (size_t i=0;i<fields.size();i++)
       accum += CtypeTable.lookup(fields[i]->getType())->size(fields[i]->getLength());
     return accum*length;
   }

@@ -49,7 +49,7 @@ void HelpSearcher::updateSearch() {
   QDir dir(m_basepath);
   dir.setNameFilters(QStringList() << "*.html");
   QFileInfoList list = dir.entryInfoList();
-  for (unsigned i=0;i<list.size();i++) {
+  for (int i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     QFile f(fileInfo.absoluteFilePath());
     if (f.open(QIODevice::ReadOnly)) {
@@ -88,9 +88,6 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
   setObjectName("helpwidget");
   m_browser = new QTabWidget(this);
   setWidget(m_browser);
-  QWidget *m_listdoc = new QWidget;
-  QVBoxLayout *layout = new QVBoxLayout;
-  
   QListWidget *m_flist = new QListWidget;
   // Populate the list widget
   QFile *file = new QFile(url + "/modules.txt");
@@ -127,13 +124,14 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
     QMessageBox::warning(this,"Cannot Find Section Index","The file sectable.txt is missing from the directory "+url+" where I think help files should be.  The Index widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else {
     QTextStream t(file);
-    QTreeWidgetItem *prev;
+    QTreeWidgetItem *prev = NULL;
     while (!t.atEnd()) {
       QString line(t.readLine());
       if (reg.indexIn(line) < 0)
 	prev = new QTreeWidgetItem(m_tindex,QStringList() << line);
-      else
+      else {
 	new QTreeWidgetItem(prev,QStringList() << reg.cap(2) << reg.cap(1));
+      }
     }
   }
   delete file;

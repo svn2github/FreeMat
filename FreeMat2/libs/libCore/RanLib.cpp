@@ -123,7 +123,7 @@ void init_by_array(unsigned long init_key[], unsigned long key_length)
     mt[i] &= 0xffffffffUL; /* for WORDSIZE > 32 machines */
     i++; j++;
     if (i>=N) { mt[0] = mt[N-1]; i=1; }
-    if (j>=key_length) j=0;
+    if (j>=(int) key_length) j=0;
   }
   for (k=N-1; k; k--) {
     mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL))

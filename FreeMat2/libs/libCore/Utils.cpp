@@ -121,7 +121,7 @@ bool contains(rvstring& list, std::string s, bool regexpmode) {
     if (regexpmode) {
       t = QRegExp(QString::fromStdString(list[i]));
       if (t.exactMatch(QString::fromStdString(s)) &&
-	  t.matchedLength() == s.size()) return true;
+	  (t.matchedLength() == (int) s.size())) return true;
     } else {
       if (list[i] == s) return true;
     }

@@ -75,6 +75,7 @@ void getArrayFromQDS(QDataStream &in, Array& dat) {
     return;
   }
   switch(dclass) {
+  default: throw Exception("unhandled type in getarrayfromqds");
   case FM_CELL_ARRAY: {
     Array *dp = new Array[elCount];
     for (int i=0;i<elCount;i++)
@@ -86,15 +87,14 @@ void getArrayFromQDS(QDataStream &in, Array& dat) {
     rvstring fnames;
     quint32 ncount;
     in >> ncount;
-    int i;
-    for (i=0;i<ncount;i++) {
+    for (quint32 i=0;i<ncount;i++) {
       char *dp;
       in >> dp;
       fnames.push_back(dp);
       delete dp;
     }
     Array *dp = new Array[elCount*ncount];
-    for (i=0;i<elCount*ncount;i++)
+    for (size_t i=0;i<elCount*ncount;i++)
       getArrayFromQDS(in,dp[i]);
     dat = Array(dclass,dims,dp,false,fnames);
     return;
@@ -215,11 +215,12 @@ void putArrayToQDS(QDataStream &out, const Array& dat) {
   out << (uint8) dat.dataClass();
   out << (uint8) dat.sparse();
   out << (uint8) dat.dimensions().getLength();
-  for (int i=0;i<dat.dimensions().getLength();i++)
+  for (size_t i=0;i<dat.dimensions().getLength();i++)
     out << (uint32) dat.dimensions().getDimensionLength(i);
   int elCount(dat.getLength());
   if (dat.isEmpty()) return;
   switch(dat.dataClass()) {
+  default: throw Exception("unhandled type in putarraytoqds");
   case FM_CELL_ARRAY: {
     const Array *dp=((const Array *) dat.getDataPointer());
     for (int i=0;i<elCount;i++)
@@ -564,7 +565,7 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
     if (txtval != "ALL")
       throw Exception(string("Unrecognized argument to tcpclose ") + txtval);
     // Close all sockets
-    for (int i=0;i<=m_sockets.maxHandle();i++) {
+    for (size_t i=0;i<=m_sockets.maxHandle();i++) {
       try {
 	QTcpSocket *sock = m_sockets.lookupHandle(i);
 	if (sock) {
@@ -613,7 +614,7 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
     if (txtval != "ALL")
       throw Exception(string("Unrecognized argument to tcpserverclose ") + txtval);
     // Close all sockets
-    for (int i=0;i<=m_servers.maxHandle();i++) {
+    for (size_t i=0;i<=m_servers.maxHandle();i++) {
       try {
 	QTcpServer *sock = m_servers.lookupHandle(i);
 	if (sock)
@@ -724,7 +725,7 @@ ArrayVector TCPRecvFunction(int nargout, const ArrayVector& arg) {
   quint64 blockSize;
   in >> blockSize;
   qDebug() << "block size = " << blockSize;
-  while (a_sock->bytesAvailable() < blockSize) {
+  while ((quint64) a_sock->bytesAvailable() < blockSize) {
     if (!a_sock->waitForReadyRead(timeout))
       throw Exception(string("tcprecv failed to get data block prior to timeout"));
   }

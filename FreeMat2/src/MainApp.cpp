@@ -304,8 +304,6 @@ void MainApp::ExecuteLine(string txt) {
   m_eval->ExecuteLine(txt);
 }
 
-static bool NonGUIModeHack = false;
-
 class NonClosable : public QWidget {
 public:
   NonClosable() : QWidget(0,Qt::FramelessWindowHint) {};
@@ -571,7 +569,6 @@ ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* 
 ArrayVector ThreadStartFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 3) throw Exception("threadstart requires at least three arguments (the thread id, the function to spawn, and the number of output arguments)");
   int32 handle = ArrayToInt32(arg[0]);
-  unsigned long timeout = ULONG_MAX;
   Interpreter* thread = m_threadHandles.lookupHandle(handle);
   if (!thread) throw Exception("invalid thread handle");
   string fnc = ArrayToString(arg[1]);

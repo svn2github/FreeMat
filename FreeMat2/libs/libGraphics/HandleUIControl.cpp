@@ -161,7 +161,7 @@ void HandleUIControl::UpdateState() {
   }
   if (HasChanged("listboxtop") || newwidget) {
     if (StringCheck("style","listbox")) {
-      double listtop(ScalarPropertyLookup("listboxtop"));
+      int listtop((int)ScalarPropertyLookup("listboxtop"));
       ((QListWidget*)widget)->scrollToItem(((QListWidget*)widget)->item(listtop-1),
 					   QAbstractItemView::PositionAtTop);
     }

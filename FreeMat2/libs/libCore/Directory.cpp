@@ -81,7 +81,7 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
 static void TabledOutput(std::vector<std::string> sysresult, Interpreter* eval) {
   int maxlen = 0;
   // Find the maximal length
-  for (int i=0;i<sysresult.size();i++) {
+  for (int i=0;i<(int)sysresult.size();i++) {
     int ellen(sysresult[i].size());
     maxlen = (maxlen < ellen) ? ellen : maxlen;
   }
@@ -92,7 +92,7 @@ static void TabledOutput(std::vector<std::string> sysresult, Interpreter* eval) 
   if (outcolumns < 1) outcolumns = 1;
   int colwidth = termwidth/outcolumns;
   int entryCount = 0;
-  while (entryCount < sysresult.size()) {
+  while (entryCount < (int)sysresult.size()) {
     char buffer[4096];
     sprintf(buffer,"%s",sysresult[entryCount].c_str());
     int wlen;
@@ -373,7 +373,7 @@ void RemoveDirectoryRecursive(string dirname) {
   QDir dir(QString::fromStdString(dirname));
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
-  for (unsigned i=0;i<list.size();i++) {
+  for (int i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     if (fileInfo.isDir())
       RemoveDirectoryRecursive(fileInfo.absoluteFilePath().toStdString());
@@ -518,7 +518,7 @@ static void CopyDirectoryRecursive(QString srcdir, QString destdir, bool overrid
   QDir dir(srcdir);
   dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
   QFileInfoList list = dir.entryInfoList();
-  for (unsigned i=0;i<list.size();i++) {
+  for (int i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     if (fileInfo.isDir())
       CopyDirectoryRecursive(fileInfo.absoluteFilePath(),
@@ -558,7 +558,7 @@ ArrayVector CopyFileFunction(int nargout, const ArrayVector& arg) {
     sourcedir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
     sourcedir.setNameFilters(QStringList() << source_info.fileName());
     QFileInfoList list = sourcedir.entryInfoList();
-    for (unsigned i=0;i<list.size();i++) {
+    for (int i=0;i<list.size();i++) {
       QFileInfo fileInfo = list.at(i);
       if (fileInfo.isDir())
 	CopyDirectoryRecursive(fileInfo.absoluteFilePath(),

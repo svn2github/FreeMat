@@ -143,7 +143,7 @@ Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   for (d=0;d<FFTDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=FFTDim+1;d<inDim.getLength();d++)
+  for (d=FFTDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
     
   // Allocate the buffer for the FFT
@@ -153,7 +153,7 @@ Array complexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   float *ob;
   ob = (float*) Malloc(sizeof(float)*2*outDim.getElementCount());
   int copyIn;
-  if (inDim.get(FFTDim) < FFTLen)
+  if ((int)inDim.get(FFTDim) < FFTLen)
     copyIn = inDim.get(FFTDim);
   else
     copyIn = FFTLen;
@@ -204,7 +204,7 @@ Array dcomplexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   for (d=0;d<FFTDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=FFTDim+1;d<inDim.getLength();d++)
+  for (d=FFTDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
     
   // Allocate the buffer for the FFT
@@ -214,7 +214,7 @@ Array dcomplexFFTFunction(const Array& input, int FFTLen, int FFTDim,
   double *ob;
   ob = (double*) Malloc(sizeof(double)*2*outDim.getElementCount());
   int copyIn;
-  if (inDim.get(FFTDim) < FFTLen)
+  if ((int)inDim.get(FFTDim) < FFTLen)
     copyIn = inDim.get(FFTDim);
   else
     copyIn = FFTLen;

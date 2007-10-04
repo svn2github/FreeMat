@@ -289,6 +289,10 @@ fi
 
 AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)
 
+MP_WITH_CURSES
+
+LIBS="$LIBS $CURSES_LIB"
+
 
 AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile

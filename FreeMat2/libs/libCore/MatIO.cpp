@@ -50,6 +50,7 @@ void ComplexSplit(const Array &x, Array &real, Array &imag) {
 
 uint32 ElementSize(Class cls) {
   switch (cls) {
+  default: throw Exception("illegal type as argument to elementsize");
   case FM_LOGICAL:
     return sizeof(logical);
   case FM_UINT8:
@@ -80,6 +81,7 @@ uint32 ElementSize(Class cls) {
 
 MatTypes ToMatType(Class x) {
   switch (x) {
+  default: throw Exception("unhandled type as argument to tomattype");
   case FM_INT8:
     return miINT8;
   case FM_UINT8:
@@ -143,10 +145,12 @@ MatIO::mxArrayTypes GetArrayType(Class x) {
   case FM_STRING:
     return MatIO::mxCHAR_CLASS;
   }  
+  throw Exception("unhandled type in GetArrayType");
 }
 
 Class ToFreeMatClass(MatTypes x) {
   switch (x) {
+  default: throw Exception("unhandled type as argument to tofreematclass");
   case miINT8:
     return FM_INT8;
   case miUINT8:
@@ -212,7 +216,7 @@ uint8 ByteFour(uint32 x) {
 
 Array FromDimensions(Dimensions dims) {
   Array x(FM_INT32,Dimensions(1,dims.getLength()));
-  for (int i=0;i<dims.getLength();i++)
+  for (size_t i=0;i<dims.getLength();i++)
     ((int32*) x.getReadWriteDataPointer())[i] = dims.get(i);
   return x;
 }
@@ -223,7 +227,7 @@ Dimensions ToDimensions(Array dims) {
 		    string("than maxDims (currently set to ") + 
 		    maxDims + ")."); // FIXME - more graceful ways to do this
   Dimensions dm;
-  for (int i=0;i<dims.getLength();i++)
+  for (size_t i=0;i<dims.getLength();i++)
     dm.set(i,((const int32*) dims.getDataPointer())[i]);
   return dm;
 }
@@ -255,7 +259,7 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
   Array pi;
   ir.promoteType(FM_UINT32);
   uint32* ir_data = (uint32*) ir.getReadWriteDataPointer();
-  for (int i=0;i<ir.getLength();i++)
+  for (size_t i=0;i<ir.getLength();i++)
     ir_data[i]++;
   jc.promoteType(FM_UINT32);
   if (complexFlag) pi = getDataElement();
@@ -271,8 +275,8 @@ Array MatIO::getSparseArray(Dimensions dm, bool complexFlag) {
   MemBlock<uint32> jrBlock(nnz);
   uint32 *jr = &jrBlock;
   int outptr = 0;
-  for (int i=0;i<dm.get(1);i++)
-    for (int j=jc_data[i];j<jc_data[i+1];j++)
+  for (size_t i=0;i<dm.get(1);i++)
+    for (size_t j=jc_data[i];j<jc_data[i+1];j++)
       jr[outptr++] = (i+1);
   if (!complexFlag)
     return Array(outType,dm,
@@ -317,6 +321,7 @@ Array MatIO::getNumericArray(mxArrayTypes arrayType, Dimensions dm, bool complex
   // Depending on the type of arrayType, we may need to adjust
   // the types of the data vectors;
   switch (arrayType) {
+  default: throw Exception("unhandled type in getnumericarray");
   case mxINT8_CLASS:
     pr.promoteType(FM_INT8);
     pi.promoteType(FM_INT8);
@@ -371,14 +376,14 @@ Array MatIO::getNumericArray(mxArrayTypes arrayType, Dimensions dm, bool complex
       pi.promoteType(FM_FLOAT);
       float *dp = (float *) pr.getReadWriteDataPointer();
       const float *ip = (const float *) pi.getDataPointer();
-      for (int i=0;i<pr.getLength();i++)
+      for (size_t i=0;i<pr.getLength();i++)
 	dp[2*i+1] = ip[i];
     } else {
       pr.promoteType(FM_DCOMPLEX);
       pi.promoteType(FM_DOUBLE);
       double *dp = (double *) pr.getReadWriteDataPointer();
       const double *ip = (const double *) pi.getDataPointer();
-      for (int i=0;i<pr.getLength();i++)
+      for (size_t i=0;i<pr.getLength();i++)
 	dp[2*i+1] = ip[i];
     }
     pr.reshape(dm);
@@ -663,7 +668,7 @@ void MatIO::putStructArray(const Array &x) {
   Array fieldNameText(FM_INT8,Dimensions(1,fieldNameCount*maxlen));
   int8* dp = (int8*) fieldNameText.getReadWriteDataPointer();
   for (int i=0;i<fieldNameCount;i++)
-    for (int j=0;j<fnames.at(i).size();j++)
+    for (size_t j=0;j<fnames.at(i).size();j++)
       dp[i*maxlen+j] = fnames.at(i)[j];
   putDataElement(fieldNameText);
   int num = x.getLength();
@@ -677,7 +682,7 @@ void MatIO::putClassArray(const Array &x) {
   string className = x.className().back();
   Array classNameArray(FM_INT8,Dimensions(1,className.size()));
   int8* dp = (int8*) classNameArray.getDataPointer();
-  for (int i=0;i<className.size();i++)
+  for (size_t i=0;i<className.size();i++)
     dp[i] = className[i];
   putDataElement(classNameArray);
   putStructArray(x);
@@ -807,7 +812,6 @@ Array MatIO::getArray(bool &atEof, string &name, bool &match, bool &isGlobal) {
   } 
   if (DataType != miMATRIX) 
     throw Exception("Unexpected data tag when looking for an array");
-  uint32 fp(ftell(m_fp));
   Array aFlags(getDataElement());
   if ((aFlags.dataClass() != FM_UINT32) || (aFlags.getLength() != 2))
     throw Exception("Corrupted MAT file - array flags");

@@ -111,12 +111,12 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
     t = arg[1];
     t.promoteType(FM_UINT32);
     dp = (int*) t.getDataPointer();
-    for (i=0;i<t.getLength();i++)
+    for (i=0;i<(int)t.getLength();i++)
       dims.set(i,dp[i]);
   }
   bool allPositive;
   allPositive = true;
-  for (i=0;i<dims.getLength();i++)
+  for (i=0;i<(int)dims.getLength();i++)
     allPositive &= (dims.get(i) >= 0);
   if (!allPositive)
     throw Exception("reshape function requires positive arguments");
@@ -272,12 +272,12 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
       t = trim_arg[0];
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
-      for (i=0;i<t.getLength();i++)
+      for (i=0;i<(int)t.getLength();i++)
 	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
-    for (i=0;i<dims.getLength();i++)
+    for (i=0;i<(int)dims.getLength();i++)
       allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Zeros function requires positive arguments");
@@ -355,12 +355,12 @@ ArrayVector CellFunction(int nargout, const ArrayVector& arg) {
       t = arg[0];
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
-      for (i=0;i<t.getLength();i++)
+      for (i=0;i<(int)t.getLength();i++)
 	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
-    for (i=0;i<dims.getLength();i++)
+    for (i=0;i<(int)dims.getLength();i++)
       allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Zeros function requires positive arguments");
@@ -444,12 +444,12 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
       t = arg[0];
       t.promoteType(FM_UINT32);
       dp = (int*) t.getDataPointer();
-      for (i=0;i<t.getLength();i++)
+      for (i=0;i<(int)t.getLength();i++)
 	dims.set(i,dp[i]);
     }
     bool allPositive;
     allPositive = true;
-    for (i=0;i<dims.getLength();i++)
+    for (i=0;i<(int)dims.getLength();i++)
       allPositive &= (dims.get(i) >= 0);
     if (!allPositive)
       throw Exception("Ones function requires positive arguments");

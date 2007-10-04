@@ -575,7 +575,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     int olen;
     olen = ilen > jlen ? ilen : jlen;
     olen = vlen > olen ? vlen : olen;
-    int istride, jstride, vstride;
+    int istride = 0, jstride = 0, vstride = 0;
     if (olen > 1) {
       if (ilen == 1)
 	istride = 0;
@@ -598,11 +598,11 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     }
     // Calculate the number of rows in the matrix
     uint32 *ip = (uint32*) i_arg.getDataPointer();
-    int rows = 0;
+    uint32 rows = 0;
     for (int i=0;i<ilen;i++)
       rows = (ip[i] > rows) ? ip[i] : rows;
     uint32 *jp = (uint32*) j_arg.getDataPointer();
-    int cols = 0;
+    uint32 cols = 0;
     for (int j=0;j<jlen;j++)
       cols = (jp[j] > cols) ? jp[j] : cols;
     Dimensions dim(rows,cols);
@@ -630,7 +630,7 @@ ArrayVector SparseFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     int olen;
     olen = ilen > jlen ? ilen : jlen;
     olen = vlen > olen ? vlen : olen;
-    int istride, jstride, vstride;
+    int istride = 0, jstride = 0, vstride = 0;
     if (olen > 1) {
       if (ilen == 1)
 	istride = 0;
@@ -1536,7 +1536,7 @@ ArrayVector EigsFunction(int nargout, const ArrayVector& arg) {
     throw Exception("eigs can only be applied to square matrices.");
   if (arg.size() < 2) {
     k = 6;
-    if (k >= A.getDimensionLength(0))
+    if (k >= (int)A.getDimensionLength(0))
       k = A.getDimensionLength(0) - 1;
   } else {
     Array kval(arg[1]);
@@ -1607,6 +1607,7 @@ ArrayVector QRDNoPivotFunction(bool compactDec, Array A) {
   Array rmat, qmat;
   Dimensions dim;
   switch (Aclass) {
+  default: throw Exception("illegal argument type to QRD");
   case FM_FLOAT:
     {
       float *q = (float*) Malloc(nrows*minmn*sizeof(float));
@@ -1730,6 +1731,7 @@ ArrayVector QRDPivotFunction(bool compactDec, Array A) {
   Array rmat, qmat, pmat;
   Dimensions dim;
   switch (Aclass) {
+  default: throw Exception("illegal argument type to QRD");
   case FM_FLOAT:
     {
       float *q = (float*) Malloc(nrows*minmn*sizeof(float));
@@ -2303,8 +2305,6 @@ ArrayVector QRDFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Cannot apply matrix operations to N-Dimensional arrays.");
   if (A.anyNotFinite())
     throw Exception("QR Decomposition only defined for matrices with finite entries.");
-  int nrows = A.getDimensionLength(0);
-  int ncols = A.getDimensionLength(1);
   bool compactDecomposition = false;
   if (arg.size() == 2) {
     Array cflag(arg[1]);
@@ -2835,6 +2835,7 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
   computevectors = (nargout>1);
   ArrayVector retval;
   switch (Aclass) {
+  default: throw Exception("illegal argument type to svd");
   case FM_FLOAT:
     {
       int mindim;
@@ -3137,7 +3138,7 @@ ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
   if (arg[0].dataClass() != FM_CELL_ARRAY)
     throw Exception("simkeys requires a cell array of strings");
   const Array *dp = (const Array *) arg[0].getDataPointer();
-  for (int i=0;i<arg[0].getLength();i++)
+  for (int i=0;i<(int) arg[0].getLength();i++)
     eval->ExecuteLine(ArrayToString(dp[i]));
   eval->ExecuteLine("quit\n");
   try {
@@ -4209,11 +4210,11 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
     t.promoteType(FM_INT32);
     if (t.getLength() > maxDims) throw Exception("replication request exceeds maxDims constant - either rebuild FreeMat with a higher maxDims constant, or shorten the requested replication array");
     int32 *dp = (int32*) t.getDataPointer();
-    for (i=0;i<t.getLength();i++)
+    for (i=0;i<(int)t.getLength();i++)
       repcount.set(i,dp[i]);
   }
   // Check for a valid replication count
-  for (i=0;i<repcount.getLength();i++)
+  for (i=0;i<(int)repcount.getLength();i++)
     if (repcount.get(i) < 0) throw Exception("negative replication counts not allowed in argument to repmat function");
   // All is peachy.  Allocate an output array of sufficient size.
   Dimensions originalSize(x.dimensions());
@@ -4230,7 +4231,6 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
   // pushing, because we can push a column at a time, which might
   // be slightly more efficient.
   int colsize = originalSize.get(0);
-  int outcolsize = outdims.get(0);
   int colcount = originalSize.getElementCount()/colsize;
   // copySelect stores which copy we are pushing.
   Dimensions copySelect(outdim);
@@ -4295,7 +4295,7 @@ ArrayVector SystemFunction(int nargout, const ArrayVector& arg) {
     return retval;
   stringVector cp(DoSystemCallCaptured(systemArg));
   Array* np = new Array[cp.size()];
-  for (int i=0;i<cp.size();i++)
+  for (int i=0;i<(int)cp.size();i++)
     np[i] = Array::stringConstructor(cp[i]);
   Dimensions dim(cp.size(),1);
   Array ret(FM_CELL_ARRAY,dim,np);
@@ -4351,7 +4351,7 @@ ArrayVector PermuteFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) throw Exception("permute requires 2 inputs, the array to permute, and the permutation vector");
   Array A(arg[0]);
   Array permutation(arg[1]);
-  permutation.promoteType(FM_INT32);
+  permutation.promoteType(FM_UINT32);
   int Adims = A.dimensions().getLength();
   if (permutation.getLength() != A.dimensions().getLength())
     throw Exception("permutation vector must contain as many elements as the array to permute has dimensions");
@@ -4359,9 +4359,9 @@ ArrayVector PermuteFunction(int nargout, const ArrayVector& arg) {
   MemBlock<bool> p(Adims);
   bool *d = &p;
   for (int i=0;i<Adims;i++) d[i] = false;
-  const int32* dp = (const int32*) permutation.getDataPointer();
+  const uint32* dp = (const uint32*) permutation.getDataPointer();
   for (int i=0;i<Adims;i++) {
-    if ((dp[i] < 1) || (dp[i] > Adims))
+    if ((dp[i] < 1) || (dp[i] > ((uint32)Adims)))
       throw Exception("permutation vector elements are limited to 1..ndims(A), where A is the array to permute");
     d[dp[i]-1] = true;
   }
@@ -4497,6 +4497,7 @@ static void Conv2MainComplex(T* C, const T* A, const T*B,
 Array Conv2FunctionDispatch(Array X,Array Y,int Cm,int Cn,
 			    int Cm_offset, int Cn_offset) {
   switch (X.dataClass()) {
+  default: throw Exception("illegal argument type to conv2");
   case FM_FLOAT: {
     float *cp = (float*) Array::allocateArray(FM_FLOAT,Cm*Cn);
     Conv2MainReal<float>(cp,

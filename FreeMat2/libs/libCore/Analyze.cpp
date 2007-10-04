@@ -38,6 +38,8 @@
 ArrayVector HandleEmpty(Array arg) {
   ArrayVector retArray;
   switch (arg.dataClass()) {
+  default:
+    throw Exception("Unexpected type argument to HandleEmpty");
   case FM_LOGICAL:
     retArray.push_back(Array::logicalConstructor(false));
     break;
@@ -84,7 +86,7 @@ ArrayVector HandleEmpty(Array arg) {
 template <class T>
 void TRealLess(const T* spx, const T* spy, T* dp, int count, 
 	       int stridex, int stridey) {
-  uint32 i;
+  int i;
   for (i=0;i<count;i++)
     dp[i] = (spx[stridex*i] < spy[stridey*i]) ? 
       spx[stridex*i] : spy[stridey*i];
@@ -93,7 +95,7 @@ void TRealLess(const T* spx, const T* spy, T* dp, int count,
 template <class T>
 void TComplexLess(const T* spx, const T* spy, T* dp, int count, 
 		  int stridex, int stridey) {
-  uint32 i;
+  int i;
   T xmag, ymag;
   for (i=0;i<count;i++) {
     xmag = complex_abs(spx[2*stridex*i],spx[2*stridex*i+1]);
@@ -113,9 +115,9 @@ void TComplexLess(const T* spx, const T* spy, T* dp, int count,
  */
 template <class T>
 void TIntMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
-  T minval;
+  T minval = 0;
   uint32 mindex;
-  uint32 i, j, k;
+  int i, j, k;
     
   for (i=0;i<planes;i++) {
     for (j=0;j<planesize;j++) {
@@ -137,9 +139,9 @@ void TIntMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int li
  */
 template <class T>
 void TRealMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
-  T minval;
+  T minval = 0;
   uint32 mindex;
-  uint32 i, j, k;
+  int i, j, k;
   bool init;
 
   for (i=0;i<planes;i++) {
@@ -174,10 +176,10 @@ void TRealMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int l
  */
 template <class T>
 void TComplexMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
-  T minval, minval_r, minval_i;
+  T minval = 0, minval_r = 0, minval_i = 0;
   T tstval;
   uint32 mindex;
-  uint32 i, j, k;
+  int i, j, k;
   bool init;
     
   for (i=0;i<planes;i++) {
@@ -219,7 +221,7 @@ void TComplexMin(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, in
 template <class T>
 void TRealGreater(const T* spx, const T* spy, T* dp, int count, 
 		  int stridex, int stridey) {
-  uint32 i;
+  int i;
   for (i=0;i<count;i++)
     dp[i] = (spx[stridex*i] > spy[stridey*i]) ? 
       spx[stridex*i] : spy[stridey*i];
@@ -228,7 +230,7 @@ void TRealGreater(const T* spx, const T* spy, T* dp, int count,
 template <class T>
 void TComplexGreater(const T* spx, const T* spy, T* dp, int count, 
 		     int stridex, int stridey) {
-  uint32 i;
+  int i;
   T xmag, ymag;
   for (i=0;i<count;i++) {
     xmag = complex_abs(spx[2*stridex*i],spx[2*stridex*i+1]);
@@ -248,9 +250,9 @@ void TComplexGreater(const T* spx, const T* spy, T* dp, int count,
  */
 template <class T>
 void TIntMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
-  T maxval;
+  T maxval = 0;
   uint32 maxdex;
-  uint32 i, j, k;
+  int i, j, k;
     
   for (i=0;i<planes;i++) {
     for (j=0;j<planesize;j++) {
@@ -272,9 +274,9 @@ void TIntMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int li
  */
 template <class T>
 void TRealMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
-  T maxval;
+  T maxval = 0;
   uint32 maxdex;
-  uint32 i, j, k;
+  int i, j, k;
   bool init;
 
   for (i=0;i<planes;i++) {
@@ -309,10 +311,10 @@ void TRealMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int l
  */
 template <class T>
 void TComplexMax(const T* sp, T* dp, uint32 *iptr, int planes, int planesize, int linesize) {
-  T maxval, maxval_r, maxval_i;
+  T maxval = 0, maxval_r = 0, maxval_i = 0;
   T tstval;
   uint32 maxdex;
-  uint32 i, j, k;
+  int i, j, k;
   bool init;
     
   for (i=0;i<planes;i++) {
@@ -651,6 +653,7 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
   // Based on the type of the output... call the associated helper function
   Array retval;
   switch(outType) {
+  default: throw Exception("Unsupported type for max operation");
   case FM_LOGICAL: {
     char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
     TRealLess<logical>((const logical *) x.getDataPointer(),
@@ -826,8 +829,7 @@ ArrayVector LessThan(int nargout, const ArrayVector& arg) {
 //\[
 //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
 //\begin{cases}
-//  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\
-//  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
+//  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\   z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
 //\end{cases}
 //\]
 //@@Example
@@ -914,7 +916,7 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   if (input.sparse()) {
     if (workDim == 0)
@@ -941,6 +943,7 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for min operation");
   case FM_LOGICAL: {
     char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
     TIntMin<logical>((const logical *) input.getDataPointer(),
@@ -1102,6 +1105,7 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
   // Based on the type of the output... call the associated helper function
   Array retval;
   switch(outType) {
+  default: throw Exception("Unsupported type for max operation");
   case FM_LOGICAL: {
     char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
     TRealGreater<logical>((const logical *) x.getDataPointer(),
@@ -1276,8 +1280,7 @@ ArrayVector GreaterThan(int nargout, const ArrayVector& arg) {
 //\[
 //  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
 //\begin{cases}
-//  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\
-//  z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
+//  x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & x(\cdots) \leq z(\cdots) \\    z(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) & z(\cdots) < x(\cdots).
 //\end{cases}
 //\]
 //@@Example
@@ -1363,7 +1366,7 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   if (input.sparse()) {
     if (workDim == 0)
@@ -1390,6 +1393,7 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for max operation");
   case FM_LOGICAL: {
     char* ptr = (char *) Malloc(sizeof(logical)*outDim.getElementCount());
     TIntMax<logical>((const logical *) input.getDataPointer(),
@@ -1534,6 +1538,7 @@ ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
     throw Exception("ceil only defined for numeric types");
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for ceil operation");
   case FM_LOGICAL:
   case FM_UINT8: 
   case FM_INT8:
@@ -1619,6 +1624,7 @@ ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
     throw Exception("floor only defined for numeric types");
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for floor operation");
   case FM_LOGICAL:
   case FM_UINT8: 
   case FM_INT8:
@@ -1702,6 +1708,7 @@ ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
     throw Exception("round only defined for numeric types");
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for round operation");
   case FM_LOGICAL:
   case FM_UINT8: 
   case FM_INT8:
@@ -1824,11 +1831,12 @@ ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for cumsum operation");
   case FM_INT32: {
     char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
     TRealCumsum<int32>((const int32 *) input.getDataPointer(),
@@ -1955,11 +1963,12 @@ ArrayVector CumprodFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for cumprod operation");
   case FM_INT32: {
     char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
     TRealCumprod<int32>((const int32 *) input.getDataPointer(),
@@ -2088,7 +2097,7 @@ ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   // Special case Sparse Matrices
@@ -2114,6 +2123,7 @@ ArrayVector SumFunction(int nargout, const ArrayVector& arg) {
   }
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for sum operation");
   case FM_INT32: {
     char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
     TRealSum<int32>((const int32 *) input.getDataPointer(),
@@ -2241,11 +2251,12 @@ ArrayVector MeanFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for mean operation");
   case FM_FLOAT: {
     char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
     TRealMean<float>((const float *) input.getDataPointer(),
@@ -2370,11 +2381,12 @@ ArrayVector VarFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for var operation");
   case FM_FLOAT: {
     char* ptr = (char *) Malloc(sizeof(float)*outDim.getElementCount());
     TRealVariance<float>((const float *) input.getDataPointer(),
@@ -2655,6 +2667,7 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
   Array retval;
   int i;
   switch (argType) {
+  default: throw Exception("Unsupported type for abs operation");
   case FM_STRING:
     retval = tmp;
     retval.promoteType(FM_UINT32);
@@ -2835,11 +2848,12 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval;
   switch (argType) {
+  default: throw Exception("Unsupported type for prod operation");
   case FM_INT32: {
     char* ptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
     TRealProd<int32>((const int32 *) input.getDataPointer(),
@@ -3213,7 +3227,7 @@ template <class T>
 class UniqueEntryReal {
 public:
   uint32 n;
-  uint32 len;
+  int len;
   uint32 stride;
   const T* data;
 };
@@ -3247,7 +3261,7 @@ template <class T>
 class UniqueEntryComplex {
 public:
   uint32 n;
-  uint32 len;
+  int len;
   uint32 stride;
   const T* data;
 };
@@ -3501,7 +3515,6 @@ ArrayVector UniqueFunctionString(int nargout, Array& input) {
       cnt++;
     i++;
   }
-  int tcnt = cnt;
   if (nargout <= 1) {
     Array *op = new Array[cnt];
     op[0] = sp[buf[0].n];
@@ -3550,6 +3563,7 @@ ArrayVector UniqueFunctionAux(int nargout, Array input, bool rowmode) {
   }
   Class argType(input.dataClass());
   switch (argType) {
+  default: throw Exception("Unsupported type for unique operation");
   case FM_INT8: 
     return UniqueFunctionRowModeReal<int8>(nargout, input);
   case FM_UINT8:
@@ -3767,6 +3781,7 @@ ArrayVector XNrm2Function(int nargout, const ArrayVector& arg) {
     argType = input.dataClass();
   }
   switch (argType) {
+  default: throw Exception("Unsupported type for xnrm2 operation");
   case FM_FLOAT: {
     float *ptr = (float*) input.getDataPointer();
     int len = input.getLength();
@@ -3791,8 +3806,6 @@ ArrayVector XNrm2Function(int nargout, const ArrayVector& arg) {
     int one = 1;
     return singleArrayVector(Array::doubleConstructor(dznrm2_(&len,ptr,&one)));
   }
-  default:
-    throw Exception("unhandled type in argument to xnrm2");
   }
   return ArrayVector();
 }
@@ -3919,12 +3932,13 @@ ArrayVector SortFunction(int nargout, const ArrayVector& arg) {
   for (d=0;d<workDim;d++)
     planesize *= inDim.get(d);
   planecount = 1;
-  for (d=workDim+1;d<inDim.getLength();d++)
+  for (d=workDim+1;d<(int)inDim.getLength();d++)
     planecount *= inDim.get(d);
   // Allocate the values output, and call the appropriate helper func.
   Array retval, ndxval;
   // Sort with index information
   switch (argType) {
+  default: throw Exception("Unsupported type for sort operation");
   case FM_INT8: {
     char* ptr = (char *) Malloc(sizeof(int8)*outDim.getElementCount());
     char* iptr = (char *) Malloc(sizeof(int32)*outDim.getElementCount());
@@ -4219,6 +4233,7 @@ ArrayVector RcondFunction(int nargout, const ArrayVector& arg) {
     Aclass = FM_DOUBLE;
   }
   switch (Aclass) {
+  default: throw Exception("Unsupported type for rcond operation");
   case FM_FLOAT:
     return singleArrayVector(Array::floatConstructor(floatRecipCond(nrows,ncols,
 								    (float*)A.getReadWriteDataPointer())));

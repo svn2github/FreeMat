@@ -67,7 +67,7 @@ protected:
   double pan_yrange, pan_ymean;
   bool zoom_active;
   bool rotate_active;
-  vector<double> rotate_up, rotate_target, rotate_camera, rotate_forward, rotate_right;
+  QVector<double> rotate_up, rotate_target, rotate_camera, rotate_forward, rotate_right;
   double rotate_source_cam_dist;
 
   int remapX(int x);

@@ -260,9 +260,9 @@ ArrayVector HFigureFunction(int nargout,const ArrayVector& arg) {
 void AddToCurrentFigChildren(unsigned handle) {
   HandleFigure *fig = CurrentFig();
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
-  std::vector<unsigned> children(cp->Data());
+  QVector<unsigned> children(cp->Data());
   // Check to make sure that children does not contain our handle already
-  size_t i=0;
+  int i=0;
   while (i<children.size()) {
     if (children[i] == handle)
       children.erase(children.begin()+i);
@@ -336,13 +336,13 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
   children.promoteType(FM_UINT32);
   const unsigned *dp = (const unsigned*) children.getDataPointer();
   // make sure they are all valid handles
-  for (size_t i=0;i<children.getLength();i++) 
+  for (int i=0;i<children.getLength();i++) 
     ValidateHandle(dp[i]);
   // Retrieve the current list of children
   HandleObject *gp;
   HPHandles *hp = (HPHandles*) fp->LookupProperty("children");
-  std::vector<unsigned> my_children(hp->Data());
-  for (size_t i=0;i<my_children.size();i++) {
+  QVector<unsigned> my_children(hp->Data());
+  for (int i=0;i<my_children.size();i++) {
     unsigned handle = my_children[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
@@ -350,7 +350,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
     }
   }
   // Loop through the new list of children
-  for (size_t i=0;i<children.getLength();i++) {
+  for (int i=0;i<children.getLength();i++) {
     unsigned handle = dp[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
@@ -359,7 +359,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
   }
   // Check for anyone with a zero reference count - it should
   // be deleted
-  for (size_t i=0;i<my_children.size();i++) {
+  for (int i=0;i<my_children.size();i++) {
     unsigned handle = my_children[i];
     if (handle >= HANDLE_OFFSET_OBJECT) {
       gp = LookupHandleObject(handle);
@@ -490,11 +490,11 @@ unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
     }
     HandleAxis *axis = (HandleAxis*) LookupHandleObject(current);
     HPHandles *cp = (HPHandles*) axis->LookupProperty("children");
-    std::vector<unsigned> children(cp->Data());
+    QVector<unsigned> children(cp->Data());
     children.push_back(handle);
     cp->Data(children);
     cp = (HPHandles*) fp->LookupProperty("parent");
-    std::vector<unsigned> parent;
+    QVector<unsigned> parent;
     parent.push_back(current);
     cp->Data(parent);
     axis->UpdateState();
@@ -559,7 +559,7 @@ ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter 
   // Parent the control to the current figure
   AddToCurrentFigChildren(handleID);
   HPHandles* cp = (HPHandles*) o->LookupProperty("parent");
-  std::vector<unsigned> parent;
+  QVector<unsigned> parent;
   parent.push_back(HcurrentFig+1);
   cp->Data(parent);
   return singleArrayVector(Array::uint32Constructor(handleID));

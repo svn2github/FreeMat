@@ -54,23 +54,23 @@ class HandleAxis : public HandleObject {
   void UpdateAxisFont();
   void HandlePlotBoxFlags();
   void GetMaxTickMetric(RenderEngine& gc,
-			std::vector<std::string> labs,
+			stringVector labs,
 			double &maxx, double &maxy);
   void DrawLabel(RenderEngine& gc,
 		 double dx, double dy, 
 		 double x2, double y2, 
-		 std::vector<double> color,
+		 QVector<double> color,
 		 std::string txt);
   void SetupAxis(RenderEngine& gc);
   void RecalculateTicks();
   int GetTickCount(RenderEngine& gc, double x1, double y1, 
 		   double z1, double x2, double y2, double z2);
   void DrawXGridLine(RenderEngine& gc, double t, 
-		     std::vector<double> limits);
+		     QVector<double> limits);
   void DrawYGridLine(RenderEngine& gc, double t, 
-		     std::vector<double> limits);
+		     QVector<double> limits);
   void DrawZGridLine(RenderEngine& gc, double t, 
-		     std::vector<double> limits);
+		     QVector<double> limits);
   double flipX(double t);
   double flipY(double t);
   double flipZ(double t);
@@ -86,20 +86,20 @@ public:
   void SetupDefaults();
   virtual void PaintMe(RenderEngine &gc);
   HandleFigure* GetParentFigure();
-  std::vector<double> UnitsReinterpret(std::vector<double> a);
-  std::vector<double> GetPropertyVectorAsPixels(std::string name);
-  std::vector<double> GetAxisLimits();
-  void SetAxisLimits(std::vector<double>);
+  QVector<double> UnitsReinterpret(QVector<double> a);
+  QVector<double> GetPropertyVectorAsPixels(std::string name);
+  QVector<double> GetAxisLimits();
+  void SetAxisLimits(QVector<double>);
   double MapX(double x);
   double MapY(double y);
   double MapZ(double z);
-  std::vector<double> ReMap(std::vector<double>);
-  void ReMap(std::vector<double>,
-	     std::vector<double>,
-	     std::vector<double>,
-	     std::vector<double>&,
-	     std::vector<double>&,
-	     std::vector<double>&);
+  QVector<double> ReMap(QVector<double>);
+  void ReMap(QVector<double>,
+	     QVector<double>,
+	     QVector<double>,
+	     QVector<double>&,
+	     QVector<double>&,
+	     QVector<double>&);
   void SetupProjection(RenderEngine& gc);
   void DrawBox(RenderEngine& gc);
   void DrawMinorGridLines(RenderEngine& gc);
@@ -107,14 +107,14 @@ public:
   void DrawAxisLines(RenderEngine& gc);
   void DrawTickMarks(RenderEngine& gc);
   void DrawTickLabels(RenderEngine& gc,
-		      std::vector<double> color,
+		      QVector<double> color,
 		      double px1, double py1, double pz1,
 		      double px2, double py2, double pz2,
 		      double limmin, double limmax,
 		      double unitx, double unity, double unitz,
-		      std::vector<double>  maptics,
-		      std::vector<double>  minortics,
-		      std::vector<std::string> labels,
+		      QVector<double>  maptics,
+		      QVector<double>  minortics,
+		      stringVector labels,
 		      std::string labelname,
 		      int ticlen, double ticdir);
   void DrawAxisLabels(RenderEngine& gc);

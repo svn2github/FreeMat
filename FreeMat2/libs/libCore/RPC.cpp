@@ -94,7 +94,7 @@ void getArrayFromQDS(QDataStream &in, Array& dat) {
       delete dp;
     }
     Array *dp = new Array[elCount*ncount];
-    for (size_t i=0;i<elCount*ncount;i++)
+    for (unsigned i=0;i<elCount*ncount;i++)
       getArrayFromQDS(in,dp[i]);
     dat = Array(dclass,dims,dp,false,fnames);
     return;
@@ -215,7 +215,7 @@ void putArrayToQDS(QDataStream &out, const Array& dat) {
   out << (uint8) dat.dataClass();
   out << (uint8) dat.sparse();
   out << (uint8) dat.dimensions().getLength();
-  for (size_t i=0;i<dat.dimensions().getLength();i++)
+  for (int i=0;i<dat.dimensions().getLength();i++)
     out << (uint32) dat.dimensions().getDimensionLength(i);
   int elCount(dat.getLength());
   if (dat.isEmpty()) return;
@@ -565,7 +565,7 @@ ArrayVector TCPCloseFunction(int nargout, const ArrayVector& arg) {
     if (txtval != "ALL")
       throw Exception(string("Unrecognized argument to tcpclose ") + txtval);
     // Close all sockets
-    for (size_t i=0;i<=m_sockets.maxHandle();i++) {
+    for (unsigned i=0;i<=m_sockets.maxHandle();i++) {
       try {
 	QTcpSocket *sock = m_sockets.lookupHandle(i);
 	if (sock) {
@@ -614,7 +614,7 @@ ArrayVector TCPServerCloseFunction(int nargout, const ArrayVector& arg) {
     if (txtval != "ALL")
       throw Exception(string("Unrecognized argument to tcpserverclose ") + txtval);
     // Close all sockets
-    for (size_t i=0;i<=m_servers.maxHandle();i++) {
+    for (unsigned i=0;i<=m_servers.maxHandle();i++) {
       try {
 	QTcpServer *sock = m_servers.lookupHandle(i);
 	if (sock)

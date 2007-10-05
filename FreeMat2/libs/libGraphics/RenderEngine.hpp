@@ -33,6 +33,7 @@ public:
   double g;
   double b;
   double a;
+  cpoint() {}
   cpoint(double ax, double ay, double az, double ar, double ag, double ab, double aa) {
     x = ax; y = ay; z = az; r = ar; g = ag; b = ab; a = aa;
   }
@@ -45,7 +46,7 @@ public:
   enum SymbolType {Plus,Circle,Star,Dot,Times,Square,Diamond,Up,Down,Right,Left,Pentagram,Hexagram,None};
   RenderEngine() {};
   virtual ~RenderEngine() {};
-  virtual void clear(std::vector<double>) = 0;
+  virtual void clear(QVector<double>) = 0;
   virtual void toPixels(double x, double y, double z, int &a, int &b) = 0;
   virtual void toPixels(double x, double y, double z, double &a, double &b) = 0;
   virtual void toPixels(double x, double y, double z, double &a, double &b, bool &clipped) = 0;
@@ -72,24 +73,24 @@ public:
   virtual void triLine(double x1, double y1, double z1,
 		       double x2, double y2, double z2,
 		       double x3, double y3, double z3) = 0;
-  virtual void color(std::vector<double>) = 0;
+  virtual void color(QVector<double>) = 0;
   virtual void setLineStyle(std::string style) = 0;
-  void color(double r, double g, double b) {std::vector<double> t; t.push_back(r); t.push_back(g); t.push_back(b); color(t);}
+  void color(double r, double g, double b) {QVector<double> t; t.push_back(r); t.push_back(g); t.push_back(b); color(t);}
   virtual void lineWidth(double n) = 0;
   virtual void line(double x1, double y1, double z1,
 		    double x2, double y2, double z2) = 0;
   virtual void line(double x1, double y1,
 		    double x2, double y2) = 0;
-  virtual void lineSeries(std::vector<double> xs, 
-			  std::vector<double> ys,
-			  std::vector<double> zs) = 0;
+  virtual void lineSeries(QVector<double> xs, 
+			  QVector<double> ys,
+			  QVector<double> zs) = 0;
   virtual void setupDirectDraw() = 0;
   virtual void releaseDirectDraw() = 0;
   virtual void getViewport(int viewp[4]) = 0;
   virtual void getProjectionMatrix(double proj[16]) = 0;
   virtual void getModelviewMatrix(double model[16]) = 0;
   virtual void putText(double x, double y, std::string txt, 
-		       std::vector<double> color, 
+		       QVector<double> color, 
 		       AlignmentFlag xflag, AlignmentFlag yflag,
 		       QFont fnt, double rotation) = 0;
   virtual void measureText(std::string txt, QFont fnt, AlignmentFlag xflag, 
@@ -102,15 +103,15 @@ public:
   virtual void circleFill(double x1, double y1, double radius) = 0;
   virtual void drawImage(double x1, double y1, double x2, double y2,
 			 QImage pic) = 0;
-  virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
-			  std::vector<std::vector<cpoint> > edges, bool flatedges) = 0;
-  virtual void setClipBox(std::vector<double> limits) {};
+  virtual void quadStrips(QVector<QVector<cpoint> > faces, bool flatfaces,
+			  QVector<QVector<cpoint> > edges, bool flatedges) = 0;
+  virtual void setClipBox(QVector<double> limits) {};
 };
   
 void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
 		double x, double y, double z, double sze,
-		std::vector<double> edgecolor, 
-		std::vector<double> fillcolor, 
+		QVector<double> edgecolor, 
+		QVector<double> fillcolor, 
 		double width);
 
 RenderEngine::SymbolType StringToSymbol(std::string);

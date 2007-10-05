@@ -21,7 +21,6 @@
 #define __KeyManager_hpp__
 
 #include <string>
-#include <vector>
 #include <list>
 #include "Scope.hpp"
 #include <QEventLoop>
@@ -80,8 +79,8 @@ public:
   void WriteHistory();
  private:
   Context *context;
-  vector<string> GetCompletions(string line, int word_end, 
-				string &matchString);
+  stringVector GetCompletions(string line, int word_end, 
+			      string &matchString);
   void CursorLeft();
   void CursorRight();
   void BeginningOfLine();
@@ -97,7 +96,7 @@ public:
   void SearchPrefix(string aline, int alen);
   void Yank();
   void ClearCurrentLine();
-  void ListCompletions(vector<string> completions);
+  void ListCompletions(stringVector completions);
   void CompleteWord();
  protected:
   void EraseCharacters(int pos, int count);

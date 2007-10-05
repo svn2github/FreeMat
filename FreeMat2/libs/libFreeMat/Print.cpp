@@ -519,7 +519,7 @@ void PrintArrayClassic(Array A, int printlimit, Interpreter* io) {
       int offset = 0;
       while (wdims.inside(Adims)) {
 	io->outputMessage("(:,:");
-	for (size_t m=2;m<Adims.getLength();m++) 
+	for (int m=2;m<Adims.getLength();m++) 
 	  io->outputMessage(",%d",wdims.get(m)+1);
 	io->outputMessage(") = \n");
 	PrintSheet(io,format,rows,columns,offset,

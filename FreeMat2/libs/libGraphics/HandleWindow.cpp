@@ -348,13 +348,13 @@ void HandleWindow::GetClick(int &x, int &y) {
 HandleAxis* GetContainingAxis(HandleFigure *fig, int x, int y) {
   //  qDebug() << "Click " << x << "," << y;
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
-  std::vector<unsigned> children(cp->Data());
+  QVector<unsigned> children(cp->Data());
   //  qDebug() << "Click " << x << "," << y;
-  for (size_t i=0;i<children.size();i++) {
+  for (int i=0;i<children.size();i++) {
     HandleObject* hp = LookupHandleObject(children[i]);
     if (hp->IsType("axes")) {
       // Get the axis extents
-      std::vector<double> position(((HandleAxis*) hp)->GetPropertyVectorAsPixels("position"));
+      QVector<double> position(((HandleAxis*) hp)->GetPropertyVectorAsPixels("position"));
       //      qDebug() << "Axis: " << position[0] << "," << position[1] << "," << position[2] << "," << position[3];
       if ((x >= position[0]) && (x < (position[0]+position[2])) &&
 	  (y >= position[1]) && (y < (position[1]+position[3])))
@@ -434,7 +434,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
       QRect plot_region(qtchild->geometry());
       HandleAxis *h = GetContainingAxis(hfig,remapX(origin.x()),remapY(origin.y()));
       if (h) {
-	std::vector<double> position(h->GetPropertyVectorAsPixels("position"));
+	QVector<double> position(h->GetPropertyVectorAsPixels("position"));
 	double delx, dely;
 	if (h->StringCheck("xdir","reverse"))
 	  delx = (e->x() - origin.x())/position[2];
@@ -463,7 +463,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
 	double az = (e->x() - origin.x())/180.0*M_PI;
 	double el = (e->y() - origin.y())/180.0*M_PI;
 	// The delx means we rotate the camera 
-	vector<double> camera_position(rotate_target);
+	QVector<double> camera_position(rotate_target);
 	camera_position[0] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[0] + 
 						      -cos(el)*cos(az)*rotate_forward[0] + 
 						      sin(el)*rotate_up[0]);
@@ -473,7 +473,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
 	camera_position[2] += rotate_source_cam_dist*(cos(el)*sin(az)*rotate_right[2] + 
 						      -cos(el)*cos(az)*rotate_forward[2] + 
 						      sin(el)*rotate_up[2]);
-	vector<double> camera_up(rotate_target);
+	QVector<double> camera_up(rotate_target);
 	camera_up[0] = (cos(el+M_PI/2.0)*sin(az)*rotate_right[0] + 
 			-cos(el+M_PI/2.0)*cos(az)*rotate_forward[0] + 
 			sin(el+M_PI/2.0)*rotate_up[0]);
@@ -500,7 +500,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
       HandleAxis *h = GetContainingAxis(hfig,remapX(origin.x()),remapY(origin.y()));
       if (h) {
 	double el = (e->y() - origin.y())/180.0*M_PI;
-	vector<double> camera_up(rotate_target);
+	QVector<double> camera_up(rotate_target);
 	camera_up[0] = cos(el)*rotate_up[0] - sin(el)*rotate_right[0];
 	camera_up[1] = cos(el)*rotate_up[1] - sin(el)*rotate_right[1];
 	camera_up[2] = cos(el)*rotate_up[2] - sin(el)*rotate_right[2];
@@ -558,7 +558,7 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
 	  QRect plot_region(qtchild->geometry());
 	  HandleAxis *h = GetContainingAxis(hfig,remapX(rect.x()),remapY(rect.y()));
 	  if (h) {
-	    std::vector<double> position(h->GetPropertyVectorAsPixels("position"));
+	    QVector<double> position(h->GetPropertyVectorAsPixels("position"));
 	    double xminfrac = (remapX(rect.x()) - position[0])/position[2];
 	    double xmaxfrac = (remapX(rect.x()+rect.width()) - position[0])/position[2];
 	    double yminfrac = (remapY(rect.y()+rect.height()) - position[1])/position[3];

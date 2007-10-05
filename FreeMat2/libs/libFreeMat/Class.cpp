@@ -816,18 +816,18 @@ void LoadClassFunction(Context* context) {
   context->insertFunction(sfdef,false);
 }
 
-std::vector<int> MarkUserClasses(ArrayVector t) {
-  std::vector<int> set;
+QVector<int> MarkUserClasses(ArrayVector t) {
+  QVector<int> set;
   for (int j=0;j<t.size();j++) 
     if (t[j].isUserClass()) set.push_back(j);
   return set;
 }
  
 bool ClassSearchOverload(Interpreter* eval, ArrayVector t, 
-			 std::vector<int> userset, FuncPtr &val,
+			 QVector<int> userset, FuncPtr &val,
 			 std::string name) {
   bool overload = false;
-  size_t k = 0;
+  int k = 0;
   while (k<userset.size() && !overload) {
     overload = eval->getContext()->lookupFunction(ClassMangleName(t[userset[k]].className().back(),name),val);
     if (!overload) k++;
@@ -845,7 +845,7 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
   for (int i=0;i<m.size();i++) {
     // check this row - make a list of columns that are
     // user classes
-    std::vector<int> userset(MarkUserClasses(m[i]));
+    QVector<int> userset(MarkUserClasses(m[i]));
     if (userset.empty()) {
       ArrayMatrix n;
       n.push_back(m[i]);
@@ -875,7 +875,7 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
   // At this point we have a vector arrays that have to vertically
   // concatenated.  There may not be any objects in it, so we have 
   // to rescan.
-  std::vector<int> userset(MarkUserClasses(rows));
+  QVector<int> userset(MarkUserClasses(rows));
   if (userset.empty()) {
     // OK - we don't have any user-defined classes anymore,
     // so we want to call matrix constructor, which needs
@@ -1017,13 +1017,13 @@ Array IndexExpressionToStruct(Interpreter* eval, const tree &t, Array r) {
    rvstring fNames;
    fNames.push_back("type");
    fNames.push_back("subs");
-   for (unsigned index=1;index < t.numchildren();index++) {
+   for (int index=1;index < t.numchildren();index++) {
      if (!rv.empty()) 
        throw Exception("Cannot reindex an expression that returns multiple values.");
      if (t.child(index).is(TOK_PARENS)) {
        ArrayVector m;
        const tree &s(t.child(index));
-       for (unsigned p=0;p<s.numchildren();p++)
+       for (int p=0;p<s.numchildren();p++)
 	 eval->multiexpr(s.child(p),m);
        eval->subsindex(m);
        //        m = eval->varExpressionList(t[index].children(),r);
@@ -1039,7 +1039,7 @@ Array IndexExpressionToStruct(Interpreter* eval, const tree &t, Array r) {
      if (t.child(index).is(TOK_BRACES)) {
        ArrayVector m;
        const tree &s(t.child(index));
-       for (unsigned p=0;p<s.numchildren();p++)
+       for (int p=0;p<s.numchildren();p++)
 	 eval->multiexpr(s.child(p),m);
        eval->subsindex(m);
        //        m = eval->varExpressionList(t[index].children(),r);
@@ -1088,13 +1088,13 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
      return ClassSubsrefCall(eval,t,r,val);
    }
  ArrayVector rv;
- for (unsigned index=1;index < t.numchildren();index++) {
+ for (int index=1;index < t.numchildren();index++) {
    if (!rv.empty()) 
      throw Exception("Cannot reindex an expression that returns multiple values.");
    if (t.child(index).is(TOK_PARENS)) {
      ArrayVector m;
      const tree &s(t.child(index));
-     for (unsigned p=0;p<s.numchildren();p++)
+     for (int p=0;p<s.numchildren();p++)
        eval->multiexpr(s.child(p),m);
      eval->subsindex(m);
      //     m = eval->varExpressionList(t.child(index).children(),r);
@@ -1111,7 +1111,7 @@ ArrayVector ClassRHSExpression(Array r, const tree &t, Interpreter* eval) {
    if (t.child(index).is(TOK_BRACES)) {
      ArrayVector m;
      const tree &s(t.child(index));
-     for (unsigned p=0;p<s.numchildren();p++)
+     for (int p=0;p<s.numchildren();p++)
        eval->multiexpr(s.child(p),m);
      eval->subsindex(m);
      //     m = eval->varExpressionList(t.child(index).children(),r);

@@ -137,11 +137,11 @@ class Interpreter : public QThread {
   /**
    * The command buffer
    */
-  vector<string> cmd_buffer;
+  stringVector cmd_buffer;
   /**
    * A buffer of return values from graphics calls
    */
-  vector<ArrayVector> gfx_buffer;
+  QVector<ArrayVector> gfx_buffer;
   /**
    * A flag to indicate that the gfx call failed
    */
@@ -169,11 +169,11 @@ class Interpreter : public QThread {
    * For technical reasons, the interpreter stores a mirror of the call stack
    * in this member.
    */
-  vector<stackentry> cstack;
+  QVector<stackentry> cstack;
   /**
    * A list of breakpoints
    */
-  vector<stackentry> bpStack;
+  QVector<stackentry> bpStack;
   /**
    * True if the interpreter is in single-step mode
    */

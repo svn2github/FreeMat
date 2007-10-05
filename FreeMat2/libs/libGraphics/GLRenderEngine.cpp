@@ -40,7 +40,7 @@ QGLWidget* GLRenderEngine::widget() {
 GLRenderEngine::~GLRenderEngine() {
 }
 
-void GLRenderEngine::clear(std::vector<double> color) {
+void GLRenderEngine::clear(QVector<double> color) {
   if (color[0] != -1) {
     glClearColor(color[0], color[1], color[2], 0.0f);
     glClearDepth(1.0f);
@@ -153,7 +153,7 @@ void GLRenderEngine::quadline(double x1, double y1, double z1,
   glEnd();
 }
 
-void GLRenderEngine::color(std::vector<double> col) {
+void GLRenderEngine::color(QVector<double> col) {
   glColor3f(col[0],col[1],col[2]);
 }
   
@@ -203,11 +203,11 @@ void GLRenderEngine::line(double x1, double y1, double x2, double y2) {
   glEnd();
 }
 
-void GLRenderEngine::lineSeries(std::vector<double> xs, 
-				std::vector<double> ys, 
-				std::vector<double> zs) {
+void GLRenderEngine::lineSeries(QVector<double> xs, 
+				QVector<double> ys, 
+				QVector<double> zs) {
   glBegin(GL_LINE_STRIP);
-  for (size_t i=0;i<xs.size();i++)
+  for (int i=0;i<xs.size();i++)
     glVertex3f(xs[i],ys[i],zs[i]);
   glEnd();
 }
@@ -270,7 +270,7 @@ void GLRenderEngine::getViewport(int aviewp[4]) {
 }
 
 void GLRenderEngine::putText(double x, double y, std::string txt, 
-			     std::vector<double> color, 
+			     QVector<double> color, 
 			     AlignmentFlag xflag, AlignmentFlag yflag,
 			     QFont fnt, double rotation) {
   QFontMetrics fm(fnt);
@@ -449,8 +449,8 @@ void GLRenderEngine::drawImage(double x1, double y1, double x2,
   m_widget->deleteTexture(texid);
 }
 
-void GLRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
-				std::vector<std::vector<cpoint> > edges, bool flatedges) {
+void GLRenderEngine::quadStrips(QVector<QVector<cpoint> > faces, bool flatfaces,
+				QVector<QVector<cpoint> > edges, bool flatedges) {
   glDisable(GL_CULL_FACE);
   glEnable(GL_POLYGON_OFFSET_FILL);
   if (flatfaces)
@@ -459,10 +459,10 @@ void GLRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool fl
     glShadeModel(GL_SMOOTH);
   glPolygonOffset(2,2);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  for (size_t i=0;i<faces.size();i++) {
-    std::vector<cpoint> qlist(faces[i]);
+  for (int i=0;i<faces.size();i++) {
+    QVector<cpoint> qlist(faces[i]);
     glBegin(GL_QUAD_STRIP);
-    for (size_t j=0;j<qlist.size();j++) {
+    for (int j=0;j<qlist.size();j++) {
       glColor4f(qlist[j].r,qlist[j].g,qlist[j].b,qlist[j].a);
       glVertex3f(qlist[j].x,qlist[j].y,qlist[j].z);
     }
@@ -474,10 +474,10 @@ void GLRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool fl
     glShadeModel(GL_FLAT);
   else
     glShadeModel(GL_SMOOTH);
-  for (size_t i=0;i<edges.size();i++) {
-    std::vector<cpoint> qlist(edges[i]);
+  for (int i=0;i<edges.size();i++) {
+    QVector<cpoint> qlist(edges[i]);
     glBegin(GL_QUAD_STRIP);
-    for (size_t j=0;j<qlist.size();j++) {
+    for (int j=0;j<qlist.size();j++) {
       glColor4f(qlist[j].r,qlist[j].g,qlist[j].b,qlist[j].a);
       glVertex3f(qlist[j].x,qlist[j].y,qlist[j].z);
     }

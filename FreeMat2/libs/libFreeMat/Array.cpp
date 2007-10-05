@@ -138,19 +138,19 @@ void* Array::allocateArray(Class type, uint32 length, rvstring names) {
   switch(type) {
   case FM_FUNCPTR_ARRAY: {
     FuncPtr *dp = new FuncPtr[length];
-    for (size_t i=0;i<length;i++)
+    for (uint32 i=0;i<length;i++)
       dp[i] = FuncPtr((FunctionDef*) NULL);
     return dp;
   }
   case FM_CELL_ARRAY: {
     Array *dp = new Array[length];
-    for (size_t i=0;i<length;i++)
+    for (uint32 i=0;i<length;i++)
       dp[i] = Array(FM_DOUBLE);
     return dp;
   }
   case FM_STRUCT_ARRAY: {
     Array *dp = new Array[length*names.size()];
-    for (size_t i=0;i<length*names.size();i++)
+    for (uint32 i=0;i<length*names.size();i++)
       dp[i] = Array(FM_DOUBLE);
     return dp;
   }
@@ -187,7 +187,7 @@ void* Array::allocateArray(Class type, uint32 length, rvstring names) {
 }
 
 
-bool* Array::getBinaryMap(uint32 maxD) {
+bool* Array::getBinaryMap(int maxD) {
   bool* map = (bool*) Malloc(maxD*sizeof(bool));
   int N = getLength();
   constIndexPtr rp = (constIndexPtr) data();
@@ -202,7 +202,7 @@ bool* Array::getBinaryMap(uint32 maxD) {
   return map;
 }
 
-uint32 Array::getMaxAsIndex()  {
+indexType Array::getMaxAsIndex()  {
   indexType maxval;
   int k;
   constIndexPtr rp = (constIndexPtr) data();
@@ -482,8 +482,8 @@ void Array::toOrdinalType(Interpreter *m_eval)  {
  */
 int32 getFieldIndexFromList(std::string fName,rvstring fieldNames) {
   bool foundName = false;
-  size_t i = 0;
-  while (i<(size_t)(fieldNames.size()) && !foundName) {
+  int i = 0;
+  while (i<(int)(fieldNames.size()) && !foundName) {
     foundName = (fieldNames.at(i) == fName);
     if (!foundName) i++;
   }
@@ -670,10 +670,10 @@ void Array::resize(Dimensions& a) {
 
 void Array::permute(const uint32 *permutation) {
   // Check for an identity permutation
-  size_t Adims = dimensions().getLength();
+  int Adims = dimensions().getLength();
   bool id_perm = true;
-  for (size_t i=0;i<Adims;i++)
-    if ((permutation[i]-1) != i) id_perm = false;
+  for (int i=0;i<Adims;i++)
+    if ((permutation[i]-1) != (uint32)i) id_perm = false;
   // It is an identity permutation - do nothing
   if (id_perm) return;
   // In 2D, the only non-identity permutation is a transpose
@@ -691,7 +691,7 @@ void Array::permute(const uint32 *permutation) {
   newdims.updateCacheVariables();
   int dstIndex = 0;
   // Loop over all points
-  for (size_t srcIndex=0;srcIndex < getLength();srcIndex++) {
+  for (int srcIndex=0;srcIndex < getLength();srcIndex++) {
     // Permute the current point into the new array
     // and then map it to a linear index
     dstIndex = newdims.mapPoint(curPos.permute(permutation));
@@ -704,7 +704,7 @@ void Array::permute(const uint32 *permutation) {
   setData(dataClass(),newdims,dst_data,sparse(),fieldNames(),className());
 }
 
-void Array::vectorResize(size_t max_index) {
+void Array::vectorResize(int max_index) {
   if (max_index > getLength()) {
     Dimensions newDim;
     if (isEmpty() || dimensions().isScalar()) {
@@ -2042,7 +2042,7 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
 	      throw Exception("Number of dimensions must match for each element in a row definition");
 	    if (d.dimensions().get(0) != row_dims.get(0))
 	      throw Exception("Mismatch in first dimension for elements in row definition");
-	    for (size_t k=2;k<row_dims.getLength();k++)
+	    for (int k=2;k<row_dims.getLength();k++)
 	      if (d.dimensions().get(k) != row_dims.get(k)) 
 		throw Exception("Mismatch in dimension for elements in row definition");
 	    row_dims.set(1,row_dims.get(1)+d.dimensions().get(1));
@@ -2060,7 +2060,7 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
 	} else {
 	  if (mat_dims.getLength() != row_dims.getLength())	    
 	    throw Exception("Number of dimensions must match for each row in a matrix definition");
-	  for (size_t k=1;k<row_dims.getLength();k++)
+	  for (int k=1;k<row_dims.getLength();k++)
 	    if (row_dims.get(k) != mat_dims.get(k)) 
 	      throw Exception("Mismatch in dimension for rows in matrix definition");
 	  mat_dims.set(0,mat_dims.get(0)+row_dims.get(0));
@@ -2468,7 +2468,7 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
       outDims.set(i,dims.get(i));
     } else if (isColon) {
       indexType* buildcolon = (indexType*) Malloc(sizeof(indexType)*dims.get(i));
-      for (size_t j=1;j<=dims.get(i);j++)
+      for (int j=1;j<=dims.get(i);j++)
 	buildcolon[j-1] = (indexType) j;
       outndx[i] = buildcolon;
       outDims.set(i,dims.get(i));
@@ -2478,7 +2478,7 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
       outDims.set(i,0);
     } else {
       index[i].toOrdinalType(m_eval);
-      if (argCheck && (index[i].getMaxAsIndex() > dims.get(i)))
+      if (argCheck && (index[i].getMaxAsIndex() > (indexType) dims.get(i)))
 	throw Exception("index exceeds array bounds");
       outndx[i] = (constIndexPtr) index[i].getDataPointer();
       outDims.set(i,index[i].getLength());
@@ -2612,7 +2612,7 @@ Array Array::getNDimSubsetScalars(ArrayVector& index, Interpreter* m_eval) {
   int pagesize = 1;
   for (int i=0;i<index.size();i++) {
     indexType q(scalarIndex(index[i],m_eval));
-    if ((q < 1) || (q > getDimensionLength(i)))
+    if ((q < 1) || (q > (indexType) getDimensionLength(i)))
       throw Exception("index exceeds array bounds");
     ndx += pagesize*(q-1);
     pagesize *= getDimensionLength(i);
@@ -2632,7 +2632,7 @@ void Array::setNDimSubsetScalars(ArrayVector& index, Array &rdata, Interpreter* 
   int pagesize = 1;
   for (int i=0;i<index.size();i++) {
     indexType q(scalarIndex(index[i],m_eval));
-    if ((q < 1) || (q > getDimensionLength(i)))
+    if ((q < 1) || (q > (indexType) getDimensionLength(i)))
       throw Exception("index exceeds array bounds");
     ndx += pagesize*(q-1);
     pagesize *= getDimensionLength(i);
@@ -2900,7 +2900,7 @@ Array Array::getVectorContents(Array& index, Interpreter* m_eval)  {
   index.toOrdinalType(m_eval);
   // Get a pointer to the index data set
   constIndexPtr index_p = (constIndexPtr) index.data();
-  if (index_p[0] > getLength())
+  if (index_p[0] > (indexType) getLength())
     throw Exception("Array index exceeds bounds of cell-array");
   // Get a pointer to our data
   const Array* qp = (const Array*) data();
@@ -2930,7 +2930,7 @@ ArrayVector Array::getVectorContentsAsList(Array& index, Interpreter* m_eval)  {
   // Get the maximum index
   indexType max_index = index.getMaxAsIndex();
   // Get our length
-  size_t bound = getLength();
+  indexType bound = getLength();
   if (max_index > bound)  throw Exception("Array index exceeds bounds of cell-array");
   // Get the length of the index object
   int index_length = index.getLength();
@@ -3055,7 +3055,7 @@ void Array::setVectorSubset(Array& index, Array& rdata, Interpreter* m_eval) {
   }      
   // Make sure the index is an ordinal type
   index.toOrdinalType(m_eval);
-  size_t index_length = index.getLength();
+  int index_length = index.getLength();
   if (index_length == 0) return;
   // Get a pointer to the index data set
   constIndexPtr index_p = (constIndexPtr) index.data();
@@ -3116,7 +3116,7 @@ void Array::setVectorSubset(Array& index, Array& rdata, Interpreter* m_eval) {
   // computing indices along the way.
   indexType srcIndex = 0;
   indexType j;
-  for (size_t i=0;i<index_length;i++) {
+  for (int i=0;i<index_length;i++) {
     j = index_p[i] - 1;
     rdata.copyElements(srcIndex,qp,j,1);
     srcIndex += advance;
@@ -3176,7 +3176,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata, Interpreter* m_eval)
       // In the assignment of the form:
       //  g(2,:,4,:) = fs;
       // we fill in the colons with the first and second dimensional sizes of fs
-      size_t colonDim = 0;
+      int colonDim = 0;
       for (int i=0;i<index.size();i++)
 	if (isColonOperator(index[i]))
 	  index[i] = Array::int32RangeConstructor(1,1,rdata.getDimensionLength(colonDim++),true);
@@ -3198,7 +3198,7 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata, Interpreter* m_eval)
     }
     Dimensions a(L);
     // First, we compute the maximum along each dimension.
-    size_t dataCount = 1;
+    int dataCount = 1;
     for (int i=0;i<L;i++) {
       if (isColonOperator(index[i])) {
 	a.set(i,myDims.get(i));
@@ -3392,10 +3392,10 @@ void Array::setVectorContentsAsList(Array& index, ArrayVector& rdata, Interprete
     throw Exception("setVectorContentsAsList not supported for sparse arrays.");
   promoteType(FM_CELL_ARRAY);
   if (isColonOperator(index)) {
-    if (getLength() > ((size_t)(rdata.size())))
+    if (getLength() > ((int)(rdata.size())))
       throw Exception("Not enough right hand side values to satisy left hand side expression.");
     Array *qp = (Array*) getReadWriteDataPointer();
-    for (size_t i=0;i<getLength();i++) {
+    for (int i=0;i<getLength();i++) {
       qp[i] = rdata.front();
       rdata.pop_front();
     }
@@ -3403,7 +3403,7 @@ void Array::setVectorContentsAsList(Array& index, ArrayVector& rdata, Interprete
     return;
   }
   index.toOrdinalType(m_eval);
-  if (((size_t)(rdata.size())) < index.getLength())
+  if (((int)(rdata.size())) < index.getLength())
     throw Exception("Not enough right hand side values to satisy left hand side expression.");
   // Get the maximum index
   indexType max_index = index.getMaxAsIndex();
@@ -3506,7 +3506,7 @@ void Array::setFieldAsList(std::string fieldName, ArrayVector& rdata)  {
     throw Exception("setFieldAsList not supported for sparse arrays.");
   if (dataClass() != FM_STRUCT_ARRAY)
     throw Exception("Cannot apply A.field_name = B to non struct-array object A.");
-  if (((size_t)(rdata.size())) < getLength())
+  if (((int)(rdata.size())) < getLength())
     throw Exception("Not enough right hand values to satisfy left hand side expression.");
   int indexLength = getLength();
   int field_ndx = getFieldIndex(fieldName);
@@ -3572,7 +3572,7 @@ void Array::deleteVectorSubset(Array& arg, Interpreter* m_eval) {
     int i;
     deletionMap = arg.getBinaryMap(N);
     // Now, we count up the number of elements that remain after deletion.
-    size_t newSize = 0;
+    int newSize = 0;
     for (i=0;i<N;i++) 
       if (!deletionMap[i]) newSize++;
     // Special case - if newSize==getLength, the delete is a no-op
@@ -3663,7 +3663,7 @@ void Array::makeDense() {
 void Array::deleteNDimSubset(ArrayVector& args, Interpreter* m_eval)  {
   int singletonReferences = 0;
   int singletonDimension = 0;
-  size_t i;
+  int i;
   Array qp;
   bool *indxCovered = NULL;
   bool *deletionMap = NULL;
@@ -3680,20 +3680,20 @@ void Array::deleteNDimSubset(ArrayVector& args, Interpreter* m_eval)  {
     // the index list matches our number of dimensions.  We extend
     // it using 1 references, and throw an exception if there are
     // more indices than our dimension set.
-    for (i=0;i<(size_t)(args.size());i++) {
+    for (i=0;i<(int)(args.size());i++) {
       if (isColonOperator(args[i]))
 	args[i] = Array::int32RangeConstructor(1,1,dimensions().get(i),true);
       args[i].toOrdinalType(m_eval);
     }
     // First, add enough "1" singleton references to pad the
     // index set out to the size of our variable.
-    if (((size_t)(args.size())) < dimensions().getLength())
-      for (i = (size_t)(args.size());i<dimensions().getLength();i++)
+    if (((int)(args.size())) < dimensions().getLength())
+      for (i = (int)(args.size());i<dimensions().getLength();i++)
 	args.push_back(Array::uint32Constructor(1));
     // Now cycle through indices one at a time.  Count
     // the number of non-covering indices.  Also track the
     // location of the last-occurring non-covering index.
-    for (i=0;i<(size_t)(args.size());i++) {
+    for (i=0;i<(int)(args.size());i++) {
       qp = args[i];
       // Get a binary representation of each index over the range [0,dimensions[i]-1]
       indxCovered = qp.getBinaryMap(dimensions().get(i));
@@ -3701,7 +3701,7 @@ void Array::deleteNDimSubset(ArrayVector& args, Interpreter* m_eval)  {
       // then this is the "singleton" dimension.  Kick the singleton
       // reference counter, and record the current dimension.
       bool allCovered = true; 
-      for (size_t k=0;allCovered && (k<dimensions().get(i));k++)
+      for (int k=0;allCovered && (k<dimensions().get(i));k++)
 	allCovered = allCovered && indxCovered[k];
       Free(indxCovered);
       indxCovered = NULL;
@@ -3737,7 +3737,7 @@ void Array::deleteNDimSubset(ArrayVector& args, Interpreter* m_eval)  {
       // dimension to build a deletion map.  The map is
       // marked true for each plane we wish to delete.
       // The map is the size of the _data_'s dimension.
-      size_t M = dimensions().get(singletonDimension);
+      int M = dimensions().get(singletonDimension);
       deletionMap = args[singletonDimension].getBinaryMap(M);
       // We can now calculate the new size of the variable in the singletonDimension
       // by counting the number of "false" entries in deletionMap.
@@ -4033,7 +4033,7 @@ string operator+(int d, string a) {
 }
 
 stringVector operator+(stringVector a, stringVector b) {
-  for (size_t i=0;i<b.size();i++)
+  for (int i=0;i<b.size();i++)
     a.push_back(b[i]);
   return a;
 }

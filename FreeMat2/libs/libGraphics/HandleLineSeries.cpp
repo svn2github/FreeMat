@@ -33,11 +33,11 @@ HandleLineSeries::~HandleLineSeries() {
 // Calculate the limits - should return a vector of the
 // form...
 // [xmin, xmax, ymin, ymax, zmin, zmax, cmin, cmax, amin, amax]
-std::vector<double> HandleLineSeries::GetLimits() {
-  std::vector<double> xs(VectorPropertyLookup("xdata"));
-  std::vector<double> ys(VectorPropertyLookup("ydata"));
-  std::vector<double> zs(VectorPropertyLookup("zdata"));
-  std::vector<double> limits;
+QVector<double> HandleLineSeries::GetLimits() {
+  QVector<double> xs(VectorPropertyLookup("xdata"));
+  QVector<double> ys(VectorPropertyLookup("ydata"));
+  QVector<double> zs(VectorPropertyLookup("zdata"));
+  QVector<double> limits;
   limits.push_back(VecMin(xs));
   limits.push_back(VecMax(xs));
   limits.push_back(VecMin(ys));
@@ -54,16 +54,16 @@ std::vector<double> HandleLineSeries::GetLimits() {
 void HandleLineSeries::UpdateState() {
   // Check that x, y and z data are the same size
   // Generate the x coordinates if necessary
-  std::vector<double> xs(VectorPropertyLookup("xdata"));
-  std::vector<double> ys(VectorPropertyLookup("ydata"));
-  std::vector<double> zs(VectorPropertyLookup("zdata"));
+  QVector<double> xs(VectorPropertyLookup("xdata"));
+  QVector<double> ys(VectorPropertyLookup("ydata"));
+  QVector<double> zs(VectorPropertyLookup("zdata"));
   if (IsAuto("xdatamode")) {
     xs.clear();
-    for (size_t i=0;i<ys.size();i++)
+    for (int i=0;i<ys.size();i++)
       xs.push_back(i+1.0);
   }
   if (zs.size() == 0)
-    for (size_t i=0;i<ys.size();i++)
+    for (int i=0;i<ys.size();i++)
       zs.push_back(0.0);
   HPVector *sp;
   sp = (HPVector*) LookupProperty("xdata");
@@ -80,21 +80,21 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
   gc.lineWidth(width);
   HPColor *lc = (HPColor*) LookupProperty("color");
   // remap...
-  std::vector<double> xs(VectorPropertyLookup("xdata"));
-  std::vector<double> ys(VectorPropertyLookup("ydata"));
-  std::vector<double> zs(VectorPropertyLookup("zdata"));
+  QVector<double> xs(VectorPropertyLookup("xdata"));
+  QVector<double> ys(VectorPropertyLookup("ydata"));
+  QVector<double> zs(VectorPropertyLookup("zdata"));
   if (!((xs.size() == ys.size()) && (ys.size() == zs.size())))
     return;
-  std::vector<double> mxs, mys, mzs;
+  QVector<double> mxs, mys, mzs;
   HandleAxis *parent = (HandleAxis*) GetParentAxis();
   parent->ReMap(xs,ys,zs,mxs,mys,mzs);
   if (!lc->IsNone()) {
     gc.color(lc->Data());
     gc.setLineStyle(StringPropertyLookup("linestyle"));
     // Partition it into segments of finite entries..
-    size_t n = 0;
+    int n = 0;
     while (n < mxs.size()) {
-      std::vector<double> local_mxs, local_mys, local_mzs;
+      QVector<double> local_mxs, local_mys, local_mzs;
       while ((n < mxs.size()) && IsFinite(mxs[n]) && IsFinite(mys[n]) && (IsFinite(mzs[n]))) {
 	local_mxs.push_back(mxs[n]);
 	local_mys.push_back(mys[n]);
@@ -113,9 +113,9 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
   // Make sure there's something to draw...
   if ((typ != RenderEngine::None) || ec->IsNone() || fc->IsNone()) {
     // Calculate the u/v coordinates (pixels)
-    std::vector<double> uc;
-    std::vector<double> vc;
-    for (size_t i=0;i<mxs.size();i++) {
+    QVector<double> uc;
+    QVector<double> vc;
+    for (int i=0;i<mxs.size();i++) {
       double u, v;
       bool clipped;
       gc.toPixels(mxs[i],mys[i],mzs[i],u,v,clipped);
@@ -124,7 +124,7 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
       }
     }
     gc.setupDirectDraw();
-    for (size_t i=0;i<uc.size();i++) 
+    for (int i=0;i<uc.size();i++) 
       DrawSymbol(gc,typ,uc[i],vc[i],0,sze,ec->Data(),fc->Data(),width);
     gc.releaseDirectDraw();
   }

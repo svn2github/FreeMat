@@ -72,7 +72,7 @@
 //
 bool HasNestedFunctions(const tree &root) {
   if (root.is(TOK_NEST_FUNC)) return true;
-  for (size_t i=0;i<root.numchildren();i++)
+  for (int i=0;i<root.numchildren();i++)
     if (HasNestedFunctions(root.child(i))) return true;
   return false;
 }

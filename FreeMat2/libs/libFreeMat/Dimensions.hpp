@@ -25,7 +25,7 @@
 #include "Types.hpp"
 
 class Interpreter;
-const unsigned int maxDims = 6;
+const int maxDims = 6;
 
 /**
  * The Dimensions class is used to keep track of the number of
@@ -44,18 +44,18 @@ private:
   /**
    * The data array of dimensions.
    */
-  size_t data[maxDims];
+  int data[maxDims];
   /**
    * The number of dimensions currently allocated.
    */
-  size_t length;
+  int length;
   /**
    * Cache values for frequently called functions.
    */
-  size_t m_cache_getElementCount;
+  int m_cache_getElementCount;
   bool m_cache_isScalar;
-  size_t m_cache_getRows;
-  size_t m_cache_getColumns;
+  int m_cache_getRows;
+  int m_cache_getColumns;
   bool m_cache_is2D;
   bool m_cache_isVector;
 public:
@@ -76,10 +76,10 @@ public:
    * and all contents set to zero.
    * Throws an Exception if the dimension count is negative.
    */
-  inline Dimensions(size_t dimCount) {
+  inline Dimensions(int dimCount) {
     if (dimCount < 0) 
       throw Exception("Illegal argument to Dimensions constructor");
-    memset(data, 0, sizeof(size_t)*maxDims);
+    memset(data, 0, sizeof(int)*maxDims);
     length = dimCount;
     updateCacheVariables();
   }
@@ -87,8 +87,8 @@ public:
    * Return a 2-D dimension object with the specified number of
    * rows and columns.
    */
-  inline Dimensions(size_t rows, size_t cols) {
-    memset(data, 0, sizeof(size_t)*maxDims);
+  inline Dimensions(int rows, int cols) {
+    memset(data, 0, sizeof(int)*maxDims);
     data[0] = rows;
     data[1] = cols;
     length = 2;
@@ -103,8 +103,8 @@ public:
    * Return a 3-D dimension object with the specified number of 
    * rows and columns and slices.
    */
-  inline Dimensions(size_t rows, size_t cols, size_t slices) {
-    memset(data, 0, sizeof(size_t)*maxDims);
+  inline Dimensions(int rows, int cols, int slices) {
+    memset(data, 0, sizeof(int)*maxDims);
     data[0] = rows;
     data[1] = cols;
     data[2] = slices;
@@ -129,7 +129,7 @@ public:
   /**
    * Get the number of currently allocated dimensions.
    */
-  inline size_t getLength() const {
+  inline int getLength() const {
     return length;
   }
   /**
@@ -146,7 +146,7 @@ public:
    * calculated via $$\Prod_{i=0}^{L-1} a_i$$, where $$L$$ is the value
    * of length, and $$a_i$$ is equivalent to data[i].
    */
-  inline size_t getElementCount() const {
+  inline int getElementCount() const {
     return m_cache_getElementCount;
   }
   /**
@@ -158,19 +158,19 @@ public:
    *   - any of the arguments are outside the valid range, i.e., 
    *     $$b_i < 0$$ or $$b_i >= a_i$$.
    */
-  size_t mapPoint(const Dimensions& point) const;
+  int mapPoint(const Dimensions& point) const;
   /**
    * Returns the first dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  inline size_t getRows() const {
+  inline int getRows() const {
     return m_cache_getRows;    
   }
   /**
    * Returns the second dimension value (or zero if no dimensions have
    * been defined yet).
    */
-  inline size_t getColumns() const {
+  inline int getColumns() const {
     return m_cache_getColumns;
   }
   /**
@@ -179,7 +179,7 @@ public:
    * the access operator, this call does not modify the contents of
    * the class.
    */
-  inline size_t getDimensionLength(size_t arg) const {
+  inline int getDimensionLength(int arg) const {
     if (length <= arg)
       return 1;
     else
@@ -188,17 +188,17 @@ public:
   /**
    * Less verbose synonym
    */
-  inline size_t get(size_t arg) const {
+  inline int get(int arg) const {
     return getDimensionLength(arg);
   }
   /**
    * A synonym for (*this)[dim] = len.
    */
-  void setDimensionLength(size_t dim, size_t len);
+  void setDimensionLength(int dim, int len);
   /**
    * Less verbose synonym
    */
-  inline void set(size_t dim, size_t len) {
+  inline void set(int dim, int len) {
     setDimensionLength(dim,len);
   }
   /**
@@ -220,7 +220,7 @@ public:
    * the limit $$b_n$$.  If $$a_n >= b_n$$, then $$a_n \leftarrow 0$$,
    * and the algorithm is repeated with ordinal+1.
    */
-  void incrementModulo(const Dimensions& limit, size_t ordinal);
+  void incrementModulo(const Dimensions& limit, int ordinal);
   /**
    * Returns comparison of $$a_n < b_n$$, where $$n$$ is the maximum defined
    * dimension in $$a$$ (this object), and $$b$$ is the given argument.
@@ -264,7 +264,7 @@ public:
   /**
    * Get the largest dimension value, i.e., $$\max_{i=1,\ldots,n} \{a_i\}$$.
    */
-  size_t getMax();
+  int getMax();
   /**
    * Returns true if and only if we are equal to $$[1,1]$$.
    */

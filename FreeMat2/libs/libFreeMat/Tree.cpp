@@ -98,7 +98,7 @@ void FreezeTree(tree root, Serialize *s) {
   }
   FreezeToken(root.node(),s);
   s->putInt(root.numchildren());
-  for (size_t i=0;i<root.numchildren();i++)
+  for (int i=0;i<root.numchildren();i++)
     FreezeTree(root.child(i),s);
 }
 

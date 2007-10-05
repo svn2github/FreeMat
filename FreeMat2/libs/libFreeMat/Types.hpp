@@ -21,7 +21,7 @@
 #define __Types_hpp__
 
 #include <string>
-#include <vector>
+#include <QVector>
 #include <QtGlobal>
 #include <QList>
 #include <QRegExp>
@@ -36,7 +36,7 @@ typedef qint32    int32;
 typedef quint32   uint32;
 typedef qint64    int64;
 typedef quint64   uint64;
-typedef size_t   indexType;
+typedef int   indexType;
 typedef const indexType * constIndexPtr;
 
 typedef enum {
@@ -59,7 +59,7 @@ typedef enum {
   FM_STRING,
 } Class;
 
-typedef std::vector<std::string> stringVector;
+typedef QVector<std::string> stringVector;
 typedef QList<std::string> rvstring;
 
 inline size_t ByteSize(Class t) {

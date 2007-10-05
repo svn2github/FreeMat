@@ -32,12 +32,12 @@ stringVector DynamicFunctions;
 
 void ClearLibs(Interpreter* eval) {
   stringVector libnames(libPointers.getCompletions(""));
-  for (size_t i=0;i<libnames.size();i++) {
+  for (int i=0;i<libnames.size();i++) {
     DynLib **ptr = libPointers.findSymbol(libnames[i]);
     libPointers.deleteSymbol(libnames[i]);
     delete *ptr;
   }
-  for (size_t i=0;i<DynamicFunctions.size();i++) {
+  for (int i=0;i<DynamicFunctions.size();i++) {
     eval->getContext()->deleteFunction(DynamicFunctions[i]);
   }
   DynamicFunctions.clear();

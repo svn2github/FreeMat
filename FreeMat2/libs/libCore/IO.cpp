@@ -1191,8 +1191,8 @@ ArrayVector FreadFunction(int nargout, const ArrayVector& arg) {
   // Next, we allocate space for the result
   void *qp = Malloc(elementCount*elementSize);
   // Read in the requested number of data points...
-  size_t g = fread(qp,elementSize,elementCount,fptr->fp);
-  if (g != (size_t)elementCount)
+  int g = fread(qp,elementSize,elementCount,fptr->fp);
+  if (g != elementCount)
     throw Exception("Insufficient data remaining in file to fill out requested size");
   if (ferror(fptr->fp)) 
     throw Exception(strerror(errno));

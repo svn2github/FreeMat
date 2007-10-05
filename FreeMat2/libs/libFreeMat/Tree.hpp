@@ -41,7 +41,7 @@ public:
   inline tree second() const {return child(1);}
   inline bool is(byte tok) const {return (token()==tok);}
   inline byte token() const {if (valid()) return tptr->node.Value(); else return 0;}
-  inline unsigned numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
+  inline int numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
   inline bool haschildren() const {return numchildren() > 0;}
   inline string text() const {if (valid()) return tptr->node.Text(); else return std::string();}
   inline Array array() const {if (valid()) return tptr->node.GetArray(); else return Array();}

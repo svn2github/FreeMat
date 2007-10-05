@@ -162,7 +162,7 @@ void Serialize::putByte(char t) {
 void Serialize::putStringVector(stringVector t) {
   sendSignature('S',1);
   putInt(t.size());
-  for (size_t i=0;i<t.size();i++)
+  for (int i=0;i<t.size();i++)
     putString(t[i].c_str());
 }
 
@@ -430,7 +430,7 @@ void Serialize::putDataClass(Class cls, bool issparse,
 void Serialize::putDimensions(const Dimensions& dim) {
   sendSignature('D',1);
   putInt(dim.getLength());
-  for (size_t i=0;i<dim.getLength();i++)
+  for (int i=0;i<dim.getLength();i++)
     putInt(dim.getDimensionLength(i));
 }
 
@@ -513,7 +513,7 @@ void Serialize::putArray(const Array& dat) {
       putInts((const int*) dp,elCount);
     } else {
       const int32 **dp = ((const int32 **) dat.getSparseDataPointer());
-      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
+      for (int i=0;i<dat.getDimensionLength(1);i++) {
 	putInt(1+dp[i][0]);
 	putInts((const int*) dp[i],1+dp[i][0]);
       }
@@ -531,7 +531,7 @@ void Serialize::putArray(const Array& dat) {
       putFloats(dp,elCount);
     } else {
       const float **dp = ((const float **) dat.getSparseDataPointer());
-      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
+      for (int i=0;i<dat.getDimensionLength(1);i++) {
 	putFloat(1+dp[i][0]);
 	putFloats((const float*) dp[i],(int)(1+dp[i][0]));
       }
@@ -544,7 +544,7 @@ void Serialize::putArray(const Array& dat) {
       putDoubles(dp,elCount);
     } else {
       const double **dp = ((const double **) dat.getSparseDataPointer());
-      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
+      for (int i=0;i<dat.getDimensionLength(1);i++) {
 	putDouble(1+dp[i][0]);
 	putDoubles((const double*) dp[i],(int)(1+dp[i][0]));
       }
@@ -557,7 +557,7 @@ void Serialize::putArray(const Array& dat) {
       putFloats(dp,elCount*2);
     } else {
       const float **dp = ((const float **) dat.getSparseDataPointer());
-      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
+      for (int i=0;i<dat.getDimensionLength(1);i++) {
 	putFloat(1+dp[i][0]);
 	putFloats((const float*) dp[i],(int)(1+dp[i][0]));
       }
@@ -570,7 +570,7 @@ void Serialize::putArray(const Array& dat) {
       putDoubles(dp,elCount*2);
     } else {
       const double **dp = ((const double **) dat.getSparseDataPointer());
-      for (size_t i=0;i<dat.getDimensionLength(1);i++) {
+      for (int i=0;i<dat.getDimensionLength(1);i++) {
 	putDouble(1+dp[i][0]);
 	putDoubles((const double*) dp[i],(int)(1+dp[i][0]));
       }
@@ -669,7 +669,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       int32 **dp = new int32*[dims.getColumns()];
-      for (size_t i=0;i<dims.getColumns();i++) {
+      for (int i=0;i<dims.getColumns();i++) {
 	int len = getInt();
 	dp[i] = new int32[len];
 	getInts(dp[i],len);
@@ -685,7 +685,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       float **dp = new float*[dims.getColumns()];
-      for (size_t i=0;i<dims.getColumns();i++) {
+      for (int i=0;i<dims.getColumns();i++) {
 	int len = (int) getFloat();
 	dp[i] = new float[len];
 	getFloats(dp[i],len);
@@ -701,7 +701,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       double **dp = new double*[dims.getColumns()];
-      for (size_t i=0;i<dims.getColumns();i++) {
+      for (int i=0;i<dims.getColumns();i++) {
 	int len = (int) getDouble();
 	dp[i] = new double[len];
 	getDoubles(dp[i],len);
@@ -717,7 +717,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       float **dp = new float*[dims.getColumns()];
-      for (size_t i=0;i<dims.getColumns();i++) {
+      for (int i=0;i<dims.getColumns();i++) {
 	int len = (int) getFloat();
 	dp[i] = new float[len];
 	getFloats(dp[i],len);
@@ -733,7 +733,7 @@ void Serialize::getArray(Array& dat) {
       dat = Array(dclass,dims,dp);
     } else {
       double **dp = new double*[dims.getColumns()];
-      for (size_t i=0;i<dims.getColumns();i++) {
+      for (int i=0;i<dims.getColumns();i++) {
 	int len = (int) getDouble();
 	dp[i] = new double[len];
 	getDoubles(dp[i],len);

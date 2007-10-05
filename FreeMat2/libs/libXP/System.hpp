@@ -20,8 +20,7 @@
 #ifndef __System_hpp__
 #define __System_hpp__
 
-#include <string>
-#include <vector>
+#include "Types.hpp"
 
-std::vector<std::string> DoSystemCallCaptured(std::string cmd);
+stringVector DoSystemCallCaptured(std::string cmd);
 #endif

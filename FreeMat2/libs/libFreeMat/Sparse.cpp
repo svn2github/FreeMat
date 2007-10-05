@@ -1760,8 +1760,8 @@ void* SparseMatrixConst(int cols, ArrayMatrix m) {
   // is active
   MemBlock<int> colindxBlock(m.size());
   int *colindx = colindxBlock.Pointer();
-  size_t j;
-  for (j=0;j<((size_t)m.size());j++) {
+  int j;
+  for (j=0;j<((int)m.size());j++) {
     blockindx[j] = 0;
     colindx[j] = 0;
   }
@@ -1770,7 +1770,7 @@ void* SparseMatrixConst(int cols, ArrayMatrix m) {
     // For the current column, we loop over all rows of m, and
     // concatenate their strings together.
     int outstringlength = 0;
-    for (j=0;j<((size_t)m.size());j++) {
+    for (j=0;j<((int)m.size());j++) {
       T** src;
       src = (T**) m[j][blockindx[j]].getSparseDataPointer();
       // Get the string length
@@ -1782,7 +1782,7 @@ void* SparseMatrixConst(int cols, ArrayMatrix m) {
     // Loop over the rows again, copying them into the new string
     // buffer
     outstringlength = 0;
-    for (j=0;j<((size_t)m.size());j++) {
+    for (j=0;j<((int)m.size());j++) {
       T** src;
       src = (T**) m[j][blockindx[j]].getSparseDataPointer();
       memcpy(dst[i]+outstringlength+1,src[colindx[j]]+1,
@@ -1790,7 +1790,7 @@ void* SparseMatrixConst(int cols, ArrayMatrix m) {
       outstringlength += (int) src[colindx[j]][0];
     }
     // Now we have to update the column pointers
-    for (j=0;j<((size_t)m.size());j++) {
+    for (j=0;j<((int)m.size());j++) {
       colindx[j]++;
       if (colindx[j] >= (int)(m[j][blockindx[j]].getDimensionLength(1))) {
 	blockindx[j]++;
@@ -2294,14 +2294,14 @@ void* SetSparseVectorSubsets(Class dclass, int &rows, int &cols,
 
 
 template <class T>
-void* GetSparseColumnSubsetAssist(size_t cols, const T** A, const indexType*cindx, 
+void* GetSparseColumnSubsetAssist(int cols, const T** A, const indexType*cindx, 
 				  indexType icols) {
-  for (size_t i=0;i<icols;i++) 
+  for (int i=0;i<icols;i++) 
     if ((cindx[i] < 1) || (cindx[i] > cols))
       throw Exception("out of range column index in sparse matrix expression of type A(:,n)");
   T** dest;
   dest = new T*[icols];
-  for (size_t i=0;i<icols;i++) 
+  for (int i=0;i<icols;i++) 
     dest[i] = RLEDuplicate<T>(A[cindx[i]-1]);
   return dest;
 }
@@ -2414,8 +2414,8 @@ void* GetSparseNDimSubsetsComplex(int rows, const T** A,
 }
 
 
-bool CheckAllRowsReference(const indexType* rindx, size_t rows) {
-  for (size_t i=0;i<rows;i++)
+bool CheckAllRowsReference(const indexType* rindx, int rows) {
+  for (int i=0;i<rows;i++)
     if (rindx[i] != (i+1)) return false;
   return true;
 }

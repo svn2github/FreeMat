@@ -44,7 +44,7 @@ void HandleUIControl::UpdateState() {
       connect(widget,SIGNAL(clicked()),this,SLOT(clicked()));
     }
     if (StringCheck("style","slider")) {
-      std::vector<double> sizevec(VectorPropertyLookup("position"));
+      QVector<double> sizevec(VectorPropertyLookup("position"));
       if (sizevec[3] > sizevec[2])
 	widget = new QSlider(Qt::Vertical,parentWidget->GetQtWidget());
       else
@@ -86,7 +86,7 @@ void HandleUIControl::UpdateState() {
     return;
   }
   if (HasChanged("position") || newwidget) {
-    std::vector<double> sizevec(VectorPropertyLookup("position"));
+    QVector<double> sizevec(VectorPropertyLookup("position"));
     widget->setGeometry((int)sizevec[0],(int)sizevec[1],(int)sizevec[2],(int)sizevec[3]);
     ClearChanged("position");
   }
@@ -104,17 +104,17 @@ void HandleUIControl::UpdateState() {
     if (StringCheck("style","popupmenu")) {
       ((QComboBox*)widget)->clear();
       string txt(StringPropertyLookup("string"));
-      vector<string> data;
+      stringVector data;
       Tokenize(txt,data,"|");
-      for (size_t i=0;i<data.size();i++)
+      for (int i=0;i<data.size();i++)
 	((QComboBox*)widget)->addItem(QString::fromStdString(data[i]));
     }
     if (StringCheck("style","listbox")) {
       ((QListWidget*)widget)->clear();
       string txt(StringPropertyLookup("string"));
-      vector<string> data;
+      stringVector data;
       Tokenize(txt,data,"|");
-      for (size_t i=0;i<data.size();i++)
+      for (int i=0;i<data.size();i++)
 	((QListWidget*)widget)->addItem(QString::fromStdString(data[i]));
     }
     if (StringCheck("style","text")) {
@@ -138,7 +138,7 @@ void HandleUIControl::UpdateState() {
        HasChanged("sliderstep")  || newwidget)) {
     double min(ScalarPropertyLookup("min"));
     double max(ScalarPropertyLookup("max"));
-    std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+    QVector<double> steps(VectorPropertyLookup("sliderstep"));
     ((QSlider*)widget)->setMinimum(0);
     ((QSlider*)widget)->setMaximum((int)((max-min)/steps[0]));
     ((QSlider*)widget)->setSingleStep(1);
@@ -173,7 +173,7 @@ void HandleUIControl::UpdateState() {
        HasChanged("max") || newwidget)) {
     double min(ScalarPropertyLookup("min"));
     double max(ScalarPropertyLookup("max"));
-    std::vector<double> value(VectorPropertyLookup("value"));
+    QVector<double> value(VectorPropertyLookup("value"));
     if (value.size() > 0) {
       if (value[0] == min)
 	((QPushButton*) widget)->setChecked(false);
@@ -190,7 +190,7 @@ void HandleUIControl::UpdateState() {
        HasChanged("max") || newwidget)) {
     double min(ScalarPropertyLookup("min"));
     double max(ScalarPropertyLookup("max"));
-    std::vector<double> value(VectorPropertyLookup("value"));
+    QVector<double> value(VectorPropertyLookup("value"));
     if (value.size() > 0) {
       if (value[0] == min)
 	((QRadioButton*) widget)->setChecked(false);
@@ -207,7 +207,7 @@ void HandleUIControl::UpdateState() {
        HasChanged("max") || newwidget)) {
     double min(ScalarPropertyLookup("min"));
     double max(ScalarPropertyLookup("max"));
-    std::vector<double> value(VectorPropertyLookup("value"));
+    QVector<double> value(VectorPropertyLookup("value"));
     if (value.size() > 0) {
       if (value[0] == min)
 	((QCheckBox*) widget)->setChecked(false);
@@ -222,19 +222,19 @@ void HandleUIControl::UpdateState() {
   if (HasChanged("value") || newwidget) {
     if (StringCheck("style","slider")) {
       double min(ScalarPropertyLookup("min"));
-      std::vector<double> steps(VectorPropertyLookup("sliderstep"));
-      std::vector<double> value(VectorPropertyLookup("value"));
+      QVector<double> steps(VectorPropertyLookup("sliderstep"));
+      QVector<double> value(VectorPropertyLookup("value"));
       if (value.size() > 0)
 	((QSlider*)widget)->setValue((int)((value[0]-min)/steps[0]));
     }
     if (StringCheck("style","popupmenu")) {
-      std::vector<double> value(VectorPropertyLookup("value"));
+      QVector<double> value(VectorPropertyLookup("value"));
       ((QComboBox*)widget)->setCurrentIndex((int)(value[0]-1));
     }
     if (StringCheck("style","listbox")) {
-      std::vector<double> value(VectorPropertyLookup("value"));
+      QVector<double> value(VectorPropertyLookup("value"));
       ((QListWidget*)widget)->clearSelection();
-      for (size_t i=0;i<value.size();i++) 
+      for (int i=0;i<value.size();i++) 
 	((QListWidget*)widget)->setItemSelected(((QListWidget*)widget)->item((int)(value[i]-1)),true);
     }
     ClearChanged("value");
@@ -243,14 +243,14 @@ void HandleUIControl::UpdateState() {
 
 void HandleUIControl::ConstructWidget(HandleWindow *f) {
   parentWidget = f;
-  //   std::vector<double> sizevec(VectorPropertyLookup("position"));
+  //   QVector<double> sizevec(VectorPropertyLookup("position"));
   //   if (!widget) return;
   //   widget->setGeometry(sizevec[0],sizevec[1],sizevec[2],sizevec[3]);
 
   //   if (StringCheck("style","slider")) {
   //     double min(ScalarPropertyLookup("min"));
   //     double max(ScalarPropertyLookup("max"));
-  //     std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+  //     QVector<double> steps(VectorPropertyLookup("sliderstep"));
   //     ((QSlider*)widget)->setMinimum(0);
   //     ((QSlider*)widget)->setMaximum((max-min)/steps[0]);
   //     ((QSlider*)widget)->setSingleStep(1);
@@ -263,7 +263,7 @@ void HandleUIControl::ConstructWidget(HandleWindow *f) {
 void HandleUIControl::clicked() {
   if (StringCheck("style","slider") && widget) {
     double min(ScalarPropertyLookup("min"));
-    std::vector<double> steps(VectorPropertyLookup("sliderstep"));
+    QVector<double> steps(VectorPropertyLookup("sliderstep"));
     ((HPVector*) LookupProperty("value"))->Data(min+steps[0]*((QSlider*)widget)->value());
     // No infinite loops, please
     ClearChanged("value");
@@ -274,7 +274,7 @@ void HandleUIControl::clicked() {
   }
   if (StringCheck("style","listbox") && widget) {
     QList<QListWidgetItem*> selection(((QListWidget*) widget)->selectedItems());
-    std::vector<double> selected;
+    QVector<double> selected;
     for (int i=0;i<selection.size();i++) 
       selected.push_back(((QListWidget*) widget)->row(selection[i])+1);
     ((HPVector*) LookupProperty("value"))->Data(selected);

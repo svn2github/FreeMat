@@ -93,7 +93,7 @@ private:
    * array.  Throws an exception if $$a(i)$$ is outside the range
    * $$1,\ldots,\mathrm{maxD}$.
    */
-  bool* getBinaryMap(uint32);
+  bool* getBinaryMap(int);
   /** Get the internal index corresponding to a given field name.
    * Get the internal index corresponding to a given field name.  This
    * is the index into the fieldname array of the argument.  If the
@@ -108,7 +108,7 @@ public:
    * successfully.  Throws an exception if the maximum value is zero or
    * negative.
    */
-  uint32 getMaxAsIndex();
+  indexType getMaxAsIndex();
   /**
    * Allocate an array.
    */
@@ -160,7 +160,7 @@ public:
    * Get the length of the array as a vector.  This is equivalent
    * to computing length(this(:)).
    */
-  inline size_t getLength() const {
+  inline int getLength() const {
     if (dp)
       return dp->dimensions().getElementCount();
     else
@@ -213,7 +213,7 @@ public:
   /**
    * Get our length along the given dimension.
    */
-  inline size_t getDimensionLength(size_t t) const {
+  inline int getDimensionLength(int t) const {
     if (dp)
       return dp->dimensions().get(t);
     else
@@ -309,7 +309,7 @@ public:
    * For an arbitrarily dimensioned array, this(n) makes the array into 
    * a row vector of length n.
    */
-  void vectorResize(size_t);
+  void vectorResize(int);
   /** Reshape an array.
    * Reshape the array along a new set of dimensions.  Valid provided that
    * setting the dimensions of the array to a does not change the number of
@@ -787,13 +787,13 @@ public:
   /**
    * Return the number of rows.
    */
-  inline size_t rows() const {
+  inline int rows() const {
     return getDimensionLength(0);
   }
   /**
    * Return the number of columns.
    */
-  inline size_t columns() const {
+  inline int columns() const {
     return getDimensionLength(1);
   }
   /**

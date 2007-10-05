@@ -341,7 +341,7 @@ void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
   ip = if_true;
   compile_block(t.second(),m_eval);
   new BranchInst(if_exit,ip);
-  unsigned n=2;
+  int n=2;
   while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
     ip = if_continue;
     JITScalar ttest(cast(compile_expression(t.child(n).first(),m_eval),
@@ -954,7 +954,7 @@ void JITVM::run(Interpreter *m_eval) {
   args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
   // For each argument in the array, retrieve it from the interpreter
   array_inputs.reserve(argumentList.size());
-  for (size_t i=0;i<argumentList.size();i++) {
+  for (int i=0;i<argumentList.size();i++) {
     JITSymbolInfo* v = symbols.findSymbol(argumentList[i]);
     if (v) {
       ArrayReference ptr(m_eval->getContext()->lookupVariable(argumentList[i]));

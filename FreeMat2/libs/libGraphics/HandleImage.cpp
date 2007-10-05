@@ -28,12 +28,12 @@ HandleImage::HandleImage() {
 HandleImage::~HandleImage() {
 }
   
-std::vector<double> HandleImage::GetLimits() {
+QVector<double> HandleImage::GetLimits() {
   UpdateState();
 
   HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
   HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
-  std::vector<double> limits;
+  QVector<double> limits;
   limits.push_back(xp->Data()[0]);
   limits.push_back(xp->Data()[1]);
   limits.push_back(yp->Data()[0]);
@@ -50,7 +50,7 @@ std::vector<double> HandleImage::GetLimits() {
     limits.push_back(0);
     limits.push_back(1);
   }
-  std::vector<double> alphadata(VectorPropertyLookup("alphadata"));
+  QVector<double> alphadata(VectorPropertyLookup("alphadata"));
   limits.push_back(VecMin(alphadata));
   limits.push_back(VecMax(alphadata));
   return limits;
@@ -122,7 +122,7 @@ void HandleImage::ConstructProperties() {
 
 void HandleImage::SetupDefaults() {
   HPVector *hp = (HPVector*) LookupProperty("alphadata");
-  std::vector<double> gp;
+  QVector<double> gp;
   gp.push_back(1.0);
   hp->Data(gp);
   SetConstrainedStringDefault("alphadatamapping","none");
@@ -155,9 +155,9 @@ double* HandleImage::RGBExpandImage(const double *dp,
   // Allocate an output array of the right size
   double *ret = new double[rows*cols*3];
   // Retrieve the colormap
-  std::vector<double> cmap(((HandleObject*)GetParentFigure())->VectorPropertyLookup("colormap"));
+  QVector<double> cmap(((HandleObject*)GetParentFigure())->VectorPropertyLookup("colormap"));
   HandleAxis* ap(GetParentAxis());
-  std::vector<double> clim(((HandleObject*)ap)->VectorPropertyLookup("clim"));
+  QVector<double> clim(((HandleObject*)ap)->VectorPropertyLookup("clim"));
   double clim_min(qMin(clim[0],clim[1]));
   double clim_max(qMax(clim[0],clim[1]));
   // Calculate the colormap length
@@ -190,7 +190,7 @@ double* HandleImage::RGBExpandImage(const double *dp,
 
 void HandleImage::PrepImageRGBNoAlphaMap(const double *dp,
 					 int rows, int cols,
-					 std::vector<double> &alpha) {
+					 QVector<double> &alpha) {
   img = QImage(cols,rows,QImage::Format_ARGB32);
   for (int i=0;i<rows;i++) {
     QRgb *ibits = (QRgb*) img.scanLine(i);
@@ -202,15 +202,15 @@ void HandleImage::PrepImageRGBNoAlphaMap(const double *dp,
   }
 }
 
-std::vector<double> HandleImage::GetAlphaMap(int rows, int cols) {
+QVector<double> HandleImage::GetAlphaMap(int rows, int cols) {
   HPVector *hp = (HPVector*) LookupProperty("alphadata");
-  std::vector<double> alphain(hp->Data());
-  std::vector<double> alphaout;
+  QVector<double> alphain(hp->Data());
+  QVector<double> alphaout;
   // Retrieve the alphamap
-  std::vector<double> amap(((HandleObject*)GetParentFigure())->VectorPropertyLookup("alphamap"));
+  QVector<double> amap(((HandleObject*)GetParentFigure())->VectorPropertyLookup("alphamap"));
   int amaplen(amap.size());
   HandleAxis* ap(GetParentAxis());
-  std::vector<double> alim(((HandleObject*)ap)->VectorPropertyLookup("alim"));
+  QVector<double> alim(((HandleObject*)ap)->VectorPropertyLookup("alim"));
   double alim_min(qMin(alim[0],alim[1]));
   double alim_max(qMax(alim[0],alim[1]));
   int increment;
@@ -218,7 +218,7 @@ std::vector<double> HandleImage::GetAlphaMap(int rows, int cols) {
     for (int i=0;i<rows*cols;i++)
       alphaout.push_back(1);
     return alphaout;
-  } else if (alphain.size() != (size_t)(rows*cols)) {
+  } else if (alphain.size() != (rows*cols)) {
     increment = 0;
   } else
     increment = 1;
@@ -249,7 +249,7 @@ void HandleImage::UpdateCAlphaData() {
   bool cdata_is_integer = cdata.isIntegerClass();
   cdata.promoteType(FM_DOUBLE);
   // Retrieve alpha map
-  std::vector<double> alphas(GetAlphaMap(cdata.getDimensionLength(0),
+  QVector<double> alphas(GetAlphaMap(cdata.getDimensionLength(0),
 					 cdata.getDimensionLength(1)));
   // Check for the indexed or non-indexed case
   if ((cdata.dimensions().getLength() == 3) &&

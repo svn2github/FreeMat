@@ -78,7 +78,7 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector();
 }
 
-static void TabledOutput(std::vector<std::string> sysresult, Interpreter* eval) {
+static void TabledOutput(stringVector sysresult, Interpreter* eval) {
   int maxlen = 0;
   // Find the maximal length
   for (int i=0;i<(int)sysresult.size();i++) {
@@ -166,7 +166,7 @@ ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
     }
   }
   if (nargout == 0) {
-    std::vector<std::string> filelist;
+    stringVector filelist;
     for (int i=0;i<foo.size();i++)
       filelist.push_back(foo[i].fileName().toStdString());
     TabledOutput(filelist,eval);

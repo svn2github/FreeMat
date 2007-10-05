@@ -34,7 +34,7 @@ public:
 		 double width, double height);
   ~GLRenderEngine();
   QGLWidget* widget();
-  virtual void clear(std::vector<double>);
+  virtual void clear(QVector<double>);
   virtual void toPixels(double x, double y, double z, int &a, int &b);
   virtual void toPixels(double x, double y, double z, double &a, double &b);
   virtual void toPixels(double x, double y, double z, double &a, double &b, bool &clipped);
@@ -61,23 +61,23 @@ public:
   virtual void triLine(double x1, double y1, double z1,
 		       double x2, double y2, double z2,
 		       double x3, double y3, double z3);
-  virtual void color(std::vector<double>);
+  virtual void color(QVector<double>);
   virtual void setLineStyle(std::string style);
   virtual void lineWidth(double n);
   virtual void line(double x1, double y1, double z1,
 		    double x2, double y2, double z2);
   virtual void line(double x1, double y1,
 		    double x2, double y2);
-  virtual void lineSeries(std::vector<double> xs, 
-			  std::vector<double> ys,
-			  std::vector<double> zs);
+  virtual void lineSeries(QVector<double> xs, 
+			  QVector<double> ys,
+			  QVector<double> zs);
   virtual void setupDirectDraw();
   virtual void releaseDirectDraw();
   virtual void getModelviewMatrix(double amodel[16]);
   virtual void getProjectionMatrix(double aproj[16]);
   virtual void getViewport(int aviewp[4]);
   virtual void putText(double x, double y, std::string txt, 
-		       std::vector<double> color, 
+		       QVector<double> color, 
 		       AlignmentFlag xflag, AlignmentFlag yflag,
 		       QFont fnt, double rotation);
   virtual void measureText(std::string txt, QFont fnt, AlignmentFlag xflag, 
@@ -90,8 +90,8 @@ public:
   virtual void circleFill(double x1, double y1, double radius); 
   virtual void drawImage(double x1, double y1, double x2, double y2,
 			 QImage pic);
-  virtual void quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
-			  std::vector<std::vector<cpoint> > edges, bool flatedges);
+  virtual void quadStrips(QVector<QVector<cpoint> > faces, bool flatfaces,
+			  QVector<QVector<cpoint> > edges, bool flatedges);
 };
 
 #endif

@@ -144,7 +144,7 @@ void Interpreter::scanDirectory(std::string scdir, bool tempfunc,
   dir.setNameFilters(QStringList() << "*.m" << "*.p" 
 		     << "@*" << "private" << "*."+mexExtension());
   QFileInfoList list(dir.entryInfoList());
-  for (size_t i=0;i<((size_t)list.size());i++) {
+  for (int i=0;i<((int)list.size());i++) {
     QFileInfo fileInfo(list.at(i));
     std::string fileSuffix(fileInfo.suffix().toStdString());
     std::string fileBaseName(fileInfo.baseName().toStdString());
@@ -636,10 +636,10 @@ Array Interpreter::matrixDefinition(const tree &t) {
   ArrayMatrix m;
   if (t.numchildren() == 0) 
     return Array::emptyConstructor();
-  for (size_t i=0;i<t.numchildren();i++) {
+  for (int i=0;i<t.numchildren();i++) {
     const tree &s(t.child(i));
     ArrayVector n;
-    for (size_t j=0;j<s.numchildren();j++)
+    for (int j=0;j<s.numchildren();j++)
       multiexpr(s.child(j),n);
     m.push_back(n);
   }
@@ -704,10 +704,10 @@ Array Interpreter::cellDefinition(const tree & t) {
     a.promoteType(FM_CELL_ARRAY);
     return a;
   }
-  for (size_t i=0;i<t.numchildren();i++) {
+  for (int i=0;i<t.numchildren();i++) {
     const tree &s(t.child(i));
     ArrayVector n;
-    for (size_t j=0;j<s.numchildren();j++) 
+    for (int j=0;j<s.numchildren();j++) 
       multiexpr(s.child(j),n);
     m.push_back(n);
   }
@@ -761,7 +761,7 @@ ArrayVector Interpreter::handleReindexing(const tree &t, const ArrayVector &p) {
 	r = p[0];
       else
 	r = Array::emptyConstructor();
-      for (unsigned index = 2;index < t.numchildren();index++) 
+      for (int index = 2;index < t.numchildren();index++) 
 	deref(r,t.child(index));
       return ArrayVector() << r;
     }
@@ -793,7 +793,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       return;
     }
     Array r(*ptr);
-    for (unsigned index = 1;index < t.numchildren()-1;index++) 
+    for (int index = 1;index < t.numchildren()-1;index++) 
       deref(r,t.child(index));
     SaveEndInfo;
     endRef = &r;
@@ -804,7 +804,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
       if (s.numchildren() == 0)
 	q.push_back(r);
       else {
-	for (unsigned p = 0;p < s.numchildren(); p++) {
+	for (int p = 0;p < s.numchildren(); p++) {
 	  endCount = m.size();
 	  multiexpr(s.child(p),m);
 	}
@@ -817,7 +817,7 @@ void Interpreter::multiexpr(const tree &t, ArrayVector &q, int lhsCount) {
     } else if (s.is(TOK_BRACES)) {
       ArrayVector m;
       endTotal = s.numchildren();
-      for (unsigned p = 0;p < s.numchildren(); p++) {
+      for (int p = 0;p < s.numchildren(); p++) {
 	endCount = m.size();
 	multiexpr(s.child(p),m);
       }
@@ -1232,7 +1232,7 @@ void Interpreter::tryStatement(const tree &t) {
   intryblock = true;
   // Get the state of the IDnum stack and the
   // contextStack and the cnameStack
-  size_t stackdepth;
+  int stackdepth;
   stackdepth = cstack.size();
   try {
     block(t.first());
@@ -1447,7 +1447,7 @@ void Interpreter::switchStatement(const tree &t) {
   // or a string switch.
   if (!switchVal.isScalar() && !switchVal.isString())
     throw Exception("Switch statements support scalar and string arguments only.");
-  unsigned n=1;
+  int n=1;
   while (n < t.numchildren() && t.child(n).is(TOK_CASE)) {
     if (testCaseStatement(t.child(n),switchVal))
       return;
@@ -1546,7 +1546,7 @@ void Interpreter::ifStatement(const tree &t) {
     block(t.second());
     return;
   } else {
-    unsigned n=2;
+    int n=2;
     while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
       if (!(expression(t.child(n).first()).isRealAllZeros())) {
 	block(t.child(n).second());
@@ -1955,7 +1955,7 @@ void Interpreter::forStatement(const tree &t) {
 //@>
 //!
 void Interpreter::globalStatement(const tree &t) {
-  for (unsigned i=0;i<t.numchildren();i++)
+  for (int i=0;i<t.numchildren();i++)
     context->addGlobalVariable(t.child(i).text());
 }
 
@@ -2008,7 +2008,7 @@ void Interpreter::globalStatement(const tree &t) {
 //@}
 //!
 void Interpreter::persistentStatement(const tree &t) {
-  for (unsigned i=0;i<t.numchildren();i++)
+  for (int i=0;i<t.numchildren();i++)
     context->addPersistentVariable(t.child(i).text());
 }
 
@@ -2358,7 +2358,7 @@ void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data
     endTotal = s.numchildren();
     if (s.numchildren() == 0) 
       throw Exception("The expression A() is not legal unless A is a function");
-    for (unsigned p = 0; p < s.numchildren(); p++) {
+    for (int p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
     }
@@ -2371,7 +2371,7 @@ void Interpreter::multiassign(ArrayReference r, const tree &s, ArrayVector &data
   } else if (s.is(TOK_BRACES)) {
     ArrayVector m;
     endTotal = s.numchildren();
-    for (unsigned p = 0; p < s.numchildren(); p++) {
+    for (int p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
     }
@@ -2403,7 +2403,7 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
     endTotal = s.numchildren();
     if (s.numchildren() == 0)
       throw Exception("The expression A() is not legal unless A is a function");
-    for (unsigned p = 0; p < s.numchildren(); p++) {
+    for (int p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
     }
@@ -2416,7 +2416,7 @@ void Interpreter::assign(ArrayReference r, const tree &s, Array &data) {
     ArrayVector datav(singleArrayVector(data));
     ArrayVector m;
     endTotal = s.numchildren();
-    for (unsigned p = 0; p < s.numchildren(); p++) {
+    for (int p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
     }
@@ -2927,7 +2927,7 @@ void Interpreter::assignment(const tree &var, bool printIt, Array &b) {
 }
 
 void Interpreter::processBreakpoints(const tree &t) {
-  for (size_t i=0;i<bpStack.size();i++) {
+  for (int i=0;i<bpStack.size();i++) {
     if ((bpStack[i].cname == ip_funcname) && 
 	((ip_context & 0xffff) == bpStack[i].tokid)) {
       doDebugCycle();
@@ -3105,7 +3105,7 @@ int Interpreter::countLeftHandSides(const tree &t) {
     lhs = *ptr;
   if (t.numchildren() == 1) return 1;
   if (t.last().is(TOK_PARENS)) return 1;
-  for (unsigned index = 1;index < t.numchildren()-1;index++) {
+  for (int index = 1;index < t.numchildren()-1;index++) {
     try {
       deref(lhs,t.child(index));
     } catch (Exception& e) {
@@ -3115,7 +3115,7 @@ int Interpreter::countLeftHandSides(const tree &t) {
   if (t.last().is(TOK_BRACES)) {
     const tree &s(t.last());
     ArrayVector m;
-    for (unsigned p = 0; p < s.numchildren(); p++) 
+    for (int p = 0; p < s.numchildren(); p++) 
       multiexpr(s.child(p),m);
     subsindex(m);
     if (m.size() == 0)
@@ -3142,7 +3142,7 @@ int Interpreter::countLeftHandSides(const tree &t) {
     }
   }
   if (t.last().is('.')) 
-    return std::max((size_t)1,lhs.getLength());
+    return std::max((int)1,lhs.getLength());
   return 1;
 }
 
@@ -3156,11 +3156,11 @@ void Interpreter::specialFunctionCall(const tree &t, bool printIt) {
   tree fAST;
   ArrayVector m;
   stringVector args;
-  for (unsigned index=0;index < t.numchildren();index++) 
+  for (int index=0;index < t.numchildren();index++) 
     args.push_back(t.child(index).text());
   if (args.empty()) return;
   ArrayVector n;
-  for (size_t i=1;i<args.size();i++)
+  for (int i=1;i<args.size();i++)
     n.push_back(Array::stringConstructor(args[i].c_str()));
   FuncPtr val;
   if (!lookupFunction(args[0],val,n))
@@ -3207,7 +3207,7 @@ void Interpreter::addBreakpoint(stackentry bp) {
 }
 
 void Interpreter::refreshBreakpoints() {
-  for (size_t i=0;i<bpStack.size();i++)
+  for (int i=0;i<bpStack.size();i++)
     setBreakpoint(bpStack[i],true);
 }
 
@@ -3243,13 +3243,13 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
   // being requested. 
   // Calculate how many lhs objects there are
   lhsCount = 0;
-  for (size_t index=0;index<((size_t)s.size());index++) 
+  for (int index=0;index<((int)s.size());index++) 
     lhsCount += countLeftHandSides(s[index]);
 
   multiexpr(t.second(),m,lhsCount);
 
-  size_t index;
-  for (index=0;(index<((size_t)s.size())) && (m.size() > 0);index++) {
+  int index;
+  for (index=0;(index<((int)s.size())) && (m.size() > 0);index++) {
     const tree &var(s[index]);
     string name(var.first().text());
     ArrayReference ptr(context->lookupVariable(name));
@@ -3302,15 +3302,14 @@ void Interpreter::multiFunctionCall(const tree &t, bool printIt) {
       displayArray(*ptr);
     }
   }
-  if (index < ((size_t)s.size()))
+  if (index < ((int)s.size()))
     warningMessage("one or more outputs not assigned in call.");
 }
 
 int getArgumentIndex(stringVector list, std::string t) {
   bool foundArg = false;
   std::string q;
-  uint32 i;
-  i = 0;
+  int i = 0;
   while (i<list.size() && !foundArg) {
     q = list[i];
     if (q[0] == '&')
@@ -3878,7 +3877,7 @@ void Interpreter::collectKeywords(const tree &q, ArrayVector &keyvals,
   // To handle keywords, we make one pass through the arguments,
   // recording a list of keywords used and using ::expression to
   // evaluate their values. 
-  for (unsigned index=0;index < q.numchildren();index++) {
+  for (int index=0;index < q.numchildren();index++) {
     if (q.child(index).is(TOK_KEYWORD)) {
       keywords.push_back(q.child(index).first().text());
       if (q.child(index).numchildren() > 1) {
@@ -3900,7 +3899,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
   int maxndx;
   maxndx = 0;
   // Map each keyword to an argument number
-  for (size_t i=0;i<keywords.size();i++) {
+  for (int i=0;i<keywords.size();i++) {
     int ndx;
     ndx = getArgumentIndex(arguments,keywords[i]);
     if (ndx == -1)
@@ -3934,7 +3933,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
   }
   // Finally...
   // Copy the keyword values in
-  for (size_t i=0;i<keywords.size();i++) {
+  for (int i=0;i<keywords.size();i++) {
     toFill[keywordNdx[i]] = keyvals[i];
     filled[keywordNdx[i]] = true;
     argTypeMap[keywordNdx[i]] = i;
@@ -3973,10 +3972,10 @@ void Interpreter::handlePassByReference(const tree &q, stringVector arguments,
 					treeVector keyexpr, int* argTypeMap) {
   tree p;
   // M functions can modify their arguments
-  size_t maxsearch = m.size(); 
+  int maxsearch = m.size(); 
   if (maxsearch > arguments.size()) maxsearch = arguments.size();
-  size_t qindx = 0;
-  for (size_t i=0;i<maxsearch;i++) {
+  int qindx = 0;
+  for (int i=0;i<maxsearch;i++) {
     // Was this argument passed out of order?
     if ((keywords.size() > 0) && (argTypeMap[i] == -1)) continue;
     if ((keywords.size() > 0) && (argTypeMap[i] >=0)) {
@@ -4022,7 +4021,7 @@ void Interpreter::functionExpression(const tree &t,
       // Evaluate function arguments
       try {
 	const tree &s(t.second());
-	for (unsigned p=0;p<s.numchildren();p++)
+	for (int p=0;p<s.numchildren();p++)
 	  multiexpr(s.child(p),m);
       } catch (Exception &e) {
 	// Transmute the error message about illegal use of ':'
@@ -4113,7 +4112,7 @@ void Interpreter::functionExpression(const tree &t,
 void Interpreter::toggleBP(QString fname, int lineNumber) {
   if (isBPSet(fname,lineNumber)) {
     string fname_string(fname.toStdString());
-    for (size_t i=0;i<bpStack.size();i++) 
+    for (int i=0;i<bpStack.size();i++) 
       if ((bpStack[i].cname == fname_string) &&
 	  ((bpStack[i].tokid & 0xffff) == lineNumber)) {
 	//	qDebug() << "Deleting bp " << i << " w/number " << bpStack[i].number << "";
@@ -4128,7 +4127,7 @@ void Interpreter::toggleBP(QString fname, int lineNumber) {
 MFunctionDef* Interpreter::lookupFullPath(string fname) {
   stringVector allFuncs(context->listAllFunctions());
   FuncPtr val;
-  for (size_t i=0;i<allFuncs.size();i++) {
+  for (int i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
     if (!isFun || !val) return NULL;
     if (val->type() == FM_M_FUNCTION) {
@@ -4155,7 +4154,7 @@ void Interpreter::addBreakpoint(string name, int line) {
   stringVector allFuncs(context->listAllFunctions());
   // We make one pass through the functions, and update 
   // those functions that belong to the given filename
-  for (size_t i=0;i<allFuncs.size();i++) {
+  for (int i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
     if (!isFun || !val) throw Exception("Cannot add breakpoint to " + name + " :  it does not appear to be a valid M file.");
     if (val->type() == FM_M_FUNCTION) {
@@ -4170,8 +4169,8 @@ void Interpreter::addBreakpoint(string name, int line) {
   // record the line number closest to it
   MemBlock<int> line_dist_block(allFuncs.size());
   int *line_dist = &line_dist_block;
-  for (size_t i=0;i<allFuncs.size();i++) line_dist[i] = 2*max_line_count;
-  for (size_t i=0;i<allFuncs.size();i++) {
+  for (int i=0;i<allFuncs.size();i++) line_dist[i] = 2*max_line_count;
+  for (int i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
     if (!isFun || !val) throw Exception("Cannot add breakpoint to " + name + " :  it does not appear to be a valid M file.");
     if (val->type() == FM_M_FUNCTION) {
@@ -4189,7 +4188,7 @@ void Interpreter::addBreakpoint(string name, int line) {
   // desired one, but not less than it
   int best_func = -1;
   int best_dist = 2*max_line_count;
-  for (size_t i=0;i<allFuncs.size();i++) {
+  for (int i=0;i<allFuncs.size();i++) {
     if ((line_dist[i] >= line) && ((line_dist[i]-line) < best_dist)) {
       best_func = i;
       best_dist = line_dist[i]-line;
@@ -4204,7 +4203,7 @@ void Interpreter::addBreakpoint(string name, int line) {
 
 bool Interpreter::isBPSet(QString fname, int lineNumber) {
   string fname_string(fname.toStdString());
-  for (size_t i=0;i<bpStack.size();i++) 
+  for (int i=0;i<bpStack.size();i++) 
     if ((bpStack[i].cname == fname_string) &&
 	((bpStack[i].tokid & 0xffff) == lineNumber)) return true;
   return false;
@@ -4215,7 +4214,7 @@ bool Interpreter::isInstructionPointer(QString fname, int lineNumber) {
 }
 
 void Interpreter::listBreakpoints() {
-  for (size_t i=0;i<bpStack.size();i++) {
+  for (int i=0;i<bpStack.size();i++) {
     //    if (bpStack[i].number > 0) {
     char buffer[2048];
     snprintf(buffer,2048,"%d   %s line %d\n",bpStack[i].number,
@@ -4226,7 +4225,7 @@ void Interpreter::listBreakpoints() {
 }
 
 void Interpreter::deleteBreakpoint(int number) {
-  for (size_t i=0;i<bpStack.size();i++) 
+  for (int i=0;i<bpStack.size();i++) 
     if (bpStack[i].number == number) {
       //      setBreakpoint(bpStack[i],false);
       bpStack.erase(bpStack.begin()+i);
@@ -4239,7 +4238,7 @@ void Interpreter::deleteBreakpoint(int number) {
 }
 
 void Interpreter::stackTrace(bool includeCurrent) {
-  for (size_t i=0;i<cstack.size();i++) {
+  for (int i=0;i<cstack.size();i++) {
     std::string cname_trim(TrimExtension(TrimFilename(cstack[i].cname)));
     outputMessage(string("In ") + cname_trim + "("
 		  + cstack[i].detail + ") on line " +
@@ -4411,7 +4410,7 @@ ArrayVector Interpreter::FunctionPointerDispatch(Array r, const tree &args,
   if (!args.is(TOK_PARENS))
     throw Exception("Expected either '()' or function arguments inside parenthesis");
   ArrayVector m;
-  for (unsigned p = 0; p< args.numchildren(); p++)
+  for (int p = 0; p< args.numchildren(); p++)
     multiexpr(args.child(p),m);
   ArrayVector n;
   if (fun->updateCode(this)) refreshBreakpoints();
@@ -4851,7 +4850,7 @@ void Interpreter::deref(Array &r, const tree &s) {
     if (s.numchildren() == 0) {
       r = r;
     } else {
-      for (unsigned p = 0; p < s.numchildren(); p++) {
+      for (int p = 0; p < s.numchildren(); p++) {
 	endCount = m.size();
 	multiexpr(s.child(p),m);
       }
@@ -4864,7 +4863,7 @@ void Interpreter::deref(Array &r, const tree &s) {
   } else if (s.is(TOK_BRACES)) {
     ArrayVector m;
     endTotal = s.numchildren();
-    for (unsigned p = 0; p < s.numchildren(); p++) {
+    for (int p = 0; p < s.numchildren(); p++) {
       endCount = m.size();
       multiexpr(s.child(p),m);
     }
@@ -4919,7 +4918,7 @@ void Interpreter::deref(Array &r, const tree &s) {
        return Array::emptyConstructor();
    }
    Array r(*ptr);
-   for (unsigned index = 1;index < t.numchildren();index++) 
+   for (int index = 1;index < t.numchildren();index++) 
      deref(r,t.child(index));
    return r;
  }
@@ -5181,7 +5180,7 @@ void Interpreter::evalCLI() {
       m_interrupt = false;
       continue;
     }
-    size_t stackdepth = cstack.size();
+    int stackdepth = cstack.size();
     InCLI = true;
     evaluateString(cmdset);
     while (cstack.size() > stackdepth) cstack.pop_back();
@@ -5203,6 +5202,6 @@ Array Interpreter::subsindex(const Array &m) {
 }
 
  void Interpreter::subsindex(ArrayVector& m) {
-   for (size_t p=0;p<((size_t)m.size());p++)
+   for (int p=0;p<((int)m.size());p++)
      m[p] = subsindex(m[p]);
  }

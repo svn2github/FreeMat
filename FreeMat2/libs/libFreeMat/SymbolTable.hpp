@@ -19,8 +19,6 @@
 
 #ifndef __SYMBOLTABLE_HPP__
 #define __SYMBOLTABLE_HPP__
-#include <string>
-#include <vector>
 #include "Types.hpp"
 
 typedef std::string key_type;

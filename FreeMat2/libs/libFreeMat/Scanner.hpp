@@ -4,7 +4,6 @@
 #include <string>
 #include "Token.hpp"
 #include <stack>
-#include <vector>
 
 using namespace std;
 
@@ -51,7 +50,6 @@ public:
   void PopWSFlag();
   bool Done();
   bool Peek(int chars, byte tok);
-  void SetBreakpoints(vector<int> bp);
   unsigned Position() {return m_ptr;}
   unsigned ContextNum();
   string Context(unsigned pos);

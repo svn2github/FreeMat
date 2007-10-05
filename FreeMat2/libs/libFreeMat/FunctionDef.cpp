@@ -39,7 +39,7 @@ QMutex functiondefmutex;
 
 stringVector IdentifierList(tree t) {
   stringVector retval;
-  for (unsigned index=0;index<t.numchildren();index++) {
+  for (int index=0;index<t.numchildren();index++) {
     if (t.child(index).is('&'))
       retval.push_back("&" + t.child(index).first().text());
     else
@@ -52,14 +52,14 @@ void VariableReferencesList(const tree & t, stringVector& idents) {
   if (t.is(TOK_NEST_FUNC)) return;
   if (t.is(TOK_VARIABLE)) {
     bool exists = false;
-    for (size_t i=0;(i<idents.size());i++) {
+    for (int i=0;(i<idents.size());i++) {
       exists = (idents[i] == t.first().text());
       if (exists) break;
     }
     if (!exists)
       idents.push_back(t.first().text());
   }
-  for (size_t i=0;i<t.numchildren();i++)
+  for (int i=0;i<t.numchildren();i++)
     VariableReferencesList(t.child(i),idents);
 }
 
@@ -84,11 +84,11 @@ ArrayVector AnonymousFunctionDef::evaluateFunction(Interpreter *eval, ArrayVecto
   context->pushScope("anonymous");
   eval->pushDebug("anonymous","anonymous");
   stringVector workspaceVars(workspace.getCompletions(""));
-  for (size_t i=0;i<workspaceVars.size();i++)
+  for (int i=0;i<workspaceVars.size();i++)
     context->insertVariableLocally(workspaceVars[i],*workspace.findSymbol(workspaceVars[i]));
-  size_t minCount = (((size_t)inputs.size()) < arguments.size()) ? 
+  int minCount = (((int)inputs.size()) < arguments.size()) ? 
     inputs.size() : arguments.size();
-  for (size_t i=0;i<minCount;i++)
+  for (int i=0;i<minCount;i++)
     context->insertVariableLocally(arguments[i],inputs[i]);
   try {
     try {
@@ -120,7 +120,7 @@ void AnonymousFunctionDef::initialize(const tree &t, Interpreter *eval) {
   graphicsFunction = false;
   stringVector vars;
   VariableReferencesList(t.second(),vars);
-  for (size_t i=0;i<vars.size();i++) {
+  for (int i=0;i<vars.size();i++) {
     ArrayReference ptr(eval->getContext()->lookupVariable(vars[i]));
     if (ptr.valid()) {
       //      cout << "Captured VAR: " << vars[i] << "\r\n";
@@ -165,7 +165,7 @@ void MFunctionDef::printMe(Interpreter*eval) {
   eval->outputMessage("Function class: Compiled M function\n");
   eval->outputMessage("returnVals: ");
   tmp = returnVals;
-  size_t i;
+  int i;
   for (i=0;i<tmp.size();i++) {
     snprintf(msgBuffer,MSGBUFLEN,"%s ",tmp[i].c_str());
     eval->outputMessage(msgBuffer);
@@ -196,7 +196,7 @@ void CaptureFunctionPointer(FuncPtr &val, Interpreter *walker,
       context->restoreScope(1);
       if (!Scope::nests(parentScope,myScope)) {
 	// Now capture the variables in our current scope
-	for (size_t i=0;i<optr->variablesAccessed.size();i++) {
+	for (int i=0;i<optr->variablesAccessed.size();i++) {
 	  ArrayReference ptr(context->lookupVariable(optr->variablesAccessed[i]));
 	  if (ptr.valid()) {
 	    if (!workspace)
@@ -216,10 +216,10 @@ void CaptureFunctionPointers(ArrayVector& outputs, Interpreter *walker,
 			     MFunctionDef *parent) {
   ScopePtr workspace = NULL;
   // First check for any 
-  for (size_t i=0;i<((size_t)outputs.size());i++) {
+  for (int i=0;i<((int)outputs.size());i++) {
     if (outputs[i].dataClass() == FM_FUNCPTR_ARRAY) {
       FuncPtr *dp = (FuncPtr*) outputs[i].getReadWriteDataPointer();
-      for (size_t j=0;j<outputs[i].getLength();j++)
+      for (int j=0;j<outputs[i].getLength();j++)
 	CaptureFunctionPointer(dp[j],walker,parent,workspace);
     }
   }
@@ -240,7 +240,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   context->setLocalVariablesList(returnVals);
   if (capturedFunction && workspace) {
     stringVector workspaceVars(workspace->getCompletions(""));
-    for (size_t i=0;i<workspaceVars.size();i++)
+    for (int i=0;i<workspaceVars.size();i++)
       context->insertVariableLocally(workspaceVars[i],
 				     *workspace->lookupVariable(workspaceVars[i]));
   }
@@ -251,7 +251,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   // argument function, then use the following logic:
   minCount = 0;
   if (inputArgCount() != -1) {
-    minCount = (((size_t)inputs.size()) < arguments.size()) ? 
+    minCount = (((int)inputs.size()) < arguments.size()) ? 
       inputs.size() : arguments.size();
     for (int i=0;i<minCount;i++) {
       std::string arg(arguments[i]);
@@ -301,22 +301,22 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
       // special case - if nargout == 0, and none of the
       // outputs are predefined, we don't do anything
       bool nonpredefed = true;
-      for (size_t i=0;i<returnVals.size()&&nonpredefed;i++) {
+      for (int i=0;i<returnVals.size()&&nonpredefed;i++) {
 	Array *ptr = context->lookupVariableLocally(returnVals[i]);
 	nonpredefed = nonpredefed && (!ptr);
       }
       if ((nargout > 0) || 
 	  ((nargout == 0) && (!nonpredefed))) {
 	outputs = ArrayVector();
-	for (size_t i=0;i<returnVals.size();i++) outputs.push_back(Array());
+	for (int i=0;i<returnVals.size();i++) outputs.push_back(Array());
 	//	outputs = ArrayVector(returnVals.size());
-	for (size_t i=0;i<returnVals.size();i++) {
+	for (int i=0;i<returnVals.size();i++) {
 	  Array *ptr = context->lookupVariableLocally(returnVals[i]);
 	  if (!ptr)
 	    outputs[i] = Array::emptyConstructor();
 	  else
 	    outputs[i] = *ptr;
-	  if (!ptr && (i < ((size_t)nargout)))
+	  if (!ptr && (i < ((int)nargout)))
 	    if (!warningIssued) {
 	      walker->warningMessage("one or more outputs not assigned in call (1)");
 	      warningIssued = true;
@@ -391,7 +391,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     CaptureFunctionPointers(outputs,walker,this);
     if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
-      for (size_t i=0;i<workspaceVars.size();i++) {
+      for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
       }
@@ -402,7 +402,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   } catch (Exception& e) {
     if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
-      for (size_t i=0;i<workspaceVars.size();i++) {
+      for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
       }
@@ -414,7 +414,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   catch (InterpreterRetallException& e) {
     if (capturedFunction && workspace) {
       stringVector workspaceVars(workspace->getCompletions(""));
-      for (size_t i=0;i<workspaceVars.size();i++) {
+      for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
       }
@@ -483,7 +483,7 @@ void RegisterNested(const tree &t, Interpreter *m_eval, MFunctionDef *parent) {
     m_eval->getContext()->insertFunction(fp,false);
     RegisterNested(fp->code,m_eval,fp);
   } else
-    for (size_t i=0;i<t.numchildren();i++)
+    for (int i=0;i<t.numchildren();i++)
       RegisterNested(t.child(i),m_eval,parent);
 }
 
@@ -551,7 +551,7 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
 	RegisterNested(code,m_eval,this);
 	localFunction = false;
 	// Process the local functions
-	for (size_t index = 1;index < pcode.numchildren();index++) {
+	for (int index = 1;index < pcode.numchildren();index++) {
 	  tree LocalFuncCode = pcode.child(index);
 	  MFunctionDef *fp = new MFunctionDef;
 	  fp->localFunction = true;
@@ -607,7 +607,7 @@ void TreeLine(tree t, unsigned &bestLine, unsigned lineTarget) {
     if ((myLine >= lineTarget) && (myLine < bestLine))
       bestLine = myLine;
   }
-  for (size_t i=0;i<t.numchildren();i++)
+  for (int i=0;i<t.numchildren();i++)
     TreeLine(t.child(i),bestLine,lineTarget);
 }
 
@@ -940,7 +940,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
     throw Exception("Unsupported return type " + retType + " in imported function call");
     
   // Second pass - Loop through the arguments
-  for (size_t i=0;i<types.size();i++) {
+  for (int i=0;i<types.size();i++) {
     if (arguments[i][0] == '&' || types[i] == "string" ||
 	sizeCheckExpressions[i].valid())
       av_ptr(alist,void*,*((void**)values[i]));

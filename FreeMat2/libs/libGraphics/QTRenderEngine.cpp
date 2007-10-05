@@ -47,7 +47,7 @@ QTRenderEngine::QTRenderEngine(QPainter *painter, double x1, double y1,
 QTRenderEngine::~QTRenderEngine() {
 }
 
-void QTRenderEngine::clear(std::vector<double> col) {
+void QTRenderEngine::clear(QVector<double> col) {
   pnt->save();
   pnt->setPen(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
   pnt->setBrush(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
@@ -62,20 +62,20 @@ QPointF QTRenderEngine::Map(double x, double y, double z) {
   return QPointF(rint(a),rint(b));
 }
 
-QVector<QPointF> QTRenderEngine::Map(std::vector<double> xs, 
-				     std::vector<double> ys, 
-				     std::vector<double> zs) {
+QVector<QPointF> QTRenderEngine::Map(QVector<double> xs, 
+				     QVector<double> ys, 
+				     QVector<double> zs) {
   QVector<QPointF> retval;
-  for (size_t i=0;i<xs.size();i++)
+  for (int i=0;i<xs.size();i++)
     retval.push_back(Map(xs[i],ys[i],zs[i]));
   return retval;
 }
 
-std::vector<quad3d> QTRenderEngine::MapQuadsFacesOnly(std::vector<std::vector<cpoint> > &faces) {
-  std::vector<quad3d> retval;
-  for (size_t i=0;i<faces.size();i++) {
-    std::vector<cpoint> qlist(faces[i]);
-    for (size_t j=2;j<qlist.size();j+=2){ 
+QVector<quad3d> QTRenderEngine::MapQuadsFacesOnly(QVector<QVector<cpoint> > &faces) {
+  QVector<quad3d> retval;
+  for (int i=0;i<faces.size();i++) {
+    QVector<cpoint> qlist(faces[i]);
+    for (int j=2;j<qlist.size();j+=2){ 
       quad3d qx;
       bool anyclipped = false;
       double zmean = 0;
@@ -106,11 +106,11 @@ std::vector<quad3d> QTRenderEngine::MapQuadsFacesOnly(std::vector<std::vector<cp
   return retval;
 }
 
-std::vector<quad3d> QTRenderEngine::MapQuadsEdgesOnly(std::vector<std::vector<cpoint> > &edges) {
-  std::vector<quad3d> retval;
-  for (size_t i=0;i<edges.size();i++) {
-    std::vector<cpoint> elist(edges[i]);
-    for (size_t j=2;j<elist.size();j+=2){ 
+QVector<quad3d> QTRenderEngine::MapQuadsEdgesOnly(QVector<QVector<cpoint> > &edges) {
+  QVector<quad3d> retval;
+  for (int i=0;i<edges.size();i++) {
+    QVector<cpoint> elist(edges[i]);
+    for (int j=2;j<elist.size();j+=2){ 
       quad3d qx;
       bool anyclipped = false;
       double zmean = 0;
@@ -142,15 +142,15 @@ std::vector<quad3d> QTRenderEngine::MapQuadsEdgesOnly(std::vector<std::vector<cp
 }
 
 
-std::vector<quad3d> QTRenderEngine::MapQuads(std::vector<std::vector<cpoint> > &faces,
-					     std::vector<std::vector<cpoint> > &edges) {
-  std::vector<quad3d> retval;
+QVector<quad3d> QTRenderEngine::MapQuads(QVector<QVector<cpoint> > &faces,
+					     QVector<QVector<cpoint> > &edges) {
+  QVector<quad3d> retval;
   if (edges.size() == 0) return MapQuadsFacesOnly(faces);
   if (faces.size() == 0) return MapQuadsEdgesOnly(edges);
-  for (size_t i=0;i<faces.size();i++) {
-    std::vector<cpoint> qlist(faces[i]);
-    std::vector<cpoint> elist(edges[i]);
-    for (size_t j=2;j<qlist.size();j+=2){ 
+  for (int i=0;i<faces.size();i++) {
+    QVector<cpoint> qlist(faces[i]);
+    QVector<cpoint> elist(edges[i]);
+    for (int j=2;j<qlist.size();j+=2){ 
       quad3d qx;
       bool anyclipped = false;
       double zmean = 0;
@@ -341,7 +341,7 @@ void QTRenderEngine::triLine(double x1, double y1, double z1,
   pnt->drawPolyline(poly);
 }
 
-void QTRenderEngine::color(std::vector<double> col) {
+void QTRenderEngine::color(QVector<double> col) {
   QPen pen(pnt->pen());
   QBrush brush(pnt->brush());
   pen.setColor(QColor((int)(col[0]*255),(int)(col[1]*255),(int)(col[2]*255)));
@@ -381,9 +381,9 @@ void QTRenderEngine::line(double x1, double y1,
   pnt->drawLine(Map(x1,y1,0),Map(x2,y2,0));    
 }
 
-void QTRenderEngine::lineSeries(std::vector<double> xs, 
-				std::vector<double> ys,
-				std::vector<double> zs) {
+void QTRenderEngine::lineSeries(QVector<double> xs, 
+				QVector<double> ys,
+				QVector<double> zs) {
   if (xs.size() < 2) return;
   pnt->drawPolyline(Map(xs,ys,zs));
 }
@@ -455,7 +455,7 @@ void QTRenderEngine::getViewport(int aviewp[4]) {
 }
 
 void QTRenderEngine::putText(double x, double y, std::string txt, 
-			     std::vector<double> color, 
+			     QVector<double> color, 
 			     AlignmentFlag xflag, AlignmentFlag yflag,
 			     QFont fnt, double rotation) {
   QFontMetrics fm(fnt);
@@ -580,7 +580,7 @@ QPainterPath QTRenderEngine::quadToPoly(double x1, double y1, double z1,
   return path;
 }
 
-void QTRenderEngine::setClipBox(std::vector<double> limits) {
+void QTRenderEngine::setClipBox(QVector<double> limits) {
   pnt->setClipPath(quadToPoly( limits[0], limits[2], limits[4],
 			       limits[1], limits[2], limits[4],
 			       limits[1], limits[3], limits[4],
@@ -614,13 +614,13 @@ void QTRenderEngine::setClipBox(std::vector<double> limits) {
   //  pnt->setClipPath(path);
 }
 
-void QTRenderEngine::quadStrips(std::vector<std::vector<cpoint> > faces, bool flatfaces,
-				std::vector<std::vector<cpoint> > edges, bool flatedges) {
+void QTRenderEngine::quadStrips(QVector<QVector<cpoint> > faces, bool flatfaces,
+				QVector<QVector<cpoint> > edges, bool flatedges) {
   //  qDebug() << "Faces " << faces.size();
   //  qDebug() << "Edges " << edges.size();
-  std::vector<quad3d> mapqds(MapQuads(faces,edges));
+  QVector<quad3d> mapqds(MapQuads(faces,edges));
   std::sort(mapqds.begin(),mapqds.end());
-  for (size_t i=0;i<mapqds.size();i++) {
+  for (int i=0;i<mapqds.size();i++) {
     QPolygonF poly;
     poly.push_back(QPointF(mapqds[i].pts[0].x,mapqds[i].pts[0].y));
     poly.push_back(QPointF(mapqds[i].pts[1].x,mapqds[i].pts[1].y));

@@ -621,7 +621,7 @@ ArrayVector RegExpCoreFunction(rvstring stringed_args, bool defaultMatchCase) {
 static bool IsCellStrings(Array t) {
   if (t.dataClass() != FM_CELL_ARRAY) return false;
   const Array *dp = (const Array *) t.getDataPointer();
-  for (size_t j=0;j<t.getLength();j++)
+  for (int j=0;j<t.getLength();j++)
     if (!dp[j].isString()) return false;
   return true;
 }
@@ -661,7 +661,7 @@ ArrayVector RegExpWrapperFunction(int nargout, const ArrayVector& arg,
   } else if (IsCellStrings(arg[0]) && arg[1].isString()) {
     const Array *dp = (const Array *) arg[0].getDataPointer();
     QList<ArrayVector> results;
-    for (size_t j=0;j<arg[0].getLength();j++) {
+    for (int j=0;j<arg[0].getLength();j++) {
       rvstring stringed_args;
       stringed_args << ArrayToString(dp[j]);
       for (int i=1;i<arg.size();i++) 
@@ -672,7 +672,7 @@ ArrayVector RegExpWrapperFunction(int nargout, const ArrayVector& arg,
   } else if (arg[0].isString() && IsCellStrings(arg[1])) {
     const Array *dp = (const Array *) arg[1].getDataPointer();
     QList<ArrayVector> results;
-    for (size_t j=0;j<arg[1].getLength();j++) {
+    for (int j=0;j<arg[1].getLength();j++) {
       rvstring stringed_args;
       stringed_args << ArrayToString(arg[0]);
       stringed_args << ArrayToString(dp[j]);
@@ -687,7 +687,7 @@ ArrayVector RegExpWrapperFunction(int nargout, const ArrayVector& arg,
     const Array *dp = (const Array *) arg[0].getDataPointer();
     const Array *sp = (const Array *) arg[1].getDataPointer();
     QList<ArrayVector> results;
-    for (size_t j=0;j<arg[0].getLength();j++) {
+    for (int j=0;j<arg[0].getLength();j++) {
       rvstring stringed_args;
       stringed_args << ArrayToString(dp[j]);
       stringed_args << ArrayToString(sp[j]);
@@ -982,7 +982,7 @@ ArrayVector RegExpRepDriverFunction(int nargout, const ArrayVector& arg) {
     replist << ArrayToString(arg[2]);
   else if (IsCellStrings(arg[2])) {
     const Array *dp = (const Array *) arg[2].getDataPointer();
-    for (size_t i=0;i<arg[2].getLength();i++)
+    for (int i=0;i<arg[2].getLength();i++)
       replist << ArrayToString(dp[i]);
   }
   return ArrayVector() << Array::stringConstructor(RegExpRepCoreFunction(subject,

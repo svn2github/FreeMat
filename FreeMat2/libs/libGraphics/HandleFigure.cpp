@@ -128,7 +128,7 @@ void HandleFigure::UpdateState() {
 }
 
 void HandleFigure::LoadDefaultColorMap() {
-  std::vector<double> cmap;
+  QVector<double> cmap;
   for (int i=0;i<64;i++) {
     double h = i/(64.0);
     double r, g, b;
@@ -169,8 +169,8 @@ void HandleFigure::PaintMe(RenderEngine &gc) {
       gc.clear(color->Data());
     }
     HPHandles *children = (HPHandles*) LookupProperty("children");
-    std::vector<unsigned> handles(children->Data());
-    for (size_t i=0;i<handles.size();i++) {
+    QVector<unsigned> handles(children->Data());
+    for (int i=0;i<handles.size();i++) {
       HandleObject *fp = LookupHandleObject(handles[i]);
       fp->PaintMe(gc);
     }
@@ -188,8 +188,8 @@ void HandleFigure::resizeGL(int width, int height) {
   UpdateState();
   // Change to be recursive...
   HPHandles *children = (HPHandles*) LookupProperty("children");
-  std::vector<unsigned> handles(children->Data());
-  for (size_t i=0;i<handles.size();i++) {
+  QVector<unsigned> handles(children->Data());
+  for (int i=0;i<handles.size();i++) {
     HandleObject *fp = LookupHandleObject(handles[i]);
     fp->UpdateState();
   }

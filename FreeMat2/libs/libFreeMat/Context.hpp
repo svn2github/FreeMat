@@ -107,7 +107,7 @@ class Context {
   /**
    * The normal stack of scopes.
    */
-  std::vector<ScopePtr> scopestack;
+  QVector<ScopePtr> scopestack;
   /**
    * The stack of scopes that have been "bypassed"
    */
@@ -315,7 +315,7 @@ public:
    * Flush temporary function definitions from the global context
    */
   inline void flushTemporaryGlobalFunctions() {
-    for (size_t i=0;i<tempFunctions.size();i++)
+    for (int i=0;i<tempFunctions.size();i++)
       deleteFunction(tempFunctions[i]);
     tempFunctions.clear();
   }
@@ -475,9 +475,9 @@ public:
     stringVector global_completions = topScope->getCompletions(prefix);
     stringVector code_completions = codeTab.getCompletions(prefix);
     stringVector completions(local_completions);
-    for (size_t i=0;i<global_completions.size();i++)
+    for (int i=0;i<global_completions.size();i++)
       completions.push_back(global_completions[i]);
-    for (size_t i=0;i<code_completions.size();i++)
+    for (int i=0;i<code_completions.size();i++)
       completions.push_back(code_completions[i]);
     return completions;
   }

@@ -46,8 +46,8 @@ RenderEngine::SymbolType StringToSymbol(std::string name) {
   
 void DrawSymbol(RenderEngine& gc, RenderEngine::SymbolType symb,
 		double x, double y, double z, double sze,
-		std::vector<double> edgecolor, 
-		std::vector<double> fillcolor, 
+		QVector<double> edgecolor, 
+		QVector<double> fillcolor, 
 		double width) {
   bool stroke, fill;
   stroke = edgecolor[0] != -1;

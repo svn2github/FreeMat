@@ -79,9 +79,10 @@ void HandleText::PaintMe(RenderEngine& gc) {
   if (!axis) return;
   // Map position -> pixel location
   int x, y;
-  std::vector<double> pos(VectorPropertyLookup("position"));
+  QVector<double> pos(VectorPropertyLookup("position"));
   // remap it
-  std::vector<double> mapped(axis->ReMap(pos));
+  if (pos.size() == 2) pos << 0;
+  QVector<double> mapped(axis->ReMap(pos));
   gc.toPixels(mapped[0],mapped[1],mapped[2],x,y);
   gc.setupDirectDraw();
   // Retrieve the margin...

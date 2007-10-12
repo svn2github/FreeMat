@@ -13,6 +13,7 @@
 
 typedef unsigned char byte;
 const byte TOK_IDENT = 130;
+const byte TOK_NUMBER = 131;
 const byte TOK_STRING = 132;
 const byte TOK_IF = 133;
 const byte TOK_ELSE = 134;
@@ -62,6 +63,7 @@ public:
 QString TokenToString(const Token& b) {
   switch (b.Value()) {
   case TOK_IDENT: return "(ident)"+b.Text();
+  case TOK_NUMBER: return "(number)"+b.Text();
   case TOK_STRING: return "(string)"+b.Text();
   case TOK_IF: return "if";
   case TOK_ELSE: return "else";
@@ -143,7 +145,7 @@ protected:
     int len = 0;
     while (isdigit(ahead(len))) len++;
     QString numtext(m_text.mid(m_ptr,len));
-    SetToken(TOK_STRING,numtext);
+    SetToken(TOK_NUMBER,numtext);
     m_ptr += len;
   }
   void FetchString() {
@@ -214,6 +216,20 @@ public:
   void Consume() {
     m_tokValid = false;
   }
+};
+
+class tree_node {
+  Token node;
+  QList<tree_node*> children;
+};
+
+typedef tree_node* tree;
+
+tree mkLeaf(const Token& tok);
+
+
+class Parser {
+  Scanner &m_lex;
 };
 
 QString ReadFileToString(const char *fname) {

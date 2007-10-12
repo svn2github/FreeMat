@@ -1,0 +1,8 @@
+a = 32 + 56
+b = 'hello';
+c = 'goober''s';
+g = (a || b);
+if (a == b)
+  c = b;
+end
+

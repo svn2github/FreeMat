@@ -4,253 +4,140 @@
 // bit appears to be dealing with archives (.zip and .tar.gz).
 
 #include <QtCore>
+#include <QtScript>
+#include <QtNetwork>
+#include <QtGui>
 
-// Let's define the mini-language of the package builder tool.
-// 1. All variables are strings.  
-// 2. Tokens are identifiers 
-// 3. Lines beginning with a % are comments
-// 4. The operators "=","+" are defined.
+QTextBrowser *console;
 
-typedef unsigned char byte;
-const byte TOK_IDENT = 130;
-const byte TOK_NUMBER = 131;
-const byte TOK_STRING = 132;
-const byte TOK_IF = 133;
-const byte TOK_ELSE = 134;
-const byte TOK_ELSEIF = 135;
-const byte TOK_END = 136;
-const byte TOK_FUNCTION = 137;
-const byte TOK_RETURN = 138;
-const byte TOK_WHILE = 139;
-const byte TOK_NE = 140;
-const byte TOK_EQ = 141;
-const byte TOK_EOF = 142;
-const byte TOK_SAND = 143;
-const byte TOK_SOR = 144;
-const byte TOK_FOR = 145;
+static bool wantsToQuit;
 
-QMap<QString, byte> reserved;
-
-static bool reservedInitialized = false;
-static void InitializeReserved() {
-  reserved["if"] = TOK_IF;
-  reserved["else"] = TOK_ELSE;
-  reserved["elseif"] = TOK_ELSEIF;
-  reserved["end"] = TOK_END;
-  reserved["function"] = TOK_FUNCTION;
-  reserved["return"] = TOK_RETURN;
-  reserved["while"] = TOK_WHILE;
-  reserved["for"] = TOK_FOR;
-  reservedInitialized = true;
+static QScriptValue qtscript_disp(QScriptContext *ctx, QScriptEngine *eng) {
+  QString str = ctx->argument(0).toString();
+  console->append(str);
+  qApp->processEvents();
+  return eng->undefinedValue();
 }
 
-class Token {
-  byte m_tok;
-  unsigned m_pos;
-  QString m_text;
-public:
-  Token() : m_tok(0), m_text("") {}
-  Token(byte tok, unsigned pos = 0, QString text = QString()) :
-    m_tok(tok), m_pos(pos), m_text(text) {}
-  bool Is(byte tok) const {return m_tok == tok;}
-  byte Value() const {return m_tok;}
-  void SetValue(byte a) {m_tok = a;}
-  unsigned Position() const {return m_pos;}
-  QString Text() const {return m_text;}
-  void SetText(QString txt) {m_text = txt;}
-};
+static QScriptValue qtscript_fetch(QScriptContext *ctx, QScriptEngine *eng) {
+  QScriptValue url = ctx->argument(0);
+  QScriptValue filename = ctx->argument(1);
+  QScriptValue timeout = ctx->argument(2);
 
-QString TokenToString(const Token& b) {
-  switch (b.Value()) {
-  case TOK_IDENT: return "(ident)"+b.Text();
-  case TOK_NUMBER: return "(number)"+b.Text();
-  case TOK_STRING: return "(string)"+b.Text();
-  case TOK_IF: return "if";
-  case TOK_ELSE: return "else";
-  case TOK_ELSEIF: return "elseif";
-  case TOK_END: return "end";
-  case TOK_FUNCTION: return "function";
-  case TOK_RETURN: return "return";
-  case TOK_WHILE: return "while";
-  case TOK_NE: return "~=";
-  case TOK_EQ: return "==";
-  case TOK_EOF: return "eof";
-  case TOK_SAND: return "&&";
-  case TOK_SOR: return "||";
-  case TOK_FOR: return "for";
-  }
-  return QString((QChar) b.Value());
+  //   curl = curl_easy_init();
+  //   if (curl) {
+  //     curl_easy_setopt(curl, CURLOPT_URL, url.toString().toAscii().constData());
+  //     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+  //     res = curl_easy_perform(curl);
+  //     curl_easy_cleanup(curl);
+  //   }
+  //   QFile file(filename.toString());
+  //   if (!file.open(QIODevice::WriteOnly))
+  //     throw QString("unable to open output file ") + filename.toString();
+  //   URLRetriever p_url(QUrl(url.toString()),&file,timeout.toNumber());
+  //   p_url.run();
+  //   return QScriptValue(eng,!p_url.error());
+  return QScriptValue(eng,false);
 }
 
-bool isdigit(QChar a) {
-  return (a.isNumber());
+static QScriptValue qtscript_quit(QScriptContext *, QScriptEngine *eng) {
+  wantsToQuit = true;
+  return eng->undefinedValue();
 }
 
-bool isalpha(QChar a) {
-  return (a.isLetter());
-}
+static void interactive(QScriptEngine &eng)
+{
+  QScriptValue global = eng.globalObject();
+  QScriptValue quitFunction = eng.newFunction(qtscript_quit);
+  QScriptValue fetchFunction = eng.newFunction(qtscript_fetch);
+  if (!global.property(QLatin1String("exit")).isValid())
+    global.setProperty(QLatin1String("exit"), quitFunction);
+  if (!global.property(QLatin1String("quit")).isValid())
+    global.setProperty(QLatin1String("quit"), quitFunction);
+  if (!global.property(QLatin1String("fetch")).isValid())
+    global.setProperty(QLatin1String("fetch"), fetchFunction);
+  wantsToQuit = false;
 
-bool isalnumus(QChar a) {
-  return (a.isLetterOrNumber() || (a=='_'));
-}
+  QTextStream qin(stdin, QFile::ReadOnly);
 
-bool isablank(QChar a) {
-  return (a==' ' || a=='\t' || a=='\r');
-}
+  const char *qscript_prompt = "qs> ";
+  const char *dot_prompt = ".... ";
+  const char *prompt = qscript_prompt;
 
-class Scanner {
-  QString m_text;
-  int m_ptr;
-  bool m_tokValid;
-  Token m_tok;
-  int m_strlen;
-  int m_linenumber;
-protected:
-  void SetToken(byte tok, QString text = QString()) {
-    m_tok = Token(tok, m_linenumber, text);
-  }
-  QChar current() {
-    if (m_ptr < m_strlen)
-      return (m_text.at(m_ptr));
-    else
-      return 0;
-  }
-  QChar ahead(int n) {
-    if ((m_ptr+n) >= (int)(m_text.size()))
-      return 0;
-    else
-      return (m_text.at(m_ptr+n));
-  }
-  void FetchWhitespace() {
-    int len = 0;
-    while (isablank(ahead(len))) len++;
-    m_ptr += len;
-  }
-  void FetchComment() {
-    while ((current() != '\n') && (m_ptr < m_strlen))
-      m_ptr++;    
-  }
-  void FetchIdentifier() {
-    int len = 0;
-    while (isalnumus(ahead(len))) len++;
-    // Collect the identifier into a string
-    QString ident(m_text.mid(m_ptr,len));
-    if (reserved.contains(ident))
-      SetToken(reserved[ident],ident);
-    else
-      SetToken(TOK_IDENT,ident);
-    m_ptr += len;
-  }
-  void FetchNumber() {
-    int len = 0;
-    while (isdigit(ahead(len))) len++;
-    QString numtext(m_text.mid(m_ptr,len));
-    SetToken(TOK_NUMBER,numtext);
-    m_ptr += len;
-  }
-  void FetchString() {
-    int len = 0;
-    while (((ahead(len+1) != '\'') ||
-	    ((ahead(len+1) == '\'') && (ahead(len+2) == '\''))) &&
-	   (ahead(len+1) != '\n')) {
-      if ((ahead(len+1) == '\'') &&
-	  (ahead(len+2) == '\'')) len+=2;
-      else
-	len++;
+  QString code;
+
+  forever {
+    QString line;
+
+    printf("%s", prompt);
+    fflush(stdout);
+
+    line = qin.readLine();
+    if (line.isNull())
+      break;
+
+    code += line;
+    code += QLatin1Char('\n');
+
+    if (line.trimmed().isEmpty()) {
+      continue;
+
+    } else if (! eng.canEvaluate(code)) {
+      prompt = dot_prompt;
+
+    } else {
+      QScriptValue result = eng.evaluate(code, QLatin1String("typein"));
+
+      code.clear();
+      prompt = qscript_prompt;
+
+      if (! result.isUndefined())
+	fprintf(stderr, "%s\n", qPrintable(result.toString()));
+
+      if (wantsToQuit)
+	break;
     }
-    if (ahead(len+1) == '\n')
-      throw QString("unterminated string on line %1").arg(m_linenumber);
-    QString ret(m_text.mid(m_ptr+1,len));
-    ret.replace("''","'");
-    SetToken(TOK_STRING,ret);
-    m_ptr += len+2;
   }
-  bool TryFetchBinary(const char* op, byte tok) {
-    if ((current() == op[0]) && (ahead(1) == op[1])) {
-      SetToken(tok);
-      m_ptr += 2;
-      return true;
-    }
-    return false;
-  }
-  void FetchOther() {
-    if (TryFetchBinary("==",TOK_EQ)) return;
-    if (TryFetchBinary("~=",TOK_NE)) return;
-    if (TryFetchBinary("&&",TOK_SAND)) return;
-    if (TryFetchBinary("||",TOK_SOR)) return;
-    SetToken(current().toAscii());
-    m_ptr++;
-  }
-  void Fetch() {
-    if (m_ptr >= m_strlen) 
-      SetToken(TOK_EOF);
-    else if (current() == '%') 
-      FetchComment();
-    else if (isalpha(current()))
-      FetchIdentifier();
-    else if (isdigit(current()))
-      FetchNumber();
-    else if (isablank(current())) {
-      FetchWhitespace();
-      return;
-    } else if (current() == '\'')
-      FetchString();
-    else 
-      FetchOther();
-    m_tokValid = true;
-  }
-public:
-  Scanner(QString buf) : m_text(buf), m_ptr(0), m_tokValid(false), 
-			 m_tok(Token()), m_strlen(buf.size()), 
-			 m_linenumber(1) {
-    if (!reservedInitialized) InitializeReserved();
-  }
-  const Token& Next() {
-    while (!m_tokValid) {
-      Fetch();
-      if ((m_ptr < m_strlen) && (current() == '\n'))
-	m_linenumber++;
-    }
-    return m_tok;
-  }
-  void Consume() {
-    m_tokValid = false;
-  }
-};
-
-class tree_node {
-  Token node;
-  QList<tree_node*> children;
-};
-
-typedef tree_node* tree;
-
-tree mkLeaf(const Token& tok);
-
-
-class Parser {
-  Scanner &m_lex;
-};
-
-QString ReadFileToString(const char *fname) {
-  QFile file(fname);
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    return "";
-  QTextStream in(&file);
-  QString buffer;
-  while (!in.atEnd()) {
-    QString line = in.readLine();
-    buffer += line;
-  }
-  return buffer;
 }
 
-int main(int argc, const char *argv[]) {
-  if (argc < 2) return 1;
-  Scanner S(ReadFileToString(argv[1]));
-  while (!S.Next().Is(TOK_EOF)) {
-    qDebug() << TokenToString(S.Next());
-    S.Consume();
-  }
-  return 0;
+void RegisterFunction(QString name, QScriptEngine &eng, 
+		      QScriptEngine::FunctionSignature fun) {
+  QScriptValue global(eng.globalObject());
+  QScriptValue ffun = eng.newFunction(fun);
+  if (!global.property(name).isValid()) global.setProperty(name, ffun);
 }
+
+int main(int argc, char *argv[])
+{
+  QApplication qapp(argc,argv);
+  if (argc < 2) {
+    return 1;
+  }
+  QString filename(argv[1]);
+  QScriptEngine eng;
+  RegisterFunction("disp",eng,qtscript_disp);
+
+  console = new QTextBrowser;
+  console->show();
+
+  QFile file(filename);
+  QString contents;
+  if (file.open(QFile::ReadOnly)) {
+    QTextStream stream(&file);
+    contents = stream.readAll();
+    file.close();
+  }
+  if (contents.isEmpty()) 
+    return qapp.exec();
+  QScriptValue r = eng.evaluate(contents, filename);
+  if (eng.hasUncaughtException()) {
+    QStringList backtrace(eng.uncaughtExceptionBacktrace());
+    console->append(r.toString() + "\n" + 
+		    backtrace.join("\n"));
+  }
+  //  interactive(eng);
+  return qapp.exec();
+  //   QScriptEngine eng;
+  //   qDebug() << "starting interpreter...";
+  //   interactive(eng);
+ }

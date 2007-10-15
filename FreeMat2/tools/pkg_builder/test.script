@@ -1,8 +1,10 @@
-a = 32 + 56
-b = 'hello';
-c = 'goober''s';
+a = 32 + 56;
+disp("The value of a is " + a);
+b = "hello";
+c = "goobers";
 g = (a || b);
-if (a == b)
+if (a == b) {
   c = b;
-end
+}
+disp("The value of c is " + c);
 

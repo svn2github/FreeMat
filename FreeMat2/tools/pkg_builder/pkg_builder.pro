@@ -8,4 +8,5 @@ DEPENDPATH += .
 INCLUDEPATH += . 
 # Input
 SOURCES += pkg_builder.cpp
-
+HEADERS += pkg_builder.hpp
+QT += script network

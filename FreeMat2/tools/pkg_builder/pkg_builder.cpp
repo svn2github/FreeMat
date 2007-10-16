@@ -35,6 +35,11 @@ void OutputConsoleText(QString txt) {
   }
 }
 
+static QScriptValue qtscript_mkdir(QScriptContext *ctx, QScriptEngine *eng) {
+  QString path = ctx->argument(0).toString();
+  return QScriptValue(eng,QDir::current()->mkpath(path));
+}
+
 static QScriptValue qtscript_sys(QScriptContext *ctx, QScriptEngine *eng) {
   QString cmd = ctx->argument(0).toString();
   QProcess toRun;

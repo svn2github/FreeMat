@@ -9,12 +9,61 @@
 #include <QtGui>
 
 QTextBrowser *console;
-
+static bool shouldErase = false;
 static bool wantsToQuit;
+
+void OutputConsoleText(QString txt) {
+  txt.replace("\r\n","\n");
+  for (int i=0;i<txt.size();i++) {
+    if (txt.at(i) == '\r') {
+      console->moveCursor(QTextCursor::StartOfLine);
+      shouldErase = true;
+    } else if (txt.at(i) == '\n') {
+      console->append("");
+      shouldErase = false;
+    } else {
+      if (shouldErase) {
+	QTextCursor cursor(console->textCursor());
+	cursor.movePosition(QTextCursor::EndOfLine,
+			    QTextCursor::KeepAnchor);
+	
+	cursor.removeSelectedText();
+	shouldErase = false;
+      }
+      console->textCursor().insertText(txt.at(i));
+    }
+  }
+}
+
+static QScriptValue qtscript_sys(QScriptContext *ctx, QScriptEngine *eng) {
+  QString cmd = ctx->argument(0).toString();
+  QProcess toRun;
+#ifdef Q_OS_WIN32
+  char shellCmd[_MAX_PATH];
+  if( !GetEnvironmentVariable("ComSpec", shellCmd, _MAX_PATH) )
+    throw Exception("Unable to find command shell!");
+  cmd = QString(shellCmd) + " /a /c " + QString(cmd);
+#else
+  cmd = QString("sh -c \"") + cmd + QString("\"");
+#endif
+  OutputConsoleText(cmd + "\n");
+  toRun.start(cmd);
+  if (!toRun.waitForStarted())
+    return QScriptValue(eng,-1);
+  toRun.closeWriteChannel();
+  while (!toRun.waitForFinished(100)) {
+    OutputConsoleText(toRun.readAllStandardOutput());
+    OutputConsoleText(toRun.readAllStandardError());
+    qApp->processEvents();
+  }
+  OutputConsoleText(toRun.readAllStandardOutput());
+  OutputConsoleText(toRun.readAllStandardError());
+  return QScriptValue(eng,toRun.exitCode());
+}
 
 static QScriptValue qtscript_disp(QScriptContext *ctx, QScriptEngine *eng) {
   QString str = ctx->argument(0).toString();
-  console->append(str);
+  OutputConsoleText(str);
   qApp->processEvents();
   return eng->undefinedValue();
 }
@@ -116,8 +165,12 @@ int main(int argc, char *argv[])
   QString filename(argv[1]);
   QScriptEngine eng;
   RegisterFunction("disp",eng,qtscript_disp);
+  RegisterFunction("sys",eng,qtscript_sys);  
+  RegisterFunction("quit",eng,qtscript_quit);
 
   console = new QTextBrowser;
+  console->setFont(QFont("Courier",10));
+  console->resize(640,480);
   console->show();
 
   QFile file(filename);
@@ -132,8 +185,8 @@ int main(int argc, char *argv[])
   QScriptValue r = eng.evaluate(contents, filename);
   if (eng.hasUncaughtException()) {
     QStringList backtrace(eng.uncaughtExceptionBacktrace());
-    console->append(r.toString() + "\n" + 
-		    backtrace.join("\n"));
+    OutputConsoleText(r.toString() + "\n" + 
+		      backtrace.join("\n"));
   }
   //  interactive(eng);
   return qapp.exec();

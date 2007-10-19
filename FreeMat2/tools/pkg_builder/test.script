@@ -10,6 +10,8 @@ disp("The value of c is " + c + "\n");
 //sys("echo Hello World");
 //sys("wget http://www.google.com/index.html");
 //sys("curl -L -O http://www.google.com/index.html");
-code = sys("curl -L -O http://downloads.sf.net/freemat/FreeMat-3.9.tar.gz");
-disp("Return code is " + code + "\n");
+//code = sys("curl -L -O http://downloads.sf.net/freemat/FreeMat-3.9.tar.gz");
+//disp("Return code is " + code + "\n");
+//
+fetch("http://downloads.sf.net/freemat/FreeMat-3.5.tar.gz","test.tgz",150000);
 quit();

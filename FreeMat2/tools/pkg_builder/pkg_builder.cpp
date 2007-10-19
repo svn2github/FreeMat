@@ -7,6 +7,7 @@
 #include <QtScript>
 #include <QtNetwork>
 #include <QtGui>
+#include "pkg_builder.hpp"
 
 QTextBrowser *console;
 static bool shouldErase = false;
@@ -37,7 +38,7 @@ void OutputConsoleText(QString txt) {
 
 static QScriptValue qtscript_mkdir(QScriptContext *ctx, QScriptEngine *eng) {
   QString path = ctx->argument(0).toString();
-  return QScriptValue(eng,QDir::current()->mkpath(path));
+  return QScriptValue(eng,QDir::current().mkpath(path));
 }
 
 static QScriptValue qtscript_sys(QScriptContext *ctx, QScriptEngine *eng) {
@@ -74,10 +75,9 @@ static QScriptValue qtscript_disp(QScriptContext *ctx, QScriptEngine *eng) {
 }
 
 static QScriptValue qtscript_fetch(QScriptContext *ctx, QScriptEngine *eng) {
-  QScriptValue url = ctx->argument(0);
+  QString url = ctx->argument(0).toString();
   QScriptValue filename = ctx->argument(1);
   QScriptValue timeout = ctx->argument(2);
-
   //   curl = curl_easy_init();
   //   if (curl) {
   //     curl_easy_setopt(curl, CURLOPT_URL, url.toString().toAscii().constData());
@@ -85,17 +85,34 @@ static QScriptValue qtscript_fetch(QScriptContext *ctx, QScriptEngine *eng) {
   //     res = curl_easy_perform(curl);
   //     curl_easy_cleanup(curl);
   //   }
-  //   QFile file(filename.toString());
-  //   if (!file.open(QIODevice::WriteOnly))
-  //     throw QString("unable to open output file ") + filename.toString();
-  //   URLRetriever p_url(QUrl(url.toString()),&file,timeout.toNumber());
-  //   p_url.run();
-  //   return QScriptValue(eng,!p_url.error());
+  QFile file(filename.toString());
+  if (!file.open(QIODevice::WriteOnly))
+    throw QString("unable to open output file ") + filename.toString();
+  int retry_count = 0;
+  bool success = false;
+  bool explicitFailure = false;
+  while (!explicitFailure && !success && (retry_count < 5)) {
+    qDebug() << "URL:" << url;
+    URLRetriever p_url(QUrl(url),&file,timeout.toNumber());
+    p_url.run();
+    if (p_url.follow()) {
+      url = p_url.forwardAddress();
+    } else {
+      explicitFailure = p_url.error();
+      success = !explicitFailure;
+    }
+    retry_count++;
+  }
+  if (!success) 
+    qDebug() << "Failed\n";
+  else
+    qDebug() << "Success\n";
+  //  return QScriptValue(eng,!p_url.error());
   return QScriptValue(eng,false);
 }
 
 static QScriptValue qtscript_quit(QScriptContext *, QScriptEngine *eng) {
-  wantsToQuit = true;
+  qApp->exit();
   return eng->undefinedValue();
 }
 
@@ -171,6 +188,7 @@ int main(int argc, char *argv[])
   QScriptEngine eng;
   RegisterFunction("disp",eng,qtscript_disp);
   RegisterFunction("sys",eng,qtscript_sys);  
+  RegisterFunction("fetch",eng,qtscript_fetch);  
   RegisterFunction("quit",eng,qtscript_quit);
 
   console = new QTextBrowser;

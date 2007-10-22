@@ -20,7 +20,11 @@ class URLRetriever : public QObject
   int m_currentLength;
 public:
   URLRetriever(QUrl url, QFile *file, double timeout) :
-    m_url(url), m_file(file), m_timeout(timeout), m_err(true) {}
+    m_url(url), m_file(file), m_timeout(timeout), m_err(true) {
+    qDebug() << "URL: " << url;
+    qDebug() << "  valid: " << url.isValid();
+    qDebug() << " string: " << url.toString();
+  }
   bool error() {
     return m_err;
   }

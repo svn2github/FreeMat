@@ -152,7 +152,7 @@ public:
 class AnonymousFunctionDef : public FunctionDef {
   VariableTable workspace;
 public:
-  tree code;
+  CodeBlock code;
   AnonymousFunctionDef();
   ~AnonymousFunctionDef();
   virtual const FunctionType type() {return FM_ANONYMOUS_FUNCTION;}
@@ -160,7 +160,7 @@ public:
   virtual int inputArgCount();
   virtual int outputArgCount();
   virtual ArrayVector evaluateFunction(Interpreter *, ArrayVector&, int);
-  void initialize(const tree &t, Interpreter *);
+  void initialize(Tree *t, Interpreter *);
 };
 
 /**
@@ -186,7 +186,7 @@ public:
    * The AST for the code that defines the function (only the body of the
    * function is contained in this AST, not the function declaration itself).
    */
-  tree code;
+  CodeBlock code;
   /**
    * Flag to indicate if the function has been compiled.
    */
@@ -386,7 +386,7 @@ public:
   /**
    * The guard expressions associated with each argument
    */
-  treeVector sizeCheckExpressions;
+  TreeList sizeCheckExpressions;
   /**
    * The return type of the function
    */
@@ -397,7 +397,7 @@ public:
   ImportedFunctionDef(GenericFuncPointer address_arg,
 		      stringVector types_arg,
 		      stringVector arguments_arg,
-		      treeVector sizeChecks,
+		      TreeList sizeChecks,
 		      std::string retType_arg);
   /**
    * Default destructor

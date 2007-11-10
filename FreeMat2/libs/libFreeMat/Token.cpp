@@ -39,7 +39,7 @@ Token::Token() {
   m_tok = TOK_INVALID;
 }
 
-bool Token::IsBinaryOperator() const {
+bool Token::isBinaryOperator() const {
   return ((m_tok == '+') || (m_tok == '-') ||
 	  (m_tok == '*') || (m_tok == '/') ||
 	  (m_tok == '\\') || (m_tok == '^') ||
@@ -53,29 +53,29 @@ bool Token::IsBinaryOperator() const {
 	  (m_tok == '&'));
 }
 
-bool Token::IsUnaryOperator() const {
+bool Token::isUnaryOperator() const {
   return ((m_tok == '+') || (m_tok == '-') || (m_tok == '~')
 	  || (m_tok == TOK_UNARY_MINUS) || 
 	  (m_tok == TOK_UNARY_PLUS));
 }
 
 
-bool Token::IsRightAssociative() const {
+bool Token::isRightAssociative() const {
   return (m_tok == '^');
 }
 
 ostream& operator<<(ostream& o, const Token& b) {
-  o << TokenToString(b) << " (" << (b.Position() >> 16)
-    << "," << (b.Position() & 0xffff) << ")\r\n";
+  o << TokenToString(b) << " (" << (b.position() >> 16)
+    << "," << (b.position() & 0xffff) << ")\r\n";
   return o;
 }
 
 string TokenToString(const Token& b) {
-  switch(b.Value()) {
-  case TOK_IDENT: return "(ident)"+b.Text();
-  case TOK_NUMBER: return b.Text();
+  switch(b.value()) {
+  case TOK_IDENT: return "(ident)"+b.text();
+  case TOK_NUMBER: return b.text();
   case TOK_SPACE: return "space";
-  case TOK_STRING: return "(string)"+b.Text();
+  case TOK_STRING: return "(string)"+b.text();
   case TOK_KEYWORD: return "keyword";
   case TOK_BREAK: return "break";
   case TOK_CASE: return "case";
@@ -127,38 +127,38 @@ string TokenToString(const Token& b) {
   case TOK_SAND: return "&&";
   case TOK_QSTATEMENT: return "qstmnt";
   case TOK_STATEMENT: return "stmnt";
-  case TOK_INTEGER: return "(int)" + b.Text();
-  case TOK_FLOAT: return "(float)" + b.Text();
-  case TOK_DOUBLE: return "(double)" + b.Text();
-  case TOK_COMPLEX: return "(complex)" + b.Text();
-  case TOK_DCOMPLEX: return "(dcomplex)" + b.Text();
+  case TOK_INTEGER: return "(int)" + b.text();
+  case TOK_FLOAT: return "(float)" + b.text();
+  case TOK_DOUBLE: return "(double)" + b.text();
+  case TOK_COMPLEX: return "(complex)" + b.text();
+  case TOK_DCOMPLEX: return "(dcomplex)" + b.text();
   case TOK_FUNCTION_DEFS: return "functions:";
   case TOK_SCRIPT: return "script:";
   case TOK_DBTRACE: return "dbtrace";
   case TOK_ANONYMOUS_FUNC: return "anon func";
   case TOK_NEST_FUNC: return "nest func";
   }
-  return string(1,(char) b.Value());
+  return string(1,(char) b.value());
 }
 
-void FreezeToken(const Token& a, Serialize *s) {
-  s->putByte(a.m_tok);
-  s->putInt(a.m_pos);
-  s->putString(a.m_text.c_str());
+void Token::freeze(Serialize *s) const {
+  s->putByte(m_tok);
+  s->putInt(m_pos);
+  s->putString(m_text);
 }
 
-Token ThawToken(Serialize *s) {
-  Token a;
-  a.m_tok = s->getByte();
-  a.m_pos = s->getInt();
-  a.m_text = s->getString();
-  a.FillArray();
-  return a;
+Token::Token(Serialize *s) {
+  m_tok = s->getByte();
+  m_pos = s->getInt();
+  m_text = s->getString();
+  fillArray();
 }
 
-void Token::FillArray() {
+void Token::fillArray() {
   Array retval;
   switch(m_tok) {
+  default:
+    return;
   case TOK_INTEGER:
     long iv;
     double fv;

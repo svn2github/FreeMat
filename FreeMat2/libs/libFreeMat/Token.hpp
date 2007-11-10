@@ -93,22 +93,21 @@ class Token {
 public:
   Token();
   Token(byte tok, unsigned pos = 0, string text = string());
-  bool Is(byte tok) const {return m_tok == tok;}
-  bool IsBinaryOperator() const;
-  bool IsUnaryOperator() const;
-  unsigned Precedence() const;
-  bool IsRightAssociative() const;
-  byte Value() const {return m_tok;}
-  void SetValue(byte a) {m_tok = a;}
-  unsigned Position()  const {return m_pos;}
-  string Text()  const {return m_text;}
-  void SetText(string txt) {m_text = txt;}
-  Array GetArray() const {return m_array;}
-  void FillArray();
-  void Print(ostream& o) const;
-
-  friend void FreezeToken(const Token& a, Serialize *s);
-  friend Token ThawToken(Serialize *s);
+  Token(Serialize *s);
+  void freeze(Serialize *s) const;
+  bool is(byte tok) const {return m_tok == tok;}
+  bool isBinaryOperator() const;
+  bool isUnaryOperator() const;
+  unsigned precedence() const;
+  bool isRightAssociative() const;
+  byte value() const {return m_tok;}
+  void setValue(byte a) {m_tok = a;}
+  unsigned position()  const {return m_pos;}
+  string text()  const {return m_text;}
+  void setText(string txt) {m_text = txt;}
+  Array array() const {return m_array;}
+  void fillArray();
+  void print(ostream& o) const;
 };
 
 string TokenToString(const Token& b);

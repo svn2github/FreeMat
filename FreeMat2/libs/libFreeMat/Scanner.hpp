@@ -23,40 +23,40 @@ class Scanner {
   byte current();
   byte previous();
   byte ahead(int n);
-  void Fetch();
-  void FetchWhitespace();
-  void FetchIdentifier();
-  void FetchComment();
-  void FetchContinuation();
-  void FetchNumber();
-  void FetchString();
-  void FetchBlob();
-  void FetchOther();
-  bool TryFetchBinary(const char* op, byte tok);
-  void SetToken(byte tok, string text = string());
+  void fetch();
+  void fetchWhitespace();
+  void fetchIdentifier();
+  void fetchComment();
+  void fetchContinuation();
+  void fetchNumber();
+  void fetchString();
+  void fetchBlob();
+  void fetchOther();
+  bool tryFetchBinary(const char* op, byte tok);
+  void setToken(byte tok, string text = string());
   bool isBreakpointLine(int num);
   void deleteBreakpoint(int num);
 public:
   Scanner(string buf, string fname);
   // Methods accessed by the parser
-  const Token& Next();
-  void Consume();
-  bool Match(byte tok);
-  void SetDebug(bool debugFlag) {m_debugFlag = debugFlag;}
+  const Token& next();
+  void consume();
+  bool match(byte tok);
+  void setDebug(bool debugFlag) {m_debugFlag = debugFlag;}
   // Warning: Ugly Hack.  When in Special Call mode, the
   // rules for what constitutes a string change completely.
-  void SetBlobMode(bool blobFlag) {m_blobFlag = blobFlag;}
-  void PushWSFlag(bool ignoreWS);
-  void PopWSFlag();
-  bool Done();
-  bool Peek(int chars, byte tok);
-  unsigned Position() {return m_ptr;}
-  unsigned ContextNum();
-  string Context(unsigned pos);
-  string Context();
-  string Snippet(unsigned pos1, unsigned pos2);
-  bool InContinuationState();
-  bool InBracket();
+  void setBlobMode(bool blobFlag) {m_blobFlag = blobFlag;}
+  void pushWSFlag(bool ignoreWS);
+  void popWSFlag();
+  bool done();
+  bool peek(int chars, byte tok);
+  unsigned position() {return m_ptr;}
+  unsigned contextNum();
+  string context(unsigned pos);
+  string context();
+  string snippet(unsigned pos1, unsigned pos2);
+  bool inContinuationState();
+  bool inBracket();
 };
 
 #endif

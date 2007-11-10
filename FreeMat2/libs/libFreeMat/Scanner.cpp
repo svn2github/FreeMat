@@ -8,28 +8,27 @@
 extern string fm_reserved[];
 extern int fm_reserved_count;
 
-
-bool isalnumus(byte a) {
+static bool isalnumus(byte a) {
   return (isalnum(a) || (a=='_'));
 }
 
-bool isablank(byte a) {
+static bool isablank(byte a) {
   return (a==' ' || a=='\t' || a=='\r');
 }
 
-unsigned Scanner::ContextNum() {
+unsigned Scanner::contextNum() {
   return (m_ptr << 16 | m_linenumber);
 }
 
-void Scanner::SetToken(byte tok, string text) {
+void Scanner::setToken(byte tok, string text) {
   m_tok = Token(tok,m_ptr << 16 | m_linenumber,text);
 }
 
-bool Scanner::Done() {
+bool Scanner::done() {
   return (m_ptr >= (int)(m_text.size()));
 }
 
-bool Scanner::Peek(int chars, byte tok) {
+bool Scanner::peek(int chars, byte tok) {
   return (ahead(chars) == tok);
 }
 
@@ -47,7 +46,7 @@ Scanner::Scanner(string buf, string fname) {
   m_blobFlag = false;
 }
 
-void Scanner::FetchContinuation() {
+void Scanner::fetchContinuation() {
   m_ptr += 3;
   while ((current() != '\n') && (m_ptr < m_strlen))
     m_ptr++;
@@ -58,69 +57,69 @@ void Scanner::FetchContinuation() {
   m_inContinuationState = true;
 }
 
-void Scanner::Fetch() {
+void Scanner::fetch() {
   if (m_ptr >= m_strlen)
-    SetToken(TOK_EOF);
+    setToken(TOK_EOF);
   else if (current() == '%') {
-    FetchComment();
+    fetchComment();
     return;
   } else if ((current() == '.') && 
 	     (ahead(1) == '.') &&
 	     (ahead(2) == '.')) {
-    FetchContinuation();
+    fetchContinuation();
     return;
   } else if (m_blobFlag && !isablank(current()) && 
 	     (current() != '\n') && (current() != ';') &&
 	     (current() != ',') && (current() != '\'') &&
 	     (current() != '%')) 
-    FetchBlob();
+    fetchBlob();
   else if (isalpha(current()))
-    FetchIdentifier();
+    fetchIdentifier();
   else if (isdigit(current()) || ((current() == '.') && isdigit(ahead(1))))
-    FetchNumber();
+    fetchNumber();
   else if (isablank(current())) {
-    FetchWhitespace();
+    fetchWhitespace();
     if (m_ignorews.top()) return;
   } else if ((current() == '\'') && !((previous() == '\'') ||
 				      (previous() == ')') ||
 				      (previous() == ']') ||
 				      (previous() == '}') ||
 				      (isalnumus(previous())))) {
-    FetchString();
+    fetchString();
   } else
-    FetchOther();
+    fetchOther();
   m_tokValid = true;
 }
 
-bool Scanner::TryFetchBinary(const char* op, byte tok) {
+bool Scanner::tryFetchBinary(const char* op, byte tok) {
   if ((current() == op[0]) && (ahead(1) == op[1])) {
-    SetToken(tok);
+    setToken(tok);
     m_ptr += 2;
     return true;
   }
   return false;
 }
 
-void Scanner::FetchComment() {
+void Scanner::fetchComment() {
   while ((current() != '\n') && (m_ptr < m_strlen))
     m_ptr++;
 }
 
-void Scanner::FetchOther() {
+void Scanner::fetchOther() {
   if (current() == '.') {
-    if (TryFetchBinary(".*",TOK_DOTTIMES)) return;
-    if (TryFetchBinary("./",TOK_DOTRDIV)) return;
-    if (TryFetchBinary(".\\",TOK_DOTLDIV)) return;
-    if (TryFetchBinary(".^",TOK_DOTPOWER)) return;
-    if (TryFetchBinary(".'",TOK_DOTTRANSPOSE)) return;
+    if (tryFetchBinary(".*",TOK_DOTTIMES)) return;
+    if (tryFetchBinary("./",TOK_DOTRDIV)) return;
+    if (tryFetchBinary(".\\",TOK_DOTLDIV)) return;
+    if (tryFetchBinary(".^",TOK_DOTPOWER)) return;
+    if (tryFetchBinary(".'",TOK_DOTTRANSPOSE)) return;
   }
-  if (TryFetchBinary("<=",TOK_LE)) return;
-  if (TryFetchBinary(">=",TOK_GE)) return;
-  if (TryFetchBinary("==",TOK_EQ)) return;
-  if (TryFetchBinary("~=",TOK_NE)) return;
-  if (TryFetchBinary("&&",TOK_SAND)) return;
-  if (TryFetchBinary("||",TOK_SOR)) return;
-  SetToken(m_text[m_ptr]);
+  if (tryFetchBinary("<=",TOK_LE)) return;
+  if (tryFetchBinary(">=",TOK_GE)) return;
+  if (tryFetchBinary("==",TOK_EQ)) return;
+  if (tryFetchBinary("~=",TOK_NE)) return;
+  if (tryFetchBinary("&&",TOK_SAND)) return;
+  if (tryFetchBinary("||",TOK_SOR)) return;
+  setToken(m_text[m_ptr]);
   if (m_text[m_ptr] == '[')
     m_bracketDepth++;
   if (m_text[m_ptr] == ']')
@@ -132,7 +131,7 @@ void Scanner::FetchOther() {
   m_ptr++;
 }
 
-void Scanner::FetchString() {
+void Scanner::fetchString() {
   int len = 0;
   // We want to advance, but skip double quotes
   //  while ((next() != ') || ((next() == ') && (next(2) == ')) && (next() != '\n')
@@ -145,21 +144,21 @@ void Scanner::FetchString() {
       len++;
   }
   if (ahead(len+1) == '\n')
-    throw Exception("unterminated string" + Context());
+    throw Exception("unterminated string" + context());
   string ret(m_text,m_ptr+1,len);
   string::size_type ndx = ret.find("''");
   while (ndx != string::npos) {
     ret.erase(ndx,1);
     ndx = ret.find("''");
   }
-  SetToken(TOK_STRING,ret);
+  setToken(TOK_STRING,ret);
   m_ptr += len+2;
 }
 
-void Scanner::FetchWhitespace() {
+void Scanner::fetchWhitespace() {
   int len = 0;
   while (isablank(ahead(len))) len++;
-  SetToken(TOK_SPACE);
+  setToken(TOK_SPACE);
   m_ptr += len;
 }
 
@@ -183,7 +182,7 @@ typedef enum {
   dcomplex_class
 } number_class;
 
-void Scanner::FetchNumber() {
+void Scanner::fetchNumber() {
   int len = 0;
   int lookahead = 0;
   number_class numclass;
@@ -245,33 +244,33 @@ void Scanner::FetchNumber() {
     m_ptr++;
   switch (numclass) {
   case integer_class:
-    SetToken(TOK_INTEGER,numtext);
+    setToken(TOK_INTEGER,numtext);
     return;
   case float_class:
-    SetToken(TOK_FLOAT,numtext);
+    setToken(TOK_FLOAT,numtext);
     return;
   case double_class:
-    SetToken(TOK_DOUBLE,numtext);
+    setToken(TOK_DOUBLE,numtext);
     return;
   case complex_class:
-    SetToken(TOK_COMPLEX,numtext);
+    setToken(TOK_COMPLEX,numtext);
     return;
   case dcomplex_class:
-    SetToken(TOK_DCOMPLEX,numtext);
+    setToken(TOK_DCOMPLEX,numtext);
     return;
   }
 }
 
-void Scanner::FetchIdentifier() {
+void Scanner::fetchIdentifier() {
   int len = 0;
   while (isalnumus(ahead(len))) len++;
   // Collect the identifier into a string
   string ident(string(m_text,m_ptr,len));
   string *p = lower_bound(fm_reserved,fm_reserved+fm_reserved_count,ident);
   if ((p!= fm_reserved+fm_reserved_count) && (*p == ident))
-    SetToken(TOK_KEYWORD+(p-fm_reserved)+1);
+    setToken(TOK_KEYWORD+(p-fm_reserved)+1);
   else
-    SetToken(TOK_IDENT,string(m_text,m_ptr,len));
+    setToken(TOK_IDENT,string(m_text,m_ptr,len));
   m_ptr += len;
 }
 
@@ -279,9 +278,9 @@ void Scanner::FetchIdentifier() {
 //   1.  A regular string (with quote delimiters)
 //   2.  A sequence of characters with either a whitespace
 //       a comma or a colon.
-void Scanner::FetchBlob() {
+void Scanner::fetchBlob() {
   if (current() == '\'') {
-    FetchString();
+    fetchString();
     m_tokValid = true;
   } else {
     int len = 0;
@@ -289,35 +288,35 @@ void Scanner::FetchBlob() {
 	   (ahead(len) != '%') && (ahead(len) != ',') &&
 	   (ahead(len) != ';')) len++;
     if (len > 0) {
-      SetToken(TOK_STRING,string(m_text,m_ptr,len));
+      setToken(TOK_STRING,string(m_text,m_ptr,len));
       m_ptr += len;
       m_tokValid = true;    
     } 
   }
 }
 
-const Token& Scanner::Next() {
+const Token& Scanner::next() {
   while (!m_tokValid) {
-    Fetch();
+    fetch();
     if (m_tokValid && m_debugFlag)
       cout << m_tok;
     if ((m_ptr < m_strlen) && (current() == '\n'))
       m_linenumber++;
   }
-  if (m_inContinuationState && m_tokValid && !m_tok.Is(TOK_EOF))
+  if (m_inContinuationState && m_tokValid && !m_tok.is(TOK_EOF))
     m_inContinuationState = false;
   return m_tok;
 }
 
-bool Scanner::InContinuationState() {
+bool Scanner::inContinuationState() {
   return m_inContinuationState;
 }
 
-bool Scanner::InBracket() {
+bool Scanner::inBracket() {
   return (m_bracketDepth>0);
 }
 
-void Scanner::Consume() {
+void Scanner::consume() {
   m_tokValid = false;
 }
 
@@ -335,11 +334,11 @@ byte Scanner::previous() {
     return 0;
 }
 
-void Scanner::PushWSFlag(bool ignoreWS) {
+void Scanner::pushWSFlag(bool ignoreWS) {
   m_ignorews.push(ignoreWS);
 }
 
-void Scanner::PopWSFlag() {
+void Scanner::popWSFlag() {
   m_ignorews.pop();
 }
 
@@ -350,23 +349,23 @@ byte Scanner::ahead(int n) {
     return m_text.at(m_ptr+n);
 }
 
-string Scanner::Context() {
-  return Context(ContextNum());
+string Scanner::context() {
+  return context(contextNum());
 }
 
-string stringFromNumber(unsigned line) {
+static string stringFromNumber(unsigned line) {
   char buffer[1000];
   sprintf(buffer,"%d",line);
   return string(buffer);
 }
 
-string Scanner::Snippet(unsigned pos1, unsigned pos2) {
+string Scanner::snippet(unsigned pos1, unsigned pos2) {
   unsigned ptr1 = pos1 >> 16;
   unsigned ptr2 = pos2 >> 16;
   return string(m_text,ptr1,ptr2-ptr1+1);
 }
 
-string Scanner::Context(unsigned pos) {
+string Scanner::context(unsigned pos) {
   pos = pos >> 16;
   string::size_type line_start = 0;
   int linenumber = 1;

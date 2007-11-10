@@ -3881,10 +3881,10 @@ ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   QString scriptText(fstr.readAll());
   Scanner S(scriptText.toStdString(),filename);
   Parser P(S);
-  tree pcode = P.Process();
-  if (pcode.is(TOK_FUNCTION_DEFS))
+  CodeBlock pcode(P.process());
+  if (pcode.tree()->is(TOK_FUNCTION_DEFS))
     throw Exception("only scripts can be source-ed, not functions");
-  tree code = pcode.first();
+  Tree *code = pcode.tree()->first();
   eval->block(code);
   return ArrayVector();
 }
@@ -4127,7 +4127,7 @@ ArrayVector DoCLIFunction(int nargout, const ArrayVector& arg, Interpreter* eval
     funcDef->updateCode(eval);
     if (funcDef->scriptFlag) {
       try {
-	eval->block(((MFunctionDef*)funcDef)->code);
+	eval->block(((MFunctionDef*)funcDef)->code.tree());
       } catch (Exception& e) {
 	eval->errorMessage("Startup script error:\n" + e.getMessageCopy());
       }

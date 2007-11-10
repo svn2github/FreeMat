@@ -4,66 +4,82 @@
 #include <string>
 #include "Token.hpp"
 #include "Array.hpp"
-#include <QSharedData>
-#include <QSharedDataPointer>
 
-using namespace std;
+// A rewrite of the tree class (yet again).  The lesson learned this time is that we want the
+// tree class to be as fast as possible.  And that we want to be able to tag the tree with profile
+// information.
+class Tree;
 
+typedef QList<Tree*> TreeList;
 
-class tree;
-class Serialize;
-
-typedef QList<tree> treeVector;
-
-class tree_node : public QSharedData {
+class Tree {
+  Token m_node;
+  TreeList m_children;
 public:
-  Token node;
-  treeVector children;
+  Tree(): m_node(TOK_INVALID) {}
+  Tree(const Token& tok) : m_node(tok) {m_node.fillArray();}
+  Tree(byte token, unsigned position) : m_node(Token(token,position)) {}
+  Tree(const Token& tok, Tree* child1, Tree* child2) : m_node(tok) {
+    m_children.push_back(child1);
+    m_children.push_back(child2);
+  }
+  Tree(const Token& tok, Tree* child1) : m_node(tok) {
+    m_children.push_back(child1);
+  }
+  Tree(Serialize *s);
+  ~Tree() {
+    for (int i=0;i<m_children.size();i++) delete m_children.at(i);
+  }
+  inline const Token& node() const {return m_node;}
   void print() const;
-  void Rename(byte newtok);
-  unsigned context() const {return node.Position();}
-  tree_node();
-};
-
-class tree {
-private:
-  QSharedDataPointer<tree_node> tptr;
-public:
-  tree();
-  tree(const Token& tok);
-  void print() const;
-  inline void Rename(byte newtok) {tptr->Rename(newtok);}
-  inline bool valid() const {return !(tptr->node.Is(TOK_INVALID));}
-  //  void operator=(const tree &copy);
-  bool operator==(const tree &copy);
-  inline unsigned context() const {if (valid()) return tptr->context(); else return 0;}
-  inline tree first() const {if (valid()) return tptr->children.front(); else return tree();}
-  inline tree second() const {return child(1);}
+  inline void rename(byte newtok) {m_node.setValue(newtok);}
+  inline unsigned context() const {return m_node.position();}
+  inline bool valid() const {return !(m_node.is(TOK_INVALID));}
+  bool operator== (const Tree &copy) const;
+  inline Tree* first() const {return m_children.front();}
+  inline Tree* second() const {return m_children.at(1);}
   inline bool is(byte tok) const {return (token()==tok);}
-  inline byte token() const {if (valid()) return tptr->node.Value(); else return 0;}
-  inline int numchildren() const {if (valid()) return tptr->children.size(); else return 0;}
-  inline bool haschildren() const {return numchildren() > 0;}
-  inline string text() const {if (valid()) return tptr->node.Text(); else return std::string();}
-  inline Array array() const {if (valid()) return tptr->node.GetArray(); else return Array();}
-  inline const treeVector& children() const {return tptr->children;}
-  inline tree last() const {if (valid()) return tptr->children.back(); else return tree();}
-  inline tree child(unsigned n) const {if (valid()) return tptr->children.at(n); else return tree();}
-  inline Token& node() {return tptr->node;}
-  inline const Token& node() const {return tptr->node;}
-  inline void addChild(const tree &t_child) {tptr->children.push_back(t_child);}
+  inline byte token() const {return m_node.value();}
+  inline int numChildren() const {return m_children.size();}
+  inline bool hasChildren() const {return (m_children.size()>0);}
+  inline string text() const {return m_node.text();}
+  inline void setText(string t) {m_node.setText(t);}
+  inline Array array() const {return m_node.array();}
+  inline const TreeList& children() const {return m_children;}
+  inline Tree* last() const {return m_children.back();}
+  inline Tree* child(unsigned n) const {return m_children.at(n);}
+  inline Token& node() {return m_node;}
+  inline void addChild(Tree *t_child) {m_children.push_back(t_child);}
+  inline void addChildren(Tree *child1, Tree *child2) {
+    m_children.push_back(child1);
+    m_children.push_back(child2);
+  }
+  void freeze(Serialize *s) const;
+  static Tree* deepTreeCopy(Tree *t) {
+    Tree *p = new Tree(t->m_node);
+    for (int i=0;i<t->m_children.size();i++)
+      p->addChild(Tree::deepTreeCopy(t->m_children.at(i)));
+    return p;
+  }
 };
 
-tree mkLeaf(const Token& tok);
-tree mkLeafWithLiterals(const Token& tok);
-tree mkLeaf(byte a, unsigned pos);
-tree mkNode(const Token& tok, tree arg1, tree arg2);
-tree mkNode(const Token& tok, tree arg1);
-tree first(tree root);
-tree second(tree root); 
-void addChild(tree &root, tree child);
-void addChild(tree &root, tree child1, tree child2);
-
-void FreezeTree(tree root, Serialize *s);
-tree ThawTree(Serialize *s);
+class CodeBlock {
+  Tree* m_tree;
+public:
+  inline CodeBlock(Tree *t, bool needClone = false) : m_tree(t) {if (needClone) clone();}
+  inline CodeBlock(const CodeBlock& copy) {m_tree = copy.m_tree; clone();}
+  inline CodeBlock() : m_tree(NULL) {}
+  inline CodeBlock& operator=(const CodeBlock& copy) {
+    if (this == &copy)
+      return *this;
+    delete m_tree;
+    m_tree = copy.m_tree;
+    clone();
+    return *this;
+  }
+  inline Tree* tree() {return m_tree;}
+  inline ~CodeBlock() {delete m_tree;}
+  inline void clone() {m_tree = Tree::deepTreeCopy(m_tree);}
+};
 
 #endif

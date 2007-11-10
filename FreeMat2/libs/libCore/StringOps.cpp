@@ -232,6 +232,7 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
 //[start,stop,tokenExtents,match,tokens,named] = regexp('quick down town zoo','(.)own')
 //@>
 //!
+#if HAVE_PCRE
 static bool isSlotSpec(string t) {
   return ((t == "start") ||
 	  (t == "end") ||
@@ -240,6 +241,7 @@ static bool isSlotSpec(string t) {
 	  (t == "tokens") ||
 	  (t == "names"));
 }
+#endif
 
 ArrayVector RegExpCoreFunction(rvstring stringed_args, bool defaultMatchCase) {
 #if HAVE_PCRE

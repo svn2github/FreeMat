@@ -21,10 +21,6 @@
 #include "JITVM.hpp"
 #endif
 
-#ifdef HAVE_PROFILE
-#include "fftw_cycle.h"
-#endif
-
 #include "Interpreter.hpp"
 #include <math.h>
 #include <stdio.h>

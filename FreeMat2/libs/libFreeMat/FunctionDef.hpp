@@ -386,7 +386,7 @@ public:
   /**
    * The guard expressions associated with each argument
    */
-  TreeList sizeCheckExpressions;
+  CodeList sizeCheckExpressions;
   /**
    * The return type of the function
    */
@@ -397,7 +397,7 @@ public:
   ImportedFunctionDef(GenericFuncPointer address_arg,
 		      stringVector types_arg,
 		      stringVector arguments_arg,
-		      TreeList sizeChecks,
+		      CodeList sizeChecks,
 		      std::string retType_arg);
   /**
    * Default destructor

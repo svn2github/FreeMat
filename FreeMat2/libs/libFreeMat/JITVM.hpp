@@ -92,17 +92,17 @@ public:
   JITScalar compile_boolean_op(llvm::Instruction::BinaryOps, JITScalar arg1, 
 			       JITScalar arg2, string inst);
   JITScalar compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst);
-  JITScalar compile_expression(tree t, Interpreter* m_eval);
-  JITScalar compile_rhs(tree t, Interpreter* m_eval);
-  JITScalar compile_function_call(tree t, Interpreter* m_eval);
+  JITScalar compile_expression(Tree* t, Interpreter* m_eval);
+  JITScalar compile_rhs(Tree* t, Interpreter* m_eval);
+  JITScalar compile_function_call(Tree* t, Interpreter* m_eval);
   JITScalar compile_scalar_function(string symname, Interpreter* m_eval);
-  void compile_if_statement(tree t, Interpreter* m_eval);
-  void compile_for_block(tree t, Interpreter *m_eval);
-  void compile_assignment(tree t, Interpreter *m_eval);
-  void compile_statement(tree t, Interpreter *m_eval);
-  void compile_statement_type(tree t, Interpreter *m_eval);
-  void compile_block(tree t, Interpreter *m_eval);
-  void compile(tree t, Interpreter *m_eval);
+  void compile_if_statement(Tree* t, Interpreter* m_eval);
+  void compile_for_block(Tree* t, Interpreter *m_eval);
+  void compile_assignment(Tree* t, Interpreter *m_eval);
+  void compile_statement(Tree* t, Interpreter *m_eval);
+  void compile_statement_type(Tree* t, Interpreter *m_eval);
+  void compile_block(Tree* t, Interpreter *m_eval);
+  void compile(Tree* t, Interpreter *m_eval);
   void run(Interpreter *m_eval);
   static void v_resize(void* this_ptr, int argnum, int new_rows);
   static void m_resize(void* this_ptr, int argnum, int r_new, int c_new);

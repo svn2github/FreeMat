@@ -196,19 +196,19 @@ static const Type* array_dereference(const Type* t) {
   return p->getElementType();
 }
 
-void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
-  tree s(t.first());
-  string symname(s.first().text());
-  JITScalar rhs(compile_expression(t.second(),m_eval));
+void JITVM::compile_assignment(Tree* t, Interpreter* m_eval) {
+  Tree* s(t->first());
+  string symname(s->first()->text());
+  JITScalar rhs(compile_expression(t->second(),m_eval));
   JITSymbolInfo *v = symbols.findSymbol(symname);
   if (!v) {
-    if (s.numchildren() == 1)
+    if (s->numChildren() == 1)
       v = add_argument_scalar(symname,m_eval,rhs,false);
     else
       v = add_argument_array(symname,m_eval);
     if (!v) throw Exception("Undefined variable reference:" + symname);
   }
-  if (s.numchildren() == 1) {
+  if (s->numChildren() == 1) {
     if (v->data_value->getType() != PointerType::get(rhs->getType()))
       throw Exception("polymorphic assignment to scalar detected.");
     if (!v->is_scalar)
@@ -216,16 +216,16 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     new StoreInst(rhs, v->data_value, ip);
     return;
   }
-  if (s.numchildren() > 2)
+  if (s->numChildren() > 2)
     throw Exception("multiple levels of dereference not handled yet...");
   if (v->is_scalar)
     throw Exception("array indexing of scalar values...");
-  tree q(s.second());
-  if (!q.is(TOK_PARENS))
+  Tree* q(s->second());
+  if (!q->is(TOK_PARENS))
     throw Exception("non parenthetical dereferences not handled yet...");
-  if (q.numchildren() == 0)
+  if (q->numChildren() == 0)
     throw Exception("Expecting at least 1 array reference for dereference...");
-  if (q.numchildren() > 2)
+  if (q->numChildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (v->data_value->getType() != PointerType::get(PointerType::get(rhs->getType()))) {
     // Handle type promotion.  The only case that I can think of 
@@ -238,8 +238,8 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     } else 
       throw Exception("polymorphic assignment to array detected");
   }
-  if (q.numchildren() == 1) {
-    JITScalar arg1 = compile_expression(q.first(),m_eval);
+  if (q->numChildren() == 1) {
+    JITScalar arg1 = compile_expression(q->first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     // Add code to check the address against the bounds and resize if necessary
     Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(1),"",ip);
@@ -258,7 +258,7 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     resize_params.push_back(this_ptr);
     resize_params.push_back(int32_const(v->argument_index));
     resize_params.push_back(arg1);
-    new CallInst(v_resize_func_ptr, &resize_params[0], 3, "", bb3);
+    new CallInst(v_resize_func_ptr, resize_params.begin(), resize_params.end(), "", bb3);
     new StoreInst(arg1,v->num_length,bb3);
     int argnum = v->argument_index;
     Value* p_arg = cast(get_input_argument(3*argnum,bb3),
@@ -271,9 +271,9 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     Value *g = new LoadInst(v->data_value,"",false,ip);
     JITScalar address = new GetElementPtrInst(g, arg1, "", ip);
     new StoreInst(rhs, address, false, ip);
-  } else if (q.numchildren() == 2) {
-    JITScalar arg1 = compile_expression(q.first(),m_eval);
-    JITScalar arg2 = compile_expression(q.second(),m_eval);
+  } else if (q->numChildren() == 2) {
+    JITScalar arg1 = compile_expression(q->first(),m_eval);
+    JITScalar arg2 = compile_expression(q->second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
     Value* under_range1 = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(1),"",ip);
@@ -300,7 +300,7 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
     resize_params.push_back(int32_const(v->argument_index));
     resize_params.push_back(arg1);
     resize_params.push_back(arg2);
-    new CallInst(m_resize_func_ptr, &resize_params[0], 4, "", bb3);
+    new CallInst(m_resize_func_ptr, resize_params.begin(), resize_params.end(), "", bb3);
     int argnum = v->argument_index;
     Value* p_arg = cast(get_input_argument(3*argnum,bb3),
 			PointerType::get(map_dataclass_type(v->inferred_type)),
@@ -331,32 +331,32 @@ void JITVM::compile_assignment(tree t, Interpreter* m_eval) {
   }
 }
 
-void JITVM::compile_if_statement(tree t, Interpreter* m_eval) {
-  JITScalar main_cond(cast(compile_expression(t.first(),m_eval),
+void JITVM::compile_if_statement(Tree* t, Interpreter* m_eval) {
+  JITScalar main_cond(cast(compile_expression(t->first(),m_eval),
 			   IntegerType::get(1),false,ip,""));
   BasicBlock *if_true = new BasicBlock("if_true",func,0);
   BasicBlock *if_continue = new BasicBlock("if_continue",func,0);
   BasicBlock *if_exit = new BasicBlock("if_exit",func,0);
   new BranchInst(if_true,if_continue,main_cond,ip);
   ip = if_true;
-  compile_block(t.second(),m_eval);
+  compile_block(t->second(),m_eval);
   new BranchInst(if_exit,ip);
   int n=2;
-  while (n < t.numchildren() && t.child(n).is(TOK_ELSEIF)) {
+  while (n < t->numChildren() && t->child(n)->is(TOK_ELSEIF)) {
     ip = if_continue;
-    JITScalar ttest(cast(compile_expression(t.child(n).first(),m_eval),
+    JITScalar ttest(cast(compile_expression(t->child(n)->first(),m_eval),
 			 IntegerType::get(1),false,ip,""));
     if_true = new BasicBlock("elseif_true",func,0);
     if_continue = new BasicBlock("elseif_continue",func,0);
     new BranchInst(if_true,if_continue,ttest,ip);
     ip = if_true;
-    compile_block(t.child(n).second(),m_eval);
+    compile_block(t->child(n)->second(),m_eval);
     new BranchInst(if_exit,ip);
     n++;
   }
-  if (t.last().is(TOK_ELSE)) {
+  if (t->last()->is(TOK_ELSE)) {
     ip = if_continue;
-    compile_block(t.last().first(),m_eval);
+    compile_block(t->last()->first(),m_eval);
     new BranchInst(if_exit,ip);
   } else {
     new BranchInst(if_exit,if_continue);
@@ -483,26 +483,26 @@ JITScalar JITVM::compile_scalar_function(string symname, Interpreter* m_eval) {
   return *val;
 }
 
-JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
+JITScalar JITVM::compile_function_call(Tree* t, Interpreter* m_eval) {
   // First, make sure it is a function
-  string symname(t.first().text());
+  string symname(t->first()->text());
   FuncPtr funcval;
   if (!m_eval->lookupFunction(symname,funcval)) 
     throw Exception("Couldn't find function " + symname);
   if (funcval->type() != FM_BUILT_IN_FUNCTION)
     throw Exception("Can only JIT built in functions - not " + symname);
-  if (t.numchildren() != 2) 
+  if (t->numChildren() != 2) 
     return compile_scalar_function(symname,m_eval);
   // Evaluate the argument
-  tree s(t.second());
-  if (!s.is(TOK_PARENS))
+  Tree* s(t->second());
+  if (!s->is(TOK_PARENS))
     throw Exception("Expecting function arguments.");
-  if (s.numchildren() > 1)
+  if (s->numChildren() > 1)
     throw Exception("Cannot JIT functions that take more than one argument");
-  if (s.numchildren() == 0) 
+  if (s->numChildren() == 0) 
     return compile_scalar_function(symname,m_eval);
   else {
-    JITScalar arg = compile_expression(s.first(),m_eval);
+    JITScalar arg = compile_expression(s->first(),m_eval);
     // First look up direct functions - also try double arg functions, as type
     // promotion means sin(int32) --> sin(double)
     JITFunction *fun = NULL;
@@ -522,36 +522,36 @@ JITScalar JITVM::compile_function_call(tree t, Interpreter* m_eval) {
   }
 }
 
-JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
-  string symname(t.first().text());
+JITScalar JITVM::compile_rhs(Tree* t, Interpreter* m_eval) {
+  string symname(t->first()->text());
   JITSymbolInfo *v = symbols.findSymbol(symname);
   if (!v) {
     
-    if (t.numchildren() == 1)
+    if (t->numChildren() == 1)
       v = add_argument_scalar(symname,m_eval);
     else
       v = add_argument_array(symname,m_eval);
     if (!v)
       return compile_function_call(t,m_eval);
   }
-  if (t.numchildren() == 1) {
+  if (t->numChildren() == 1) {
     if (!v->is_scalar)
       throw Exception("non-scalar reference returned in scalar context!");
     return new LoadInst(v->data_value, "", false, ip);
   }
-  if (t.numchildren() > 2)
+  if (t->numChildren() > 2)
     throw Exception("multiple levels of dereference not handled yet...");
   if (v->is_scalar)
     throw Exception("array indexing of scalar values...");
-  tree s(t.second());
-  if (!s.is(TOK_PARENS))
+  Tree* s(t->second());
+  if (!s->is(TOK_PARENS))
     throw Exception("non parenthetical dereferences not handled yet...");
-  if (s.numchildren() == 0)
+  if (s->numChildren() == 0)
     throw Exception("Expecting at least 1 array reference for dereference...");
-  if (s.numchildren() > 2)
+  if (s->numChildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
-  if (s.numchildren() == 1) {
-    JITScalar arg1 = compile_expression(s.first(),m_eval);
+  if (s->numChildren() == 1) {
+    JITScalar arg1 = compile_expression(s->first(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
     Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(0),"",ip);
@@ -570,9 +570,9 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
     Value *g = new LoadInst(v->data_value, "", false, ip);
     JITScalar address = new GetElementPtrInst(g, arg1, "", ip);
     return new LoadInst(address, "", false, ip);
-  } else if (s.numchildren() == 2) {
-    JITScalar arg1 = compile_expression(s.first(),m_eval);
-    JITScalar arg2 = compile_expression(s.second(),m_eval);
+  } else if (s->numChildren() == 2) {
+    JITScalar arg1 = compile_expression(s->first(),m_eval);
+    JITScalar arg2 = compile_expression(s->second(),m_eval);
     arg1 = cast(arg1,IntegerType::get(32),false,ip);
     arg2 = cast(arg2,IntegerType::get(32),false,ip);
     arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
@@ -612,12 +612,12 @@ JITScalar JITVM::compile_rhs(tree t, Interpreter* m_eval) {
   throw Exception("dereference not handled yet...");
 }
 
-JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
-  switch(t.token()) {
+JITScalar JITVM::compile_expression(Tree* t, Interpreter* m_eval) {
+  switch(t->token()) {
   case TOK_VARIABLE:     return compile_rhs(t,m_eval);
-  case TOK_INTEGER:      return int32_const(ArrayToInt32(t.array()));
-  case TOK_FLOAT:        return ConstantFP::get(Type::FloatTy,ArrayToDouble(t.array()));
-  case TOK_DOUBLE:       return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t.array()));
+  case TOK_INTEGER:      return int32_const(ArrayToInt32(t->array()));
+  case TOK_FLOAT:        return ConstantFP::get(Type::FloatTy,ArrayToDouble(t->array()));
+  case TOK_DOUBLE:       return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t->array()));
   case TOK_COMPLEX:
   case TOK_DCOMPLEX:
   case TOK_STRING:
@@ -627,22 +627,22 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   case TOK_CELLDEF:      throw Exception("JIT compiler does not support complex, string, END, matrix or cell defs");
   case '+':
     return compile_binary_op(Instruction::Add,
-			     compile_expression(t.first(),m_eval),
-			     compile_expression(t.second(),m_eval),"add");
+			     compile_expression(t->first(),m_eval),
+			     compile_expression(t->second(),m_eval),"add");
   case '-': 
     return compile_binary_op(Instruction::Sub,
-			     compile_expression(t.first(),m_eval),
-			     compile_expression(t.second(),m_eval),"sub");
+			     compile_expression(t->first(),m_eval),
+			     compile_expression(t->second(),m_eval),"sub");
   case '*': 
   case TOK_DOTTIMES: 
     return compile_binary_op(Instruction::Mul,
-			     compile_expression(t.first(),m_eval),
-			     compile_expression(t.second(),m_eval),"mul");
+			     compile_expression(t->first(),m_eval),
+			     compile_expression(t->second(),m_eval),"mul");
   case '/': 
   case TOK_DOTRDIV:
     {
-      JITScalar arg1 = compile_expression(t.first(),m_eval);
-      JITScalar arg2 = compile_expression(t.second(),m_eval);
+      JITScalar arg1 = compile_expression(t->first(),m_eval);
+      JITScalar arg2 = compile_expression(t->second(),m_eval);
       if (!(isf(arg1) && isf(arg2))) {
 	arg1 = cast(arg1,Type::DoubleTy,true,ip);
 	arg2 = cast(arg2,Type::DoubleTy,true,ip);
@@ -652,8 +652,8 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   case '\\': 
   case TOK_DOTLDIV: 
     {
-      JITScalar arg1 = compile_expression(t.first(),m_eval);
-      JITScalar arg2 = compile_expression(t.second(),m_eval);
+      JITScalar arg1 = compile_expression(t->first(),m_eval);
+      JITScalar arg2 = compile_expression(t->second(),m_eval);
       if (!(isf(arg1) && isf(arg2))) {
 	arg1 = cast(arg1,Type::DoubleTy,true,ip);
 	arg2 = cast(arg2,Type::DoubleTy,true,ip);
@@ -664,49 +664,49 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   case TOK_SOR: 
   case '|':
     return compile_boolean_op(Instruction::Or,
- 			      compile_expression(t.first(),m_eval),
- 			      compile_expression(t.second(),m_eval),"or");
+ 			      compile_expression(t->first(),m_eval),
+ 			      compile_expression(t->second(),m_eval),"or");
   case TOK_SAND: 
   case '&': 
     return compile_boolean_op(Instruction::And,
-			      compile_expression(t.first(),m_eval),
-			      compile_expression(t.second(),m_eval),"and");
+			      compile_expression(t->first(),m_eval),
+			      compile_expression(t->second(),m_eval),"and");
   case '<': 
-    return compile_comparison_op(t.token(),
-				 compile_expression(t.first(),m_eval),
-				 compile_expression(t.second(),m_eval),"lt");
+    return compile_comparison_op(t->token(),
+				 compile_expression(t->first(),m_eval),
+				 compile_expression(t->second(),m_eval),"lt");
   case TOK_LE: 
-    return compile_comparison_op(t.token(),
-				 compile_expression(t.first(),m_eval),
-				 compile_expression(t.second(),m_eval),"le");
+    return compile_comparison_op(t->token(),
+				 compile_expression(t->first(),m_eval),
+				 compile_expression(t->second(),m_eval),"le");
   case '>': 
-    return compile_comparison_op(t.token(),
-				 compile_expression(t.first(),m_eval),
-				 compile_expression(t.second(),m_eval),"gt");
+    return compile_comparison_op(t->token(),
+				 compile_expression(t->first(),m_eval),
+				 compile_expression(t->second(),m_eval),"gt");
   case TOK_GE: 
-    return compile_comparison_op(t.token(),
-				 compile_expression(t.first(),m_eval),
-				 compile_expression(t.second(),m_eval),"ge");
+    return compile_comparison_op(t->token(),
+				 compile_expression(t->first(),m_eval),
+				 compile_expression(t->second(),m_eval),"ge");
   case TOK_EQ: 
-    return compile_comparison_op(t.token(),
-				 compile_expression(t.first(),m_eval),
-				 compile_expression(t.second(),m_eval),"eq");
+    return compile_comparison_op(t->token(),
+				 compile_expression(t->first(),m_eval),
+				 compile_expression(t->second(),m_eval),"eq");
   case TOK_NE: 
-    return compile_comparison_op(t.token(),
-				 compile_expression(t.first(),m_eval),
-				 compile_expression(t.second(),m_eval),"ne");
+    return compile_comparison_op(t->token(),
+				 compile_expression(t->first(),m_eval),
+				 compile_expression(t->second(),m_eval),"ne");
   case TOK_UNARY_MINUS: 
     {
-      JITScalar val(compile_expression(t.first(),m_eval));
+      JITScalar val(compile_expression(t->first(),m_eval));
       return BinaryOperator::create(Instruction::Sub,
 				    Constant::getNullValue(val->getType()),
 				    val,"",ip);
     }
   case TOK_UNARY_PLUS: 
-    return compile_expression(t.first(),m_eval);
+    return compile_expression(t->first(),m_eval);
   case '~': 
     {
-      JITScalar val(compile_expression(t.first(),m_eval));
+      JITScalar val(compile_expression(t->first(),m_eval));
       val = cast(val,IntegerType::get(1),false,ip);
       return BinaryOperator::create(Instruction::Xor,val,bool_const(1),"",ip);
     }
@@ -719,8 +719,8 @@ JITScalar JITVM::compile_expression(tree t, Interpreter* m_eval) {
   }
 }
 
-void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
-  switch(t.token()) {
+void JITVM::compile_statement_type(Tree* t, Interpreter *m_eval) {
+  switch(t->token()) {
   case '=': 
     compile_assignment(t,m_eval);
     break;
@@ -749,7 +749,7 @@ void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
   case TOK_GLOBAL:      throw Exception("global is not currently handled by the JIT compiler");
   case TOK_PERSISTENT:  throw Exception("persistent is not currently handled by the JIT compiler");
   case TOK_EXPR:
-    compile_expression(t.first(),m_eval);
+    compile_expression(t->first(),m_eval);
     break;
   case TOK_NEST_FUNC:
     break;
@@ -758,29 +758,29 @@ void JITVM::compile_statement_type(tree t, Interpreter *m_eval) {
   }
 }
 
-void JITVM::compile_statement(tree t, Interpreter *m_eval) {
-  if (t.is(TOK_STATEMENT) && 
-      (t.first().is(TOK_EXPR) || t.first().is(TOK_SPECIAL) ||
-       t.first().is(TOK_MULTI) || t.first().is('=')))
+void JITVM::compile_statement(Tree* t, Interpreter *m_eval) {
+  if (t->is(TOK_STATEMENT) && 
+      (t->first()->is(TOK_EXPR) || t->first()->is(TOK_SPECIAL) ||
+       t->first()->is(TOK_MULTI) || t->first()->is('=')))
     throw Exception("JIT compiler doesn't work with verbose statements");
-  compile_statement_type(t.first(),m_eval);
+  compile_statement_type(t->first(),m_eval);
 }
 
-void JITVM::compile_block(tree t, Interpreter *m_eval) {
-  const treeVector &statements(t.children());
-  for (treeVector::const_iterator i=statements.begin();
+void JITVM::compile_block(Tree* t, Interpreter *m_eval) {
+  const TreeList &statements(t->children());
+  for (TreeList::const_iterator i=statements.begin();
        i!=statements.end();i++) 
     compile_statement(*i,m_eval);
 }
 
-void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
-  if (!(t.first().is('=') && t.first().second().is(':') &&
-	t.first().second().first().is(TOK_INTEGER) &&
-	t.first().second().second().is(TOK_INTEGER))) 
+void JITVM::compile_for_block(Tree* t, Interpreter *m_eval) {
+  if (!(t->first()->is('=') && t->first()->second()->is(':') &&
+	t->first()->second()->first()->is(TOK_INTEGER) &&
+	t->first()->second()->second()->is(TOK_INTEGER))) 
     throw Exception("For loop cannot be compiled - need integer bounds");
-  string loop_start(t.first().second().first().text());
-  string loop_stop(t.first().second().second().text());
-  string loop_index(t.first().first().text());
+  string loop_start(t->first()->second()->first()->text());
+  string loop_stop(t->first()->second()->second()->text());
+  string loop_index(t->first()->first()->text());
   // Allocate a slot for the loop index register
   JITSymbolInfo* v = add_argument_scalar(loop_index,m_eval,ConstantInt::get(APInt(32, loop_start, 10)),true);
   JITScalar loop_index_address = v->data_value;
@@ -792,7 +792,7 @@ void JITVM::compile_for_block(tree t, Interpreter *m_eval) {
   new BranchInst(looptest, ip);
   // Create 3 blocks
   ip = loopbody;
-  compile_block(t.second(),m_eval);
+  compile_block(t->second(),m_eval);
   JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, ip);
   JITScalar next_loop_value = BinaryOperator::create(Instruction::Add,loop_index_value,int32_const(1),"",ip);
   new StoreInst(next_loop_value, loop_index_address, false, ip);
@@ -826,7 +826,7 @@ void JITVM::m_resize(void* base, int argnum, int r_new, int c_new) {
 }
 
 
-void JITVM::compile(tree t, Interpreter *m_eval) {
+void JITVM::compile(Tree* t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
   M = new Module("test");

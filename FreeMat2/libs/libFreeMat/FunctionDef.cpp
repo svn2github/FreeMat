@@ -611,6 +611,7 @@ static void TreeLine(Tree* t, unsigned &bestLine, unsigned lineTarget) {
     TreeLine(t->child(i),bestLine,lineTarget);
 }
 
+
 // Find the closest line number to the requested 
 unsigned MFunctionDef::ClosestLine(unsigned line) {
   unsigned bestline;
@@ -757,7 +758,7 @@ FunctionDef::~FunctionDef() {
 ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
 					 stringVector types_arg,
 					 stringVector arguments_arg,
-					 TreeList sizeChecks,
+					 CodeList sizeChecks,
 					 std::string retType_arg) {
   address = address_arg;
   types = types_arg;
@@ -819,7 +820,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
   int passByReference = 0;
   for (int j=0;j<inputs.size();j++)
     if ((arguments[j][0] == '&') || (types[j] == "string") ||
-	(sizeCheckExpressions[j].valid()))
+	(sizeCheckExpressions[j].tree()->valid()))
       passByReference++;
   /**
    * Next, we check to see if any bounds-checking expressions are
@@ -828,7 +829,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
   bool boundsCheckActive = false;
   int m=0;
   while (m < inputs.size() && !boundsCheckActive)
-    boundsCheckActive = (sizeCheckExpressions[m++].valid());
+    boundsCheckActive = (sizeCheckExpressions[m++].tree()->valid());
   if (boundsCheckActive) {
     /**
      * If the bounds-checking is active, we have to create a 
@@ -853,8 +854,8 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
        * Next, evaluate each size check expression
        */
       for (i=0;i<inputs.size();i++) {
-	if (sizeCheckExpressions[i].valid()) {
-	  Array ret(walker->expression(sizeCheckExpressions[i]));
+	if (sizeCheckExpressions[i].tree()->valid()) {
+	  Array ret(walker->expression(sizeCheckExpressions[i].tree()));
 	  ret.promoteType(FM_INT32);
 	  int len;
 	  len = ret.getContentsAsIntegerScalar();
@@ -890,7 +891,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
   int ptr = 0;
   for (i=0;i<inputs.size();i++) {
     if (types[i] != "string") {
-      if ((arguments[i][0] == '&') || (sizeCheckExpressions[i].valid())) {
+      if ((arguments[i][0] == '&') || (sizeCheckExpressions[i].tree()->valid())) {
 	refPointers[ptr] = inputs[i].getReadWriteDataPointer();
 	values[i] = &refPointers[ptr];
 	ptr++;
@@ -943,7 +944,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
   // Second pass - Loop through the arguments
   for (int i=0;i<types.size();i++) {
     if (arguments[i][0] == '&' || types[i] == "string" ||
-	sizeCheckExpressions[i].valid())
+	sizeCheckExpressions[i].tree()->valid())
       av_ptr(alist,void*,*((void**)values[i]));
     else {
       if ((types[i] == "logical") || (types[i] == "uint8"))

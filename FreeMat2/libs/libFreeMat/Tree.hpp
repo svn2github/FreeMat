@@ -82,4 +82,6 @@ public:
   inline void clone() {m_tree = Tree::deepTreeCopy(m_tree);}
 };
 
+typedef QList<CodeBlock> CodeList;
+
 #endif

@@ -403,7 +403,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
   func = lib->GetSymbol(symbolname.c_str());
   stringVector types;
   stringVector arguments;
-  treeVector checks;
+  CodeList checks;
   /**
    * Parse the arglist...
    */
@@ -426,7 +426,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
       checks.push_back(ParseExpressionString(bc));
       free(bc);
     } else
-      checks.push_back(tree());
+      checks.push_back(CodeBlock(new Tree));
     char *ar;
     ar = parseArgumentName(cp);
     arguments.push_back(ar);

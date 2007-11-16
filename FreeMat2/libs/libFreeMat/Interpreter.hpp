@@ -317,7 +317,7 @@ public:
    * Manipulate the profile state
    */
   inline void setProfileState(bool t) {m_profile = t;}
-  inline bool getProfileState() {return m_profile;}
+  inline bool profileState() {return m_profile;}
   /**
    * Get the result of the thread function evaluation
    */
@@ -348,6 +348,15 @@ public:
    */
   string getMFileName();
   string getInstructionPointerFileName();
+  inline string sampleInstructionPointer(unsigned &context) const {
+    if (!InCLI) {
+      context = ip_context & 0x0000FFFF; 
+      return ip_funcname;
+    } else {
+      context = 0;
+      return "CLI";
+    }
+  }
   /**
    * The Base Path is the one that contains .m files in the current app bundle
    */

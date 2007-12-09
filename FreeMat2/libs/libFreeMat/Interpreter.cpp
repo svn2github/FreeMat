@@ -301,16 +301,18 @@ void Interpreter::warningMessage(std::string msg) {
       emit outputRawText(TranslateString("Warning: " +msg + "\r\n"));
 }
 
-void Interpreter::SetContext(int a) {
-//   qDebug() << "setting context to line " << (a & 0xffff);
-  ip_context = a;
-}
-
 static bool isMFile(std::string arg) {
   // Not completely right...
   return (((arg[arg.size()-1] == 'm') ||
 	   (arg[arg.size()-1] == 'p')) && 
 	  (arg[arg.size()-2] == '.'));
+}
+
+void Interpreter::SetContext(int a) {
+  if (((a & 0xffff) == 0) && isMFile(ip_funcname))
+    qDebug() << "Warning: zero context!";
+//   qDebug() << "setting context to line " << (a & 0xffff);
+  ip_context = a;
 }
 
 std::string TrimFilename(std::string arg) {

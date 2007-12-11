@@ -3138,9 +3138,13 @@ ArrayVector SimKeysFunction(int nargout, const ArrayVector& arg,
   if (arg[0].dataClass() != FM_CELL_ARRAY)
     throw Exception("simkeys requires a cell array of strings");
   const Array *dp = (const Array *) arg[0].getDataPointer();
-  for (int i=0;i<(int) arg[0].getLength();i++)
-    eval->ExecuteLine(ArrayToString(dp[i]));
-  eval->ExecuteLine("quit\n");
+  for (int i=0;i<(int) arg[0].getLength();i++) {
+    string txt(ArrayToString(dp[i]));
+    if ((txt.size() > 0) && (txt[txt.size()-1] != '\n'))
+      txt.push_back('\n');
+    eval->ExecuteLine(txt);
+  }
+  eval->ExecuteLine("\nquit\n");
   try {
     while(1) 
       eval->evalCLI();

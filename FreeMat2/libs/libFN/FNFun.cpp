@@ -21,258 +21,7 @@
 #include "Exception.hpp"
 #include "Array.hpp"
 #include "Malloc.hpp"
-
-extern "C" {
-  double dexpei_(double*);
-  double deone_(double*);
-  double dei_(double*);
-  double derfcx_(double*);
-  double derfc_(double*);
-  double derf_(double*);
-  double ddaw_(double*);
-  double dpsi_(double*);
-  double dgamma_(double*);
-  double dlgama_(double*);
-  float expei_(float*);
-  float eone_(float*);
-  float ei_(float*);
-  float erfcx_(float*);
-  float erfc_(float*);
-  float erf_(float*);
-  float daw_(float*);
-  float psi_(float*);
-  float gamma_(float*);
-  float algama_(float*);
-}
-
-//!
-//@Module EXPEI Exponential Weighted Integral Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the exponential weighted integral function for real arguments.  The @|expei|
-//function takes only a single argument
-//@[
-//  y = expei(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output
-//vector @|y| is the same size (and type) as @|x|.
-//@@Function Internals
-//The expei function is defined by the integral:
-//\[
-//  \mathrm{expei}(x) = - e^{-x} \int_{-x}^{\infty} \frac{e^{-t}\,dt}{t}.
-//\]
-//@@Example
-//Here is a plot of the @|expei| function over the range @|[-5,5]|.
-//@<
-//x = linspace(-5,5);
-//y = expei(x);
-//plot(x,y); xlabel('x'); ylabel('expei(x)');
-//mprint expei1
-//@>
-//which results in the following plot.
-//@figure expei1
-//!
-ArrayVector ExpeiFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("expei requires at least one argument");
-  Array tmp(arg[0]);
-  if (tmp.dataClass() < FM_FLOAT)
-    tmp.promoteType(FM_DOUBLE);
-  if (tmp.isComplex())
-    throw Exception("expei does not work with complex arguments");
-  if (tmp.isReferenceType() || tmp.isString())
-    throw Exception("expei function requires numerical arguments");
-  if (tmp.dataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    float *sp = (float*) tmp.getDataPointer();
-    float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = expei_(sp+i);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.dataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    double *sp = (double*) tmp.getDataPointer();
-    double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = dexpei_(sp+i);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
-  }
-  return ArrayVector();
-}
-
-//!
-//@Module EONE Exponential Integral Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the exponential integral function for real arguments.  The @|eone|
-//function takes only a single argument
-//@[
-//  y = eone(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output
-//vector @|y| is the same size (and type) as @|x|.
-//@@Function Internals
-//The eone function is defined by the integral:
-//\[
-//  \mathrm{eone}(x) = \int_{x}^{\infty} \frac{e^{-u}\,du}{u}.
-//\]
-//@@Example
-//Here is a plot of the @|eone| function over the range @|[-5,5]|.
-//@<
-//x = linspace(-5,5);
-//y = eone(x);
-//plot(x,y); xlabel('x'); ylabel('eone(x)');
-//mprint eone1
-//@>
-//which results in the following plot.
-//@figure eone1
-//!
-ArrayVector EoneFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("eone requires at least one argument");
-  Array tmp(arg[0]);
-  if (tmp.dataClass() < FM_FLOAT)
-    tmp.promoteType(FM_DOUBLE);
-  if (tmp.isComplex())
-    throw Exception("eone does not work with complex arguments");
-  if (tmp.isReferenceType() || tmp.isString())
-    throw Exception("eone function requires numerical arguments");
-  if (tmp.dataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    float *sp = (float*) tmp.getDataPointer();
-    float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = eone_(sp+i);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.dataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    double *sp = (double*) tmp.getDataPointer();
-    double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = deone_(sp+i);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
-  }
-  return ArrayVector();
-}
-
-//!
-//@Module EI Exponential Integral Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the exponential integral function for real arguments.  The @|ei|
-//function takes only a single argument
-//@[
-//  y = ei(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output
-//vector @|y| is the same size (and type) as @|x|.
-//@@Function Internals
-//The ei function is defined by the integral:
-//\[
-//  \mathrm{ei}(x) = -\int_{-x}^{\infty} \frac{e^{-t}\,dt}{t}.
-//\]
-//@@Example
-//Here is a plot of the @|ei| function over the range @|[-5,5]|.
-//@<
-//x = linspace(-5,5);
-//y = ei(x);
-//plot(x,y); xlabel('x'); ylabel('ei(x)');
-//mprint ei1
-//@>
-//which results in the following plot.
-//@figure ei1
-//!
-ArrayVector EiFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("ei requires at least one argument");
-  Array tmp(arg[0]);
-  if (tmp.dataClass() < FM_FLOAT)
-    tmp.promoteType(FM_DOUBLE);
-  if (tmp.isComplex())
-    throw Exception("ei does not work with complex arguments");
-  if (tmp.isReferenceType() || tmp.isString())
-    throw Exception("ei function requires numerical arguments");
-  if (tmp.dataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    float *sp = (float*) tmp.getDataPointer();
-    float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = ei_(sp+i);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.dataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    double *sp = (double*) tmp.getDataPointer();
-    double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = dei_(sp+i);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
-  }
-  return ArrayVector();
-}
-
-//!
-//@Module ERFCX Complimentary Weighted Error Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the complimentary error function for real arguments.  The @|erfcx|
-//function takes only a single argument
-//@[
-//  y = erfcx(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output
-//vector @|y| is the same size (and type) as @|x|.
-//@@Function Internals
-//The erfcx function is defined by the integral:
-//\[
-//  \mathrm{erfcx}(x) = \frac{2e^{x^2}}{\sqrt{\pi}}\int_{x}^{\infty} e^{-t^2} \, dt,
-//\]
-//and is an exponentially weighted integral of the normal distribution.
-//@@Example
-//Here is a plot of the @|erfcx| function over the range @|[-5,5]|.
-//@<
-//x = linspace(0,5);
-//y = erfcx(x);
-//plot(x,y); xlabel('x'); ylabel('erfcx(x)');
-//mprint erfcx1
-//@>
-//which results in the following plot.
-//@figure erfcx1
-//!
-ArrayVector ErfcxFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("erfcx requires at least one argument");
-  Array tmp(arg[0]);
-  if (tmp.dataClass() < FM_FLOAT)
-    tmp.promoteType(FM_DOUBLE);
-  if (tmp.isComplex())
-    throw Exception("erfcx does not work with complex arguments");
-  if (tmp.isReferenceType() || tmp.isString())
-    throw Exception("erfcx function requires numerical arguments");
-  if (tmp.dataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    float *sp = (float*) tmp.getDataPointer();
-    float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = erfcx_(sp+i);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.dataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    double *sp = (double*) tmp.getDataPointer();
-    double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = derfcx_(sp+i);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
-  }
-  return ArrayVector();
-}
+#include <math.h>
 
 //!
 //@Module ERFC Complimentary Error Function
@@ -318,7 +67,7 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
-      dp[i] = erfc_(sp+i);
+      dp[i] = erfcf(sp[i]);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
@@ -326,7 +75,7 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
     for (int i=0;i<olen;i++)
-      dp[i] = derfc_(sp+i);
+      dp[i] = erfc(sp[i]);
     return singleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
@@ -376,7 +125,7 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
-      dp[i] = erf_(sp+i);
+      dp[i] = erff(sp[i]);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
@@ -384,132 +133,7 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
     for (int i=0;i<olen;i++)
-      dp[i] = derf_(sp+i);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
-  }
-  return ArrayVector();
-}
-
-//!
-//@Module DAWSON Dawson Integral Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the dawson function for real arguments.  The @|dawson|
-//function takes only a single argument
-//@[
-//  y = dawson(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output
-//vector @|y| is the same size (and type) as @|x|.
-//@@Function Internals
-//The dawson function is defined as
-//\[
-//  \mathrm{dawson}(x) = e^{-x^2} \int_{0}^{x} e^{t^2} \, dt
-//\]
-//@@Example
-//Here is a plot of the dawson function over the range @|[-5,5]|.
-//@<
-//x = linspace(-5,5);
-//y = dawson(x);
-//plot(x,y); xlabel('x'); ylabel('dawson(x)');
-//mprint dawson1
-//@>
-//which results in the following plot.
-//@figure dawson1
-//!
-ArrayVector DawsonFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("dawson requires at least one argument");
-  Array tmp(arg[0]);
-  if (tmp.dataClass() < FM_FLOAT)
-    tmp.promoteType(FM_DOUBLE);
-  if (tmp.isComplex())
-    throw Exception("dawson does not work with complex arguments");
-  if (tmp.isReferenceType() || tmp.isString())
-    throw Exception("dawson function requires numerical arguments");
-  if (tmp.dataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    float *sp = (float*) tmp.getDataPointer();
-    float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = daw_(sp+i);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.dataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    double *sp = (double*) tmp.getDataPointer();
-    double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++)
-      dp[i] = ddaw_(sp+i);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
-  }
-  return ArrayVector();
-}
-  
-//!
-//@Module PSI Psi Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the psi function for real arguments.  The @|psi|
-//function takes only a single argument
-//@[
-//  y = psi(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output
-//vector @|y| is the same size (and type) as @|x|.
-//@@Function Internals
-//The psi function is defined as
-//\[
-//  \frac{d}{dx} \ln \gamma(x)
-//\]
-//and for integer arguments, is equivalent to the factorial function.
-//@@Example
-//Here is a plot of the psi function over the range @|[-5,5]|.
-//@<
-//x = linspace(-5,5);
-//y = psi(x);
-//plot(x,y); xlabel('x'); ylabel('psi(x)');
-//mprint psi1
-//@>
-//which results in the following plot.
-//@figure psi1
-//!
-ArrayVector PsiFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() < 1)
-    throw Exception("psi requires at least one argument");
-  Array tmp(arg[0]);
-  if (tmp.dataClass() < FM_FLOAT)
-    tmp.promoteType(FM_DOUBLE);
-  if (tmp.isComplex())
-    throw Exception("psi does not work with complex arguments");
-  if (tmp.isReferenceType() || tmp.isString())
-    throw Exception("psi function requires numerical arguments");
-  if (tmp.dataClass() == FM_FLOAT) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    float *sp = (float*) tmp.getDataPointer();
-    float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++) {
-      float t;
-      t = psi_(sp+i);
-      if (t == 1.70e38)
-	t = atof("inf");
-      dp[i] = t;
-    }
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
-  } else if (tmp.dataClass() == FM_DOUBLE) {
-    Dimensions odims(tmp.dimensions());
-    int olen(odims.getElementCount());
-    double *sp = (double*) tmp.getDataPointer();
-    double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++) {
-      double t;
-      t = dpsi_(sp+i);
-      if (t == 1.70E38)
-	t = atof("inf");	
-      dp[i] = t;
-    }
+      dp[i] = erf(sp[i]);
     return singleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
@@ -563,26 +187,16 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++) {
-      float t;
-      t = gamma_(sp+i);
-      if (t == 3.4e38)
-	t = atof("inf");
-      dp[i] = t;
-    }
+    for (int i=0;i<olen;i++) 
+      dp[i] = tgammaf(sp[i]);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++) {
-      double t;
-      t = dgamma_(sp+i);
-      if (t == 1.79E308)
-	t = atof("inf");
-      dp[i] = t;
-    }
+    for (int i=0;i<olen;i++) 
+      dp[i] = tgamma(sp[i]);
     return singleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
@@ -625,26 +239,16 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
     int olen(odims.getElementCount());
     float *sp = (float*) tmp.getDataPointer();
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
-    for (int i=0;i<olen;i++) {
-      float t;
-      t = algama_(sp+i);
-      if (t == 3.4e38)
-	t = atof("inf");
-      dp[i] = t;
-    }
+    for (int i=0;i<olen;i++) 
+      dp[i] = lgammaf(sp[i]);
     return singleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
     double *sp = (double*) tmp.getDataPointer();
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
-    for (int i=0;i<olen;i++) {
-      double t;
-      t = dlgama_(sp+i);
-      if (t == 1.79E308)
-	t = atof("inf");
-      dp[i] = t;
-    }
+    for (int i=0;i<olen;i++) 
+      dp[i] = lgamma(sp[i]);
     return singleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();

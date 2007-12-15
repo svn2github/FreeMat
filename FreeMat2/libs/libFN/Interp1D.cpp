@@ -33,7 +33,7 @@ int interv(const T *xt, int lxt, T x, int *left, int *mflag)
   static int ihi, istep, middle;
   
   /*  from  * a practical guide to splines *  by C. de Boor */
-  /* omputes  left = max( i :  xt(i) .lt. xt(lxt) .and.  xt(i) .le. x )  . */
+  /* Computes  left = max( i :  xt(i) .lt. xt(lxt) .and.  xt(i) .le. x )  . */
 
   /* ******  i n p u t  ****** */
   /*  xt.....a real sequence, of length  lxt , assumed to be nondecreasing */

@@ -54,6 +54,22 @@ public:
     m_children.push_back(child1);
     m_children.push_back(child2);
   }
+  inline void try_validate() {
+    for (int i=0;i<m_children.size();i++) {
+      if (m_children.at(i)) 
+	m_children.at(i)->try_validate();
+      else
+	throw Exception("validation failed");
+    }
+  }
+  inline void validate() {
+    try {
+      try_validate();
+    } catch(Exception &e) {
+      std::cout << "Tree fails validation!\n";
+      print();
+    }
+  }
   void freeze(Serialize *s) const;
   static Tree* deepTreeCopy(Tree *t) {
     Tree *p = new Tree(t->m_node);
@@ -66,7 +82,7 @@ public:
 class CodeBlock {
   Tree* m_tree;
 public:
-  inline CodeBlock(Tree *t, bool needClone = false) : m_tree(t) {if (needClone) clone();}
+  inline CodeBlock(Tree *t, bool needClone = false) : m_tree(t) {if (needClone) clone(); m_tree->validate();}
   inline CodeBlock(const CodeBlock& copy) {m_tree = copy.m_tree; clone();}
   inline CodeBlock() : m_tree(NULL) {}
   inline CodeBlock& operator=(const CodeBlock& copy) {

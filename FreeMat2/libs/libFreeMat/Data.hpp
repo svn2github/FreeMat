@@ -57,11 +57,11 @@ private:
   /**
    * The field names of the array - used only for structure array types.
    */
-  rvstring m_fieldNames;
+  StringVector m_fieldNames;
   /**
    * The class name - only used for user-defined classes
    */
-  rvstring m_className;
+  StringVector m_className;
 
 public:
   /**
@@ -70,8 +70,8 @@ public:
    */
   inline Data(Class aClass, const Dimensions& dims, void *s, 
 	      bool sparseflag = false, 
-	      rvstring fields = rvstring(), 
-	      rvstring classname = rvstring()) : 
+	      StringVector fields = StringVector(), 
+	      StringVector classname = StringVector()) : 
     m_dataClass(aClass), cp(s), m_dimensions(dims)  {
     m_sparse = sparseflag;
     m_fieldNames = fields;
@@ -108,8 +108,8 @@ public:
    */
   inline void putData(Class aClass, const Dimensions& dims, void *s, 
 		      bool sparseflag = false, 
-		      rvstring fields = rvstring(),
-		      rvstring classname = rvstring()) {
+		      StringVector fields = StringVector(),
+		      StringVector classname = StringVector()) {
     FreeData();
     cp = s;
     m_dataClass = aClass;
@@ -133,10 +133,10 @@ public:
   inline void setSparse(bool p) {m_sparse = p;}
   inline const Dimensions& dimensions() const {return m_dimensions;}
   inline void setDimensions(const Dimensions& p) {m_dimensions = p;}
-  inline const rvstring& fieldNames() const {return m_fieldNames;}
-  inline void setFieldNames(const rvstring& p) {m_fieldNames = p;}
-  inline const rvstring& className() const {return m_className;}
-  inline void setClassName(const rvstring& p) {m_className = p;}
+  inline const StringVector& fieldNames() const {return m_fieldNames;}
+  inline void setFieldNames(const StringVector& p) {m_fieldNames = p;}
+  inline const StringVector& className() const {return m_className;}
+  inline void setClassName(const StringVector& p) {m_className = p;}
   /**
    * Return true if this is a user-defined class
    */

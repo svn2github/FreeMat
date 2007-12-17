@@ -120,8 +120,8 @@ public:
     hashTable[hash_value] = new Entry(key,val,hashTable[hash_value]);
   }
     
-  stringVector getCompletions(const std::string& prefix) {
-    stringVector retlist;
+  StringVector getCompletions(const std::string& prefix) {
+    StringVector retlist;
     // Search through the symbol table...
     for (int i=0;i<SYMTAB;i++) {
       if (hashTable[i] != NULL) {

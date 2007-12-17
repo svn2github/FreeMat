@@ -137,7 +137,7 @@ class Interpreter : public QThread {
   /**
    * The command buffer
    */
-  stringVector cmd_buffer;
+  StringVector cmd_buffer;
   /**
    * A buffer of return values from graphics calls
    */
@@ -634,17 +634,17 @@ private:
    * expressions from a function call
    */
   void collectKeywords(Tree *q, ArrayVector &keyvals,
-		       TreeList &keyexpr, stringVector &keywords);
+		       TreeList &keyexpr, StringVector &keywords);
   /**
    * Sort keywords into a proper call order.
    */
-  int* sortKeywords(ArrayVector &m, stringVector &keywords,
-		    stringVector arguments, ArrayVector keyvals);
+  int* sortKeywords(ArrayVector &m, StringVector &keywords,
+		    StringVector arguments, ArrayVector keyvals);
   /**
    * For values passed by reference, update the caller's variables.
    */
-  void handlePassByReference(Tree *q, stringVector arguments,
-			     ArrayVector m,stringVector keywords,
+  void handlePassByReference(Tree *q, StringVector arguments,
+			     ArrayVector m,StringVector keywords,
 			     TreeList keyexpr, int* argTypeMap);
   /**
    * Create a variable in the correct scope, and return a reference to it

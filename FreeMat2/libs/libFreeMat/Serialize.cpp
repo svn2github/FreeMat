@@ -159,18 +159,18 @@ void Serialize::putByte(char t) {
   putBytes(&t,1);
 }
 
-void Serialize::putStringVector(stringVector t) {
+void Serialize::putStringVector(StringVector t) {
   sendSignature('S',1);
   putInt(t.size());
   for (int i=0;i<t.size();i++)
     putString(t[i].c_str());
 }
 
-stringVector Serialize::getStringVector() {
+StringVector Serialize::getStringVector() {
   checkSignature('S',1);
   int L = getInt();
   int i;
-  stringVector N;
+  StringVector N;
   for (i=0;i<L;i++)
     N.push_back(getString());
   return N;
@@ -307,7 +307,7 @@ double Serialize::getDouble() {
   return t;
 }
 
-Class Serialize::getDataClass(bool& sparseflag, rvstring& className) {
+Class Serialize::getDataClass(bool& sparseflag, StringVector& className) {
   checkSignature('a',1);
   char a = getByte();
   sparseflag = (a & 16) > 0;
@@ -362,7 +362,7 @@ Class Serialize::getDataClass(bool& sparseflag, rvstring& className) {
 }
 
 void Serialize::putDataClass(Class cls, bool issparse, 
-			     bool isuserclass, rvstring className) {
+			     bool isuserclass, StringVector className) {
   char sparseval;
   sparseval = issparse ? 16 : 0;
   sendSignature('a',1);
@@ -460,7 +460,7 @@ void Serialize::putArray(const Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    rvstring fnames(dat.fieldNames());
+    StringVector fnames(dat.fieldNames());
     int ncount(fnames.size());
     putInt(ncount);
     int i;
@@ -583,7 +583,7 @@ void Serialize::putArray(const Array& dat) {
 void Serialize::getArray(Array& dat) {
   checkSignature('A',1);
   bool sparseflag;
-  rvstring className;
+  StringVector className;
   Class dclass(getDataClass(sparseflag,className));
   Dimensions dims(getDimensions());
   int elCount(dims.getElementCount());
@@ -602,7 +602,7 @@ void Serialize::getArray(Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    rvstring fnames;
+    StringVector fnames;
     int ncount(getInt());
     int i;
     for (i=0;i<ncount;i++) 

@@ -813,7 +813,7 @@ bool SameSizeCheck(Dimensions Adim, Dimensions Bdim) {
  *      A is a scalar or B is a scalar.
  */
 inline void VectorCheck(Array& A, Array& B, bool promote, std::string opname){
-  stringVector dummySV;
+  StringVector dummySV;
 
   // Check for numeric types
   CheckNumeric(A,B,opname);
@@ -1007,7 +1007,7 @@ Array MatrixPowerSparse(Array a, Array b, Interpreter* m_eval) {
 inline Array DoPowerTwoArgFunction(Array A, Array B){
   Array C;
   bool Anegative;
-  stringVector dummySV;
+  StringVector dummySV;
   Class AClass, BClass;
   int opType;
 
@@ -3819,7 +3819,7 @@ Array Multiply(Array A, Array B, Interpreter* m_eval){
 Array LeftDivide(Array A, Array B, Interpreter* m_eval) {
 //   if (A.isEmpty() || B.isEmpty())
 //     return Array::emptyConstructor();
-  stringVector dummySV;
+  StringVector dummySV;
   // Process our arguments
   if (!MatrixCheck(A,B,"\\"))
     // Its really a vector product, pass...

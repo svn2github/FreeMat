@@ -119,7 +119,7 @@ class Context {
   /**
    * List of functions that are "temporary" and should be flushed
    */
-  stringVector tempFunctions;
+  StringVector tempFunctions;
   /**
    * Mutex to control access to this context class.
    */
@@ -285,10 +285,10 @@ public:
   inline bool variableLocalToCurrentScope(string varName) {
     return bottomScope->variableLocal(varName);
   }
-  inline void setVariablesAccessed(stringVector va) {
+  inline void setVariablesAccessed(StringVector va) {
     bottomScope->setVariablesAccessed(va);
   }
-  inline void setLocalVariablesList(stringVector rv) {
+  inline void setLocalVariablesList(StringVector rv) {
     bottomScope->setLocalVariables(rv);
   }
   /**
@@ -322,21 +322,23 @@ public:
   /**
    * Add a built in function to the global scope with the given name.
    */
-  inline void addFunction(char *name, BuiltInFuncPtr fptr, int argc_in, int argc_out, ...) {
-    stringVector args;
+  inline void addFunction(std::string name, BuiltInFuncPtr fptr, int argc_in, int argc_out, ...) {
+    StringVector args;
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++) {
 	const char *t = va_arg(argp, const char *);
 	if (!t) {
-	  qDebug() << "addFunction for function " << name << " is wrong!\n";
+	  qDebug() << "addFunction for function " << 
+	    QString::fromStdString(name) << " is wrong!\n";
 	  exit(1);
 	}
 	args.push_back(t);
       }
       if (va_arg(argp,const char *) != NULL) {
-	qDebug() << "addFunction for function " << name << " is wrong!\n";
+	qDebug() << "addFunction for function " << 
+	  QString::fromStdString(name) << " is wrong!\n";
 	exit(1);
       }
       va_end(argp);
@@ -353,21 +355,23 @@ public:
   /**
    * Add a special function to the global scope with the given name.
    */
-  inline void addSpecialFunction(char*name, SpecialFuncPtr fptr, int argc_in, int argc_out, ...) {
-    stringVector args;
+  inline void addSpecialFunction(std::string name, SpecialFuncPtr fptr, int argc_in, int argc_out, ...) {
+    StringVector args;
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++) {
 	const char *t = va_arg(argp, const char *);
 	if (!t) {
-	  qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	  qDebug() << "addSpecialFunction for function " << 
+	    QString::fromStdString(name) << " is wrong!\n";
 	  exit(1);
 	}
 	args.push_back(t);
       }
       if (va_arg(argp,const char *) != NULL) {
-	qDebug() << "addSpecialFunction for function " << name << " is wrong!\n";
+	qDebug() << "addSpecialFunction for function " << 
+	  QString::fromStdString(name) << " is wrong!\n";
 	exit(1);
       }
       va_end(argp);
@@ -385,21 +389,23 @@ public:
    * Add a built in function to the global scope with the given name
    * and tag it as a graphics function
    */
-  inline void addGfxFunction(char*name, BuiltInFuncPtr fptr, int argc_in, int argc_out, ...) {
-    stringVector args;
+  inline void addGfxFunction(std::string name, BuiltInFuncPtr fptr, int argc_in, int argc_out, ...) {
+    StringVector args;
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++) {
 	const char *t = va_arg(argp, const char *);
 	if (!t) {
-	  qDebug() << "addGfxFunction for function " << name << " is wrong!\n";
+	  qDebug() << "addGfxFunction for function " << 
+	    QString::fromStdString(name) << " is wrong!\n";
 	  exit(1);
 	}
 	args.push_back(t);
       }
       if (va_arg(argp,const char *) != NULL) {
-	qDebug() << "addGfxFunction for function " << name << " is wrong!\n";
+	qDebug() << "addGfxFunction for function " << 
+	  QString::fromStdString(name) << " is wrong!\n";
 	exit(1);
       }
       va_end(argp);
@@ -418,21 +424,23 @@ public:
    * Add a special function to the global scope with the given name, and
    * tag it as a graphics function
    */
-  inline void addGfxSpecialFunction(char*name, SpecialFuncPtr fptr, int argc_in, int argc_out, ...) {
-    stringVector args;
+  inline void addGfxSpecialFunction(std::string name, SpecialFuncPtr fptr, int argc_in, int argc_out, ...) {
+    StringVector args;
     va_list argp;
     if (argc_in>0) {
       va_start(argp,argc_out);
       for (int i=0;i<argc_in;i++) {
 	const char *t = va_arg(argp, const char *);
 	if (!t) {
-	  qDebug() << "addGfxSpecialFunction for function " << name << " is wrong!\n";
+	  qDebug() << "addGfxSpecialFunction for function " << 
+	    QString::fromStdString(name) << " is wrong!\n";
 	  exit(1);
 	}
 	args.push_back(t);
       }
       if (va_arg(argp,const char *) != NULL) {
-	qDebug() << "addGfxSpecialFunction for function " << name << " is wrong!\n";
+	qDebug() << "addGfxSpecialFunction for function " << 
+	  QString::fromStdString(name) << " is wrong!\n";
 	exit(1);
       }
       va_end(argp);
@@ -448,15 +456,15 @@ public:
     insertFunction(f2def,false);
   }
   
-  inline stringVector listAllFunctions() {
+  inline StringVector listAllFunctions() {
     return codeTab.getCompletions("");
   }
 
-  inline stringVector listGlobalVariables() {
+  inline StringVector listGlobalVariables() {
     return topScope->listAllVariables();
   }
 
-  inline stringVector listAllVariables() {
+  inline StringVector listAllVariables() {
     return bottomScope->listAllVariables();
   }
 
@@ -470,11 +478,11 @@ public:
     bottomScope->clearPersistentVariableList();
   }
 
-  inline stringVector getCompletions(const std::string& prefix) {
-    stringVector local_completions = bottomScope->getCompletions(prefix);
-    stringVector global_completions = topScope->getCompletions(prefix);
-    stringVector code_completions = codeTab.getCompletions(prefix);
-    stringVector completions(local_completions);
+  inline StringVector getCompletions(const std::string& prefix) {
+    StringVector local_completions = bottomScope->getCompletions(prefix);
+    StringVector global_completions = topScope->getCompletions(prefix);
+    StringVector code_completions = codeTab.getCompletions(prefix);
+    StringVector completions(local_completions);
     for (int i=0;i<global_completions.size();i++)
       completions.push_back(global_completions[i]);
     for (int i=0;i<code_completions.size();i++)

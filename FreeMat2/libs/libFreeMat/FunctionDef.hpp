@@ -91,7 +91,7 @@ public:
    * Should have "varargin" as the last entry for variable argument
    * functions.
    */
-  stringVector arguments;
+  StringVector arguments;
   /**
    * The constructor.
    */
@@ -170,7 +170,7 @@ public:
  * When the updateCode() member function is called, the contents of
  * the file are parsed (if necessary), and the resulting AST code tree
  * is stored.  The number of input and output arguments are computed
- * based on the contents of the returnVals and arguments stringVectors.
+ * based on the contents of the returnVals and arguments StringVectors.
  */
 class MFunctionDef : public FunctionDef {
 public:
@@ -181,7 +181,7 @@ public:
    * returnVals contains two entries: "a", and "b".  For variable
    * return functions, the last entry should be "varargout".
    */
-  stringVector returnVals;
+  StringVector returnVals;
   /**
    * The AST for the code that defines the function (only the body of the
    * function is contained in this AST, not the function declaration itself).
@@ -209,12 +209,12 @@ public:
   /**
    * The help text.
    */
-  stringVector helpText;
+  StringVector helpText;
   /**
    * The variable access list - used as a hinting mechanism to try and
    * resolve scope rules for nested functions.
    */
-  stringVector variablesAccessed;
+  StringVector variablesAccessed;
   /**
    * The workspace for this function - used for capturing variables
    * when functions are used out of scope.
@@ -382,7 +382,7 @@ public:
   /**
    * The types of each argument
    */
-  stringVector types;
+  StringVector types;
   /**
    * The guard expressions associated with each argument
    */
@@ -395,8 +395,8 @@ public:
    * Default constructor
    */
   ImportedFunctionDef(GenericFuncPointer address_arg,
-		      stringVector types_arg,
-		      stringVector arguments_arg,
+		      StringVector types_arg,
+		      StringVector arguments_arg,
 		      CodeList sizeChecks,
 		      std::string retType_arg);
   /**

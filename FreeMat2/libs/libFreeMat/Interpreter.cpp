@@ -2294,7 +2294,7 @@ void Interpreter::displayArray(Array b) {
   FuncPtr val;
   if (b.isUserClass() && ClassResolveFunction(this,b,"display",val)) {
     if (val->updateCode(this)) refreshBreakpoints();
-    ArrayVector args(singleArrayVector(b));
+    ArrayVector args(SingleArrayVector(b));
     ArrayVector retvec(val->evaluateFunction(this,args,1));
   } else
     PrintArrayClassic(b,printLimit,this);
@@ -2417,7 +2417,7 @@ void Interpreter::assign(ArrayReference r, Tree *s, Array &data) {
     else
       r->setNDimSubset(m,data,this);
   } else if (s->is(TOK_BRACES)) {
-    ArrayVector datav(singleArrayVector(data));
+    ArrayVector datav(SingleArrayVector(data));
     ArrayVector m;
     endTotal = s->numChildren();
     for (int p = 0; p < s->numChildren(); p++) {
@@ -2430,7 +2430,7 @@ void Interpreter::assign(ArrayReference r, Tree *s, Array &data) {
     else
       r->setNDimContentsAsList(m,datav,this);
   } else if (s->is('.')) {
-    ArrayVector datav(singleArrayVector(data));
+    ArrayVector datav(SingleArrayVector(data));
     r->setFieldAsList(s->first()->text(),datav);
   } else if (s->is(TOK_DYN)) {
     string field;
@@ -2440,7 +2440,7 @@ void Interpreter::assign(ArrayReference r, Tree *s, Array &data) {
     } catch (Exception &e) {
       throw Exception("dynamic field reference to structure requires a string argument");
     }
-    ArrayVector datav(singleArrayVector(data));
+    ArrayVector datav(SingleArrayVector(data));
     r->setFieldAsList(field,datav);
   }
   RestoreEndInfo;
@@ -3158,7 +3158,7 @@ Array Interpreter::AllColonReference(Array v, int index, int count) {
 //test
 void Interpreter::specialFunctionCall(Tree *t, bool printIt) {
   ArrayVector m;
-  stringVector args;
+  StringVector args;
   for (int index=0;index < t->numChildren();index++) 
     args.push_back(t->child(index)->text());
   if (args.empty()) return;
@@ -3309,7 +3309,7 @@ void Interpreter::multiFunctionCall(Tree *t, bool printIt) {
     warningMessage("one or more outputs not assigned in call.");
 }
 
-int getArgumentIndex(stringVector list, std::string t) {
+int getArgumentIndex(StringVector list, std::string t) {
   bool foundArg = false;
   std::string q;
   int i = 0;
@@ -3875,7 +3875,7 @@ int getArgumentIndex(stringVector list, std::string t) {
 //@>
 //!
 void Interpreter::collectKeywords(Tree *q, ArrayVector &keyvals,
-				  TreeList &keyexpr, stringVector &keywords) {
+				  TreeList &keyexpr, StringVector &keywords) {
   // Search for the keyword uses - 
   // To handle keywords, we make one pass through the arguments,
   // recording a list of keywords used and using ::expression to
@@ -3894,8 +3894,8 @@ void Interpreter::collectKeywords(Tree *q, ArrayVector &keyvals,
   }
 }
 
-int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
-			       stringVector arguments, ArrayVector keyvals) {
+int* Interpreter::sortKeywords(ArrayVector &m, StringVector &keywords,
+			       StringVector arguments, ArrayVector keyvals) {
   // If keywords were used, we have to permute the
   // entries of the arrayvector to the correct order.
   int *keywordNdx = new int[keywords.size()];
@@ -3970,8 +3970,8 @@ int* Interpreter::sortKeywords(ArrayVector &m, stringVector &keywords,
 // m is vector of argument values
 // keywords is the list of values passed as keywords
 // keyexpr is the   
-void Interpreter::handlePassByReference(Tree *q, stringVector arguments,
-					ArrayVector m,stringVector keywords, 
+void Interpreter::handlePassByReference(Tree *q, StringVector arguments,
+					ArrayVector m,StringVector keywords, 
 					TreeList keyexpr, int* argTypeMap) {
   Tree *p;
   // M functions can modify their arguments
@@ -4006,7 +4006,7 @@ void Interpreter::functionExpression(Tree *t,
 				     bool outputOptional,
 				     ArrayVector &output) {
   ArrayVector m, n;
-  stringVector keywords;
+  StringVector keywords;
   ArrayVector keyvals;
   TreeList keyexpr;
   FuncPtr funcDef;
@@ -4128,7 +4128,7 @@ void Interpreter::toggleBP(QString fname, int lineNumber) {
 }
 
 MFunctionDef* Interpreter::lookupFullPath(string fname) {
-  stringVector allFuncs(context->listAllFunctions());
+  StringVector allFuncs(context->listAllFunctions());
   FuncPtr val;
   for (int i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
@@ -4154,7 +4154,7 @@ void Interpreter::addBreakpoint(string name, int line) {
   else
     fullFileName = name;
   // Get a list of all functions
-  stringVector allFuncs(context->listAllFunctions());
+  StringVector allFuncs(context->listAllFunctions());
   // We make one pass through the functions, and update 
   // those functions that belong to the given filename
   for (int i=0;i<allFuncs.size();i++) {

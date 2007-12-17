@@ -43,10 +43,10 @@ bool Scope::referenced() {
 
 ScopePtr ThawScope(Serialize *s) {
   string name(s->getString());
-  stringVector globalVars(s->getStringVector());
-  stringVector persistentVars(s->getStringVector());
-  stringVector variablesAccessed(s->getStringVector());
-  stringVector localVariables(s->getStringVector());
+  StringVector globalVars(s->getStringVector());
+  StringVector persistentVars(s->getStringVector());
+  StringVector variablesAccessed(s->getStringVector());
+  StringVector localVariables(s->getStringVector());
   bool isNested(s->getBool());
   Scope *q = new Scope(name,isNested);
   q->setVariablesAccessed(variablesAccessed);
@@ -55,7 +55,7 @@ ScopePtr ThawScope(Serialize *s) {
     q->addPersistentVariablePointer(persistentVars[i]);
   for (int i=0;i<globalVars.size();i++)
     q->addGlobalVariablePointer(globalVars[i]);
-  stringVector names(s->getStringVector());
+  StringVector names(s->getStringVector());
   for (int i=0;i<names.size();i++) {
     bool arrayDefed = s->getBool();
     if (arrayDefed) {
@@ -74,7 +74,7 @@ void FreezeScope(ScopePtr scope, Serialize *s) {
   s->putStringVector(scope->getVariablesAccessedList());
   s->putStringVector(scope->getLocalVariablesList());
   s->putBool(scope->isnested());
-  stringVector names(scope->getCompletions(""));
+  StringVector names(scope->getCompletions(""));
   s->putStringVector(names);
   for (int i=0;i<names.size();i++) {
     Array* p = scope->lookupVariable(names[i]);

@@ -37,8 +37,8 @@
 
 QMutex functiondefmutex;
 
-static stringVector IdentifierList(Tree *t) {
-  stringVector retval;
+static StringVector IdentifierList(Tree *t) {
+  StringVector retval;
   for (int index=0;index<t->numChildren();index++) {
     if (t->child(index)->is('&'))
       retval.push_back("&" + t->child(index)->first()->text());
@@ -48,7 +48,7 @@ static stringVector IdentifierList(Tree *t) {
   return retval;
 }
 
-static void VariableReferencesList(Tree *t, stringVector& idents) {
+static void VariableReferencesList(Tree *t, StringVector& idents) {
   if (t->is(TOK_NEST_FUNC)) return;
   if (t->is(TOK_VARIABLE)) {
     bool exists = false;
@@ -83,7 +83,7 @@ ArrayVector AnonymousFunctionDef::evaluateFunction(Interpreter *eval, ArrayVecto
   Context * context = eval->getContext();
   context->pushScope("anonymous");
   eval->pushDebug("anonymous","anonymous");
-  stringVector workspaceVars(workspace.getCompletions(""));
+  StringVector workspaceVars(workspace.getCompletions(""));
   for (int i=0;i<workspaceVars.size();i++)
     context->insertVariableLocally(workspaceVars[i],*workspace.findSymbol(workspaceVars[i]));
   int minCount = (((int)inputs.size()) < arguments.size()) ? 
@@ -118,7 +118,7 @@ void AnonymousFunctionDef::initialize(Tree *t, Interpreter *eval) {
   scriptFlag = false;
   temporaryFlag = false;
   graphicsFunction = false;
-  stringVector vars;
+  StringVector vars;
   VariableReferencesList(t->second(),vars);
   for (int i=0;i<vars.size();i++) {
     ArrayReference ptr(eval->getContext()->lookupVariable(vars[i]));
@@ -158,7 +158,7 @@ int MFunctionDef::outputArgCount() {
 }
 
 void MFunctionDef::printMe(Interpreter*eval) {
-  stringVector tmp;
+  StringVector tmp;
   char msgBuffer[MSGBUFLEN];
   snprintf(msgBuffer,MSGBUFLEN,"Function name:%s\n",name.c_str());
   eval->outputMessage(msgBuffer);
@@ -239,7 +239,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   context->setVariablesAccessed(variablesAccessed);
   context->setLocalVariablesList(returnVals);
   if (capturedFunction && workspace) {
-    stringVector workspaceVars(workspace->getCompletions(""));
+    StringVector workspaceVars(workspace->getCompletions(""));
     for (int i=0;i<workspaceVars.size();i++)
       context->insertVariableLocally(workspaceVars[i],
 				     *workspace->lookupVariable(workspaceVars[i]));
@@ -390,7 +390,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     // Check the outputs for function pointers
     CaptureFunctionPointers(outputs,walker,this);
     if (capturedFunction && workspace) {
-      stringVector workspaceVars(workspace->getCompletions(""));
+      StringVector workspaceVars(workspace->getCompletions(""));
       for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
@@ -401,7 +401,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
     return outputs;
   } catch (Exception& e) {
     if (capturedFunction && workspace) {
-      stringVector workspaceVars(workspace->getCompletions(""));
+      StringVector workspaceVars(workspace->getCompletions(""));
       for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
@@ -413,7 +413,7 @@ ArrayVector MFunctionDef::evaluateFunction(Interpreter *walker,
   }
   catch (InterpreterRetallException& e) {
     if (capturedFunction && workspace) {
-      stringVector workspaceVars(workspace->getCompletions(""));
+      StringVector workspaceVars(workspace->getCompletions(""));
       for (int i=0;i<workspaceVars.size();i++) {
 	Array *ptr = context->lookupVariableLocally(workspaceVars[i]);
 	workspace->insertVariable(workspaceVars[i],*ptr);
@@ -672,7 +672,7 @@ int BuiltInFunctionDef::outputArgCount() {
 }
 
 void BuiltInFunctionDef::printMe(Interpreter *eval) {
-  stringVector tmp;
+  StringVector tmp;
   char msgBuffer[MSGBUFLEN];
   snprintf(msgBuffer,MSGBUFLEN," Function name:%s\n",name.c_str());
   eval->outputMessage(msgBuffer);
@@ -756,8 +756,8 @@ FunctionDef::~FunctionDef() {
 
 
 ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
-					 stringVector types_arg,
-					 stringVector arguments_arg,
+					 StringVector types_arg,
+					 StringVector arguments_arg,
 					 CodeList sizeChecks,
 					 std::string retType_arg) {
   address = address_arg;
@@ -1004,7 +1004,7 @@ ArrayVector ImportedFunctionDef::evaluateFunction(Interpreter *walker,
   free(refPointers);
   free(values);
   walker->popDebug();
-  return singleArrayVector(retArray);
+  return SingleArrayVector(retArray);
 #else
   throw Exception("Support for the import command requires that the avcall library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install avcall and recompile FreeMat.");
 #endif

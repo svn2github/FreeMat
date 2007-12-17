@@ -71,7 +71,7 @@ class Scope {
    * scope.  Global variables are not stored in this Scope, but
    * are deferred to the top scope in the Context.
    */
-  stringVector globalVars;
+  StringVector globalVars;
   /**
    * Persistent variables are similar to global variables in that
    * they are deferred to the top scope in the Context.  However,
@@ -79,17 +79,17 @@ class Scope {
    * with the name of the scope before being indexed into the global 
    * scope.
    */
-  stringVector persistentVars;
+  StringVector persistentVars;
   /**
    * This string vector contains the names of variables accessed (potentially)
    * in this scope.
    */
-  stringVector variablesAccessed;
+  StringVector variablesAccessed;
   /**
    * This string vector contains the names of variables that must be local to this
    * scope.
    */
-  stringVector localVariables;
+  StringVector localVariables;
   /**
    * On every call to modify the scope, we have to check the global/persistent
    * variable table.  This is generally expensive, so we cache information
@@ -110,7 +110,7 @@ public:
 					      anyGlobals(false),
 					      isNested(nested)  {}
 
-  inline void setVariablesAccessed(stringVector varList) {
+  inline void setVariablesAccessed(StringVector varList) {
     variablesAccessed = varList;
   }
   inline bool variableAccessed(string varName) {
@@ -118,13 +118,13 @@ public:
       if (variablesAccessed[i] == varName) return true;
     return false;
   }
-  inline stringVector getVariablesAccessedList() {
+  inline StringVector getVariablesAccessedList() {
     return variablesAccessed;
   }
-  inline void setLocalVariables(stringVector varList) {
+  inline void setLocalVariables(StringVector varList) {
     localVariables = varList;
   }
-  inline stringVector getLocalVariablesList() {
+  inline StringVector getLocalVariablesList() {
     return localVariables;
   }
   inline bool variableLocal(string varName) {
@@ -196,14 +196,14 @@ public:
       anyGlobals = true;
     }
   }
-  inline stringVector getGlobalVariablesList() {
+  inline StringVector getGlobalVariablesList() {
     return globalVars;
   }
   /**
    * Delete a variable name from the global variables list.
    */
   inline void deleteGlobalVariablePointer(std::string varName) {
-    stringVector::iterator i = std::find(globalVars.begin(),
+    StringVector::iterator i = std::find(globalVars.begin(),
 					 globalVars.end(),
 					 varName);
     if (*i == varName)
@@ -233,14 +233,14 @@ public:
       anyPersistents = true;
     }
   }
-  inline stringVector getPersistentVariablesList() {
+  inline StringVector getPersistentVariablesList() {
     return persistentVars;
   }
   /**
    * Delete a variable name from the persistent variables list.
    */
   inline void deletePersistentVariablePointer(std::string varName) {
-    stringVector::iterator i = std::find(persistentVars.begin(),
+    StringVector::iterator i = std::find(persistentVars.begin(),
 					 persistentVars.end(),
 					 varName);
     if (*i == varName)
@@ -297,15 +297,15 @@ public:
    * Get a list of all possible completions of the given
    * string.
    */
-   inline stringVector getCompletions(const std::string& prefix) {
+   inline StringVector getCompletions(const std::string& prefix) {
      return symTab.getCompletions(prefix);
   }
   /**
    * Returns a list of all currently defined variables
    * in the active scope.
    */
-  inline stringVector listAllVariables() {
-    stringVector names(symTab.getCompletions(""));
+  inline StringVector listAllVariables() {
+    StringVector names(symTab.getCompletions(""));
     for (int i=0;i<globalVars.size();i++)
       names.push_back(globalVars[i]);
     for (int i=0;i<persistentVars.size();i++)

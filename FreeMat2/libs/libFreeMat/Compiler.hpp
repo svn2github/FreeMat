@@ -552,7 +552,7 @@ public:
   VMInstruction* operator[](int i) {return p_data[i];}
   SymbolInformation* find_symbol(string name) {return p_symbols.findSymbol(name);}
   void add_symbol(const string &key, const SymbolInformation &val) {p_symbols.insertSymbol(key,val);}
-  stringVector get_symbol_names() {return p_symbols.getCompletions("");}
+  StringVector get_symbol_names() {return p_symbols.getCompletions("");}
   void Run(Interpreter* m_eval);
   inline unsigned GetReg() { return reglist++; }
 };

@@ -28,10 +28,10 @@
 #include <QDir>
 
 SymbolTable<DynLib*> libPointers;
-stringVector DynamicFunctions;
+StringVector DynamicFunctions;
 
 void ClearLibs(Interpreter* eval) {
-  stringVector libnames(libPointers.getCompletions(""));
+  StringVector libnames(libPointers.getCompletions(""));
   for (int i=0;i<libnames.size();i++) {
     DynLib **ptr = libPointers.findSymbol(libnames[i]);
     libPointers.deleteSymbol(libnames[i]);
@@ -401,8 +401,8 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
   } else
     lib = *ptr;
   func = lib->GetSymbol(symbolname.c_str());
-  stringVector types;
-  stringVector arguments;
+  StringVector types;
+  StringVector arguments;
   CodeList checks;
   /**
    * Parse the arglist...

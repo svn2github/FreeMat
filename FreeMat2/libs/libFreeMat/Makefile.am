@@ -20,6 +20,7 @@ IEEEFP.hpp \
 LAPACK.hpp \
 LeastSquaresSolver.hpp \
 LinearEqSolver.hpp \
+List.hpp \
 LUDecompose.hpp \
 Malloc.hpp \
 Math.hpp \

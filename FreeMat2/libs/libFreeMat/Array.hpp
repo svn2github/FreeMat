@@ -35,7 +35,7 @@ class Array;
 class Interpreter;
 
 typedef PList<Array> ArrayVector;
-ArrayVector singleArrayVector(Array);
+ArrayVector SingleArrayVector(Array);
 typedef QVector<ArrayVector> ArrayMatrix;
 
 class FuncPtr;
@@ -112,7 +112,7 @@ public:
   /**
    * Allocate an array.
    */
-  static void* allocateArray(Class, uint32 length,rvstring names = rvstring());
+  static void* allocateArray(Class, uint32 length,StringVector names = StringVector());
   /** Convert us to an index type
    * Convert the current object to an ordinal one.  This has different
    * meanings for different data types.  
@@ -139,13 +139,13 @@ public:
    * Create an empty Array of the specified type.
    */
   inline Array(Class type) {
-    dp = new Data(type,Dimensions(),NULL,false,rvstring(),rvstring());
+    dp = new Data(type,Dimensions(),NULL,false,StringVector(),StringVector());
   }
   /**
    * Create an Array with the specified contents.
    */
   inline Array(Class type, const Dimensions& dims, void* t_data, bool t_sparse = false, 
-	       rvstring t_fieldNames = rvstring(), rvstring classname = rvstring()) {
+	       StringVector t_fieldNames = StringVector(), StringVector classname = StringVector()) {
     dp = new Data(type, dims, t_data, t_sparse, t_fieldNames, classname);
   }
   /**
@@ -154,7 +154,7 @@ public:
   inline Array(Class type, const Dimensions& dims) {
     dp = new Data(type, dims, 
 		  allocateArray(type,dims.getElementCount()), 
-		  false, rvstring(), rvstring());
+		  false, StringVector(), StringVector());
   }
   /**
    * Get the length of the array as a vector.  This is equivalent
@@ -178,16 +178,16 @@ public:
   /**
    * Return name of user-defined class
    */
-  inline rvstring className() const {
+  inline StringVector className() const {
     if (dp)
       return dp->className();
     else
-      return rvstring();
+      return StringVector();
   }
   /**
    * Set classname tag - implies this is a structure array.
    */
-  inline void setClassName(rvstring cname) {
+  inline void setClassName(StringVector cname) {
     if (dataClass() != FM_STRUCT_ARRAY)
       throw Exception("cannot set class name for non-struct array");
     dp->setClassName(cname);
@@ -204,11 +204,11 @@ public:
   /**
    * Get the fieldnames.
    */
-  inline rvstring fieldNames() const {
+  inline StringVector fieldNames() const {
     if (dp)
       return dp->fieldNames();
     else
-      return rvstring();
+      return StringVector();
   }
   /**
    * Get our length along the given dimension.
@@ -255,8 +255,8 @@ public:
 
   inline void setData(Class aClass, const Dimensions& dims, void *s, 
 		      bool sparseflag = false, 
-		      rvstring fields = rvstring(),
-		      rvstring classname = rvstring()) {
+		      StringVector fields = StringVector(),
+		      StringVector classname = StringVector()) {
     if (dp)
       dp->putData(aClass,dims,s,sparseflag,fields,classname);
     else 
@@ -482,7 +482,7 @@ public:
    *   - we try to convert a structure-array to a non-structure array type.
    *   - we try to convert any numerical types to a reference type.
    */
-  void promoteType(Class new_type, rvstring fieldNames);
+  void promoteType(Class new_type, StringVector fieldNames);
   /**
    * Promote our array to a new type.  This is a shortcut for when new_type is not
    * FM_STRUCT_ARRAY, so that the fieldNames argument is not needed.
@@ -670,7 +670,7 @@ public:
    *    the number of entries in the values vector
    *  - the non-scalar values do not agree in dimension
    */
-  static Array structConstructor(rvstring fNames, ArrayVector& values);
+  static Array structConstructor(StringVector fNames, ArrayVector& values);
   /**
    * Get a subset of an Array.  This is for vector-indexing, meaning that
    * the argument is assumed to refer to the elements in their order as a vector.
@@ -845,5 +845,5 @@ uint32 TypeSize(Class cls);
 
 string operator+(string a, int d);
 string operator+(int d, string a);
-stringVector operator+(stringVector a, stringVector b);
+StringVector operator+(StringVector a, StringVector b);
 #endif

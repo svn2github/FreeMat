@@ -1,6 +1,7 @@
 #ifndef __List_hpp__
 #define __List_hpp__
 
+#include <vector>
 #include <QList>
 #include "Exception.hpp"
 
@@ -139,6 +140,26 @@ public:
       return true;
     else
       return false;
+  }
+};
+
+template <class T>
+class PList : public std::vector<T> {
+public:
+  inline void pop_front() {
+    erase(this->begin());
+  }
+  inline PList<T>& operator<< (const T& value) {
+    push_back(value);
+    return *this;
+  }
+  inline void push_front(const T& value) {
+    insert(this->begin(),value);
+  }
+  inline PList<T>& operator+= (const PList<T>& other) {
+    for (int i=0;i<other.size();i++)
+      push_back(other[i]);
+    return *this;
   }
 };
 

@@ -26,6 +26,7 @@
 #include <QList>
 #include <QRegExp>
 #include "RefVec.hpp"
+#include "List.hpp"
 
 typedef quint8    logical;
 typedef qint8     int8;
@@ -59,8 +60,7 @@ typedef enum {
   FM_STRING,
 } Class;
 
-typedef QVector<std::string> stringVector;
-typedef QList<std::string> rvstring;
+typedef PList<std::string> StringVector;
 
 inline size_t ByteSize(Class t) {
   switch(t) {

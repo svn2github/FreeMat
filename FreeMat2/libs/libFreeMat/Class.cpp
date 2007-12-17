@@ -26,8 +26,8 @@
 //  The list of parent objects must also be the same for all objects
 //  So, classes are stored as the following:
 //     class UserClass {
-//         stringVector fieldNames;
-//         stringVector parentClasses;
+//         StringVector fieldNames;
+//         StringVector parentClasses;
 //     }
 //  Also, somewhere we require a table that
 //  tracks the hierarchy relationship of the classes.
@@ -112,7 +112,7 @@
 UserClass::UserClass() {
 }
 
-UserClass::UserClass(rvstring fields, rvstring parents) :
+UserClass::UserClass(StringVector fields, StringVector parents) :
   fieldNames(fields), parentClasses(parents) {
 }
 
@@ -124,11 +124,11 @@ bool UserClass::matchClass(UserClass test) {
 UserClass::~UserClass() {
 }
 
-rvstring UserClass::getParentClasses() {
+StringVector UserClass::getParentClasses() {
   return parentClasses;
 }
 
-Array ClassAux(Array s, std::string classname, rvstring parentNames, 
+Array ClassAux(Array s, std::string classname, StringVector parentNames, 
 	       ArrayVector parents, Interpreter* eval) {
   UserClass newclass(s.fieldNames(),parentNames);
   if (s.dataClass() != FM_STRUCT_ARRAY) 
@@ -146,7 +146,7 @@ Array ClassAux(Array s, std::string classname, rvstring parentNames,
   // Set up the new structure array.  We do this by constructing a set of fieldnames
   // that includes fields for the parent classes...  To resolve - what happens
   // if the parent arrays are different sizes than the current class.
-  rvstring newfields(s.fieldNames());
+  StringVector newfields(s.fieldNames());
   // We should check for duplicates!
   for (int i=0;i<parentNames.size();i++)
     newfields.push_back(parentNames.at(i));
@@ -174,7 +174,7 @@ Array ClassAux(Array s, std::string classname, rvstring parentNames,
     }
   // return a new object with the specified properties
   Array retval(FM_STRUCT_ARRAY,s.dimensions(),dp,false,newfields);
-  rvstring cp;
+  StringVector cp;
   cp.push_back(classname);
   retval.setClassName(cp);
   return retval;
@@ -791,9 +791,9 @@ ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
   if (arg.size() == 0)
     throw Exception("class function requires at least one argument");
   if (arg.size() == 1) 
-    return singleArrayVector(ClassOneArgFunction(arg[0]));
+    return SingleArrayVector(ClassOneArgFunction(arg[0]));
   ArrayVector parents;
-  rvstring parentNames;
+  StringVector parentNames;
   for (int i=2;i<arg.size();i++) {
     Array parent(arg[i]);
     if (!parent.isUserClass())
@@ -803,7 +803,7 @@ ArrayVector ClassFunction(int nargout, const ArrayVector& arg,
   }
   Array sval(arg[0]);
   Array classname(arg[1]);
-  return singleArrayVector(ClassAux(sval,classname.getContentsAsString(),
+  return SingleArrayVector(ClassAux(sval,classname.getContentsAsString(),
 				    parentNames,parents,eval));
 }
 
@@ -882,7 +882,7 @@ Array ClassMatrixConstructor(ArrayMatrix m, Interpreter* eval) {
     // an ArrayMatrix instead of an ArrayVector.
     ArrayMatrix ref;
     for (int i=0;i<rows.size();i++)
-      ref.push_back(singleArrayVector(rows[i]));
+      ref.push_back(SingleArrayVector(rows[i]));
     return Array::matrixConstructor(ref);
   } else {
     // We do have a user defined class - look for a vertcat defined
@@ -925,11 +925,11 @@ bool ClassResolveFunction(Interpreter* eval, Array& args, std::string funcName, 
     return true;
   } 
   UserClass eclass(eval->lookupUserClass(args.className().back()));
-  rvstring parentClasses(eclass.getParentClasses());
+  StringVector parentClasses(eclass.getParentClasses());
   // Now check the parent classes
   for (int i=0;i<parentClasses.size();i++) {
     if (context->lookupFunction(ClassMangleName(parentClasses.at(i),funcName),val)) {
-      rvstring argClass(args.className());
+      StringVector argClass(args.className());
       argClass.push_back(parentClasses.at(i));
       args.setClassName(argClass);
       return true;
@@ -940,7 +940,7 @@ bool ClassResolveFunction(Interpreter* eval, Array& args, std::string funcName, 
 }
 
 void printClassNames(Array a) {
-  rvstring classname(a.className());
+  StringVector classname(a.className());
   for (int i=0;i<classname.size();i++)
     std::cout << "class " << classname.at(i) << "\r\n";
 }
@@ -1014,7 +1014,7 @@ Array IndexExpressionToStruct(Interpreter* eval, Tree *t, Array r) {
    ArrayVector struct_args;
    ArrayVector rv;
    Array rsave(r);
-   rvstring fNames;
+   StringVector fNames;
    fNames.push_back("type");
    fNames.push_back("subs");
    for (int index=1;index < t->numChildren();index++) {
@@ -1130,7 +1130,7 @@ ArrayVector ClassRHSExpression(Array r, Tree *t, Interpreter* eval) {
    }
    if (t->child(index)->is('.')) {
      // This is where the classname chain comes into being.
-     rvstring className(r.className());
+     StringVector className(r.className());
      for (int i=1;i<className.size();i++) {
 	rv = r.getFieldAsList(className.at(i));
 	r = rv[0];

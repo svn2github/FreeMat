@@ -949,7 +949,7 @@ void JITVM::compile(Tree* t, Interpreter *m_eval) {
 
 void JITVM::run(Interpreter *m_eval) {
   // Collect the list of arguments
-  stringVector argumentList(symbols.getCompletions(""));
+  StringVector argumentList(symbols.getCompletions(""));
   // Allocate the argument array
   args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
   // For each argument in the array, retrieve it from the interpreter

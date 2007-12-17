@@ -770,7 +770,7 @@ void KeyManager::Yank() {
   AddStringToLine(cutbuf);
 }
 
-void KeyManager::ListCompletions(stringVector completions) {
+void KeyManager::ListCompletions(StringVector completions) {
   int maxlen;    /* The length of the longest matching string */
   int width;     /* The width of a column */
   int ncol;      /* The number of columns to list */
@@ -832,7 +832,7 @@ void KeyManager::ListCompletions(stringVector completions) {
   };
 }
 
-string GetCommonPrefix(stringVector matches,
+string GetCommonPrefix(StringVector matches,
 		       string tempstring) {
   int minlength;
   int prefixlength;
@@ -871,7 +871,7 @@ void KeyManager::CompleteWord() {
                           /*  total length of the line. */
   int buff_pos;           /* The buffer index at which the completion is */
                           /*  to be inserted. */
-  stringVector matches;
+  StringVector matches;
   redisplay = 1;
   /*
    * Get the cursor position at which the completion is to be inserted.
@@ -1186,10 +1186,10 @@ static char *start_of_path(const char *string, int back_from)
   return (char *)string + i + 1;
 }
 
-stringVector KeyManager::GetCompletions(string line, 
+StringVector KeyManager::GetCompletions(string line, 
 					  int word_end, 
 					  string &matchString) {
-  stringVector completions;
+  StringVector completions;
   if (!context->getMutex()->tryLock()) return completions;
   QMutexLocker lock(context->getMutex());
   context->getMutex()->unlock();
@@ -1212,12 +1212,12 @@ stringVector KeyManager::GetCompletions(string line,
    */
   if (!context) return completions;
   if (start[-1] != '\'') {
-    stringVector local_completions(context->getCompletions(string(start)));
+    StringVector local_completions(context->getCompletions(string(start)));
     for (int i=0;i<local_completions.size();i++) 
       if (local_completions[i].find("private:") == local_completions[i].npos)
 	completions.push_back(local_completions[i]);
   }
-  stringVector comp(GetCompletionList(tmp));
+  StringVector comp(GetCompletionList(tmp));
   for (int i=0;i<comp.size();i++) 
     if (comp[i].find("private:") == comp[i].npos)
       completions.push_back(comp[i]);

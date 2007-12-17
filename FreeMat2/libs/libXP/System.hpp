@@ -22,5 +22,5 @@
 
 #include "Types.hpp"
 
-stringVector DoSystemCallCaptured(std::string cmd);
+StringVector DoSystemCallCaptured(std::string cmd);
 #endif

@@ -24,5 +24,5 @@
 #include "Types.hpp"
 
 QStringList GetRecursiveDirList(QString basedir);
-stringVector GetCompletionList(std::string pattern);
+StringVector GetCompletionList(std::string pattern);
 #endif

@@ -37,14 +37,14 @@ QStringList GetRecursiveDirList(QString basedir) {
   return ret;
 }
 
-stringVector GetCompletionList(string pattern) {
-  stringVector completions;
+StringVector GetCompletionList(string pattern) {
+  StringVector completions;
   QString Pattern(QString::fromStdString(pattern));
   QDir dir(QDir::current());
   if (Pattern.count(QDir::separator()) > 0) {
     // Completion includes a directory name...  Have to split it out
     QFileInfo t(Pattern);
-    if (!dir.cd(t.path())) return stringVector();
+    if (!dir.cd(t.path())) return StringVector();
     QFileInfoList list = dir.entryInfoList(QStringList() << (t.fileName() + "*"));
     for (int i=0;i<((int)list.size());i++) {
       QFileInfo fileInfo = list.at(i);

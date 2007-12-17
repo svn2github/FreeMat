@@ -880,9 +880,9 @@ static void DumpProfileDB() {
 ArrayVector ProfilerFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) {
     if (m_profiler_active)
-      return singleArrayVector(Array::stringConstructor("on"));
+      return SingleArrayVector(Array::stringConstructor("on"));
     else
-      return singleArrayVector(Array::stringConstructor("off"));
+      return SingleArrayVector(Array::stringConstructor("off"));
   } else {
     if (!arg[0].isString())
       throw Exception("second argument to profile function must be either on/off/list");
@@ -925,7 +925,7 @@ ArrayVector ProfilerFunction(int nargout, const ArrayVector& arg) {
 // 	  for (int k=0;k<lines.size()+1;k++)
 // 	    pctblock[k] = tblock[k]/accum*100.0;
 // 	  // Look for all functions
-// 	  stringVector localfuncs = eval->getContext()->getCompletions(symbol);
+// 	  StringVector localfuncs = eval->getContext()->getCompletions(symbol);
 // 	  for (int k=0;k<localfuncs.size();k++)
 // 	    DumpFunctionProfileData(eval,localfuncs[k],tblock);
 // 	  eval->outputMessage("Profile information for " + symbol + " (" + filename + ")\n");

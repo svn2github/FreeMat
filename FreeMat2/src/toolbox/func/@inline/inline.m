@@ -41,6 +41,10 @@
 %feval(a,pi/2)
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = inline(expr,varargin)
   % Create a default structure - we store the original expression
   % and the expression that assigns the arguments

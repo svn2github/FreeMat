@@ -26,6 +26,10 @@
 %@$"y=strrep({'time is money';'A stitch in time';'No time for games'},'time','money')","{'money is money';'A stitch in money';'No money for games'}","exact"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = strrep(source,pattern,replace)
   if (isstr(source) & isstr(pattern) & isstr(replace))
     y = strrep_string(source,pattern,replace);

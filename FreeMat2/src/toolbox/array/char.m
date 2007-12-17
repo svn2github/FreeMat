@@ -42,6 +42,10 @@
 %char('hello','to','the','world')
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = char(varargin)
   if ((nargin == 1) && ~iscell(varargin{1}))
     y = string(varargin{1});

@@ -29,6 +29,10 @@
 %@$"y=ipermute([1,2;3,4],[2,1])","[1,3;2,4]","exact"
 %@$"y=size(ipermute(permute(randn(13,5,7,2),[3,4,2,1]),[3,4,2,1]))","[13,5,7,2]","exact"
 %!
+
+% Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
+
 function y = ipermute(x,p)
   iperm = zeros(1,ndims(x));
   iperm(p) = 1:ndims(x);

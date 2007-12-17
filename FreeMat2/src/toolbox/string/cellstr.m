@@ -19,6 +19,10 @@
 %@@Tests
 %@$"y=cellstr(['quick';'brown';'fox  ';'is   '])","{'quick';'brown';'fox';'is'}","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function A = cellstr(x)
   if (iscell(x))
     A = x;

@@ -30,6 +30,10 @@
 %@$"y=acosh(0.543f)","0.99679077fi","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = acosh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('acosh expects a single, numeric input');

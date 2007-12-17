@@ -29,6 +29,10 @@
 %@$"y=lower('HELLO')","'hello'","exact"
 %@$"y=lower({'Ab','cD','EF'})","{'ab','cd','ef'}","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = lower(x)
   if (isstr(x))
     y = lower_string(x);

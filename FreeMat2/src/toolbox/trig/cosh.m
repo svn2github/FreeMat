@@ -26,6 +26,10 @@
 %@$"y=cosh(3-4i)","-6.58066304055116+7.58155274274654i","close"
 %@$"y=cosh(2.12f)","4.2255840f","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = cosh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('cosh expects a numeric input');

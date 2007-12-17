@@ -40,6 +40,7 @@
 %!
 
 %Copyright (c) 2004,2006 Brian Yanoff, Samit Basu
+% Licensed under the GPL
 function ret = ylim(varargin)
   if ((nargin > 0) && isnumeric(varargin{1}) && isscalar(varargin{1}) && ishandle(varargin{1}))
     handle = varargin{1};

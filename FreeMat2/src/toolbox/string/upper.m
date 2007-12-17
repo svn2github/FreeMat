@@ -29,6 +29,10 @@
 %@$"y=upper('HELLO')","'HELLO'","exact"
 %@$"y=upper({'Ab','cD','EF'})","{'AB','CD','EF'}","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = upper(x)
   if (isstr(x))
     y = upper_string(x);

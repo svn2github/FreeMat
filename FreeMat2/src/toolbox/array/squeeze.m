@@ -22,6 +22,7 @@
 %@>
 %!
 % Copyright 2004-2005, 2006 Brian Yanoff, Dirk Beque
+% Licensed under the GPL
 function B = squeeze(A)
   sz = size(A);
   sz(find(sz==1)) = [];

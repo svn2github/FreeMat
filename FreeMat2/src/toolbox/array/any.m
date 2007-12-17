@@ -43,7 +43,8 @@
 %@$"y=any([1,0,0;1,0,0;0,0,1],2)","[1;1;1]","exact"
 %!
 
-% Copyright (c) 2002-2006 Samit Basu
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 
 function y = any(A,dim)
   if (nargin == 0)

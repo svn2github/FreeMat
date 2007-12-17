@@ -10,7 +10,8 @@
 %where @|a| and @|b| are 3-element vectors.
 %!
 
-% Copyright (c) 2002-2006 Samit Basu
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 
 function C = cross(A,B)
   C(1) = A(2)*B(3) - A(3)*B(2);

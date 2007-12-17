@@ -29,6 +29,10 @@
 %@$"y=acsc(0.523f)","1.5707964f+1.2646196fi","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = acsc(x)
   if (nargin == 0 || ~isnumeric(x))
     error('acsc expects a single, numeric input');

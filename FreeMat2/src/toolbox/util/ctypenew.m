@@ -19,6 +19,10 @@
 %@]
 %where @|count| is the number of elements in the structure array.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function a = ctypenew(typename,count)
   if (nargin == 1)
     count = 1;

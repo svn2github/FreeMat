@@ -41,6 +41,10 @@
 %rem([9 3 2 0],[1 0 2 2])
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = rem(x,n)
   if (isscalar(x))
     x = repmat(x,size(n));

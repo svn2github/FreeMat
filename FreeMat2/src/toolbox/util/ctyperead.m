@@ -25,6 +25,10 @@
 %buffer.  A consequence of this behavior is that the byte-endian
 %corrective behavior of FreeMat does not work.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function a = ctyperead(fid,typename,count)
   if (nargin < 3), count = 1; end;
   if (nargin < 2), error('ctyperead requries at least a file id and a typename'); end;

@@ -34,5 +34,9 @@
 %@$"A = [5,1,3;3,2,1;0,3,1];y = std(A)","[2.51661147842358  1.0000000000000000  1.15470053837925]","close"
 %@$"A = [5,1,3;3,2,1;0,3,1];y = std(A,2)","[2;1;1.52752523165195]","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = std(varargin)
   y = sqrt(var(varargin{:}));

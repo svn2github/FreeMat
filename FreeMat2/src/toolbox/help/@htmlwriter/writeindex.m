@@ -1,3 +1,7 @@
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function writeindex(&p)
   secnames = fieldnames(p.section_descriptors);
   for n=1:numel(secnames)

@@ -42,6 +42,7 @@
 %!
 
 % Copyright (c) 2002-2007 Samit Basu, Eugene Ingerman
+% Licensed under the GPL
 
 function ohandle = imagesc(varargin)
   	ax = newplot;

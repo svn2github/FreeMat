@@ -32,6 +32,10 @@
 %@$"y=angle(3+4*i)","0.92729521800161","close"
 %@$"y=angle(4)","0","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function p = angle(c)
 
 p = atan2(imag(c), real(c));

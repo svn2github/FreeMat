@@ -23,6 +23,9 @@
 %@$"x1=1e3*[2.006,.006,.009,.011,.044,.01907414];x2=1e3*[2.006,.006,.009,.011,.044,.024688253];y=etime(x2,x1)","5.614113f","close"
 %!
 
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = etime(x1,x2)
   if (~exist('x1') | ~exist('x2'))
      error 'etime expects two arguments'

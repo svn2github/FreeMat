@@ -18,6 +18,10 @@
 %@$"y=deg2rad(45)","pi/4","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = deg2rad(x)
   if (isa(x,'float') || isa(x,'complex'))
     y = x*float(pi/180);

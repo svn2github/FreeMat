@@ -60,6 +60,8 @@
 %@figure tubeplot1
 %
 % Written by Anders Sandberg, asa@nada.kth.se, 2005
+% Website says the package is free for anybody to use.
+% www.nada.kth.se/~asa/Ray/Tubeplot/tubeplot.html
 %!
 function [varargout]=tubeplot(x,y,z,varargin)  
   subdivs = 6;

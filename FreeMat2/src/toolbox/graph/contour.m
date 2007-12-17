@@ -80,6 +80,10 @@
 %which is here
 %@figure contour4
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function ohandle = contour(varargin)
   % Check for an axes handle 
     if (nargin>=2)

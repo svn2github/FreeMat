@@ -30,6 +30,10 @@
 %@$"y=asinh(0.543f)","0.5193379f","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = asinh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('asinh expects a single, numeric input');

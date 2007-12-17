@@ -61,6 +61,10 @@
 %@}
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = strcmp(source,pattern)
   if (isstr(source) & isstr(pattern))
     y = strcmp_string_string(source,pattern);

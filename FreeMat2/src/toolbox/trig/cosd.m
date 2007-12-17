@@ -21,6 +21,10 @@
 %@$"y=cosd(45)","0.70710678118655","close"
 %@$"y=cosd(60)","0.5","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = cosd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
     error('cosd expects a numeric input');

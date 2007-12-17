@@ -43,6 +43,10 @@
 %1/rcond(A)
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = cond(A,p)
     if (nargin < 2)
         p = 2;

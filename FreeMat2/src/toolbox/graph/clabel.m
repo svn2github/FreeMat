@@ -36,6 +36,9 @@
 %which results in
 %@figure clabel2
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 function handles = clabel(contourhandle,varargin)
   if (~strcmp(get(contourhandle,'type'),'contour'))
     error('First argument to clabel must be the handle of a contour.');

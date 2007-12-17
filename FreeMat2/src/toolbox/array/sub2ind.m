@@ -36,6 +36,7 @@
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
 
 function n = sub2ind(sizevec,varargin)
   if (length(varargin) == 0)

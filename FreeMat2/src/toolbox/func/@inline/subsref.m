@@ -1,3 +1,5 @@
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 function B = subsref(A,S)
   if (length(S) ~= 1)
     error('inline expressions only support () indexing expressions')

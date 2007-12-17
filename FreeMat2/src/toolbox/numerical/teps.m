@@ -22,8 +22,8 @@
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
 
-% Copyright (c) 2005 Samit Basu
 function y = teps(x)
 switch(typeof(x))
   case {'float','complex'}

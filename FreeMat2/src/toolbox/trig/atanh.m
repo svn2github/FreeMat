@@ -29,6 +29,10 @@
 %@$"y=atanh(0.523f)","0.5804604f","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = atanh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('atanh expects a single, numeric input');

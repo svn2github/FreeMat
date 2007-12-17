@@ -20,6 +20,10 @@
 %@$"y=cotd(2.12f)","27.0139790f","close"
 %@$"y=cotd(45)","1","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = cotd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
     error('cotd expects a real numeric input');

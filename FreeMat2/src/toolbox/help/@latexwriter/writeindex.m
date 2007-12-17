@@ -1,3 +1,7 @@
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function writeindex(&p)
   secnames = fieldnames(p.section_descriptors);
   fp = fopen(sprintf('%s/help/latex/main.tex',p.sourcepath),'w');

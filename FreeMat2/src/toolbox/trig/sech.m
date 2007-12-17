@@ -26,6 +26,10 @@
 %@$"y=sech(1+3*i)","-0.64698003387259-0.07023784378464i","close"
 %@$"y=sech(5.234f)","0.0106640f","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = sech(x)
   if (nargin == 0 || ~isnumeric(x))
     error('sech expects a numeric input');

@@ -48,6 +48,10 @@
 %test_val = (det(A) == -2)
 %@}
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = det(A)
     if (~isnumeric(A))
         error('Argument to det must be numeric');

@@ -17,6 +17,10 @@
 %the required behavior, please file an enhancement request to have it changed.  Note that
 %@|mkdir| returns a logical @|1| if the call succeeded, and a logical @|0| if not.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function status = mkdir(parentdir,dirname)
   if (~exist('dirname'))
     status = mkdir_core(parentdir);

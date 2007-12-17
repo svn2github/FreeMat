@@ -16,6 +16,10 @@
 %@$"y=strcmpi({'this','is','a','pickle'},{'what','is','to','PIckle'})","[0,1,0,1]","exact"
 %@$"y=strcmpi({'this','is','a','pickle'},['peter ';'piper ';'hated ';'picklE'])","[0,0,0,1]","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = strcmpi(source,pattern)
   y = strcmp(upper(source),upper(pattern));
   

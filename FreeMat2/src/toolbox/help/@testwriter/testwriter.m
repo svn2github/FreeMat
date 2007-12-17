@@ -1,3 +1,7 @@
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function p = testwriter(a)
   if (nargin == 0)
     p.myfile = -1;

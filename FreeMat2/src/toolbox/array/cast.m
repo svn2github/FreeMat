@@ -42,6 +42,10 @@
 %@$"y=cast(pi,'uint8')","3","exact"
 %@$"y=cast([1,0,3,0],'logical')","logical([1,0,1,0])","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = cast(a,toclass)
     switch(toclass)
       case 'cell'

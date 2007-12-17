@@ -23,6 +23,10 @@
 %@$"y=asecd(2.523f)","66.6495819f","close"
 %@$"y=asecd(inf)","90","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = asecd(x)
   if (nargin == 0 || ~isnumeric(x))
     error('asecd expects a numeric input');

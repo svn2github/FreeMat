@@ -20,7 +20,8 @@
 %references together using this syntax.
 %!
 
-% Copyright (c) 2002-2006 Samit Basu
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 
 function y = getfield(x,varargin)
 if (isempty(varargin))

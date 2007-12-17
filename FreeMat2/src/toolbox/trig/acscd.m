@@ -23,6 +23,10 @@
 %@$"y=acscd(0.523f)","90.0f+72.4573669fi","close"
 %@$"y=acscd(0.5)","90.0+75.45612929021689i","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = acscd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
     error('acscd expects a real numeric input');

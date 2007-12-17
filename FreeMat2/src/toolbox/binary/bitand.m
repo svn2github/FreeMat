@@ -24,6 +24,9 @@
 %@$"y=bitand(13,27)","9","exact"
 %!
 
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = bitand(a,b)
   if (isscalar(a))
     a = repmat(a,size(b));

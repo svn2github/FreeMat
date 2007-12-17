@@ -22,6 +22,10 @@
 %@$"y=acosd(0.523f)","58.4662971f","close"
 %@$"y=acosd(0.5)","60","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = acosd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
     error('acosd expects a real numeric input');

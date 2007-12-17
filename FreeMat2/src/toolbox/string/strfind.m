@@ -31,6 +31,10 @@
 %@$"a = {'how now brown cow','quick brown fox','coffee anyone?'};y=strfind(a,'ow')","{[2,6,11,16],9,[]}","exact"
 %!
 
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
+
 function y = strfind(source,pattern)
   patlen = length(pattern);
   if (isa(source,'string'))

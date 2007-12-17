@@ -43,6 +43,11 @@
 %which returns a vector @|[samples channels]| indicating the size of the
 %data present in the WAV file.
 %!
+
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function varargout = wavread(varargin);
 % Originally based on :
 % http://ccrma.stanford.edu/workshops/dsp2006/xjs/software/octave/wavread.m

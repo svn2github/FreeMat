@@ -18,6 +18,7 @@
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
 
 function y = ifftshift(x,dim)
 if (nargin > 1)

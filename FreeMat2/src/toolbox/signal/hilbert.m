@@ -14,6 +14,10 @@
 %where @|x| is real vector or matrix.  If @|x| is a matrix, then he
 %Hilbert transform is computed along the columns of @|x|.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = hilbert(x,n)
   [t,ns] = shiftdim(x);
   if (nargin == 1)

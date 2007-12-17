@@ -31,6 +31,7 @@
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
 
 function hout = plot3(varargin)
   % Check for an axes handle

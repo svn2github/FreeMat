@@ -29,6 +29,10 @@
 %@$"y=strtrim({'  space','enough ',' for ',''})","{'space','enough','for',''}","exact"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = strtrim(x)
   if (isa(x,'string'))
     y = strtrim_string(x);

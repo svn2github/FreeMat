@@ -22,6 +22,10 @@
 %@$"y=dot([1,2;3,2],[2,1;4,5],2)","[4;22]","exact"
 %@$"y=dot([1,2;3,2],[2,1;4,5],3)","[2,2;12,10]","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = dot(x,z,dim)
   if (isvector(x) && isvector(z))
     if (numel(x) ~= numel(z))

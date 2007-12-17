@@ -19,6 +19,10 @@
 %threadfree(id)
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function varargout = threadcall(id,timeout,funcname,varargin)
   threadstart(id,funcname,numel(nargout),varargin{:});
   if (~threadwait(id,timeout))

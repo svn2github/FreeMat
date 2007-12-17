@@ -26,6 +26,10 @@
 %@$"y=sinh(3-4i)","-6.54812004091100+7.61923172032141i","close"
 %@$"y=sinh(2.12f)","4.1055527f","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = sinh(x)
   if (nargin == 0 || ~isnumeric(x))
     error('sinh expects a numeric input');

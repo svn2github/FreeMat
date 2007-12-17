@@ -28,6 +28,10 @@
 %(type 1 PCM in WAV-speak).  For 32 bit output format, the data is
 %written in type 3 PCM as floating point data.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function wavwrite(varargin)
   SampleRate = 8000;
   NBits = 16;

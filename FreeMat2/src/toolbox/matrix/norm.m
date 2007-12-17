@@ -46,6 +46,7 @@
 %@$"y=norm([4,3])","5","close"
 %!
 % Copyright (c) 2005 Samit Basu
+% Licensed under the GPL
 function y = norm(A,p)
 if (~isset('p'))
   p = 2;

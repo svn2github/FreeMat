@@ -20,6 +20,7 @@
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
 
 function y = input(prompt,stringflag)
   if (isset('stringflag') && ischar(stringflag) && (strcmp(stringflag,'s') | strcmp(stringflag,'S')))

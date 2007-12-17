@@ -18,6 +18,10 @@
 %of calls to @|fft|.
 %@@Tests
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = fftn(x,dims)
   if (nargin == 1)
     dims = size(x);

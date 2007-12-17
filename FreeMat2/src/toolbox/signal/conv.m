@@ -14,6 +14,10 @@
 %@$"a=[0.5,1];b=[1,2,3];y=conv(a,b)","[0.5,2.0,3.5,3.0]","close"
 %@$"a=[1];b=[1,2,3];y=conv(a,b)","[1,2,3]","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function z = conv(x,y)
 % is x a column vector
 xiscol = size(x,1) > size(x,2);

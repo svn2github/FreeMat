@@ -24,6 +24,10 @@
 %@$"y=symvar('pi+3')","{}","exact"
 %@$"y=symvar('x+t*alpha-cos(pi)')","{'alpha','t','x'}","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function syms = symvar(expr)
   ignore = {'pi','inf','nan','eps','i','j'};
   tsyms = regexp(expr,'(\b[a-zA-Z]\w*\b)(?!\s*\()','tokens');

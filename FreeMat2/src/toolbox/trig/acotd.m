@@ -15,6 +15,10 @@
 %@$"y=acotd(1)","45","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = acotd(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
     error('acot expects a single, real numeric input');

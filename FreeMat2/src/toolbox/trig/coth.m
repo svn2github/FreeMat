@@ -27,6 +27,10 @@
 %@$"y=coth(3-4i)","0.99926692780590+0.00490118239430i","close"
 %@$"y=coth(2.12f)","1.0292364f","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = coth(x)
   if (nargin == 0 || ~isnumeric(x))
     error('coth expects a numeric input');

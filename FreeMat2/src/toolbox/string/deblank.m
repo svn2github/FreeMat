@@ -27,6 +27,10 @@
 %@$"y=deblank(' hello   ')","' hello'","exact"
 %@$"y=deblank({'hello  ','there ','  is  ','  sign  '})","{'hello','there','  is','  sign'}","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = deblank(x)
   if (isstr(x))
     y = deblank_string(x);

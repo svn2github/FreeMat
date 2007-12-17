@@ -35,6 +35,10 @@
 %@>
 %Note the extra zeros.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function csvwrite(filename,x,firstrow,firstcol)
     if (nargin == 2)
         firstrow = 0;

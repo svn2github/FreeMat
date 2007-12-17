@@ -26,6 +26,10 @@
 %[X,Y] = meshgrid([1,2,3,4],[6,7,8])
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function [X,Y,Z] = meshgrid(x,y,z)
   if (nargin == 0)
     error('meshgrid requires at least one input argument');

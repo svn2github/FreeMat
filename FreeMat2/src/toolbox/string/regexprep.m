@@ -14,6 +14,10 @@
 %is the number of the token to use.  You can also specify the same @|mode| 
 %flags that are used by @|regexp|.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function outputs = regexprep(instring,pattern,replacement,varargin)
 if (iscellstr(instring))
   outputs = {};

@@ -83,6 +83,7 @@
 %!
 
 % Copyright (c) 2002-2006 Samit Basu
+% Licensed under the GPL
 
 function hout = subplot(varargin)
   m = 1; n = 1; p = 1;

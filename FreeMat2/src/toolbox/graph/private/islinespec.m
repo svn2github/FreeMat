@@ -1,3 +1,5 @@
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 function b = islinespec(t,&colorspec,&markerspec,&linespec)
 % try to parse a string out as a linespec
 % a linespec consists of three parts:

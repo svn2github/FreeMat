@@ -30,6 +30,9 @@
 %  s(3).type = '{}'  s(3).subs = ':'
 %@]
 %!
+
+% Copyright (c) 2007 Samit Basu
+% Licensed under the GPL
 function b = subsref(a,s)
   for i=1:numel(s)
     switch (s(i).type)

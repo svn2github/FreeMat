@@ -28,6 +28,10 @@
 %@$"y=acoth(0.523f)","0.5804604f+1.5707964fi","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = acoth(x)
   if (nargin == 0 || ~isnumeric(x))
     error('acoth expects a single, numeric input');

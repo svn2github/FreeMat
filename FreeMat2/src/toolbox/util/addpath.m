@@ -21,6 +21,10 @@
 %added to the top of the path, and if the @|flag| is either @|'-1'| or 
 %@|'-end'| the directories are added to the bottom (or end) of the path.
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function addpath(varargin)
     if (nargin == 0) return; end
     atbegin = 1;

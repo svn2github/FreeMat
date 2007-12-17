@@ -55,6 +55,10 @@
 %csvread('sample_data.csv',1,2,[1,2,3,4])
 %@>
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function x = csvread(filename,firstrow,firstcol,range)
     if (nargin == 1)
 	x = dlmread(filename,',');

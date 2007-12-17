@@ -35,6 +35,8 @@
 %@$"y=bitcmp(uint8(55))","200","exact"
 %@$"y=bitcmp(uint16(55))","65480","exact"
 %!
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 function y = bitcmp(a,n)
     if (nargin == 1)
         if (isa(a,'int8') || (isa(a,'uint8')))

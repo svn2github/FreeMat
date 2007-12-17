@@ -1,3 +1,5 @@
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
 function result = match_exact(a,b)
   if (isempty(a) & isempty(b))
     result = 1;

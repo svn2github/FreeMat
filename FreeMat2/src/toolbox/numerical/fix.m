@@ -21,6 +21,10 @@
 %@$"y=fix(-e)","-2","exact"
 %@$"y=fix(3.1-2.3i)","3-2i","exact"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = fix(x)
   if (isreal(x))
     y = x;

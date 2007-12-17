@@ -20,6 +20,10 @@
 %@$"y=tand(2.12f)","0.0370179f","close"
 %@$"y=tand(45)","1","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = tand(x)
   if (nargin == 0 || ~isnumeric(x))
     error('tand expects a numeric input');

@@ -29,6 +29,10 @@
 %@$"y=asech(2.523f)"," 1.1632546fi","close"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = asech(x)
   if (nargin == 0 || ~isnumeric(x))
     error('asech expects a single, numeric input');

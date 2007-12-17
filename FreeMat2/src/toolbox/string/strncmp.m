@@ -54,6 +54,10 @@
 %@$"y=strncmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4)","[0,0,0,1]","exact"
 %!
 
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = strncmp(source,pattern,n)
   if (isstr(source) & isstr(pattern))
     y = strncmp_string_string(source,pattern,n);

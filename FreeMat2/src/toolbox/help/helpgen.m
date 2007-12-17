@@ -1,3 +1,6 @@
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function helpgen(source_path)
   global sourcepath section_descriptors genfiles
 
@@ -19,6 +22,8 @@ function helpgen(source_path)
   file_list = {};
   file_list = [file_list;helpgen_rdir([source_path,'/libs'])];
   file_list = [file_list;helpgen_rdir([source_path,'/src'])];
+file_list = {[source_path,'/libs/libFreeMat/Interpreter.cpp']};
+
   for i=1:numel(file_list)
     [path,name,suffix] = fileparts(file_list{i});
     if (~strcmp(name,'MPIWrap'))

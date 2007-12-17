@@ -23,6 +23,10 @@
 %@$"y=asind(2.0)","90.0+75.45612929021689i","close"
 %@$"y=asind(-0.9f)","-64.1580658f","close"
 %!
+
+% Copyright (c) 2002-2007 Samit Basu
+% Licensed under the GPL
+
 function y = asind(x)
   if (nargin == 0 || ~isnumeric(x) || ~isreal(x))
     error('asind expects a real numeric input');

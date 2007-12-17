@@ -416,7 +416,7 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
     break;
   }
   }
-  return singleArrayVector(Array(y1.dataClass(),
+  return SingleArrayVector(Array(y1.dataClass(),
 				 xi.dimensions(),
 				 dp));
       

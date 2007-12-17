@@ -68,7 +68,7 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erfcf(sp[i]);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
+    return SingleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
@@ -76,7 +76,7 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erfc(sp[i]);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
+    return SingleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
 }
@@ -126,7 +126,7 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erff(sp[i]);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
+    return SingleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
@@ -134,7 +134,7 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
     for (int i=0;i<olen;i++)
       dp[i] = erf(sp[i]);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
+    return SingleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
 }
@@ -189,7 +189,7 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++) 
       dp[i] = tgammaf(sp[i]);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
+    return SingleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
@@ -197,7 +197,7 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
     for (int i=0;i<olen;i++) 
       dp[i] = tgamma(sp[i]);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
+    return SingleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
 }
@@ -241,7 +241,7 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
     float *dp = (float*) Array::allocateArray(FM_FLOAT,olen);
     for (int i=0;i<olen;i++) 
       dp[i] = lgammaf(sp[i]);
-    return singleArrayVector(Array(FM_FLOAT,odims,dp));
+    return SingleArrayVector(Array(FM_FLOAT,odims,dp));
   } else if (tmp.dataClass() == FM_DOUBLE) {
     Dimensions odims(tmp.dimensions());
     int olen(odims.getElementCount());
@@ -249,7 +249,7 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
     double *dp = (double*) Array::allocateArray(FM_DOUBLE,olen);
     for (int i=0;i<olen;i++) 
       dp[i] = lgamma(sp[i]);
-    return singleArrayVector(Array(FM_DOUBLE,odims,dp));
+    return SingleArrayVector(Array(FM_DOUBLE,odims,dp));
   }
   return ArrayVector();
 }

@@ -233,6 +233,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("strstr",StrStrFunction,2,1,"x","y",NULL);
   context->addFunction("strrep_string",StrRepStringFunction,3,1,"source","pattern","replace",NULL);
   context->addFunction("conv2",Conv2Function,4,1,"A","B","C","keep",NULL);
+  context->addFunction("demo",DemoFunction,1,0,"x",NULL);
   context->addFunction("permute",PermuteFunction,2,1,"A","permutation",NULL);
   context->addSpecialFunction("inv",InvFunction,1,1,"A",NULL);
   context->addFunction("rcond",RcondFunction,1,1,"A",NULL);

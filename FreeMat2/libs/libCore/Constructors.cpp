@@ -602,11 +602,11 @@ ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 1) {
     Array t(arg[0]);
     if (!t.isUserClass() && t.dataClass() == FM_STRUCT_ARRAY)
-      return singleArrayVector(t);
+      return SingleArrayVector(t);
     if (!t.isUserClass())
       throw Exception("can only convert objects (user-defined types) into structs");
     t.setClassName(rvstring());
-    return singleArrayVector(t);
+    return SingleArrayVector(t);
   }
   if (arg.size() % 2)
     throw Exception("struct function requires pairs of field names and values");

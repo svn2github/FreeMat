@@ -1077,7 +1077,7 @@ ArrayVector FcloseFunction(int nargout, const ArrayVector& arg) {
     fileHandles.deleteHandle(handle+1);
     delete fptr;
   }
-  return singleArrayVector(Array::int32Constructor(retval));
+  return SingleArrayVector(Array::int32Constructor(retval));
 }
 
 //!
@@ -1654,7 +1654,7 @@ template <class T>
 Array Num2StrHelperReal(const T*dp, Dimensions Xdims, const char *formatspec) {
   int rows(Xdims.getRows());
   int cols(Xdims.getColumns());
-  stringVector row_string;
+  StringVector row_string;
   if (Xdims.getLength() == 2)
     Xdims.set(3,1);
   Dimensions Wdims(Xdims.getLength());
@@ -1700,7 +1700,7 @@ template <class T>
 Array Num2StrHelperComplex(const T*dp, Dimensions Xdims, const char *formatspec) {
   int rows(Xdims.getRows());
   int cols(Xdims.getColumns());
-  stringVector row_string;
+  StringVector row_string;
   if (Xdims.getLength() == 2)
     Xdims.set(3,1);
   Dimensions Wdims(Xdims.getLength());
@@ -1845,7 +1845,7 @@ ArrayVector SprintfFunction(int nargout, const ArrayVector& arg) {
   Array outString(Array::stringConstructor(buff));
   free(op);
   free(buff);
-  return singleArrayVector(outString);
+  return SingleArrayVector(outString);
 }
   
 //!
@@ -1988,8 +1988,8 @@ ArrayVector FgetlineFunction(int nargout, const ArrayVector& arg) {
   char buffer[65535];
   fgets(buffer,sizeof(buffer),fptr->fp);
   if (feof(fptr->fp))
-    return singleArrayVector(Array::emptyConstructor());
-  return singleArrayVector(Array::stringConstructor(buffer));
+    return SingleArrayVector(Array::emptyConstructor());
+  return SingleArrayVector(Array::stringConstructor(buffer));
 }
 
 //!
@@ -2057,7 +2057,7 @@ ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
   fprintf(fp,"%s",txt.c_str());
   rewind(fp);
   if (feof(fp))
-    return singleArrayVector(Array::emptyConstructor());
+    return SingleArrayVector(Array::emptyConstructor());
   string frmt = format.getContentsAsString();
   char *buff = strdup(frmt.c_str());
   // Search for the start of a format subspec
@@ -2213,7 +2213,7 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
   if (!format.isString())
     throw Exception("fscanf format argument must be a string");
   if (feof(fptr->fp))
-    return singleArrayVector(Array::emptyConstructor());
+    return SingleArrayVector(Array::emptyConstructor());
   string frmt = format.getContentsAsString();
   char *buff = strdup(frmt.c_str());
   // Search for the start of a format subspec
@@ -2611,7 +2611,7 @@ ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   Context *cntxt = eval->getContext();
   rvstring toSave;
   if (regexpMode || (names.size() == 0)) {
-    stringVector allNames = cntxt->listAllVariables();
+    StringVector allNames = cntxt->listAllVariables();
     for (int i=0;i<(int)allNames.size();i++)
       if ((names.size() == 0) || contains(names,allNames[i],regexpMode))
 	toSave << allNames[i];

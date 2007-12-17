@@ -120,7 +120,7 @@ int getArrayByteFootPrint(Array &a, MPI_Comm comm) {
       return (total+overhead);
     } else {
       // Array is a structure array
-      stringVector fieldnames(a.getFieldNames());
+      StringVector fieldnames(a.getFieldNames());
       int fieldcount = 0;
       fieldcount = fieldnames.size();
       // Start out with the number of fields
@@ -260,7 +260,7 @@ void packArrayMPI(Array &a, void *buffer, int bufsize, int *packpos, MPI_Comm co
       for (int i=0;i<a.getLength();i++)
 	packArrayMPI(dp[i],buffer,bufsize,packpos,comm);
     } else {
-      stringVector fieldnames(a.getFieldNames());
+      StringVector fieldnames(a.getFieldNames());
       int fieldcnt(fieldnames.size());
       MPI_Pack(&fieldcnt,1,MPI_INT,buffer,bufsize,packpos,comm);
       for (int i=0;i<fieldcnt;i++) {
@@ -341,7 +341,7 @@ Array unpackArrayMPI(void *buffer, int bufsize, int *packpos, MPI_Comm comm) {
   } else if (dataClass == FM_STRUCT_ARRAY) {
     int fieldcnt;
     MPI_Unpack(buffer,bufsize,packpos,&fieldcnt,1,MPI_INT,comm);
-    stringVector fieldnames;
+    StringVector fieldnames;
     for (int j=0;j<fieldcnt;j++) {
       int fieldnamelength;
       MPI_Unpack(buffer,bufsize,packpos,&fieldnamelength,1,MPI_INT,comm);

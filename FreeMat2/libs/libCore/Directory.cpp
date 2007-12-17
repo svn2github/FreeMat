@@ -78,7 +78,7 @@ ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector();
 }
 
-static void TabledOutput(stringVector sysresult, Interpreter* eval) {
+static void TabledOutput(StringVector sysresult, Interpreter* eval) {
   int maxlen = 0;
   // Find the maximal length
   for (int i=0;i<(int)sysresult.size();i++) {
@@ -166,7 +166,7 @@ ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
     }
   }
   if (nargout == 0) {
-    stringVector filelist;
+    StringVector filelist;
     for (int i=0;i<foo.size();i++)
       filelist.push_back(foo[i].fileName().toStdString());
     TabledOutput(filelist,eval);
@@ -236,7 +236,7 @@ ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
 //@>
 //!
 ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  stringVector sysresult;
+  StringVector sysresult;
   string buffer;
   int i;
 

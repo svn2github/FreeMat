@@ -37,9 +37,9 @@ ArrayVector StrCmpFunction(int nargout, const ArrayVector& arg) {
   arg1 = arg[0];
   arg2 = arg[1];
   if (!(arg1.isString()))
-    return singleArrayVector(Array::logicalConstructor(false));
+    return SingleArrayVector(Array::logicalConstructor(false));
   if (!(arg2.isString()))
-    return singleArrayVector(Array::logicalConstructor(false));
+    return SingleArrayVector(Array::logicalConstructor(false));
   if (!(arg1.dimensions().equals(arg2.dimensions())))
     retval = Array::logicalConstructor(false);
   else {
@@ -91,7 +91,7 @@ ArrayVector StrStrFunction(int nargout, const ArrayVector& arg) {
     retndx = 0;
   else
     retndx = pos+1;
-  return singleArrayVector(Array::int32Constructor(retndx));
+  return SingleArrayVector(Array::int32Constructor(retndx));
 }
 
 char* strrep(const char* source, const char* pattern, const char* replace) {
@@ -145,7 +145,7 @@ ArrayVector StrRepStringFunction(int nargout, const ArrayVector& arg) {
   string s2 = arg2.getContentsAsString();
   string s3 = arg3.getContentsAsString();
   char *cp = strrep(s1.c_str(),s2.c_str(),s3.c_str());
-  ArrayVector retval(singleArrayVector(Array::stringConstructor(cp)));
+  ArrayVector retval(SingleArrayVector(Array::stringConstructor(cp)));
   free(cp);
   return retval;
 }

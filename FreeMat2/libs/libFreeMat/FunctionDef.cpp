@@ -114,7 +114,7 @@ ArrayVector AnonymousFunctionDef::evaluateFunction(Interpreter *eval, ArrayVecto
 void AnonymousFunctionDef::initialize(Tree *t, Interpreter *eval) {
   name = t->text();
   arguments = IdentifierList(t->first());
-  code = t->second();
+  code = CodeBlock(t->second(),true);
   scriptFlag = false;
   temporaryFlag = false;
   graphicsFunction = false;

@@ -34,7 +34,7 @@
 class Array;
 class Interpreter;
 
-typedef QList<Array> ArrayVector;
+typedef PList<Array> ArrayVector;
 ArrayVector singleArrayVector(Array);
 typedef QVector<ArrayVector> ArrayMatrix;
 

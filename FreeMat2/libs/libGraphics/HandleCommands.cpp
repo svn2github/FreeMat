@@ -26,6 +26,7 @@
 
 #include <qgl.h>
 #include <QtGui>
+#include <QtSvg>
 #include <ctype.h>
 #include <algorithm>
 #include "HandleLineSeries.hpp"
@@ -806,6 +807,14 @@ bool PrintBaseFigure(HandleWindow* g, std::string filename,
     QTRenderEngine gc(&pnt,0,0,g->width(),g->height());
     g->HFig()->PaintMe(gc);
     retval = true;
+  } else if (type == "SVG") {
+    QSvgGenerator gen;
+    gen.setFileName(QString::fromStdString(filename));
+    gen.setSize(QSize(g->width(),g->height()));
+    QPainter pnt(&gen);
+    QTRenderEngine gc(&pnt,0,0,g->width(),g->height());
+    g->HFig()->PaintMe(gc);
+    retval = true;
   } else {
     // Binary print - use grabWidget
     QPixmap pxmap(QPixmap::grabWidget(g->GetQtWidget()));
@@ -909,7 +918,7 @@ ArrayVector HCopyFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
   
-std::string NormalizeImageExtension(std::string ext) {
+static std::string NormalizeImageExtension(std::string ext) {
   std::string upperext(ext);
   std::string lowerext(ext);
   std::transform(upperext.begin(),upperext.end(),upperext.begin(),
@@ -917,7 +926,8 @@ std::string NormalizeImageExtension(std::string ext) {
   std::transform(lowerext.begin(),lowerext.end(),lowerext.begin(),
 		 (int(*)(int))tolower);
   if (upperext == "JPG") return std::string("JPEG");
-  if ((upperext == "PDF") || (upperext == "PS") || (upperext == "EPS")) return upperext;
+  if ((upperext == "SVG") || (upperext == "PDF") || 
+      (upperext == "PS") || (upperext == "EPS")) return upperext;
   QList<QByteArray> formats(QImageWriter::supportedImageFormats());
   for (int i=0;i<formats.count();i++) {
     if (formats.at(i).data() == upperext) return upperext;
@@ -956,6 +966,7 @@ std::string FormatListAsString() {
 //\item @|jpg|, @|jpeg|  --  JPEG file 
 //\item @|pdf| -- Portable Document Format file
 //\item @|png| -- Portable Net Graphics file
+//\item @|svg| -- Scalable Vector Graphics file
 //\end{itemize}
 //Postscript (PS, EPS) is supported on non-Mac-OSX Unix only.
 //Note that only the fig is printed, not the window displaying

@@ -99,21 +99,21 @@ public:
 
 class HPStringSet : public HandleProperty {
 protected:
-  QVector<std::string> data;
+  stringVector data;
 public:
   HPStringSet() {}
   virtual ~HPStringSet() {}
   virtual Array Get();
   virtual void Set(Array);
-  QVector<std::string> Data() {return data;}
-  void Data(QVector<std::string> m) {data = m;}
+  stringVector Data() {return data;}
+  void Data(stringVector m) {data = m;}
 };
 
 class HPConstrainedString : public HPString {
 protected:
-  QVector<std::string> m_dictionary;
+  stringVector m_dictionary;
 public:
-  HPConstrainedString(QVector<std::string> dict) : m_dictionary(dict) {
+  HPConstrainedString(stringVector dict) : m_dictionary(dict) {
     data = dict[0];
   }
   HPConstrainedString(const char **dict) {
@@ -126,7 +126,7 @@ public:
 };
 
 class HPConstrainedStringSet : public HPStringSet {
-  QVector<std::string> m_dictionary;
+  stringVector m_dictionary;
 public:
   HPConstrainedStringSet(const char **dict) {
     while (*dict) {

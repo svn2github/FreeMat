@@ -99,21 +99,21 @@ public:
 
 class HPStringSet : public HandleProperty {
 protected:
-  stringVector data;
+  StringVector data;
 public:
   HPStringSet() {}
   virtual ~HPStringSet() {}
   virtual Array Get();
   virtual void Set(Array);
-  stringVector Data() {return data;}
-  void Data(stringVector m) {data = m;}
+  StringVector Data() {return data;}
+  void Data(StringVector m) {data = m;}
 };
 
 class HPConstrainedString : public HPString {
 protected:
-  stringVector m_dictionary;
+  StringVector m_dictionary;
 public:
-  HPConstrainedString(stringVector dict) : m_dictionary(dict) {
+  HPConstrainedString(StringVector dict) : m_dictionary(dict) {
     data = dict[0];
   }
   HPConstrainedString(const char **dict) {
@@ -126,7 +126,7 @@ public:
 };
 
 class HPConstrainedStringSet : public HPStringSet {
-  stringVector m_dictionary;
+  StringVector m_dictionary;
 public:
   HPConstrainedStringSet(const char **dict) {
     while (*dict) {

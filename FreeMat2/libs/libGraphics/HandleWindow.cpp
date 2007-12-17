@@ -263,7 +263,7 @@ void HandleWindow::camRotate(bool active) {
 void HandleWindow::save() {
   QString fn = QFileDialog::getSaveFileName();
   try {
-    HPrintFunction(0,singleArrayVector(Array::stringConstructor(fn.toStdString())));
+    HPrintFunction(0,SingleArrayVector(Array::stringConstructor(fn.toStdString())));
   } catch(Exception &e) {
     QMessageBox::critical(0,"Critical Error in Save",QString::fromStdString(e.getMessageCopy()));
   }

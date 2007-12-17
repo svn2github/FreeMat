@@ -45,11 +45,11 @@ public:
   virtual void RegisterProperties() {}
   virtual void UpdateState() {}
   virtual QVector<double> GetLimits() {return QVector<double>();};
-  bool HasChanged(stringVector names);
+  bool HasChanged(StringVector names);
   bool HasChanged(std::string name);
   void ToManual(std::string name);
   bool IsType(std::string name);
-  void ClearChanged(stringVector names);
+  void ClearChanged(StringVector names);
   void ClearChanged(std::string name);
   void ClearAllChanged();
   void AddProperty(HandleProperty* prop, std::string name);

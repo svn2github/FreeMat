@@ -104,7 +104,7 @@ void HandleUIControl::UpdateState() {
     if (StringCheck("style","popupmenu")) {
       ((QComboBox*)widget)->clear();
       string txt(StringPropertyLookup("string"));
-      stringVector data;
+      StringVector data;
       Tokenize(txt,data,"|");
       for (int i=0;i<data.size();i++)
 	((QComboBox*)widget)->addItem(QString::fromStdString(data[i]));
@@ -112,7 +112,7 @@ void HandleUIControl::UpdateState() {
     if (StringCheck("style","listbox")) {
       ((QListWidget*)widget)->clear();
       string txt(StringPropertyLookup("string"));
-      stringVector data;
+      StringVector data;
       Tokenize(txt,data,"|");
       for (int i=0;i<data.size();i++)
 	((QListWidget*)widget)->addItem(QString::fromStdString(data[i]));

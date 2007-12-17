@@ -2391,7 +2391,7 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
 }
 
   
-ArrayVector SaveNativeFunction(string filename, rvstring names, Interpreter* eval) {
+ArrayVector SaveNativeFunction(string filename, StringVector names, Interpreter* eval) {
   File ofile(filename,"wb");
   Serialize output(&ofile);
   output.handshakeServer();
@@ -2418,7 +2418,7 @@ ArrayVector SaveNativeFunction(string filename, rvstring names, Interpreter* eva
   return ArrayVector();
 }
   
-ArrayVector SaveASCIIFunction(string filename, rvstring names, bool tabsMode,
+ArrayVector SaveASCIIFunction(string filename, StringVector names, bool tabsMode,
 			      bool doubleMode, Interpreter* eval) {
   FILE *fp = fopen(filename.c_str(),"w");
   if (!fp) throw Exception("unable to open file " + filename + " for writing.");
@@ -2602,14 +2602,14 @@ ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 	((fname[len-1] == 'T') || (fname[len-1] == 't'))) 
       matMode = true;    
   }
-  rvstring names;
+  StringVector names;
   for (int i=1;i<argCopy.size();i++) {
     if (!arg[i].isString())
       throw Exception("unexpected non-string argument to save command");
     names << ArrayToString(argCopy[i]);
   }
   Context *cntxt = eval->getContext();
-  rvstring toSave;
+  StringVector toSave;
   if (regexpMode || (names.size() == 0)) {
     StringVector allNames = cntxt->listAllVariables();
     for (int i=0;i<(int)allNames.size();i++)
@@ -2912,12 +2912,12 @@ ArrayVector LoadASCIIFunction(int nargout, string filename, Interpreter* eval) {
 }
 
 ArrayVector LoadNativeFunction(int nargout, string filename,
-			       rvstring names, bool regexpmode, Interpreter* eval) {
+			       StringVector names, bool regexpmode, Interpreter* eval) {
   File ofile(filename,"rb");
   Serialize input(&ofile);
   input.handshakeClient();
   string arrayName = input.getString();
-  rvstring fieldnames;
+  StringVector fieldnames;
   ArrayVector fieldvalues;
   while (arrayName != "__eof") {
     Array toRead;
@@ -3087,7 +3087,7 @@ ArrayVector LoadFunction(int nargout, const ArrayVector& arg,
       }
     }
   }
-  rvstring names;
+  StringVector names;
   for (int i=1;i<argCopy.size();i++) {
     if (!arg[i].isString())
       throw Exception("unexpected non-string argument to load command");

@@ -82,7 +82,7 @@ static Array QDomElementToArray(QDomElement elem);
 static Array QDomNodeToArray(QDomNode p) {
   if (p.nodeType() == QDomNode::ElementNode)
     return QDomElementToArray(p.toElement());
-  rvstring fnames;
+  StringVector fnames;
   fnames << "Name" << "Value";
   ArrayVector vals;
   vals << Array::stringConstructor(p.nodeName().toStdString());
@@ -98,7 +98,7 @@ static Array QDomNamedNodeMapToArray(QDomNamedNodeMap attr) {
 }
 
 static Array QDomElementToArray(QDomElement elem) {
-  rvstring fnames;
+  StringVector fnames;
   fnames << "Name" << "Attributes" << "Data" << "Children";
   ArrayVector vals;
   vals << Array::stringConstructor(elem.tagName().toStdString());

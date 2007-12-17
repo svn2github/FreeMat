@@ -33,5 +33,5 @@ void z_exp(double real, double imag, double *re, double *im);
 void z_sqrt(double real, double imag, double *re, double *im);
 void z_sqr(double real, double imag, double *re, double *im);
 
-bool contains(rvstring& list, std::string s, bool regexpmode);
+bool contains(StringVector& list, std::string s, bool regexpmode);
 #endif

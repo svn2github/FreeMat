@@ -397,7 +397,7 @@ Array MatIO::getClassArray(Dimensions dm) {
   Array className(getDataElement());
   if (className.dataClass() != FM_INT8)
     throw Exception("Corrupted MAT file - invalid class name");
-  rvstring classname;
+  StringVector classname;
   classname.push_back(ArrayToString(className));
   Array fieldNameLength(getDataElement());
   fieldNameLength.promoteType(FM_INT32);
@@ -408,7 +408,7 @@ Array MatIO::getClassArray(Dimensions dm) {
   int fieldNamesLen = fieldNames.getLength();
   int fieldNameCount = fieldNamesLen / fieldNameLen;
   const int8 *dp = (const int8*) fieldNames.getDataPointer();
-  rvstring names;
+  StringVector names;
   for (int i=0;i<fieldNameCount;i++) {
     for (int j=0;j<fieldNameLen;j++)
       buffer[j] = dp[i*fieldNameLen+j];
@@ -436,7 +436,7 @@ Array MatIO::getStructArray(Dimensions dm) {
   int fieldNamesLen = fieldNames.getLength();
   int fieldNameCount = fieldNamesLen / fieldNameLen;
   const int8 *dp = (const int8*) fieldNames.getDataPointer();
-  rvstring names;
+  StringVector names;
   for (int i=0;i<fieldNameCount;i++) {
     for (int j=0;j<fieldNameLen;j++)
       buffer[j] = dp[i*fieldNameLen+j];
@@ -656,7 +656,7 @@ void MatIO::Align64Bit() {
 
 void MatIO::putStructArray(const Array &x) {
   // Calculate the maximum field name length
-  rvstring fnames(x.fieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
+  StringVector fnames(x.fieldNames()); // FIXME - should we truncate to 32 byte fieldnames?
   int fieldNameCount = fnames.size();
   int maxlen = 0;
   for (int i=0;i<fieldNameCount;i++)
@@ -909,8 +909,8 @@ MatIO::~MatIO() {
 }
 
 ArrayVector MatLoadFunction(int nargout, string filename, 
-			    rvstring varnames, bool regexpmode, Interpreter *eval) {
-  rvstring fieldnames;
+			    StringVector varnames, bool regexpmode, Interpreter *eval) {
+  StringVector fieldnames;
   ArrayVector fieldvalues;
   MatIO m(filename,MatIO::readMode);
   m.getHeader();
@@ -940,7 +940,7 @@ ArrayVector MatLoadFunction(int nargout, string filename,
       Array::structConstructor(fieldnames,fieldvalues);
 }
 
-ArrayVector MatSaveFunction(string filename, rvstring names, 
+ArrayVector MatSaveFunction(string filename, StringVector names, 
 			    Interpreter *eval) {
   MatIO m(filename,MatIO::writeMode);
   Context *cntxt = eval->getContext();

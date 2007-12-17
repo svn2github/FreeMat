@@ -84,7 +84,7 @@ void getArrayFromQDS(QDataStream &in, Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    rvstring fnames;
+    StringVector fnames;
     quint32 ncount;
     in >> ncount;
     for (quint32 i=0;i<ncount;i++) {
@@ -228,7 +228,7 @@ void putArrayToQDS(QDataStream &out, const Array& dat) {
     return;
   }
   case FM_STRUCT_ARRAY: {
-    rvstring fnames(dat.fieldNames());
+    StringVector fnames(dat.fieldNames());
     int ncount(fnames.size());
     out << (quint32) ncount;
     int i;

@@ -724,7 +724,7 @@ ArrayVector FieldNamesFunction(int nargout, const ArrayVector& arg) {
     ret.promoteType(FM_CELL_ARRAY);
     return SingleArrayVector(ret);
   }
-  rvstring names(a.fieldNames());
+  StringVector names(a.fieldNames());
   ArrayMatrix m;
   for (int i=0;i<names.size();i++)
     m.push_back(SingleArrayVector(Array::stringConstructor(names.at(i))));

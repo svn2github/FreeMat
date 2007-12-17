@@ -240,9 +240,9 @@ ArrayVector RegExpIFunction(int nargout, const ArrayVector& arg);
 void Tokenize(const std::string& str, StringVector& tokens,
 	      const std::string& delimiters = " \n");
 bool inBundleMode();
-ArrayVector MatLoadFunction(int nargout, string filename, rvstring varnames, 
+ArrayVector MatLoadFunction(int nargout, string filename, StringVector varnames, 
 			    bool regexp, Interpreter *eval);
-ArrayVector MatSaveFunction(string filename, rvstring varnames,
+ArrayVector MatSaveFunction(string filename, StringVector varnames,
 			    Interpreter *eval);
 ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg);

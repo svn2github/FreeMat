@@ -116,7 +116,7 @@ public:
   void putHeader(string header);
 };
 
-ArrayVector MatLoadFunction(int nargout, string filename, rvstring varnames, 
+ArrayVector MatLoadFunction(int nargout, string filename, StringVector varnames, 
 			    bool regexp, Interpreter *eval);
 
 #endif

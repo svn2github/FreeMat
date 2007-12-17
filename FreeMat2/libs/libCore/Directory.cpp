@@ -182,7 +182,7 @@ ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
       bytes << Array::uint64Constructor(foo[i].size());
       isdirs << Array::logicalConstructor(foo[i].isDir());
     }
-    return ArrayVector() << Array::structConstructor(rvstring() 
+    return ArrayVector() << Array::structConstructor(StringVector() 
 						     << "name"
 						     << "date"
 						     << "bytes"
@@ -275,7 +275,7 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //!
 ArrayVector DirSepFunction(int nargout, const ArrayVector& arg) {
   QString psep(QDir::separator());
-  return singleArrayVector(Array::stringConstructor(psep.toStdString()));
+  return SingleArrayVector(Array::stringConstructor(psep.toStdString()));
 }
 
 //!

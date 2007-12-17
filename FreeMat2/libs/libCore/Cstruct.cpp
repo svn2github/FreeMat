@@ -268,7 +268,7 @@ public:
     for (int i=0;i<fields.size();i++) 
       mat.push_back(ArrayVector());
     // collect the field names
-    rvstring names;
+    StringVector names;
     for (int i=0;i<fields.size();i++) 
       names << fields[i]->getName();
     // Populate the matrix

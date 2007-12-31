@@ -4,6 +4,22 @@
 #include <iostream>
 #include "Tree.hpp"
 #include "Serialize.hpp"
+#include "JITVM.hpp"
+
+Tree::~Tree() {
+  for (int i=0;i<m_children.size();i++) delete m_children.at(i);
+  delete m_jit;
+}
+
+Tree* Tree::deepTreeCopy(Tree* t) {
+  Tree *p = new Tree(t->m_node);
+  for (int i=0;i<t->m_children.size();i++)
+    p->addChild(Tree::deepTreeCopy(t->m_children.at(i)));
+  p->m_jitstate = t->m_jitstate;
+  if (t->m_jit)
+    p->m_jit = new JITVM(*t->m_jit);
+  return p;
+}
 
 static int indentlevel = 0;
 void Tree::print() const {

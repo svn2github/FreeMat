@@ -137,6 +137,7 @@ string TokenToString(const Token& b) {
   case TOK_DBTRACE: return "dbtrace";
   case TOK_ANONYMOUS_FUNC: return "anon func";
   case TOK_NEST_FUNC: return "nest func";
+  case TOK_TYPE_DECL: return "type decl";
   }
   return string(1,(char) b.value());
 }

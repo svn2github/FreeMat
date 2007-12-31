@@ -73,6 +73,7 @@ const byte TOK_FUNCTION_DEFS = 190;
 const byte TOK_SCRIPT = 191;
 const byte TOK_ANONYMOUS_FUNC = 192;
 const byte TOK_NEST_FUNC = 193;
+const byte TOK_TYPE_DECL = 194;
 typedef byte tok;
 class Serialize;
 

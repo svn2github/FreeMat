@@ -42,7 +42,6 @@ Token.hpp \
 Parser.hpp \
 Scanner.hpp \
 Tree.hpp \
-JITVM.hpp \
 List.hpp \
 fftw_cycle.h
 
@@ -75,7 +74,6 @@ Token.cpp \
 Parser.cpp \
 Scanner.cpp \
 Tree.cpp \
-JITVM.cpp \
 FunctionDef.cpp \
 $(libFreeMat_a_HFILES) 
 

@@ -17,10 +17,6 @@
  *
  */
 
-#ifdef HAVE_LLVM
-#include "JITVM.hpp"
-#endif
-
 #include "Interpreter.hpp"
 #include <math.h>
 #include <stdio.h>
@@ -1816,7 +1812,7 @@ void ForLoopHelperComplex(Tree *codeBlock, Class indexClass,
 //!
 //Works
 void Interpreter::forStatement(Tree *t) {
-#ifdef HAVE_LLVM
+#if 0
   // Try to compile this block to an instruction stream  
   if (jitcontrol) {
     if (t->JITState() == Tree::UNTRIED) {

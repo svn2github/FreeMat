@@ -1816,29 +1816,38 @@ void ForLoopHelperComplex(Tree *codeBlock, Class indexClass,
 //!
 //Works
 void Interpreter::forStatement(Tree *t) {
-  Array indexSet;
-  string indexVarName;
-
-  // Try to compile this for statement to an instruction stream
-  if (jitcontrol) {
 #ifdef HAVE_LLVM
-    JITVM jit;
-    bool success = false;
-    try {
-      jit.compile(t,this);
-      success = true;
-    } catch (Exception &e) {
+  // Try to compile this block to an instruction stream  
+  if (jitcontrol) {
+    if (t->JITState() == Tree::UNTRIED) {
       t->print();
-      std::cout << e.getMessageCopy() << "\r\n";
-      success = false;
-    }
-    if (success) {
-      jit.run(this);
+      JITVM *jit = new JITVM;
+      bool success = false;
+      try {
+	jit->compile(t,this);
+	success = true;
+	t->setJITState(Tree::SUCCEEDED);
+	t->setJITCode(jit);
+      } catch (Exception &e) {
+	t->print();
+	std::cout << e.getMessageCopy() << "\r\n";
+	success = false;
+	t->setJITState(Tree::FAILED);
+      delete jit;
+      }
+      if (success) {
+	jit->run(this);
+	return;
+      }
+    } else if (t->JITState() == Tree::SUCCEEDED) {
+      JITVM *jit = t->JITCode();
+      jit->run(this);
       return;
     }
-#endif
   }
-
+#endif
+  Array indexSet;
+  string indexVarName;
   /* Get the name of the indexing variable */
   if (t->first()->is('=')) {
     indexVarName = t->first()->first()->text();

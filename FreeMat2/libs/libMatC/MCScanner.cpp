@@ -1,9 +1,11 @@
-#include "Scanner.hpp"
+#include "MCScanner.hpp"
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "Exception.hpp"
+
+using namespace std;
 
 extern string fm_reserved[];
 extern int fm_reserved_count;
@@ -16,70 +18,46 @@ static bool isablank(byte a) {
   return (a==' ' || a=='\t' || a=='\r');
 }
 
-unsigned Scanner::contextNum() {
+unsigned MCScanner::contextNum() {
   return (m_ptr << 16 | m_linenumber);
 }
 
-void Scanner::setToken(byte tok, string text) {
+void MCScanner::setToken(byte tok, string text) {
   m_tok = Token(tok,m_ptr << 16 | m_linenumber,text);
 }
 
-bool Scanner::done() {
+bool MCScanner::done() {
   return (m_ptr >= (int)(m_text.size()));
 }
 
-bool Scanner::peek(int chars, byte tok) {
+bool MCScanner::peek(int chars, byte tok) {
   return (ahead(chars) == tok);
 }
 
-Scanner::Scanner(string buf, string fname) {
+MCScanner::MCScanner(string buf, string fname) {
   m_text = buf;
   m_filename = fname;
   m_ptr = 0;
   m_linenumber = 1;
   m_tokValid = false;
-  m_inContinuationState = false;
   m_bracketDepth = 0;
   m_strlen = buf.size();
-  m_ignorews.push(true);
-  m_debugFlag = false;
-  m_blobFlag = false;
 }
 
-void Scanner::fetchContinuation() {
-  m_ptr += 3;
-  while ((current() != '\n') && (m_ptr < m_strlen))
-    m_ptr++;
-  if (current() == '\n') {
-    m_linenumber++;
-    m_ptr++;
-  }
-  m_inContinuationState = true;
-}
 
-void Scanner::fetch() {
+void MCScanner::fetch() {
   if (m_ptr >= m_strlen)
     setToken(TOK_EOF);
   else if (current() == '%') {
     fetchComment();
     return;
-  } else if ((current() == '.') && 
-	     (ahead(1) == '.') &&
-	     (ahead(2) == '.')) {
-    fetchContinuation();
-    return;
-  } else if (m_blobFlag && !isablank(current()) && 
-	     (current() != '\n') && (current() != ';') &&
-	     (current() != ',') && (current() != '\'') &&
-	     (current() != '%')) 
-    fetchBlob();
-  else if (isalpha(current()))
+  } else if (isalpha(current()))
     fetchIdentifier();
   else if (isdigit(current()) || ((current() == '.') && isdigit(ahead(1))))
     fetchNumber();
   else if (isablank(current())) {
     fetchWhitespace();
-    if (m_ignorews.top()) return;
+    return;
   } else if ((current() == '\'') && !((previous() == '\'') ||
 				      (previous() == ')') ||
 				      (previous() == ']') ||
@@ -91,7 +69,7 @@ void Scanner::fetch() {
   m_tokValid = true;
 }
 
-bool Scanner::tryFetchBinary(const char* op, byte tok) {
+bool MCScanner::tryFetchBinary(const char* op, byte tok) {
   if ((current() == op[0]) && (ahead(1) == op[1])) {
     setToken(tok);
     m_ptr += 2;
@@ -100,12 +78,12 @@ bool Scanner::tryFetchBinary(const char* op, byte tok) {
   return false;
 }
 
-void Scanner::fetchComment() {
+void MCScanner::fetchComment() {
   while ((current() != '\n') && (m_ptr < m_strlen))
     m_ptr++;
 }
 
-void Scanner::fetchOther() {
+void MCScanner::fetchOther() {
   if (current() == '.') {
     if (tryFetchBinary(".*",TOK_DOTTIMES)) return;
     if (tryFetchBinary("./",TOK_DOTRDIV)) return;
@@ -131,7 +109,7 @@ void Scanner::fetchOther() {
   m_ptr++;
 }
 
-void Scanner::fetchString() {
+void MCScanner::fetchString() {
   int len = 0;
   // We want to advance, but skip double quotes
   //  while ((next() != ') || ((next() == ') && (next(2) == ')) && (next() != '\n')
@@ -155,7 +133,7 @@ void Scanner::fetchString() {
   m_ptr += len+2;
 }
 
-void Scanner::fetchWhitespace() {
+void MCScanner::fetchWhitespace() {
   int len = 0;
   while (isablank(ahead(len))) len++;
   setToken(TOK_SPACE);
@@ -182,7 +160,7 @@ typedef enum {
   dcomplex_class
 } number_class;
 
-void Scanner::fetchNumber() {
+void MCScanner::fetchNumber() {
   int len = 0;
   int lookahead = 0;
   number_class numclass;
@@ -261,7 +239,7 @@ void Scanner::fetchNumber() {
   }
 }
 
-void Scanner::fetchIdentifier() {
+void MCScanner::fetchIdentifier() {
   int len = 0;
   while (isalnumus(ahead(len))) len++;
   // Collect the identifier into a string
@@ -278,7 +256,7 @@ void Scanner::fetchIdentifier() {
 //   1.  A regular string (with quote delimiters)
 //   2.  A sequence of characters with either a whitespace
 //       a comma or a colon.
-void Scanner::fetchBlob() {
+void MCScanner::fetchBlob() {
   if (current() == '\'') {
     fetchString();
     m_tokValid = true;
@@ -295,61 +273,41 @@ void Scanner::fetchBlob() {
   }
 }
 
-const Token& Scanner::next() {
+const Token& MCScanner::next() {
   while (!m_tokValid) {
     fetch();
-    if (m_tokValid && m_debugFlag)
-      cout << m_tok;
     if ((m_ptr < m_strlen) && (current() == '\n'))
       m_linenumber++;
   }
-  if (m_inContinuationState && m_tokValid && !m_tok.is(TOK_EOF))
-    m_inContinuationState = false;
   return m_tok;
 }
 
-bool Scanner::inContinuationState() {
-  return m_inContinuationState;
-}
-
-bool Scanner::inBracket() {
-  return (m_bracketDepth>0);
-}
-
-void Scanner::consume() {
+void MCScanner::consume() {
   m_tokValid = false;
 }
 
-byte Scanner::current() {
+byte MCScanner::current() {
   if (m_ptr < m_strlen)
     return m_text.at(m_ptr);
   else
     return 0;
 }
 
-byte Scanner::previous() {
+byte MCScanner::previous() {
   if (m_ptr)
     return m_text.at(m_ptr-1);
   else
     return 0;
 }
 
-void Scanner::pushWSFlag(bool ignoreWS) {
-  m_ignorews.push(ignoreWS);
-}
-
-void Scanner::popWSFlag() {
-  m_ignorews.pop();
-}
-
-byte Scanner::ahead(int n) {
+byte MCScanner::ahead(int n) {
   if ((m_ptr+n) >= (int)(m_text.size()))
     return 0;
   else
     return m_text.at(m_ptr+n);
 }
 
-string Scanner::context() {
+string MCScanner::context() {
   return context(contextNum());
 }
 
@@ -359,13 +317,7 @@ static string stringFromNumber(unsigned line) {
   return string(buffer);
 }
 
-string Scanner::snippet(unsigned pos1, unsigned pos2) {
-  unsigned ptr1 = pos1 >> 16;
-  unsigned ptr2 = pos2 >> 16;
-  return string(m_text,ptr1,ptr2-ptr1+1);
-}
-
-string Scanner::context(unsigned pos) {
+string MCScanner::context(unsigned pos) {
   pos = pos >> 16;
   string::size_type line_start = 0;
   int linenumber = 1;

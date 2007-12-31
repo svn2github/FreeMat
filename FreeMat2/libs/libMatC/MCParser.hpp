@@ -1,14 +1,14 @@
-#ifndef __Parser_hpp__
-#define __Parser_hpp__
+#ifndef __MCParser_hpp__
+#define __MCParser_hpp__
 
 #include <string>
-#include "Scanner.hpp"
+#include "MCScanner.hpp"
 #include "Tree.hpp"
 
 using namespace std;
 
-class Parser {
-  Scanner &m_lex;
+class MCParser {
+  MCScanner &m_lex;
   unsigned lastpos;
   string lasterr;
   void serror(string);
@@ -24,14 +24,13 @@ private:
   Tree* functionDefinition();
   Tree* forIndexExpression();
   Tree* singletonStatement();
-  Tree* dBStepOrTraceStatement();
   Tree* whileStatement();
   Tree* ifStatement();
   Tree* switchStatement();
   Tree* tryStatement();
   Tree* expression();
   Tree* statement();
-  Tree* declarationStatement();
+  Tree* typeDeclarationStatement();
   Tree* statementSeperator();
   Tree* identifier();
   Tree* assignmentStatement();
@@ -40,24 +39,17 @@ private:
   Tree* matDef(byte basetok, byte closebracket);
   Tree* matrixDefinition();
   Tree* rowVectorDefinition();
-  Tree* specialFunctionCall();
-  Tree* keyword();
   Tree* exp(unsigned p);
   Tree* primaryExpression();
-  Tree* anonymousFunction();
   Tree* statementList();
 public:
-  Parser(Scanner& lex);
+  MCParser(MCScanner& lex);
   CodeBlock process();
   CodeBlock processStatementList();
   string lastErr() {return lasterr;}
   unsigned lastPos() {return lastpos;}
   void dump(); 
 
-  friend CodeBlock ParseExpressionString(string);
 };
-
-CodeBlock ParseString(string arg);
-CodeBlock ParseExpressionString(string arg);
 
 #endif

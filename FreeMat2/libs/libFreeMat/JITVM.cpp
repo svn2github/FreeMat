@@ -20,17 +20,17 @@
 
 // List of reasonable functions to JIT
 //
-// sec
-// csc
-// tan
-// atan
-// cot
-// exp
-// expm1
-// ceil
-// floor
-// round
-// pi, e
+// sec  - done
+// csc  - done
+// tan  - done
+// atan - done
+// cot  - done
+// exp  - done
+// expm1 - done
+// ceil - done
+// floor - done
+// round - done
+// pi, e - done
 // float
 // single
 // double
@@ -55,7 +55,7 @@
 #ifdef HAVE_LLVM
 #include "llvm/Analysis/Verifier.h"
 #include "llvm/Bitcode/ReaderWriter.h"
-#if 0
+#if 1
 #include "llvm/Pass.h"
 #include "llvm/PassManager.h"
 #include "llvm/LinkAllPasses.h"
@@ -69,128 +69,440 @@
 
 using namespace llvm;
 
-llvm::FunctionType *ddFuncTy;
-llvm::FunctionType *ffFuncTy;
-llvm::FunctionType *iiFuncTy;
-
-
-static llvm::FunctionType* GetScalarFunctionType(const Type* arg, 
-						 const Type* ret) {
-  std::vector<const Type*> tArgs;
-  tArgs.push_back(arg);
-  llvm::FunctionType* fret = llvm::FunctionType::get(ret,tArgs,false,
-						     (ParamAttrsList*) 0);
-  return fret;
+JIT::JIT() {
+  m = new Module("test");
+  mp = new ExistingModuleProvider(m);
+  ee = ExecutionEngine::create(mp,false);
 }
 
-JITFunction::JITFunction(string fun, const llvm::Type *ret, const llvm::Type *arg, llvm::Module* mod) {
-  retType = ret;
-  argType = arg;
-  funcType = GetScalarFunctionType(arg,ret);
-  funcAddress = new llvm::Function(funcType,GlobalValue::ExternalLinkage,fun,mod);
+void JIT::OptimizeCode() {
+  PassManager PM;
+  PM.add(new TargetData(m));
+  PM.add(createVerifierPass());                  // Verify that input is correct
+
+  PM.add((Pass*)createLowerSetJmpPass());          // Lower llvm.setjmp/.longjmp
+
+  // If the -strip-debug command line option was specified, do it.
+  PM.add((Pass*)createRaiseAllocationsPass());     // call %malloc -> malloc inst
+  PM.add((Pass*)createCFGSimplificationPass());    // Clean up disgusting code
+  PM.add((Pass*)createPromoteMemoryToRegisterPass());// Kill useless allocas
+  PM.add((Pass*)createGlobalOptimizerPass());      // Optimize out global vars
+  PM.add((Pass*)createGlobalDCEPass());            // Remove unused fns and globs
+  PM.add((Pass*)createIPConstantPropagationPass());// IP Constant Propagation
+  PM.add((Pass*)createDeadArgEliminationPass());   // Dead argument elimination
+  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after IPCP & DAE
+  PM.add((Pass*)createCFGSimplificationPass());    // Clean up after IPCP & DAE
+
+  PM.add((Pass*)createPruneEHPass());              // Remove dead EH info
+
+  PM.add((Pass*)createFunctionInliningPass());   // Inline small functions
+  PM.add((Pass*)createArgumentPromotionPass());    // Scalarize uninlined fn args
+
+  PM.add((Pass*)createTailDuplicationPass());      // Simplify cfg by copying code
+  PM.add((Pass*)createInstructionCombiningPass()); // Cleanup for scalarrepl.
+  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
+  PM.add((Pass*)createScalarReplAggregatesPass()); // Break up aggregate allocas
+  PM.add((Pass*)createInstructionCombiningPass()); // Combine silly seq's
+  PM.add((Pass*)createCondPropagationPass());      // Propagate conditionals
+
+  PM.add((Pass*)createTailCallEliminationPass());  // Eliminate tail calls
+  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
+  PM.add((Pass*)createReassociatePass());          // Reassociate expressions
+  PM.add((Pass*)createLoopRotatePass());
+  PM.add((Pass*)createLICMPass());                 // Hoist loop invariants
+  PM.add((Pass*)createLoopUnswitchPass());         // Unswitch loops.
+  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after LICM/reassoc
+  PM.add((Pass*)createIndVarSimplifyPass());       // Canonicalize indvars
+  PM.add((Pass*)createLoopUnrollPass());           // Unroll small loops
+  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after the unroller
+  PM.add((Pass*)createLoadValueNumberingPass());   // GVN for load instructions
+  PM.add((Pass*)createGCSEPass());                 // Remove common subexprs
+  PM.add((Pass*)createSCCPPass());                 // Constant prop with SCCP
+
+  // Run instcombine after redundancy elimination to exploit opportunities
+  // opened up by them.
+  PM.add((Pass*)createInstructionCombiningPass());
+  PM.add((Pass*)createCondPropagationPass());      // Propagate conditionals
+
+  PM.add((Pass*)createDeadStoreEliminationPass()); // Delete dead stores
+  PM.add((Pass*)createAggressiveDCEPass());        // SSA based 'Aggressive DCE'
+  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
+  PM.add((Pass*)createSimplifyLibCallsPass());     // Library Call Optimizations
+  PM.add((Pass*)createDeadTypeEliminationPass());  // Eliminate dead types
+  PM.add((Pass*)createConstantMergePass());        // Merge dup global constants
+  PM.run(*m);
 }
 
-void JITVM::initialize_JIT_functions() {
-  JITScalars.insertSymbol("pi",ConstantFP::get(Type::DoubleTy,4.0*atan(1.0)));
-  JITScalars.insertSymbol("e",ConstantFP::get(Type::DoubleTy,exp(1.0)));
-  JITScalars.insertSymbol("true",int32_const(1));
-  JITScalars.insertSymbol("false",int32_const(0));
-  // SIN
-  JITDoubleFuncs.insertSymbol("sin",JITFunction("sin",Type::getPrimitiveType(Type::DoubleTyID),
-						Type::getPrimitiveType(Type::DoubleTyID),M));
-  JITFloatFuncs.insertSymbol("sin",JITFunction("sinf",Type::getPrimitiveType(Type::FloatTyID),
-					      Type::getPrimitiveType(Type::FloatTyID),M));
-  // COS
-  JITDoubleFuncs.insertSymbol("cos",JITFunction("cos",Type::getPrimitiveType(Type::DoubleTyID),
-						Type::getPrimitiveType(Type::DoubleTyID),M));
-  JITFloatFuncs.insertSymbol("cos",JITFunction("cosf",Type::getPrimitiveType(Type::FloatTyID),
-					       Type::getPrimitiveType(Type::FloatTyID),M));
-  // ABS
-  JITDoubleFuncs.insertSymbol("abs",JITFunction("fabs",Type::getPrimitiveType(Type::DoubleTyID),
-						Type::getPrimitiveType(Type::DoubleTyID),M));
-  JITFloatFuncs.insertSymbol("abs",JITFunction("fabsf",Type::getPrimitiveType(Type::FloatTyID),
-					       Type::getPrimitiveType(Type::FloatTyID),M));
-  JITIntFuncs.insertSymbol("abs",JITFunction("abs",IntegerType::get(32),
-					     IntegerType::get(32),M));
-  // SEC
-  //   JITDoubleFuncs.insertSymbol("sec",JITFunction("sec",Type::getPrimitiveType(Type::DoubleTyID),
-  // 						Type::getPrimitiveType(Type::DoubleTyID),M));
-  //   JITFloatFuncs.insertSymbol("sec",JITFunction("secf",Type::getPrimitiveType(Type::FloatTyID),
-  // 					       Type::getPrimitiveType(Type::FloatTyID),M));
+JITFunctionType JIT::FunctionType(JITType rettype, std::vector<JITType> args) {
+  return llvm::FunctionType::get(rettype,args,false,(ParamAttrsList*) 0);
 }
 
-static inline bool isi(JITScalar arg) {
-  return arg->getType()->isInteger();
+JITFunctionType JIT::FunctionType(std::string rettype, std::string args) {
+  std::vector<JITType> argv;
+  for (int i=0;i<args.size();i++)
+    argv.push_back(MapTypeCode(args[i]));
+  JITFunctionType ty = FunctionType(MapTypeCode(rettype[0]),argv);
+  return ty;
 }
 
-static inline bool isfd(JITScalar arg) {
-  return arg->getType()->isFloatingPoint();
+void JIT::LinkFunction(JITFunction func, void* address) {
+  ee->addGlobalMapping(func,address);
 }
 
-static inline bool isf(JITScalar arg) {
-  return (arg->getType()->getTypeID() == Type::FloatTyID);
+JITType JIT::DoubleType() {
+  return Type::getPrimitiveType(Type::DoubleTyID);
 }
 
-static inline bool isd(JITScalar arg) {
-  return (arg->getType()->getTypeID() == Type::DoubleTyID);
+JITType JIT::FloatType() {
+  return Type::getPrimitiveType(Type::FloatTyID);
 }
 
-JITScalar JITVM::compile_boolean_op(Instruction::BinaryOps op, JITScalar arg1, JITScalar arg2, string inst) {
-  arg1 = cast(arg1,IntegerType::get(1),false,ip,"");
-  arg2 = cast(arg2,IntegerType::get(1),false,ip,"");
-  return BinaryOperator::create(op, arg1,arg2,"",ip);
+JITType JIT::Int32Type() {
+  return IntegerType::get(32);
 }
 
-// add immediate to immediate - this instruction can be replaced by 
-// constant folding, but for now, leave it in.
-JITScalar JITVM::compile_binary_op(BinaryOperator::BinaryOps opcode, 
-				   JITScalar arg1, JITScalar arg2, string inst) {
-  const Type* outType = NULL;
-  if (arg1->getType() == arg2->getType()) 
-    outType = arg1->getType();
-  else if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))
-    outType = Type::DoubleTy;
-  else if ((isf(arg1) && isd(arg2)) || (isd(arg1) && isf(arg2)))
-    outType = Type::DoubleTy;
-  arg1 = cast(arg1,outType,true,ip);
-  arg2 = cast(arg2,outType,true,ip);
-  return BinaryOperator::create(opcode,arg1,arg2,"",ip);
+JITType JIT::BoolType() {
+  return IntegerType::get(1);
 }
 
-JITScalar JITVM::compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst) {
-  const Type* outType = NULL;
-  if (arg1->getType() == arg2->getType())
-    outType = arg1->getType();
-  else if ((isi(arg1) && isfd(arg2)) || (isi(arg2) && isfd(arg1)))
-    outType = Type::DoubleTy;
-  else if ((isf(arg1) && isd(arg2)) || (isd(arg1) && isf(arg2)))
-    outType = Type::DoubleTy;
-  arg1 = cast(arg1,outType,true,ip);
-  arg2 = cast(arg2,outType,true,ip);
-  if (outType->isInteger()) {
-    switch (op) {
-    default:      throw Exception("Unrecognized comparison op");
-    case '<':     return new ICmpInst(ICmpInst::ICMP_SLT,arg1,arg2,"",ip);
-    case TOK_LE:  return new ICmpInst(ICmpInst::ICMP_SLE,arg1,arg2,"",ip);
-    case TOK_EQ:  return new ICmpInst(ICmpInst::ICMP_EQ,arg1,arg2,"",ip);
-    case TOK_GE:  return new ICmpInst(ICmpInst::ICMP_SGE,arg1,arg2,"",ip);
-    case '>':     return new ICmpInst(ICmpInst::ICMP_SGT,arg1,arg2,"",ip);
-    case TOK_NE:  return new ICmpInst(ICmpInst::ICMP_NE,arg1,arg2,"",ip);
-    }
-  } else {
-    switch (op) {
-    default:      throw Exception("Unrecognized comparison op");
-    case '<':     return new FCmpInst(FCmpInst::FCMP_OLT,arg1,arg2,"",ip);
-    case TOK_LE:  return new FCmpInst(FCmpInst::FCMP_OLE,arg1,arg2,"",ip);
-    case TOK_EQ:  return new FCmpInst(FCmpInst::FCMP_OEQ,arg1,arg2,"",ip);
-    case TOK_GE:  return new FCmpInst(FCmpInst::FCMP_OGE,arg1,arg2,"",ip);
-    case '>':     return new FCmpInst(FCmpInst::FCMP_OGT,arg1,arg2,"",ip);
-    case TOK_NE:  return new FCmpInst(FCmpInst::FCMP_ONE,arg1,arg2,"",ip);
-    }    
+JITType JIT::PointerType(JITType t) {
+  return PointerType::get(t);
+}
+
+JITType JIT::VoidType() {
+  return Type::VoidTy;
+}
+
+JITType JIT::TypeOf(JITScalar x) {
+  return x->getType();
+}
+
+JITScalar JIT::Int32Value(int32 x) {
+  return ConstantInt::get(Type::Int32Ty,x);
+}
+
+JITScalar JIT::DoubleValue(double x) {
+  return ConstantFP::get(Type::DoubleTy,x);
+}
+
+JITScalar JIT::FloatValue(float x) {
+  return ConstantFP::get(Type::FloatTy,x);
+}
+
+JITScalar JIT::BoolValue(bool t) {
+  if (t)
+    return ConstantInt::get(Type::Int1Ty,1);
+  else
+    return ConstantInt::get(Type::Int1Ty,0);
+}
+
+JITScalar JIT::Zero(JITType t) {
+  return Constant::getNullValue(t);
+}
+
+JITBlock JIT::NewBlock(std::string name) {
+  return new BasicBlock(name,func,0);
+}
+
+JITScalar JIT::Mul(JITScalar A, JITScalar B) {
+  return BinaryOperator::create(Instruction::Mul,A,B,"",ip);
+}
+
+JITScalar JIT::Div(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return BinaryOperator::create(Instruction::SDiv,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return BinaryOperator::create(Instruction::FDiv,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to divide instruction");
+}
+
+JITScalar JIT::Sub(JITScalar A, JITScalar B) {
+  return BinaryOperator::create(Instruction::Sub,A,B,"",ip);
+}
+
+JITScalar JIT::Add(JITScalar A, JITScalar B) {
+  return BinaryOperator::create(Instruction::Add,A,B,"",ip);
+}
+
+JITScalar JIT::And(JITScalar A, JITScalar B) {
+  return BinaryOperator::create(Instruction::And,A,B,"",ip);
+}
+
+JITScalar JIT::Or(JITScalar A, JITScalar B) {
+  return BinaryOperator::create(Instruction::Or,A,B,"",ip);
+}
+
+JITScalar JIT::Xor(JITScalar A, JITScalar B) {
+  return BinaryOperator::create(Instruction::Xor,A,B,"",ip);
+}
+
+JITScalar JIT::Alloc(JITType T, std::string name) {
+  return new AllocaInst(T,name,ip);
+}
+
+JITScalar JIT::Cast(JITScalar A, JITType T) {
+  return CastInst::create(CastInst::getCastOpcode(A,true,T,true),A,T,"",ip);
+}
+
+JITScalar JIT::LessThan(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return new ICmpInst(ICmpInst::ICMP_SLT,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return new FCmpInst(FCmpInst::FCMP_OLT,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to less than instruction");
+}
+
+JITScalar JIT::LessEquals(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return new ICmpInst(ICmpInst::ICMP_SLE,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return new FCmpInst(FCmpInst::FCMP_OLE,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to less-equal instruction");  
+}
+
+JITScalar JIT::Equals(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return new ICmpInst(ICmpInst::ICMP_EQ,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return new FCmpInst(FCmpInst::FCMP_OEQ,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to equal instruction");  
+}
+
+JITScalar JIT::NotEqual(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return new ICmpInst(ICmpInst::ICMP_NE,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return new FCmpInst(FCmpInst::FCMP_ONE,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to not-equal instruction");  
+}
+
+JITScalar JIT::GreaterThan(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return new ICmpInst(ICmpInst::ICMP_SGT,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return new FCmpInst(FCmpInst::FCMP_OGT,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to greater than instruction");
+}
+
+JITScalar JIT::GreaterEquals(JITScalar A, JITScalar B) {
+  if (A->getType()->isInteger() && B->getType()->isInteger()) 
+    return new ICmpInst(ICmpInst::ICMP_SGE,A,B,"",ip);
+  else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
+    return new FCmpInst(FCmpInst::FCMP_OGE,A,B,"",ip);
+  else
+    throw Exception("Unsupported type combinations to greater-equal instruction");  
+}
+
+void JIT::Store(JITScalar Value, JITScalar Address) {
+  new StoreInst(Value, Address, ip);
+}
+
+JITScalar JIT::Load(JITScalar Address) {
+  return new LoadInst(Address,"",false,ip);
+}
+
+void JIT::Jump(JITBlock B) {
+  new BranchInst(B,ip);
+}
+
+void JIT::Branch(JITBlock IfTrue, JITBlock IfFalse, JITScalar TestValue) {
+  new BranchInst(IfTrue,IfFalse,TestValue,ip);
+}
+
+void JIT::SetCurrentBlock(JITBlock B) {
+  ip = B;
+}
+
+JITBlock JIT::CurrentBlock() {
+  return ip;
+}
+
+JITScalar JIT::Call(JITFunction F, std::vector<JITScalar> args) {
+  CallInst *t = new CallInst(F,args.begin(),args.end(),"",ip);
+  t->setTailCall(false);
+  return t;
+}
+
+JITScalar JIT::Call(JITFunction F, JITScalar arg1) {
+  std::vector<JITScalar> args;
+  args.push_back(arg1);
+  return Call(F,args);
+}
+
+JITScalar JIT::Call(JITFunction F, JITScalar arg1, JITScalar arg2) {
+  std::vector<JITScalar> args;
+  args.push_back(arg1);
+  args.push_back(arg2);
+  return Call(F,args);
+}
+
+JITScalar JIT::Call(JITFunction F, JITScalar arg1, JITScalar arg2, JITScalar arg3) {
+  std::vector<JITScalar> args;
+  args.push_back(arg1);
+  args.push_back(arg2);
+  args.push_back(arg3);
+  return Call(F,args);
+}
+
+JITScalar JIT::Call(JITFunction F, JITScalar arg1, JITScalar arg2, 
+		    JITScalar arg3, JITScalar arg4) {
+  std::vector<JITScalar> args;
+  args.push_back(arg1);
+  args.push_back(arg2);
+  args.push_back(arg3);
+  args.push_back(arg4);
+  return Call(F,args);
+}
+
+JITScalar JIT::Call(JITFunction F, JITScalar arg1, JITScalar arg2, 
+		    JITScalar arg3, JITScalar arg4, JITScalar arg5) {
+  std::vector<JITScalar> args;
+  args.push_back(arg1);
+  args.push_back(arg2);
+  args.push_back(arg3);
+  args.push_back(arg4);
+  args.push_back(arg5);
+  return Call(F,args);
+}
+
+JITScalar JIT::GetElement(JITScalar BaseAddress, JITScalar Offset) {
+  return new GetElementPtrInst(BaseAddress,Offset,"",ip);
+}
+
+JITFunction JIT::DefineFunction(JITFunctionType functype, std::string name) {
+  JITFunction func = new Function(functype,GlobalValue::ExternalLinkage,name,m);
+  func->setCallingConv(CallingConv::C);
+  return func;
+}
+
+JITType JIT::MapTypeCode(char c) {
+  switch (c) {
+  case 'v':
+    return VoidType();
+  case 'i':
+    return Int32Type();
+  case 'f':
+    return FloatType();
+  case 'd':
+    return DoubleType();
+  case 'p':
+    return PointerType(Int32Type());
+  default:
+    throw Exception("Invalid type map code");
   }
 }
 
-static const Type* array_dereference(const Type* t) {
+JITFunction JIT::DefineLinkFunction(std::string name, std::string rettype, std::string args, void *address) {
+  std::vector<JITType> argv;
+  for (int i=0;i<args.size();i++)
+    argv.push_back(MapTypeCode(args[i]));
+  JITFunctionType ty = FunctionType(MapTypeCode(rettype[0]),argv);
+  JITFunction fn = DefineFunction(ty,name);
+  LinkFunction(fn,address);
+  return fn;
+}
+
+void JIT::SetCurrentFunction(JITFunction f) {
+  func = f;
+}
+
+JITFunction JIT::CurrentFunction() {
+  return func;
+}
+
+JITScalar JIT::FunctionArgument(int n, std::string name) {
+  Function::arg_iterator args = func->arg_begin();
+  for (int i=0;i<n;i++)
+    args++;
+  JITScalar ret = args;
+  ret->setName(name);
+  return ret;
+}
+
+void JIT::CloseFunction() {
+}
+
+bool JIT::IsDouble(JITType t) {
+  return t->getTypeID() == Type::DoubleTyID;
+}
+
+bool JIT::IsFloat(JITType t) {
+  return t->getTypeID() == Type::FloatTyID;
+}
+
+bool JIT::IsFP(JITType t) {
+  return t->isFloatingPoint();
+}
+
+bool JIT::IsInteger(JITType t) {
+  return t->isInteger();
+}
+
+bool JIT::IsDouble(JITScalar t) {
+  return IsDouble(TypeOf(t));
+}
+
+bool JIT::IsFloat(JITScalar t) {
+  return IsFloat(TypeOf(t));
+}
+
+bool JIT::IsFP(JITScalar t) {
+  return IsFP(TypeOf(t));
+}
+
+bool JIT::IsInteger(JITScalar t) {
+  return IsInteger(TypeOf(t));
+}
+
+void JIT::Return(JITScalar t) {
+  new ReturnInst(t,ip);
+}
+
+void JIT::Return() {
+  new ReturnInst(NULL,ip);
+}
+
+void JIT::Dump() {
+  std::cout << (*m);
+}
+
+JITGeneric JIT::Invoke(JITFunction f, JITGeneric arg) {
+  std::vector<JITGeneric> args;
+  args.push_back(arg);
+  return ee->runFunction(f,args);
+}
+
+double csc(double t) {
+  return 1.0/sin(t);
+}
+
+float cscf(float t) {
+  return 1.0f/sinf(t);
+}
+
+double sec(double t) {
+  return 1.0/cos(t);
+}
+
+float secf(float t) {
+  return 1.0f/cosf(t);
+}
+
+double cot(double t) {
+  return 1.0/tan(t);
+}
+
+float cotf(float t) {
+  return 1.0f/tanf(t);
+}
+
+static JITType array_dereference(JITType t) {
   const PointerType* p = dynamic_cast<const PointerType*>(t);
   if (!p) throw Exception("Expected pointer type in argument to array_dereference");
   return p->getElementType();
@@ -209,11 +521,18 @@ void JITVM::compile_assignment(Tree* t, Interpreter* m_eval) {
     if (!v) throw Exception("Undefined variable reference:" + symname);
   }
   if (s->numChildren() == 1) {
-    if (v->data_value->getType() != PointerType::get(rhs->getType()))
+    if (v->jit_type != jit->TypeOf(rhs))
       throw Exception("polymorphic assignment to scalar detected.");
     if (!v->is_scalar)
       throw Exception("scalar assignment to array variable.");
-    new StoreInst(rhs, v->data_value, ip);
+    if (jit->IsDouble(rhs))
+      jit->Call(func_scalar_store_double, this_ptr, jit->Int32Value(v->argument_index), rhs);
+    else if (jit->IsFloat(rhs))
+      jit->Call(func_scalar_store_float, this_ptr, jit->Int32Value(v->argument_index), rhs);
+    else if (jit->IsInteger(rhs))
+      jit->Call(func_scalar_store_int32, this_ptr, jit->Int32Value(v->argument_index), rhs);
+    else
+      throw Exception("Unsupported type in JIT store");
     return;
   }
   if (s->numChildren() > 2)
@@ -227,176 +546,68 @@ void JITVM::compile_assignment(Tree* t, Interpreter* m_eval) {
     throw Exception("Expecting at least 1 array reference for dereference...");
   if (q->numChildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
-  if (v->data_value->getType() != PointerType::get(PointerType::get(rhs->getType()))) {
-    // Handle type promotion.  The only case that I can think of 
-    // (with int, float and double) is if the destination array is
-    // double, in which case, we can promote the RHS to type double
-    const Type* p_p_array_type = v->data_value->getType();
-    const Type* array_type = array_dereference(array_dereference(p_p_array_type));
-    if (array_type && array_type->getTypeID() == Type::DoubleTyID) {
-      rhs = cast(rhs,array_type,true,ip,"");
-    } else 
-      throw Exception("polymorphic assignment to array detected");
-  }
   if (q->numChildren() == 1) {
-    JITScalar arg1 = compile_expression(q->first(),m_eval);
-    arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    // Add code to check the address against the bounds and resize if necessary
-    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(1),"",ip);
-    BasicBlock *bb1 = new BasicBlock("under_range",func,0);
-    BasicBlock *bb2 = new BasicBlock("not_under_range",func,0);
-    new BranchInst(bb1,bb2,under_range,ip);
-    new StoreInst(int32_const(2),return_val,false,bb1);
-    new BranchInst(func_epilog,bb1);
-    Value* over_range = new ICmpInst(ICmpInst::ICMP_SGT,
-     				     arg1,new LoadInst(v->num_length,"",false,bb2),"",bb2); 
-    BasicBlock *bb3 = new BasicBlock("need_resize",func,0);
-    BasicBlock *bb4 = new BasicBlock("valid_range",func,0);
-    new BranchInst(bb3,bb4,over_range,bb2);
-    // Need to resize 
-    std::vector<Value*> resize_params;
-    resize_params.push_back(this_ptr);
-    resize_params.push_back(int32_const(v->argument_index));
-    resize_params.push_back(arg1);
-    new CallInst(v_resize_func_ptr, resize_params.begin(), resize_params.end(), "", bb3);
-    new StoreInst(arg1,v->num_length,bb3);
-    int argnum = v->argument_index;
-    Value* p_arg = cast(get_input_argument(3*argnum,bb3),
-			PointerType::get(map_dataclass_type(v->inferred_type)),
-			false,bb3,"");
-    new StoreInst(p_arg,v->data_value,bb3);
-    new BranchInst(bb4,bb3);
-    ip = bb4;
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
-    Value *g = new LoadInst(v->data_value,"",false,ip);
-    JITScalar address = new GetElementPtrInst(g, arg1, "", ip);
-    new StoreInst(rhs, address, false, ip);
+    JITScalar arg1 = jit->Cast(compile_expression(q->first(),m_eval),jit->Int32Type());
+    if (jit->IsDouble(rhs))
+      jit->Call(func_vector_store_double, this_ptr, jit->Int32Value(v->argument_index), arg1, rhs);
+    else if (jit->IsFloat(rhs))
+      jit->Call(func_vector_store_float, this_ptr, jit->Int32Value(v->argument_index), arg1, rhs);
+    else if (jit->IsInteger(rhs))
+      jit->Call(func_vector_store_int32, this_ptr, jit->Int32Value(v->argument_index), arg1, rhs);
   } else if (q->numChildren() == 2) {
-    JITScalar arg1 = compile_expression(q->first(),m_eval);
-    JITScalar arg2 = compile_expression(q->second(),m_eval);
-    arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg2 = cast(arg2,IntegerType::get(32),false,ip);
-    Value* under_range1 = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(1),"",ip);
-    Value* under_range2 = new ICmpInst(ICmpInst::ICMP_SLT,arg2,int32_const(1),"",ip);
-    Value* under_range = BinaryOperator::create(Instruction::Or,
-						under_range1,under_range2,"",ip);
-    BasicBlock *bb1 = new BasicBlock("under_range",func,0);
-    BasicBlock *bb2 = new BasicBlock("not_under_range",func,0);
-    new BranchInst(bb1,bb2,under_range,ip);
-    new StoreInst(int32_const(2),return_val,false,bb1);
-    new BranchInst(func_epilog,bb1);
-    Value* over_range1 = new ICmpInst(ICmpInst::ICMP_SGT,
-				      arg1,new LoadInst(v->num_rows,"",false,bb2),"",bb2);
-    Value* over_range2 = new ICmpInst(ICmpInst::ICMP_SGT,
-				      arg2,new LoadInst(v->num_cols,"",false,bb2),"",bb2);
-    Value* over_range = BinaryOperator::create(Instruction::Or,
-					       over_range1,over_range2,"",bb2);
-    BasicBlock *bb3 = new BasicBlock("need_resize",func,0);
-    BasicBlock *bb4 = new BasicBlock("valid_range",func,0);
-    new BranchInst(bb3,bb4,over_range,bb2);
-    // Need to resize
-    std::vector<Value*> resize_params;
-    resize_params.push_back(this_ptr);
-    resize_params.push_back(int32_const(v->argument_index));
-    resize_params.push_back(arg1);
-    resize_params.push_back(arg2);
-    new CallInst(m_resize_func_ptr, resize_params.begin(), resize_params.end(), "", bb3);
-    int argnum = v->argument_index;
-    Value* p_arg = cast(get_input_argument(3*argnum,bb3),
-			PointerType::get(map_dataclass_type(v->inferred_type)),
-			false,bb3,"");
-    new StoreInst(p_arg,v->data_value,bb3);
-    Value* r_arg = cast(get_input_argument(3*argnum+1,bb3),
-			PointerType::get(IntegerType::get(32)),false,bb3);
-    Value* c_arg = cast(get_input_argument(3*argnum+2,bb3),
-			PointerType::get(IntegerType::get(32)),false,bb3);
-    copy_value(r_arg,v->num_rows,bb3);
-    copy_value(c_arg,v->num_cols,bb3);
-    new StoreInst(BinaryOperator::create(Instruction::Mul,
-					 new LoadInst(c_arg, "", false, bb3),
-					 new LoadInst(r_arg, "", false, bb3),
-				       "",bb3),v->num_length,false,bb3);
-    new BranchInst(bb4,bb3);
-    ip = bb4;
-    // Add code to check range
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
-    arg2 = BinaryOperator::create(Instruction::Sub,arg2,int32_const(1),"",ip);
-    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
-					   new LoadInst(v->num_rows,"",false,ip),
-					   "",ip);
-    lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
-    Value *g = new LoadInst(v->data_value, "", false, ip);
-    JITScalar address = new GetElementPtrInst(g, lin, "", ip);
-    new StoreInst(rhs, address, false, ip);
+    JITScalar arg1 = jit->Cast(compile_expression(q->first(),m_eval),jit->Int32Type());
+    JITScalar arg2 = jit->Cast(compile_expression(q->second(),m_eval),jit->Int32Type());
+    if (jit->IsDouble(rhs))
+      jit->Call(func_matrix_store_double, this_ptr, jit->Int32Value(v->argument_index), arg1, arg2, rhs);
+    else if (jit->IsFloat(rhs))
+      jit->Call(func_matrix_store_float, this_ptr, jit->Int32Value(v->argument_index), arg1, arg2, rhs);
+    else if (jit->IsInteger(rhs))
+      jit->Call(func_matrix_store_int32, this_ptr, jit->Int32Value(v->argument_index), arg1, arg2, rhs);
   }
 }
 
 void JITVM::compile_if_statement(Tree* t, Interpreter* m_eval) {
-  JITScalar main_cond(cast(compile_expression(t->first(),m_eval),
-			   IntegerType::get(1),false,ip,""));
-  BasicBlock *if_true = new BasicBlock("if_true",func,0);
-  BasicBlock *if_continue = new BasicBlock("if_continue",func,0);
-  BasicBlock *if_exit = new BasicBlock("if_exit",func,0);
-  new BranchInst(if_true,if_continue,main_cond,ip);
-  ip = if_true;
+  JITScalar main_cond = jit->Cast(compile_expression(t->first(),m_eval),jit->BoolType());
+  JITBlock if_true = jit->NewBlock("if_true");
+  JITBlock if_continue = jit->NewBlock("if_continue");
+  JITBlock if_exit = jit->NewBlock("if_exit");
+  jit->Branch(if_true,if_continue,main_cond);
+  jit->SetCurrentBlock(if_true);
   compile_block(t->second(),m_eval);
-  new BranchInst(if_exit,ip);
+  jit->Jump(if_exit);
   int n=2;
   while (n < t->numChildren() && t->child(n)->is(TOK_ELSEIF)) {
-    ip = if_continue;
-    JITScalar ttest(cast(compile_expression(t->child(n)->first(),m_eval),
-			 IntegerType::get(1),false,ip,""));
-    if_true = new BasicBlock("elseif_true",func,0);
-    if_continue = new BasicBlock("elseif_continue",func,0);
-    new BranchInst(if_true,if_continue,ttest,ip);
-    ip = if_true;
+    jit->SetCurrentBlock(if_continue);
+    JITScalar ttest = jit->Cast(compile_expression(t->child(n)->first(),m_eval),jit->BoolType());
+    if_true = jit->NewBlock("elseif_true");
+    if_continue = jit->NewBlock("elseif_continue");
+    jit->Branch(if_true,if_continue,ttest);
+    jit->SetCurrentBlock(if_true);
     compile_block(t->child(n)->second(),m_eval);
-    new BranchInst(if_exit,ip);
+    jit->Jump(if_exit);
     n++;
   }
   if (t->last()->is(TOK_ELSE)) {
-    ip = if_continue;
+    jit->SetCurrentBlock(if_continue);
     compile_block(t->last()->first(),m_eval);
-    new BranchInst(if_exit,ip);
+    jit->Jump(if_exit);
   } else {
-    new BranchInst(if_exit,if_continue);
+    jit->SetCurrentBlock(if_continue);
+    jit->Jump(if_exit);
   }
-  ip = if_exit;
+  jit->SetCurrentBlock(if_exit);
 }
 
-JITScalar JITVM::bool_const(int32 x) {
-  return ConstantInt::get(Type::Int1Ty,x);
-}
-
-JITScalar JITVM::int32_const(int32 x) {
-  return ConstantInt::get(Type::Int32Ty,x);
-}
-
-JITScalar JITVM::cast(JITScalar value, const Type *type, bool sgnd, BasicBlock *where, string name) {
-  return CastInst::create(CastInst::getCastOpcode(value,sgnd,type,sgnd),
-			  value, type, name, where);
-}
-
-JITScalar JITVM::get_input_argument(int arg, BasicBlock* where) {
-  Value *s = new GetElementPtrInst(ptr_inputs,int32_const(arg),"",where);
-  s = new LoadInst(s,"",false,where);
-  return s;
-}
-
-void JITVM::copy_value(JITScalar source, JITScalar dest, BasicBlock* where) {
-  new StoreInst(new LoadInst(source, "", false, where), dest, false, where);
-}
-
-const Type* JITVM::map_dataclass_type(Class aclass) {
+JITType JITVM::map_dataclass_type(Class aclass) {
   switch (aclass) {
   default:
     throw Exception("JIT does not support");
   case FM_INT32:
-    return IntegerType::get(32);
+    return jit->Int32Type();
   case FM_FLOAT:
-    return Type::FloatTy;
+    return jit->FloatType();
   case FM_DOUBLE:
-    return Type::DoubleTy;
+    return jit->DoubleType();
   }
   return NULL;
 }
@@ -413,30 +624,7 @@ JITSymbolInfo* JITVM::add_argument_array(string name, Interpreter* m_eval) {
   if (ptr->isComplex())
     throw Exception("Cannot JIT complex arrays:" + name);
   aclass = ptr->dataClass();
-  // Map the array class to an llvm type
-  const Type* ctype(map_dataclass_type(aclass));
-  // Allocate local variables for the row, column and pointer to data
-  Value* r = new AllocaInst(IntegerType::get(32),name+"_rows",func_prolog);
-  Value* c = new AllocaInst(IntegerType::get(32),name+"_cols",func_prolog);
-  Value* p = new AllocaInst(PointerType::get(ctype),name+"_data",func_prolog);
-  Value* l = new AllocaInst(IntegerType::get(32),name+"_len",func_prolog);
-  // Get pointers to the argument array elements
-  Value* r_arg = cast(get_input_argument(3*argument_count+1,func_prolog),
-		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_rows_in");
-  Value* c_arg = cast(get_input_argument(3*argument_count+2,func_prolog),
-		      PointerType::get(IntegerType::get(32)),false,func_prolog,name+"_cols_in");
-  Value* p_arg = cast(get_input_argument(3*argument_count,func_prolog),
-		      PointerType::get(ctype),false,func_prolog,name+"_data_in");
-  // Initialize the local variables from the argument array
-  copy_value(r_arg,r,func_prolog);
-  copy_value(c_arg,c,func_prolog);
-  new StoreInst(p_arg,p,func_prolog);
-  new StoreInst(BinaryOperator::create(Instruction::Mul,
-				       new LoadInst(c, "", false, func_prolog),
-				       new LoadInst(r, "", false, func_prolog),
-				       "",func_prolog),l,false,func_prolog);
-  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,false,true,
-					  r,c,l,p,aclass,false));  
+  symbols.insertSymbol(name,JITSymbolInfo(argument_count,false,aclass,map_dataclass_type(aclass)));
   argument_count++;
   return symbols.findSymbol(name);
 }
@@ -447,11 +635,11 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
   Class aclass = FM_FUNCPTR_ARRAY;
   if (!val && !ptr.valid()) return NULL;
   if (!ptr.valid() || override) {
-    if (isi(val))
+    if (jit->IsInteger(val))
       aclass = FM_INT32;
-    else if (isf(val))
+    else if (jit->IsFloat(val))
       aclass = FM_FLOAT;
-    else if (isd(val))
+    else if (jit->IsDouble(val))
       aclass = FM_DOUBLE;
   } else {
     if (!ptr->isScalar())
@@ -462,28 +650,22 @@ JITSymbolInfo* JITVM::add_argument_scalar(string name, Interpreter* m_eval, JITS
       throw Exception("Cannot JIT complex arrays:" + name);
     aclass = ptr->dataClass();
   }
-  Value *s = new GetElementPtrInst(ptr_inputs,int32_const(3*argument_count),"",func_prolog);
-  s = new LoadInst(s, "", false, func_prolog);
-  const Type* ctype(map_dataclass_type(aclass));
-  Value *r = cast(s,PointerType::get(ctype),false,func_prolog,name+"_in");
-  Value *t = new AllocaInst(ctype,name,func_prolog);
-  new StoreInst(new LoadInst(r, "", false, func_prolog), t, false, func_prolog);
-  new StoreInst(new LoadInst(t, "", false, func_epilog), r, false, func_epilog);
-  symbols.insertSymbol(name,JITSymbolInfo(true,argument_count,true,true,NULL,
-					  NULL,NULL,t,aclass,false));
+  symbols.insertSymbol(name,JITSymbolInfo(argument_count,true,aclass,map_dataclass_type(aclass)));
   argument_count++;
   return symbols.findSymbol(name);
 }
 
 JITScalar JITVM::compile_scalar_function(string symname, Interpreter* m_eval) {
+#if 0
   // Look up the function in the set of scalars
-  JITScalar *val;
-  val = JITScalars.findSymbol(symname);
+  JITScalar *val = JITScalars.findSymbol(symname);
   if (!val) throw Exception("No JIT version of function " + symname);
   return *val;
+#endif
 }
 
 JITScalar JITVM::compile_function_call(Tree* t, Interpreter* m_eval) {
+#if 0
   // First, make sure it is a function
   string symname(t->first()->text());
   FuncPtr funcval;
@@ -505,7 +687,7 @@ JITScalar JITVM::compile_function_call(Tree* t, Interpreter* m_eval) {
     JITScalar arg = compile_expression(s->first(),m_eval);
     // First look up direct functions - also try double arg functions, as type
     // promotion means sin(int32) --> sin(double)
-    JITFunction *fun = NULL;
+    JITFunc *fun = NULL;
     if (isi(arg)) {
       fun = JITIntFuncs.findSymbol(symname);
       if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
@@ -520,13 +702,13 @@ JITScalar JITVM::compile_function_call(Tree* t, Interpreter* m_eval) {
     //The function exists and is defined - call it
     return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""),"",ip);
   }
+#endif
 }
 
 JITScalar JITVM::compile_rhs(Tree* t, Interpreter* m_eval) {
   string symname(t->first()->text());
   JITSymbolInfo *v = symbols.findSymbol(symname);
   if (!v) {
-    
     if (t->numChildren() == 1)
       v = add_argument_scalar(symname,m_eval);
     else
@@ -537,7 +719,12 @@ JITScalar JITVM::compile_rhs(Tree* t, Interpreter* m_eval) {
   if (t->numChildren() == 1) {
     if (!v->is_scalar)
       throw Exception("non-scalar reference returned in scalar context!");
-    return new LoadInst(v->data_value, "", false, ip);
+    if (jit->IsDouble(v->jit_type))
+      return jit->Call(func_scalar_load_double, this_ptr, jit->Int32Value(v->argument_index));
+    else if (jit->IsFloat(v->jit_type))
+      return jit->Call(func_scalar_load_float, this_ptr, jit->Int32Value(v->argument_index));
+    else if (jit->IsInteger(v->jit_type))
+      return jit->Call(func_scalar_load_int32, this_ptr, jit->Int32Value(v->argument_index));
   }
   if (t->numChildren() > 2)
     throw Exception("multiple levels of dereference not handled yet...");
@@ -551,63 +738,24 @@ JITScalar JITVM::compile_rhs(Tree* t, Interpreter* m_eval) {
   if (s->numChildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (s->numChildren() == 1) {
-    JITScalar arg1 = compile_expression(s->first(),m_eval);
-    arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
-    Value* under_range = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(0),"",ip);
-    Value* over_range = new ICmpInst(ICmpInst::ICMP_SGE,
-				     arg1,
-				     new LoadInst(v->num_length,"",false,ip),
-				     "",ip);
-    Value* out_range = BinaryOperator::create(Instruction::Or,
- 					      under_range,over_range,"",ip);
-    BasicBlock *bb1 = new BasicBlock("",func,0);
-    BasicBlock *bb2 = new BasicBlock("",func,0);
-    new BranchInst(bb1, bb2, out_range, ip);
-    new StoreInst(int32_const(1),return_val,false,bb1);
-    new BranchInst(func_epilog,bb1);
-    ip = bb2;
-    Value *g = new LoadInst(v->data_value, "", false, ip);
-    JITScalar address = new GetElementPtrInst(g, arg1, "", ip);
-    return new LoadInst(address, "", false, ip);
+    JITScalar arg1 = jit->Cast(compile_expression(s->first(),m_eval),jit->Int32Type());
+    if (jit->IsDouble(v->jit_type))
+      return jit->Call(func_vector_load_double, this_ptr, jit->Int32Value(v->argument_index), arg1);
+    else if (jit->IsFloat(v->jit_type))
+      return jit->Call(func_vector_load_float, this_ptr, jit->Int32Value(v->argument_index), arg1);
+    else if (jit->IsInteger(v->jit_type))
+      return jit->Call(func_vector_load_int32, this_ptr, jit->Int32Value(v->argument_index), arg1);
+    throw Exception("Unsupported JIT type in Load");
   } else if (s->numChildren() == 2) {
     JITScalar arg1 = compile_expression(s->first(),m_eval);
     JITScalar arg2 = compile_expression(s->second(),m_eval);
-    arg1 = cast(arg1,IntegerType::get(32),false,ip);
-    arg2 = cast(arg2,IntegerType::get(32),false,ip);
-    arg1 = BinaryOperator::create(Instruction::Sub,arg1,int32_const(1),"",ip);
-    arg2 = BinaryOperator::create(Instruction::Sub,arg2,int32_const(1),"",ip);
-    Value* under_range_1 = new ICmpInst(ICmpInst::ICMP_SLT,arg1,int32_const(0),"",ip);
-    Value* under_range_2 = new ICmpInst(ICmpInst::ICMP_SLT,arg2,int32_const(0),"",ip);
-    Value* over_range_1 = new ICmpInst(ICmpInst::ICMP_SGE,
-				       arg1,
-				       new LoadInst(v->num_rows,"",false,ip),
-				       "",ip);
-    Value* over_range_2 = new ICmpInst(ICmpInst::ICMP_SGE,
-				       arg2,
-				       new LoadInst(v->num_cols,"",false,ip),
-				       "",ip);
-    Value* out_range = BinaryOperator::create(Instruction::Or,
-					      BinaryOperator::create(Instruction::Or,
-								     under_range_1,
-								     under_range_2,"",ip),
-					      BinaryOperator::create(Instruction::Or,
-								     over_range_1,
-								     over_range_2,"",ip),
-					      "",ip);
-    BasicBlock *bb1 = new BasicBlock("",func,0);
-    BasicBlock *bb2 = new BasicBlock("",func,0);
-    new BranchInst(bb1, bb2, out_range, ip);
-    new StoreInst(int32_const(1),return_val,false,bb1);
-    new BranchInst(func_epilog,bb1);
-    ip = bb2;
-    JITScalar lin = BinaryOperator::create(Instruction::Mul,arg2,
-					   new LoadInst(v->num_rows,"",false,ip),
-					   "",ip);
-    lin = BinaryOperator::create(Instruction::Add,lin,arg1,"",ip);
-    Value *g = new LoadInst(v->data_value, "", false, ip);
-    JITScalar address = new GetElementPtrInst(g, lin, "", ip);
-    return new LoadInst(address, "", false, ip);
+    if (jit->IsDouble(v->jit_type))
+      return jit->Call(func_matrix_load_double, this_ptr, jit->Int32Value(v->argument_index), arg1, arg2);
+    else if (jit->IsFloat(v->jit_type))
+      return jit->Call(func_matrix_load_float, this_ptr, jit->Int32Value(v->argument_index), arg1, arg2);
+    else if (jit->IsInteger(v->jit_type))
+      return jit->Call(func_matrix_load_int32, this_ptr, jit->Int32Value(v->argument_index), arg1, arg2);
+    throw Exception("Unsupported JIT type in Load");
   }
   throw Exception("dereference not handled yet...");
 }
@@ -615,9 +763,9 @@ JITScalar JITVM::compile_rhs(Tree* t, Interpreter* m_eval) {
 JITScalar JITVM::compile_expression(Tree* t, Interpreter* m_eval) {
   switch(t->token()) {
   case TOK_VARIABLE:     return compile_rhs(t,m_eval);
-  case TOK_INTEGER:      return int32_const(ArrayToInt32(t->array()));
-  case TOK_FLOAT:        return ConstantFP::get(Type::FloatTy,ArrayToDouble(t->array()));
-  case TOK_DOUBLE:       return ConstantFP::get(Type::DoubleTy,ArrayToDouble(t->array()));
+  case TOK_INTEGER:      return jit->Int32Value(ArrayToInt32(t->array()));
+  case TOK_FLOAT:        return jit->FloatValue(ArrayToDouble(t->array()));
+  case TOK_DOUBLE:       return jit->DoubleValue(ArrayToDouble(t->array()));
   case TOK_COMPLEX:
   case TOK_DCOMPLEX:
   case TOK_STRING:
@@ -626,89 +774,48 @@ JITScalar JITVM::compile_expression(Tree* t, Interpreter* m_eval) {
   case TOK_MATDEF: 
   case TOK_CELLDEF:      throw Exception("JIT compiler does not support complex, string, END, matrix or cell defs");
   case '+':
-    return compile_binary_op(Instruction::Add,
-			     compile_expression(t->first(),m_eval),
-			     compile_expression(t->second(),m_eval),"add");
+    return jit->Add(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case '-': 
-    return compile_binary_op(Instruction::Sub,
-			     compile_expression(t->first(),m_eval),
-			     compile_expression(t->second(),m_eval),"sub");
+    return jit->Sub(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case '*': 
   case TOK_DOTTIMES: 
-    return compile_binary_op(Instruction::Mul,
-			     compile_expression(t->first(),m_eval),
-			     compile_expression(t->second(),m_eval),"mul");
+    return jit->Mul(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case '/': 
   case TOK_DOTRDIV:
-    {
-      JITScalar arg1 = compile_expression(t->first(),m_eval);
-      JITScalar arg2 = compile_expression(t->second(),m_eval);
-      if (!(isf(arg1) && isf(arg2))) {
-	arg1 = cast(arg1,Type::DoubleTy,true,ip);
-	arg2 = cast(arg2,Type::DoubleTy,true,ip);
-      }
-      return compile_binary_op(Instruction::FDiv,arg1,arg2,"div");
-    }
+    return jit->Div(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case '\\': 
   case TOK_DOTLDIV: 
-    {
-      JITScalar arg1 = compile_expression(t->first(),m_eval);
-      JITScalar arg2 = compile_expression(t->second(),m_eval);
-      if (!(isf(arg1) && isf(arg2))) {
-	arg1 = cast(arg1,Type::DoubleTy,true,ip);
-	arg2 = cast(arg2,Type::DoubleTy,true,ip);
-      }
-      return compile_binary_op(Instruction::FDiv,arg2,arg1,"div");
-    }
-    // FIXME: Are shortcuts handled correctly here?
+    return jit->Div(compile_expression(t->second(),m_eval),compile_expression(t->first(),m_eval));
+#warning shortcut evaluation
   case TOK_SOR: 
   case '|':
-    return compile_boolean_op(Instruction::Or,
- 			      compile_expression(t->first(),m_eval),
- 			      compile_expression(t->second(),m_eval),"or");
+    return jit->Or(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case TOK_SAND: 
   case '&': 
-    return compile_boolean_op(Instruction::And,
-			      compile_expression(t->first(),m_eval),
-			      compile_expression(t->second(),m_eval),"and");
+    return jit->And(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case '<': 
-    return compile_comparison_op(t->token(),
-				 compile_expression(t->first(),m_eval),
-				 compile_expression(t->second(),m_eval),"lt");
+    return jit->LessThan(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case TOK_LE: 
-    return compile_comparison_op(t->token(),
-				 compile_expression(t->first(),m_eval),
-				 compile_expression(t->second(),m_eval),"le");
+    return jit->LessEquals(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case '>': 
-    return compile_comparison_op(t->token(),
-				 compile_expression(t->first(),m_eval),
-				 compile_expression(t->second(),m_eval),"gt");
+    return jit->GreaterThan(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case TOK_GE: 
-    return compile_comparison_op(t->token(),
-				 compile_expression(t->first(),m_eval),
-				 compile_expression(t->second(),m_eval),"ge");
+    return jit->GreaterEquals(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case TOK_EQ: 
-    return compile_comparison_op(t->token(),
-				 compile_expression(t->first(),m_eval),
-				 compile_expression(t->second(),m_eval),"eq");
-  case TOK_NE: 
-    return compile_comparison_op(t->token(),
-				 compile_expression(t->first(),m_eval),
-				 compile_expression(t->second(),m_eval),"ne");
+    return jit->Equals(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
+  case TOK_NE:
+    return jit->NotEqual(compile_expression(t->first(),m_eval),compile_expression(t->second(),m_eval));
   case TOK_UNARY_MINUS: 
     {
       JITScalar val(compile_expression(t->first(),m_eval));
-      return BinaryOperator::create(Instruction::Sub,
-				    Constant::getNullValue(val->getType()),
-				    val,"",ip);
+      return jit->Sub(jit->Zero(jit->TypeOf(val)),compile_expression(t->first(),m_eval));
     }
   case TOK_UNARY_PLUS: 
     return compile_expression(t->first(),m_eval);
-  case '~': 
+  case '~':
     {
       JITScalar val(compile_expression(t->first(),m_eval));
-      val = cast(val,IntegerType::get(1),false,ip);
-      return BinaryOperator::create(Instruction::Xor,val,bool_const(1),"",ip);
+      return jit->Xor(jit->Cast(val,jit->BoolType()),jit->BoolValue(true));
     }
   case '^':               throw Exception("^ is not currently handled by the JIT compiler");
   case TOK_DOTPOWER:      throw Exception(".^ is not currently handled by the JIT compiler");
@@ -768,44 +875,139 @@ void JITVM::compile_statement(Tree* t, Interpreter *m_eval) {
 
 void JITVM::compile_block(Tree* t, Interpreter *m_eval) {
   const TreeList &statements(t->children());
-  for (TreeList::const_iterator i=statements.begin();
-       i!=statements.end();i++) 
+  for (TreeList::const_iterator i=statements.begin();i!=statements.end();i++) 
     compile_statement(*i,m_eval);
 }
 
 void JITVM::compile_for_block(Tree* t, Interpreter *m_eval) {
-  if (!(t->first()->is('=') && t->first()->second()->is(':') &&
-	t->first()->second()->first()->is(TOK_INTEGER) &&
-	t->first()->second()->second()->is(TOK_INTEGER))) 
-    throw Exception("For loop cannot be compiled - need integer bounds");
-  string loop_start(t->first()->second()->first()->text());
-  string loop_stop(t->first()->second()->second()->text());
+  if (!(t->first()->is('=') && t->first()->second()->is(':'))) 
+    throw Exception("For loop cannot be compiled - need scalar bounds");
+  if (t->first()->second()->first()->is(':'))
+    throw Exception("For loop does not work with triple format bounds");
+  JITScalar loop_start = compile_expression(t->first()->second()->first(),m_eval);
+  JITScalar loop_stop = compile_expression(t->first()->second()->second(),m_eval);
   string loop_index(t->first()->first()->text());
   // Allocate a slot for the loop index register
-  JITSymbolInfo* v = add_argument_scalar(loop_index,m_eval,ConstantInt::get(APInt(32, loop_start, 10)),true);
-  JITScalar loop_index_address = v->data_value;
-  new StoreInst(ConstantInt::get(APInt(32, loop_start, 10)), loop_index_address, 
-		false, ip);
-  BasicBlock *loopbody = new BasicBlock("for_body",func,0);
-  BasicBlock *looptest = new BasicBlock("for_test",func,0);
-  BasicBlock *loopexit = new BasicBlock("for_exit",func,0);
-  new BranchInst(looptest, ip);
+  JITSymbolInfo* v = add_argument_scalar(loop_index,m_eval,loop_start,true);
+  if (jit->IsDouble(loop_start))
+    jit->Call(func_scalar_store_double, this_ptr, jit->Int32Value(v->argument_index), loop_start);
+  else 
+    throw Exception("Unsupported loop variable type");
+  JITBlock loopbody = jit->NewBlock("for_body");
+  JITBlock looptest = jit->NewBlock("for_test");
+  JITBlock loopexit = jit->NewBlock("for_exit");
+  jit->Jump(looptest);
   // Create 3 blocks
-  ip = loopbody;
+  jit->SetCurrentBlock(loopbody);
   compile_block(t->second(),m_eval);
-  JITScalar loop_index_value = new LoadInst(loop_index_address, "", false, ip);
-  JITScalar next_loop_value = BinaryOperator::create(Instruction::Add,loop_index_value,int32_const(1),"",ip);
-  new StoreInst(next_loop_value, loop_index_address, false, ip);
-  new BranchInst(looptest, ip);
-
-  loop_index_value = new LoadInst(loop_index_address, "", false, looptest);
-  JITScalar loop_comparison = new ICmpInst(ICmpInst::ICMP_SLE, loop_index_value,
-					   ConstantInt::get(APInt(32, loop_stop, 10)), 
-					   "", looptest);
-  new BranchInst(loopbody, loopexit, loop_comparison, looptest);
-  ip = loopexit;
+  JITScalar loop_index_value = jit->Call(func_scalar_load_double, this_ptr, jit->Int32Value(v->argument_index));
+  JITScalar next_loop_value = jit->Add(loop_index_value,jit->DoubleValue(1.0));
+  jit->Call(func_scalar_store_double, this_ptr, jit->Int32Value(v->argument_index), next_loop_value);
+  jit->Jump(looptest);
+  jit->SetCurrentBlock(looptest);
+  loop_index_value = jit->Call(func_scalar_load_double, this_ptr, jit->Int32Value(v->argument_index));
+  JITScalar loop_comparison = jit->LessEquals(loop_index_value,loop_stop);
+  jit->Branch(loopbody,loopexit,loop_comparison);
+  jit->SetCurrentBlock(loopexit);
 }
 
+double JITVM::scalar_load_double(void* base, int argnum) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  return ((double*)this_ptr->array_inputs[argnum]->getDataPointer())[0];
+}
+
+float JITVM::scalar_load_float(void* base, int argnum) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  return ((float*)this_ptr->array_inputs[argnum]->getDataPointer())[0];
+}
+
+int32 JITVM::scalar_load_int32(void* base, int argnum) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  return ((int32*)this_ptr->array_inputs[argnum]->getDataPointer())[0];
+}
+
+void JITVM::scalar_store_double(void* base, int argnum, double rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  ((double*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[0] = rhs;
+}
+
+void JITVM::scalar_store_float(void* base, int argnum, float rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  ((float*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[0] = rhs;
+}
+
+void JITVM::scalar_store_int32(void* base, int argnum, int32 rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  ((int32*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[0] = rhs;
+}
+
+double JITVM::vector_load_double(void* base, int argnum, int32 ndx) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  return ((double*)this_ptr->array_inputs[argnum]->getDataPointer())[ndx-1];
+}
+
+float JITVM::vector_load_float(void* base, int argnum, int32 ndx) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  return ((float*)this_ptr->array_inputs[argnum]->getDataPointer())[ndx-1];
+}
+
+int32 JITVM::vector_load_int32(void* base, int argnum, int32 ndx) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  return ((int32*)this_ptr->array_inputs[argnum]->getDataPointer())[ndx-1];
+}
+
+void JITVM::vector_store_double(void* base, int argnum, int32 ndx, double rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  ((double*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[ndx-1] = rhs;
+}
+
+void JITVM::vector_store_float(void* base, int argnum, int32 ndx, float rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  ((float*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[ndx-1] = rhs;
+}
+
+void JITVM::vector_store_int32(void* base, int argnum, int32 ndx, int32 rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  ((int32*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[ndx-1] = rhs;
+}
+
+double JITVM::matrix_load_double(void* base, int argnum, int32 row, int32 col) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  int rows = this_ptr->array_inputs[argnum]->rows();
+  return ((double*)this_ptr->array_inputs[argnum]->getDataPointer())[(col-1)*rows+row-1];
+}
+
+float JITVM::matrix_load_float(void* base, int argnum, int32 row, int32 col) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  int rows = this_ptr->array_inputs[argnum]->rows();
+  return ((float*)this_ptr->array_inputs[argnum]->getDataPointer())[(col-1)*rows+row-1];
+}
+
+int32 JITVM::matrix_load_int32(void* base, int argnum, int32 row, int32 col) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  int rows = this_ptr->array_inputs[argnum]->rows();
+  return ((int32*)this_ptr->array_inputs[argnum]->getDataPointer())[(col-1)*rows+row-1];
+}
+
+void JITVM::matrix_store_double(void* base, int argnum, int32 row, int32 col, double rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  int rows = this_ptr->array_inputs[argnum]->rows();
+  ((double*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[(col-1)*rows+row-1] = rhs;
+}
+
+void JITVM::matrix_store_float(void* base, int argnum, int32 row, int32 col, float rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  int rows = this_ptr->array_inputs[argnum]->rows();
+  ((float*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[(col-1)*rows+row-1] = rhs;
+}
+
+void JITVM::matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 rhs) {
+  JITVM *this_ptr = static_cast<JITVM*>(base);
+  int rows = this_ptr->array_inputs[argnum]->rows();
+  ((int32*)this_ptr->array_inputs[argnum]->getReadWriteDataPointer())[(col-1)*rows+row-1] = rhs;
+}
+
+#if 0
 void JITVM::v_resize(void* base, int argnum, int r_new) { 
   JITVM *this_ptr = static_cast<JITVM*>(base);
   if (!this_ptr) throw Exception("vector resize failed");
@@ -824,134 +1026,56 @@ void JITVM::m_resize(void* base, int argnum, int r_new, int c_new) {
   *((int*)(this_ptr->args[3*argnum+1])) = this_ptr->array_inputs[argnum]->rows();
   *((int*)(this_ptr->args[3*argnum+2])) = this_ptr->array_inputs[argnum]->columns();
 }
-
+#endif
 
 void JITVM::compile(Tree* t, Interpreter *m_eval) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
-  M = new Module("test");
-  initialize_JIT_functions();
-  //  InitializeJITFunctions(M);
-  std::vector<const Type*> DispatchFuncArgs;
-  PointerType* void_pointer = PointerType::get(IntegerType::get(8));
-  PointerType* void_pointer_pointer = PointerType::get(void_pointer);
-  std::vector<const Type*> vResizeFuncArgs;
-  vResizeFuncArgs.push_back(void_pointer);         //this pointer
-  vResizeFuncArgs.push_back(IntegerType::get(32)); //array index
-  vResizeFuncArgs.push_back(IntegerType::get(32)); //new row count
-  vResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
-					  vResizeFuncArgs,false,
-					 (ParamAttrsList *) 0);
-  std::vector<const Type*> mResizeFuncArgs;
-  mResizeFuncArgs.push_back(void_pointer);         //this pointer
-  mResizeFuncArgs.push_back(IntegerType::get(32)); //array index
-  mResizeFuncArgs.push_back(IntegerType::get(32)); //new row count
-  mResizeFuncArgs.push_back(IntegerType::get(32)); //new col count
-  mResizeFuncTy = llvm::FunctionType::get(Type::VoidTy,
-					  mResizeFuncArgs,false,
-					  (ParamAttrsList *) 0);
-  DispatchFuncArgs.push_back(void_pointer_pointer);            //argument array
-  DispatchFuncArgs.push_back(PointerType::get(vResizeFuncTy)); //vector resize func
-  DispatchFuncArgs.push_back(PointerType::get(mResizeFuncTy)); //matrix resize func
-  DispatchFuncArgs.push_back(void_pointer);                    //this pointer
-  llvm::FunctionType* DispatchFuncType = llvm::FunctionType::get(IntegerType::get(32),
-								 DispatchFuncArgs,
-								 false,
-								 (ParamAttrsList *)0);
-  func = new Function(DispatchFuncType,
-		      GlobalValue::ExternalLinkage,
-		      "initArray", M);  
-  func->setCallingConv(CallingConv::C);
-  Function::arg_iterator args = func->arg_begin();
-  ptr_inputs = args++;
-  ptr_inputs->setName("inputs");
-  v_resize_func_ptr = args++;
-  v_resize_func_ptr->setName("v_resize_func");
-  m_resize_func_ptr = args++;
-  m_resize_func_ptr->setName("m_resize_func");
-  this_ptr = args++;
-  this_ptr->setName("this_ptr");
-  ip = 0;
   argument_count = 0;
-  func_prolog = new BasicBlock("func_prolog",func,0);
-  func_body = new BasicBlock("func_body",func,0);
-  func_epilog = new BasicBlock("func_epilog",func,0);
-  return_val = new AllocaInst(IntegerType::get(32),"return_code",func_prolog);
-  new StoreInst(int32_const(0),return_val,false,func_prolog);
-  ip = func_body;
+  jit = new JIT;
+  func_scalar_load_int32 = jit->DefineLinkFunction("func_scalar_load_int32","i","pi",(void*)JITVM::scalar_load_int32);
+  func_scalar_load_double = jit->DefineLinkFunction("func_scalar_load_double","d","pi",(void*)JITVM::scalar_load_double);
+  func_scalar_load_float = jit->DefineLinkFunction("func_scalar_load_float","f","pi",(void*)JITVM::scalar_load_float);
+  func_vector_load_int32 = jit->DefineLinkFunction("func_vector_load_int32","i","pii",(void*)JITVM::vector_load_int32);
+  func_vector_load_double = jit->DefineLinkFunction("func_vector_load_double","d","pii",(void*)JITVM::vector_load_double);
+  func_vector_load_float = jit->DefineLinkFunction("func_vector_load_float","f","pii",(void*)JITVM::vector_load_float);
+  func_matrix_load_int32 = jit->DefineLinkFunction("func_matrix_load_int32","i","piii",(void*)JITVM::matrix_load_int32);
+  func_matrix_load_double = jit->DefineLinkFunction("func_matrix_load_double","d","piii",(void*)JITVM::matrix_load_double);
+  func_matrix_load_float = jit->DefineLinkFunction("func_matrix_load_float","f","piii",(void*)JITVM::matrix_load_float);
+
+  func_scalar_store_int32 = jit->DefineLinkFunction("func_scalar_store_int32","v","pii",(void*)JITVM::scalar_store_int32);
+  func_scalar_store_double = jit->DefineLinkFunction("func_scalar_store_double","v","pid",(void*)JITVM::scalar_store_double);
+  func_scalar_store_float = jit->DefineLinkFunction("func_scalar_store_float","v","pif",(void*)JITVM::scalar_store_float);
+  func_vector_store_int32 = jit->DefineLinkFunction("func_vector_store_int32","v","piii",(void*)JITVM::vector_store_int32);
+  func_vector_store_double = jit->DefineLinkFunction("func_vector_store_double","v","piid",(void*)JITVM::vector_store_double);
+  func_vector_store_float = jit->DefineLinkFunction("func_vector_store_float","v","piif",(void*)JITVM::vector_store_float);
+  func_matrix_store_int32 = jit->DefineLinkFunction("func_matrix_store_int32","v","piiii",(void*)JITVM::matrix_store_int32);
+  func_matrix_store_double = jit->DefineLinkFunction("func_matrix_store_double","v","piiid",(void*)JITVM::matrix_store_double);
+  func_matrix_store_float = jit->DefineLinkFunction("func_matrix_store_float","v","piiif",(void*)JITVM::matrix_store_float);
+  
+  func = jit->DefineFunction(jit->FunctionType("v","p"),"main");
+  jit->SetCurrentFunction(func);
+  jit->SetCurrentBlock(jit->NewBlock("main_block"));
+  Function::arg_iterator args = func->arg_begin();
+  this_ptr = args;
+  this_ptr->setName("this_ptr");
   compile_for_block(t,m_eval);
-  new BranchInst(func_body,func_prolog);
-  new BranchInst(func_epilog,ip);
-  new ReturnInst(new LoadInst(return_val, "", false, func_epilog),func_epilog);
+  jit->Return();
 
-  std::cout << (*M);
-#if 0
-  if (0) {
-  PassManager PM;
-  PM.add(new TargetData(M));
-  PM.add(createVerifierPass());                  // Verify that input is correct
+  std::cout << "************************************************************\n";
+  std::cout << "*  Before optimization \n";
+  jit->Dump();
 
-  PM.add((Pass*)createLowerSetJmpPass());          // Lower llvm.setjmp/.longjmp
+  //  jit->OptimizeCode();
 
-  // If the -strip-debug command line option was specified, do it.
-  PM.add((Pass*)createRaiseAllocationsPass());     // call %malloc -> malloc inst
-  PM.add((Pass*)createCFGSimplificationPass());    // Clean up disgusting code
-  PM.add((Pass*)createPromoteMemoryToRegisterPass());// Kill useless allocas
-  PM.add((Pass*)createGlobalOptimizerPass());      // Optimize out global vars
-  PM.add((Pass*)createGlobalDCEPass());            // Remove unused fns and globs
-  PM.add((Pass*)createIPConstantPropagationPass());// IP Constant Propagation
-  PM.add((Pass*)createDeadArgEliminationPass());   // Dead argument elimination
-  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after IPCP & DAE
-  PM.add((Pass*)createCFGSimplificationPass());    // Clean up after IPCP & DAE
-
-  PM.add((Pass*)createPruneEHPass());              // Remove dead EH info
-
-  PM.add((Pass*)createFunctionInliningPass());   // Inline small functions
-  PM.add((Pass*)createArgumentPromotionPass());    // Scalarize uninlined fn args
-
-  PM.add((Pass*)createTailDuplicationPass());      // Simplify cfg by copying code
-  PM.add((Pass*)createInstructionCombiningPass()); // Cleanup for scalarrepl.
-  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
-  PM.add((Pass*)createScalarReplAggregatesPass()); // Break up aggregate allocas
-  PM.add((Pass*)createInstructionCombiningPass()); // Combine silly seq's
-  PM.add((Pass*)createCondPropagationPass());      // Propagate conditionals
-
-  PM.add((Pass*)createTailCallEliminationPass());  // Eliminate tail calls
-  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
-  PM.add((Pass*)createReassociatePass());          // Reassociate expressions
-  PM.add((Pass*)createLoopRotatePass());
-  PM.add((Pass*)createLICMPass());                 // Hoist loop invariants
-  PM.add((Pass*)createLoopUnswitchPass());         // Unswitch loops.
-  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after LICM/reassoc
-  PM.add((Pass*)createIndVarSimplifyPass());       // Canonicalize indvars
-  PM.add((Pass*)createLoopUnrollPass());           // Unroll small loops
-  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after the unroller
-  PM.add((Pass*)createLoadValueNumberingPass());   // GVN for load instructions
-  PM.add((Pass*)createGCSEPass());                 // Remove common subexprs
-  PM.add((Pass*)createSCCPPass());                 // Constant prop with SCCP
-
-  // Run instcombine after redundancy elimination to exploit opportunities
-  // opened up by them.
-  PM.add((Pass*)createInstructionCombiningPass());
-  PM.add((Pass*)createCondPropagationPass());      // Propagate conditionals
-
-  PM.add((Pass*)createDeadStoreEliminationPass()); // Delete dead stores
-  PM.add((Pass*)createAggressiveDCEPass());        // SSA based 'Aggressive DCE'
-  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
-  PM.add((Pass*)createSimplifyLibCallsPass());     // Library Call Optimizations
-  PM.add((Pass*)createDeadTypeEliminationPass());  // Eliminate dead types
-  PM.add((Pass*)createConstantMergePass());        // Merge dup global constants
-  PM.run(*M);
-  }
-  std::cout << *M;
-#endif
+  std::cout << "************************************************************\n";
+  std::cout << "*  After optimization \n";
+  jit->Dump();
 }
 
 void JITVM::run(Interpreter *m_eval) {
   // Collect the list of arguments
   StringVector argumentList(symbols.getCompletions(""));
-  // Allocate the argument array
-  args = (void**) malloc(sizeof(void*)*argumentList.size()*3);
   // For each argument in the array, retrieve it from the interpreter
   array_inputs.reserve(argumentList.size());
   for (int i=0;i<argumentList.size();i++) {
@@ -967,33 +1091,10 @@ void JITVM::run(Interpreter *m_eval) {
 	ptr = m_eval->getContext()->lookupVariable(argumentList[i]);
 	if (!ptr.valid()) throw Exception("unable to create variable " + argumentList[i]);
       }
-      args[3*v->argument_index] = (void*) ptr->getReadWriteDataPointer();
-      args[3*v->argument_index+1] = (int*) malloc(sizeof(int));
-      *((int*)(args[3*v->argument_index+1])) = ptr->rows();
-      args[3*v->argument_index+2] = (int*) malloc(sizeof(int));;
-      *((int*)(args[3*v->argument_index+2])) = ptr->columns();
       array_inputs[v->argument_index] = &(*ptr);
     }
   }
-
-//    std::ofstream p("jit.bc");
-//    WriteBitcodeToFile(M,p);
-//    p.close();
-  
-//   return;
-
-  ExistingModuleProvider* MP = new ExistingModuleProvider(M);
-  ExecutionEngine* EE = ExecutionEngine::create(MP, false);
-  std::vector<GenericValue> GVargs;
-  GVargs.push_back(GenericValue(args));
-  GVargs.push_back(GenericValue((void*) &v_resize));
-  GVargs.push_back(GenericValue((void*) &m_resize));
-  GVargs.push_back(GenericValue((void*) this));
-  GenericValue gv = EE->runFunction(func,GVargs);
-  delete EE;
-
-  if (gv.IntVal == 1)
-    throw Exception("Index exceeds variable dimensions");
+  jit->Invoke(func,JITGeneric((void*) this));
 }
 
 #endif

@@ -27,45 +27,128 @@
 using namespace std;
 
 typedef llvm::Value* JITScalar;
+typedef const llvm::Type* JITType;
+typedef const llvm::FunctionType* JITFunctionType;
+typedef llvm::Function* JITFunction;
+typedef llvm::BasicBlock* JITBlock;
+typedef llvm::ExecutionEngine* JITEngine;
+typedef llvm::Module* JITModule;
+typedef llvm::ModuleProvider* JITModuleProvider;
+typedef llvm::GenericValue JITGeneric;
+
+// A wrapper interface - this is a way to abstract out the details of the
+// LLVM interface.
+class JIT {
+private:
+  JITBlock ip;
+  JITFunction func;
+  JITEngine ee;
+  JITModule m;
+  JITModuleProvider mp;
+public:
+  JIT();
+  void            OptimizeCode();
+  JITFunctionType FunctionType(JITType rettype, std::vector<JITType> args);
+  JITFunctionType FunctionType(std::string rettype, std::string args);
+  void            LinkFunction(JITFunction func, void* address);
+  JITType         DoubleType();
+  JITType         FloatType();
+  JITType         Int32Type();
+  JITType         BoolType();
+  JITType         VoidType();
+  JITType         MapTypeCode(char c);
+  bool            IsDouble(JITType t);
+  bool            IsFloat(JITType t);
+  bool            IsInteger(JITType t);
+  bool            IsFP(JITType t);
+  bool            IsDouble(JITScalar t);
+  bool            IsFloat(JITScalar t);
+  bool            IsInteger(JITScalar t);
+  bool            IsFP(JITScalar t);
+  JITType         PointerType(JITType t);
+  JITType         TypeOf(JITScalar x);
+  JITScalar       Int32Value(int32 x);
+  JITScalar       DoubleValue(double x);
+  JITScalar       FloatValue(float x);
+  JITScalar       BoolValue(bool t);
+  JITScalar       Zero(JITType t);
+  JITBlock        NewBlock(std::string name);
+  JITScalar       And(JITScalar A, JITScalar B);
+  JITScalar       Or(JITScalar A, JITScalar B);
+  JITScalar       Xor(JITScalar A, JITScalar B);
+  JITScalar       Mul(JITScalar A, JITScalar B);
+  JITScalar       Div(JITScalar A, JITScalar B);
+  JITScalar       Sub(JITScalar A, JITScalar B);
+  JITScalar       Add(JITScalar A, JITScalar B);
+  JITScalar       Alloc(JITType T, std::string name);
+  JITScalar       Cast(JITScalar A, JITType T);
+  JITScalar       LessThan(JITScalar A, JITScalar B);
+  JITScalar       LessEquals(JITScalar A, JITScalar B);
+  JITScalar       Equals(JITScalar A, JITScalar B);
+  JITScalar       GreaterEquals(JITScalar A, JITScalar B);
+  JITScalar       GreaterThan(JITScalar A, JITScalar B);
+  JITScalar       NotEqual(JITScalar A, JITScalar B);
+  void            Store(JITScalar Value, JITScalar Address);
+  JITScalar       Load(JITScalar Address);
+  void            Jump(JITBlock B);
+  void            Branch(JITBlock IfTrue, JITBlock IfFalse, JITScalar TestValue);
+  void            SetCurrentBlock(JITBlock B);
+  JITBlock        CurrentBlock();
+  JITScalar       Call(JITFunction, std::vector<JITScalar> args);
+  JITScalar       Call(JITFunction, JITScalar arg1);
+  JITScalar       Call(JITFunction, JITScalar arg1, JITScalar arg2);
+  JITScalar       Call(JITFunction, JITScalar arg1, JITScalar arg2, 
+		       JITScalar arg3);
+  JITScalar       Call(JITFunction, JITScalar arg1, JITScalar arg2,
+		       JITScalar arg3, JITScalar arg4);
+  JITScalar       Call(JITFunction, JITScalar arg1, JITScalar arg2, 
+		       JITScalar arg3, JITScalar arg4, JITScalar arg5);
+  JITScalar       GetElement(JITScalar BaseAddress, JITScalar Offset);
+  JITFunction     DefineFunction(JITFunctionType functype, std::string name);
+  void            SetCurrentFunction(JITFunction A);
+  JITFunction     CurrentFunction();
+  // Shortcut to define a non-JIT function
+  // Type codes are "v - void, i - int32, f - float, d - double, p - pointer"
+  JITFunction     DefineLinkFunction(std::string name, std::string rettype, std::string args, void* address);
+  JITScalar       FunctionArgument(int n, std::string name);
+  void            CloseFunction();
+  void            Return(JITScalar t);
+  void            Return();
+  void            Dump();
+  JITGeneric      Invoke(JITFunction f, JITGeneric arg);
+};
 
 class JITVM;
 
 class JITSymbolInfo {
-  bool is_argument;
+  // The location of this symbol in the argument list
   int argument_index;
+  // Is the variable a known scalar
   bool is_scalar;
-  bool is_readonly;
-  llvm::Value *num_rows;
-  llvm::Value *num_cols;
-  llvm::Value *num_length;
-  llvm::Value *data_value;
+  // The class of the scalar if inferred
   Class inferred_type;
-  bool  type_mutable;
+  // The JIT type of the array or scalar
+  JITType jit_type;
   // Complete constructor
-  JITSymbolInfo(bool arg, int arg_index, bool scalar, bool readonly, 
-		llvm::Value* rows, llvm::Value* cols, 
-		llvm::Value* length, llvm::Value* value,
-		Class i_type, bool t_mutable) :
-    is_argument(arg), argument_index(arg_index), is_scalar(scalar), 
-    is_readonly(readonly), num_rows(rows), num_cols(cols), num_length(length),
-    data_value(value), inferred_type(i_type), type_mutable(t_mutable) {}
+  JITSymbolInfo(int arg_index, bool scalar, Class i_type, JITType j_type) :
+    argument_index(arg_index), is_scalar(scalar), inferred_type(i_type), jit_type(j_type) {}
   friend class JITVM;
 };
 
-class JITFunction {
-  const llvm::Type *retType;
-  const llvm::Type *argType;
-  llvm::FunctionType *funcType;
-  llvm::Function *funcAddress;
-  JITFunction(string fun, const llvm::Type *ret, const llvm::Type *arg, llvm::Module* mod);
+class JITFunc {
+  JITType retType;
+  JITType argType;
+  JITFunctionType funcType;
+  JITFunction funcAddress;
+  JITFunc(string fun, JITType ret, JITType arg, JITModule mod);
   friend class JITVM;
 };
 
 class JITVM {
   SymbolTable<JITSymbolInfo> symbols;
-  SymbolTable<JITFunction> JITDoubleFuncs;
-  SymbolTable<JITFunction> JITFloatFuncs;
-  SymbolTable<JITFunction> JITIntFuncs;
+  SymbolTable<JITFunc> JITDoubleFuncs;
+  SymbolTable<JITFunc> JITFloatFuncs;
+  SymbolTable<JITFunc> JITIntFuncs;
   SymbolTable<JITScalar> JITScalars;
   int argument_count;
   vector<Array*> array_inputs;
@@ -74,24 +157,23 @@ class JITVM {
   llvm::Function *func;
   llvm::BasicBlock *ip, *func_prolog, *func_body, *func_epilog;
   llvm::Module *M;
+  llvm::ExistingModuleProvider *MP;
+  llvm::ExecutionEngine *EE;
   llvm::FunctionType *vResizeFuncTy, *mResizeFuncTy;
+  llvm::Function *vResizeFunc, *mResizeFunc;
+  JITFunction func_scalar_load_double, func_scalar_load_float, func_scalar_load_int32;
+  JITFunction func_vector_load_double, func_vector_load_float, func_vector_load_int32;
+  JITFunction func_matrix_load_double, func_matrix_load_float, func_matrix_load_int32;
+  JITFunction func_scalar_store_double, func_scalar_store_float, func_scalar_store_int32;
+  JITFunction func_vector_store_double, func_vector_store_float, func_vector_store_int32;
+  JITFunction func_matrix_store_double, func_matrix_store_float, func_matrix_store_int32;
+  JIT *jit;
   JITScalar return_val;
   JITSymbolInfo* add_argument_array(string name, Interpreter* m_eval);
   JITSymbolInfo* add_argument_scalar(string name, Interpreter* m_eval, JITScalar val = NULL, bool override = false);
-  JITScalar cast(JITScalar value, const llvm::Type *type, bool sgnd, 
-		 llvm::BasicBlock* wh, string name="");
-  JITScalar get_input_argument(int arg, llvm::BasicBlock* where);
   const llvm::Type* map_dataclass_type(Class aclass);
-  void initialize_JIT_functions();
 public:
-  static JITScalar int32_const(int32 x);
-  static JITScalar bool_const(int32 x);
-  static void copy_value(JITScalar source, JITScalar dest, llvm::BasicBlock* where);
-  JITScalar compile_binary_op(llvm::Instruction::BinaryOps, JITScalar arg1, 
-			      JITScalar arg2, string inst);
-  JITScalar compile_boolean_op(llvm::Instruction::BinaryOps, JITScalar arg1, 
-			       JITScalar arg2, string inst);
-  JITScalar compile_comparison_op(byte op, JITScalar arg1, JITScalar arg2, string inst);
+  ~JITVM() {delete EE;}
   JITScalar compile_expression(Tree* t, Interpreter* m_eval);
   JITScalar compile_rhs(Tree* t, Interpreter* m_eval);
   JITScalar compile_function_call(Tree* t, Interpreter* m_eval);
@@ -104,8 +186,30 @@ public:
   void compile_block(Tree* t, Interpreter *m_eval);
   void compile(Tree* t, Interpreter *m_eval);
   void run(Interpreter *m_eval);
-  static void v_resize(void* this_ptr, int argnum, int new_rows);
-  static void m_resize(void* this_ptr, int argnum, int r_new, int c_new);
+  static double scalar_load_double(void* this_ptr, int32 argnum);
+  static float scalar_load_float(void* this_ptr, int32 argnum);
+  static int32 scalar_load_int32(void* this_ptr, int32 argnum);
+  static double vector_load_double(void* this_ptr, int32 argnum, int32 ndx);
+  static float vector_load_float(void* this_ptr, int32 argnum, int32 ndx);
+  static int32 vector_load_int32(void* this_ptr, int32 argnum, int32 ndx);
+  static double matrix_load_double(void* this_ptr, int32 argnum, int32 row, int32 col);
+  static float matrix_load_float(void* this_ptr, int32 argnum, int32 row, int32 col);
+  static int32 matrix_load_int32(void* this_ptr, int32 argnum, int32 row, int32 col);
+  static void scalar_store_double(void* this_ptr, int32 argnum, double rhs);
+  static void scalar_store_float(void* this_ptr, int32 argnum, float rhs);
+  static void scalar_store_int32(void* this_ptr, int32 argnum, int32 rhs);
+  static void vector_store_double(void* this_ptr, int32 argnum, int32 ndx, double rhs);
+  static void vector_store_float(void* this_ptr, int32 argnum, int32 ndx, float rhs);
+  static void vector_store_int32(void* this_ptr, int32 argnum, int32 ndx, int32 rhs);
+  static void matrix_store_double(void* this_ptr, int32 argnum, int32 row, int32 col, double rhs);
+  static void matrix_store_float(void* this_ptr, int32 argnum, int32 row, int32 col, float rhs);
+  static void matrix_store_int32(void* this_ptr, int32 argnum, int32 row, int32 col, int32 rhs);
+};
+
+#else
+
+class JITVM {
+  // Empty class declaration
 };
 
 #endif

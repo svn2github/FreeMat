@@ -39,6 +39,8 @@
 #include <QtCore>
 #include <fstream>
 #include <stdarg.h>
+#include "JIT.hpp"
+#include "CodeGen.hpp"
 
 
 #ifdef WIN32
@@ -1812,36 +1814,34 @@ void ForLoopHelperComplex(Tree *codeBlock, Class indexClass,
 //!
 //Works
 void Interpreter::forStatement(Tree *t) {
-#if 0
   // Try to compile this block to an instruction stream  
   if (jitcontrol) {
     if (t->JITState() == Tree::UNTRIED) {
       t->print();
-      JITVM *jit = new JITVM;
+      CodeGen cg(this);
       bool success = false;
       try {
-	jit->compile(t,this);
+	cg.compile(t);
 	success = true;
-	t->setJITState(Tree::SUCCEEDED);
-	t->setJITCode(jit);
+	//	t->setJITState(Tree::SUCCEEDED);
       } catch (Exception &e) {
 	t->print();
 	std::cout << e.getMessageCopy() << "\r\n";
 	success = false;
-	t->setJITState(Tree::FAILED);
-      delete jit;
+	//	t->setJITState(Tree::FAILED);
       }
       if (success) {
-	jit->run(this);
+	cg.run();
 	return;
+	//	jit->run(this);
+	//	return;
       }
     } else if (t->JITState() == Tree::SUCCEEDED) {
-      JITVM *jit = t->JITCode();
-      jit->run(this);
+      //      JITVM *jit = t->JITCode();
+      //      jit->run(this);
       return;
     }
   }
-#endif
   Array indexSet;
   string indexVarName;
   /* Get the name of the indexing variable */
@@ -4964,10 +4964,21 @@ Interpreter::Interpreter(Context* aContext) {
   m_capture = "";
   m_profile = false;
   m_quietlevel = 0;
+  m_jit = NULL;
+}
+
+JIT* Interpreter::JITPointer() {
+  if (m_jit)
+    return m_jit;
+  else {
+    m_jit = new JIT;
+    return m_jit;
+  }
 }
 
 Interpreter::~Interpreter() {
   delete context;
+  if (m_jit) delete m_jit;
 }
 
 

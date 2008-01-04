@@ -60,6 +60,7 @@ public:
 
 class Interpreter;
 class UserClass;
+class JIT;
 
 typedef Array (*BinaryFunc)(Array, Array, Interpreter*);
 typedef Array (*UnaryFunc)(Array, Interpreter*);
@@ -126,6 +127,10 @@ class Interpreter : public QThread {
    * jit control flag
    */
   bool jitcontrol;
+  /**
+   * jit instance for this interpreter
+   */
+  JIT *m_jit;
   /**
    * When this flag is active, autostop does nothing.
    */
@@ -495,12 +500,16 @@ public:
    * an exception occurs
    */
   inline bool AutoStop() {return autostop;}
-  inline void AutoStop(bool a) {autostop = a;}
+  inline void setAutoStop(bool a) {autostop = a;}
   /**
    * Set the JITControl flag
    */
   inline bool JITControl() {return jitcontrol;}
-  inline void JITControl(bool a) {jitcontrol = a;}
+  inline void setJITControl(bool a) {jitcontrol = a;}
+  /**
+   * Get the JIT pointer
+   */
+  JIT* JITPointer();
   /**
    * Set the print limit (number of element printed prior to truncation).
    */

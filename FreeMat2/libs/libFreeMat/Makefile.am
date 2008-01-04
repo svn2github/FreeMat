@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libFreeMat.a
 
-INCLUDES = -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libMex 
+INCLUDES = -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libMatC
 
 libFreeMat_a_MOC = Interpreter.moc.cpp
 

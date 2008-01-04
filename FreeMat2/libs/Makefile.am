@@ -1,1 +1,2 @@
-SUBDIRS = libFreeMat libGraphics libMex libXP libCore libFN 
+SUBDIRS = libFreeMat libGraphics libMex libXP libCore libFN libMatC
+

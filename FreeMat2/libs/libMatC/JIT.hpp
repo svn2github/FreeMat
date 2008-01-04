@@ -41,12 +41,16 @@ private:
   JITEngine ee;
   JITModule m;
   JITModuleProvider mp;
+  bool initialized;
 public:
   JIT();
+  ~JIT();
   void            OptimizeCode();
   JITFunctionType FunctionType(JITType rettype, std::vector<JITType> args);
   JITFunctionType FunctionType(std::string rettype, std::string args);
   void            LinkFunction(JITFunction func, void* address);
+  bool            Initialized();
+  void            SetInitialized(bool t);
   JITType         DoubleType();
   JITType         FloatType();
   JITType         Int32Type();
@@ -112,6 +116,11 @@ public:
   void            Return();
   void            Dump();
   JITGeneric      Invoke(JITFunction f, JITGeneric arg);
+};
+
+#else
+
+class JIT {
 };
 
 #endif

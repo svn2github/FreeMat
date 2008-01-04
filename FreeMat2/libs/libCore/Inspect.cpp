@@ -70,9 +70,9 @@ ArrayVector JITControlFunction(int nargout, const ArrayVector& arg, Interpreter*
       throw Exception("jitcontrol function takes only a single, string argument");
     string txt = arg[0].getContentsAsStringUpper();
     if (txt == "ON")
-      eval->JITControl(true);
+      eval->setJITControl(true);
     else if (txt == "OFF")
-      eval->JITControl(false);
+      eval->setJITControl(false);
     else
       throw Exception("jitcontrol function argument needs to be 'on/off'");
   }
@@ -128,9 +128,9 @@ ArrayVector DbAutoFunction(int nargout, const ArrayVector& arg, Interpreter* eva
       throw Exception("dbauto function takes only a single, string argument");
     string txt = arg[0].getContentsAsStringUpper();
     if (txt == "ON")
-      eval->AutoStop(true);
+      eval->setAutoStop(true);
     else if (txt == "OFF")
-      eval->AutoStop(false);
+      eval->setAutoStop(false);
     else
       throw Exception("dbauto function argument needs to be 'on/off'");
   }

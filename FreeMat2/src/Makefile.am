@@ -1,6 +1,6 @@
 bin_PROGRAMS = FreeMat
 
-INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libFN -I@top_srcdir@/src -I@top_builddir@/libs/libXP
+INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_srcdir@/libs/libCore -I@top_srcdir@/libs/libGraphics -I@top_srcdir@/libs/libFN -I@top_srcdir@/src -I@top_builddir@/libs/libXP -I@top_srcdir@/libs/libMatC
 
 EXTRA_DIST = appIcon.icns freemat.ico freematv2.ico run-test
 
@@ -42,7 +42,7 @@ if WIN32
 FreeMat_SOURCES += freemat.rc
 endif
 
-FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libMex/libMex.a 
+FreeMat_LDADD = @top_builddir@/libs/libCore/libCore.a @top_builddir@/libs/libFN/libFN.a @top_builddir@/libs/libGraphics/libGraphics.a @top_builddir@/libs/libFreeMat/libFreeMat.a @top_builddir@/libs/libXP/libXP.a @top_builddir@/libs/libMex/libMex.a @top_builddir@/libs/libMatC/libMatC.a
 
 FreeMat_LDFLAGS = $(QT_CXXFLAGS)
 

@@ -2,7 +2,7 @@ AC_INIT(src/main.cpp)
 
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(FreeMat, 3.6)
+AM_INIT_AUTOMAKE(FreeMat, 4.0)
 
 AC_PROG_CC
 AC_PROG_CXX
@@ -281,7 +281,7 @@ if (test "$use_llvm" = "yes"); then
       AC_MSG_NOTICE([Unable to find llvm-config.  JIT support disabled.])
    else
       CXXFLAGS="`$LLVM_CONFIG --cxxflags` $CXXFLAGS"
-      LIBS="`$LLVM_CONFIG --libs jit engine interpreter` $LIBS";
+      LIBS="`$LLVM_CONFIG --libs all` $LIBS";
       LDFLAGS="`$LLVM_CONFIG --ldflags` $LDFLAGS";
    fi
    AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
@@ -298,5 +298,5 @@ AC_OUTPUT([Makefile src/Makefile libs/Makefile libs/libFreeMat/Makefile
 		    libs/libCore/Makefile libs/libFN/Makefile
 		    libs/libMex/Makefile libs/libXP/Makefile 
 		    libs/libGraphics/Makefile images/Makefile
-		    tools/Makefile])
+		    libs/libMatC/Makefile  tools/Makefile])
 

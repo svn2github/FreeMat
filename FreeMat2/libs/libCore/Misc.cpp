@@ -32,8 +32,10 @@
 #include "Print.hpp"
 #include "MemPtr.hpp"
 #include "Parser.hpp"
-
 #include "List.hpp"
+
+#include "MCScanner.hpp"
+#include "MCParser.hpp"
 
 #include <algorithm>
 #undef max
@@ -3457,7 +3459,7 @@ ArrayVector VerStringFunction(int nargout, const ArrayVector& arg, Interpreter* 
 //function evenoddtest(n)
 //  if (n==0)
 //    error('zero is neither even nor odd');
-//  elseif (~isa(n,'int32'))
+//  elseif ( n ~= fix(n) )
 //    error('expecting integer argument');
 //  end;
 //  if (n==int32(n/2)*2)
@@ -3593,7 +3595,7 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
     ArrayVector retval;
     bool autostop;
     autostop = eval->AutoStop();
-    eval->AutoStop(false);
+    eval->setAutoStop(false);
     try {
       eval->getContext()->bypassScope(popSpec);
       eval->evaluateString(try_buf,true);
@@ -3604,7 +3606,7 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       eval->evaluateString(catch_buf,false);
       retval = RetrieveCallVars(eval,nargout);
     }
-    eval->AutoStop(autostop);
+    eval->setAutoStop(autostop);
     return retval;
   } else {
     string try_line = arg[0].getContentsAsString();
@@ -3613,7 +3615,7 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
     string catch_buf = catch_line + "\n";
     bool autostop;
     autostop = eval->AutoStop();
-    eval->AutoStop(false);
+    eval->setAutoStop(false);
     try {
       eval->getContext()->bypassScope(popSpec);
       eval->evaluateString(try_buf,true);
@@ -3622,7 +3624,7 @@ ArrayVector EvalTryFunction(int nargout, const ArrayVector& arg, Interpreter* ev
       eval->getContext()->restoreBypassedScopes();
       eval->evaluateString(catch_buf,false);
     }
-    eval->AutoStop(autostop);
+    eval->setAutoStop(autostop);
     return ArrayVector();
   }
 }
@@ -4941,6 +4943,14 @@ ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
 	QList<Array> k;
 	k = p;
       }
+    }
+    break;
+  case 14:
+    {
+      MCScanner scanner(ArrayToString(arg[1]),"test.mc");
+      MCParser parser(scanner);
+      CodeBlock t(parser.processStatementList());
+      t.tree()->print();
     }
     break;
   }

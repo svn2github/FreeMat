@@ -20,8 +20,24 @@ using namespace llvm;
 
 JIT::JIT() {
   m = new Module("test");
+  m->setTargetTriple("i686-pc-linux-gnu");
   mp = new ExistingModuleProvider(m);
   ee = ExecutionEngine::create(mp,false);
+  initialized = false;
+}
+
+JIT::~JIT() {
+  delete m;
+  delete mp;
+  delete ee;
+}
+
+bool JIT::Initialized() {
+  return initialized;
+}
+
+void JIT::SetInitialized(bool t) {
+  initialized = t;
 }
 
 void JIT::OptimizeCode() {

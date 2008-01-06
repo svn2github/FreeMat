@@ -114,6 +114,7 @@ public:
   void            Return(JITScalar t);
   void            Return();
   void            Dump();
+  void		  Dump( const std::string& fname );
   JITGeneric      Invoke(JITFunction f, JITGeneric arg);
 };
 

@@ -2,6 +2,11 @@
 #include "Context.hpp"
 #include "Interpreter.hpp"
 
+#if defined(_MSC_VER )
+    #define JIT_EXPORT __declspec( dllexport )
+#else
+    #define JIT_EXPORT
+#endif
 
 static JITFunction func_scalar_load_double, func_scalar_load_float, func_scalar_load_int32;
 static JITFunction func_scalar_store_double, func_scalar_store_float, func_scalar_store_int32;
@@ -361,97 +366,97 @@ void CodeGen::compile_if_statement(Tree* t) {
 }
 
 extern "C" {
-double scalar_load_double(void* base, int argnum) {
+JIT_EXPORT double scalar_load_double(void* base, int argnum) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
-float scalar_load_float(void* base, int argnum) {
+JIT_EXPORT float scalar_load_float(void* base, int argnum) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
-int32 scalar_load_int32(void* base, int argnum) {
+JIT_EXPORT int32 scalar_load_int32(void* base, int argnum) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
-void scalar_store_double(void* base, int argnum, double rhs) {
+JIT_EXPORT void scalar_store_double(void* base, int argnum, double rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
 }
 
-void scalar_store_float(void* base, int argnum, float rhs) {
+JIT_EXPORT void scalar_store_float(void* base, int argnum, float rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
 }
 
-void scalar_store_int32(void* base, int argnum, int32 rhs) {
+JIT_EXPORT void scalar_store_int32(void* base, int argnum, int32 rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
 }
 
-double vector_load_double(void* base, int argnum, int32 ndx) {
+JIT_EXPORT double vector_load_double(void* base, int argnum, int32 ndx) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
 }
 
-float vector_load_float(void* base, int argnum, int32 ndx) {
+JIT_EXPORT float vector_load_float(void* base, int argnum, int32 ndx) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
 }
 
-int32 vector_load_int32(void* base, int argnum, int32 ndx) {
+JIT_EXPORT int32 vector_load_int32(void* base, int argnum, int32 ndx) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
 }
 
-void vector_store_double(void* base, int argnum, int32 ndx, double rhs) {
+JIT_EXPORT void vector_store_double(void* base, int argnum, int32 ndx, double rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
 }
 
-void vector_store_float(void* base, int argnum, int32 ndx, float rhs) {
+JIT_EXPORT void vector_store_float(void* base, int argnum, int32 ndx, float rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
 }
 
-void vector_store_int32(void* base, int argnum, int32 ndx, int32 rhs) {
+JIT_EXPORT void vector_store_int32(void* base, int argnum, int32 ndx, int32 rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
 }
 
-double matrix_load_double(void* base, int argnum, int32 row, int32 col) {
+JIT_EXPORT double matrix_load_double(void* base, int argnum, int32 row, int32 col) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
 }
 
-float matrix_load_float(void* base, int argnum, int32 row, int32 col) {
+JIT_EXPORT float matrix_load_float(void* base, int argnum, int32 row, int32 col) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
 }
 
-int32 matrix_load_int32(void* base, int argnum, int32 row, int32 col) {
+JIT_EXPORT int32 matrix_load_int32(void* base, int argnum, int32 row, int32 col) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
 }
 
-void matrix_store_double(void* base, int argnum, int32 row, int32 col, double rhs) {
+JIT_EXPORT void matrix_store_double(void* base, int argnum, int32 row, int32 col, double rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
 }
 
-void matrix_store_float(void* base, int argnum, int32 row, int32 col, float rhs) {
+JIT_EXPORT void matrix_store_float(void* base, int argnum, int32 row, int32 col, float rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
 }
 
-void matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 rhs) {
+JIT_EXPORT void matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
@@ -507,11 +512,11 @@ void CodeGen::compile(Tree* t) {
   jit->Return();
   std::cout << "************************************************************\n";
   std::cout << "*  Before optimization \n";
-  jit->Dump();
+  jit->Dump( "unoptimized.bc.txt" );
   jit->OptimizeCode();
   std::cout << "************************************************************\n";
   std::cout << "*  After optimization \n";
-  jit->Dump();
+  jit->Dump( "optimized.bc.txt" );
 }
 
 #warning - How to detect non-integer loop bounds?

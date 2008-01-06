@@ -439,6 +439,11 @@ void JIT::Dump() {
   std::cout << (*m);
 }
 
+void JIT::Dump( const std::string& fname ) {
+    std::ofstream fout( fname.c_str() );
+    fout << (*m);
+}
+
 JITGeneric JIT::Invoke(JITFunction f, JITGeneric arg) {
   std::vector<JITGeneric> args;
   args.push_back(arg);

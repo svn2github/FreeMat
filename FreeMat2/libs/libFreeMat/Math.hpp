@@ -21,6 +21,7 @@
 #define __Math_hpp_
 
 #include "Array.hpp"
+#include <cmath>
 
 /**
  * Add the two argument arrays together: $$C_n = A_n + B_n$$.
@@ -174,5 +175,21 @@ void power_zz(double *c, const double *a, const double *b);
 double power_di(double a, int b);
 double power_dd(double a, double b);
 template <class T>
-T complex_abs(T real, T imag);
+T complex_abs(T real, T imag) {
+  double temp;
+  if(real < 0)
+    real = -real;
+  if(imag < 0)
+    imag = -imag;
+  if(imag > real){
+    temp = real;
+    real = imag;
+    imag = temp;
+  }
+  if((real+imag) == real)
+    return(real);
+  temp = imag/real;
+  temp = real*sqrt(1.0 + temp*temp);  /*overflow!!*/
+  return(temp);
+}
 #endif

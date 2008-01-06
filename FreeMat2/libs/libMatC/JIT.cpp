@@ -20,9 +20,11 @@ using namespace llvm;
 
 JIT::JIT() {
   m = new Module("test");
-  m->setTargetTriple("i686-pc-linux-gnu");
+  //  m->setTargetTriple("i686-pc-linux-gnu");
   mp = new ExistingModuleProvider(m);
-  ee = ExecutionEngine::create(mp,false);
+  std::string errorstring;
+  ee = ExecutionEngine::create(mp,false,&errorstring);
+  std::cerr << "Execution engine: " << errorstring << "\n";
   initialized = false;
 }
 
@@ -111,7 +113,7 @@ JITFunctionType JIT::FunctionType(std::string rettype, std::string args) {
 }
 
 void JIT::LinkFunction(JITFunction func, void* address) {
-  ee->addGlobalMapping(func,address);
+  //  ee->addGlobalMapping(func,address);
 }
 
 JITType JIT::DoubleType() {

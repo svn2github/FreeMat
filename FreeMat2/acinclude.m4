@@ -447,6 +447,29 @@ if test x"$found_z" == xyes; then
    LIBS="-lz $LIBS"
 fi
 
+AC_MSG_CHECKING(for LLVM)
+found_llvm=no
+if test -z "$LLVM_CONFIG"; then
+  AC_PATH_PROG(LLVM_CONFIG, llvm-config, no)
+fi
+
+if test "$LLVM_CONFIG" = "no" ; then
+  found_llvm=no
+else
+  AC_MSG_CHECKING(for LLVM >= 2.1)
+  LLVM_VERSION=`$LLVM_CONFIG --version`
+  VERSION_CHECK=`expr $LLVM_VERSION \>\= 2.1`
+  if test "$VERSION_CHECK" == "1" ; then
+    AC_MSG_RESULT(yes)
+    found_llvm=yes;
+    CXXFLAGS="$CXXFLAGS `$LLVM_CONFIG --cxxflags`"
+    LDFLAGS="$LDFLAGS `$LLVM_CONFIG --ldflags` -Wl,--export-dynamic"
+    LIBS="$LIBS `$LLVM_CONFIG --libs all`"
+    AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
+  fi
+fi
+
+
 AC_CHECK_HEADERS([libintl.h malloc.h stddef.h stdlib.h string.h strings.h sys/time.h unistd.h limits.h c_asm.h intrinsics.h stdint.h mach/mach_time.h sys/sysctl.h])
 AC_CHECK_FUNCS([BSDgettimeofday gettimeofday gethrtime read_real_time time_base_to_time drand48 sqrt memset posix_memalign memalign _mm_malloc _mm_free clock_gettime mach_absolute_time sysctl abort])
 AC_MSG_CHECKING([for _rtc intrinsic])

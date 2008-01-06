@@ -17,7 +17,6 @@
 #include "llvm/Value.h"
 #include "llvm/Function.h"
 #include "llvm/ExecutionEngine/JIT.h"
-#include "llvm/ExecutionEngine/Interpreter.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
 
 #include <string>

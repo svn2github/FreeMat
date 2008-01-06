@@ -16,6 +16,7 @@ class SymbolInfo {
 };
 
 class CodeGen {
+public:
   SymbolTable<SymbolInfo> symbols;
   JIT *jit;
   Interpreter *eval;
@@ -28,26 +29,7 @@ class CodeGen {
   SymbolInfo* add_argument_scalar(string name, JITScalar val = NULL, bool override = false);
   JITType map_dataclass(Class aclass);
   Class map_dataclass(JITType type);
-  static double scalar_load_double(void* this_ptr, int32 argnum);
-  static float scalar_load_float(void* this_ptr, int32 argnum);
-  static int32 scalar_load_int32(void* this_ptr, int32 argnum);
-  static double vector_load_double(void* this_ptr, int32 argnum, int32 ndx);
-  static float vector_load_float(void* this_ptr, int32 argnum, int32 ndx);
-  static int32 vector_load_int32(void* this_ptr, int32 argnum, int32 ndx);
-  static double matrix_load_double(void* this_ptr, int32 argnum, int32 row, int32 col);
-  static float matrix_load_float(void* this_ptr, int32 argnum, int32 row, int32 col);
-  static int32 matrix_load_int32(void* this_ptr, int32 argnum, int32 row, int32 col);
-  static void scalar_store_double(void* this_ptr, int32 argnum, double rhs);
-  static void scalar_store_float(void* this_ptr, int32 argnum, float rhs);
-  static void scalar_store_int32(void* this_ptr, int32 argnum, int32 rhs);
-  static void vector_store_double(void* this_ptr, int32 argnum, int32 ndx, double rhs);
-  static void vector_store_float(void* this_ptr, int32 argnum, int32 ndx, float rhs);
-  static void vector_store_int32(void* this_ptr, int32 argnum, int32 ndx, int32 rhs);
-  static void matrix_store_double(void* this_ptr, int32 argnum, int32 row, int32 col, double rhs);
-  static void matrix_store_float(void* this_ptr, int32 argnum, int32 row, int32 col, float rhs);
-  static void matrix_store_int32(void* this_ptr, int32 argnum, int32 row, int32 col, int32 rhs);
   void initialize();
-public:
   CodeGen(Interpreter *eval);
   JITScalar compile_expression(Tree* t);
   JITScalar compile_rhs(Tree* t);
@@ -62,5 +44,6 @@ public:
   void compile(Tree* t);
   void run();
 };
+
 
 #endif

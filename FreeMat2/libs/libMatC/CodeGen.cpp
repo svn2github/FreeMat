@@ -304,21 +304,27 @@ void CodeGen::compile_assignment(Tree* t) {
     throw Exception("Expecting at most 2 array references for dereference...");
   if (q->numChildren() == 1) {
     JITScalar arg1 = jit->Cast(compile_expression(q->first()),jit->Int32Type());
-    if (jit->IsDouble(rhs))
-      jit->Call(func_vector_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, rhs);
-    else if (jit->IsFloat(rhs))
-      jit->Call(func_vector_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, rhs);
-    else if (jit->IsInteger(rhs))
-      jit->Call(func_vector_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, rhs);
+    if (jit->IsDouble(v->type))
+      jit->Call(func_vector_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, 
+		jit->Cast(rhs,v->type));
+    else if (jit->IsFloat(v->type))
+      jit->Call(func_vector_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, 
+		jit->Cast(rhs,v->type));
+    else if (jit->IsInteger(v->type))
+      jit->Call(func_vector_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, 
+		jit->Cast(rhs,v->type));
   } else if (q->numChildren() == 2) {
     JITScalar arg1 = jit->Cast(compile_expression(q->first()),jit->Int32Type());
     JITScalar arg2 = jit->Cast(compile_expression(q->second()),jit->Int32Type());
-    if (jit->IsDouble(rhs))
-      jit->Call(func_matrix_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2, rhs);
-    else if (jit->IsFloat(rhs))
-      jit->Call(func_matrix_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2, rhs);
-    else if (jit->IsInteger(rhs))
-      jit->Call(func_matrix_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2, rhs);
+    if (jit->IsDouble(v->type))
+      jit->Call(func_matrix_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2,
+		jit->Cast(rhs,v->type));
+    else if (jit->IsFloat(v->type))
+      jit->Call(func_matrix_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2,
+		jit->Cast(rhs,v->type));
+    else if (jit->IsInteger(v->type))
+      jit->Call(func_matrix_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2,
+		jit->Cast(rhs,v->type));
   }
 }
 
@@ -354,121 +360,123 @@ void CodeGen::compile_if_statement(Tree* t) {
   jit->SetCurrentBlock(if_exit);
 }
 
-double CodeGen::scalar_load_double(void* base, int argnum) {
+extern "C" {
+double scalar_load_double(void* base, int argnum) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
-float CodeGen::scalar_load_float(void* base, int argnum) {
+float scalar_load_float(void* base, int argnum) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
-int32 CodeGen::scalar_load_int32(void* base, int argnum) {
+int32 scalar_load_int32(void* base, int argnum) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
-void CodeGen::scalar_store_double(void* base, int argnum, double rhs) {
+void scalar_store_double(void* base, int argnum, double rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
 }
 
-void CodeGen::scalar_store_float(void* base, int argnum, float rhs) {
+void scalar_store_float(void* base, int argnum, float rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
 }
 
-void CodeGen::scalar_store_int32(void* base, int argnum, int32 rhs) {
+void scalar_store_int32(void* base, int argnum, int32 rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
 }
 
-double CodeGen::vector_load_double(void* base, int argnum, int32 ndx) {
+double vector_load_double(void* base, int argnum, int32 ndx) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
 }
 
-float CodeGen::vector_load_float(void* base, int argnum, int32 ndx) {
+float vector_load_float(void* base, int argnum, int32 ndx) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
 }
 
-int32 CodeGen::vector_load_int32(void* base, int argnum, int32 ndx) {
+int32 vector_load_int32(void* base, int argnum, int32 ndx) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
 }
 
-void CodeGen::vector_store_double(void* base, int argnum, int32 ndx, double rhs) {
+void vector_store_double(void* base, int argnum, int32 ndx, double rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
 }
 
-void CodeGen::vector_store_float(void* base, int argnum, int32 ndx, float rhs) {
+void vector_store_float(void* base, int argnum, int32 ndx, float rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
 }
 
-void CodeGen::vector_store_int32(void* base, int argnum, int32 ndx, int32 rhs) {
+void vector_store_int32(void* base, int argnum, int32 ndx, int32 rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
 }
 
-double CodeGen::matrix_load_double(void* base, int argnum, int32 row, int32 col) {
+double matrix_load_double(void* base, int argnum, int32 row, int32 col) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
 }
 
-float CodeGen::matrix_load_float(void* base, int argnum, int32 row, int32 col) {
+float matrix_load_float(void* base, int argnum, int32 row, int32 col) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
 }
 
-int32 CodeGen::matrix_load_int32(void* base, int argnum, int32 row, int32 col) {
+int32 matrix_load_int32(void* base, int argnum, int32 row, int32 col) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
 }
 
-void CodeGen::matrix_store_double(void* base, int argnum, int32 row, int32 col, double rhs) {
+void matrix_store_double(void* base, int argnum, int32 row, int32 col, double rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
 }
 
-void CodeGen::matrix_store_float(void* base, int argnum, int32 row, int32 col, float rhs) {
+void matrix_store_float(void* base, int argnum, int32 row, int32 col, float rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
 }
 
-void CodeGen::matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 rhs) {
+void matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 rhs) {
   CodeGen *this_ptr = static_cast<CodeGen*>(base);
   int rows = this_ptr->array_inputs[argnum]->rows();
   ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
 }
+}
 
 void CodeGen::initialize() {
-  func_scalar_load_int32 = jit->DefineLinkFunction("func_scalar_load_int32","i","pi",(void*)CodeGen::scalar_load_int32);
-  func_scalar_load_double = jit->DefineLinkFunction("func_scalar_load_double","d","pi",(void*)CodeGen::scalar_load_double);
-  func_scalar_load_float = jit->DefineLinkFunction("func_scalar_load_float","f","pi",(void*)CodeGen::scalar_load_float);
-  func_vector_load_int32 = jit->DefineLinkFunction("func_vector_load_int32","i","pii",(void*)CodeGen::vector_load_int32);
-  func_vector_load_double = jit->DefineLinkFunction("func_vector_load_double","d","pii",(void*)CodeGen::vector_load_double);
-  func_vector_load_float = jit->DefineLinkFunction("func_vector_load_float","f","pii",(void*)CodeGen::vector_load_float);
-  func_matrix_load_int32 = jit->DefineLinkFunction("func_matrix_load_int32","i","piii",(void*)CodeGen::matrix_load_int32);
-  func_matrix_load_double = jit->DefineLinkFunction("func_matrix_load_double","d","piii",(void*)CodeGen::matrix_load_double);
-  func_matrix_load_float = jit->DefineLinkFunction("func_matrix_load_float","f","piii",(void*)CodeGen::matrix_load_float);
-  func_scalar_store_int32 = jit->DefineLinkFunction("func_scalar_store_int32","v","pii",(void*)CodeGen::scalar_store_int32);
-  func_scalar_store_double = jit->DefineLinkFunction("func_scalar_store_double","v","pid",(void*)CodeGen::scalar_store_double);
-  func_scalar_store_float = jit->DefineLinkFunction("func_scalar_store_float","v","pif",(void*)CodeGen::scalar_store_float);
-  func_vector_store_int32 = jit->DefineLinkFunction("func_vector_store_int32","v","piii",(void*)CodeGen::vector_store_int32);
-  func_vector_store_double = jit->DefineLinkFunction("func_vector_store_double","v","piid",(void*)CodeGen::vector_store_double);
-  func_vector_store_float = jit->DefineLinkFunction("func_vector_store_float","v","piif",(void*)CodeGen::vector_store_float);
-  func_matrix_store_int32 = jit->DefineLinkFunction("func_matrix_store_int32","v","piiii",(void*)CodeGen::matrix_store_int32);
-  func_matrix_store_double = jit->DefineLinkFunction("func_matrix_store_double","v","piiid",(void*)CodeGen::matrix_store_double);
-  func_matrix_store_float = jit->DefineLinkFunction("func_matrix_store_float","v","piiif",(void*)CodeGen::matrix_store_float);  
+  func_scalar_load_int32 = jit->DefineLinkFunction("scalar_load_int32","i","pi",(void*)scalar_load_int32);
+  func_scalar_load_double = jit->DefineLinkFunction("scalar_load_double","d","pi",(void*)scalar_load_double);
+  func_scalar_load_float = jit->DefineLinkFunction("scalar_load_float","f","pi",(void*)scalar_load_float);
+  func_vector_load_int32 = jit->DefineLinkFunction("vector_load_int32","i","pii",(void*)vector_load_int32);
+  func_vector_load_double = jit->DefineLinkFunction("vector_load_double","d","pii",(void*)vector_load_double);
+  func_vector_load_float = jit->DefineLinkFunction("vector_load_float","f","pii",(void*)vector_load_float);
+  func_matrix_load_int32 = jit->DefineLinkFunction("matrix_load_int32","i","piii",(void*)matrix_load_int32);
+  func_matrix_load_double = jit->DefineLinkFunction("matrix_load_double","d","piii",(void*)matrix_load_double);
+  func_matrix_load_float = jit->DefineLinkFunction("matrix_load_float","f","piii",(void*)matrix_load_float);
+  func_scalar_store_int32 = jit->DefineLinkFunction("scalar_store_int32","v","pii",(void*)scalar_store_int32);
+  func_scalar_store_double = jit->DefineLinkFunction("scalar_store_double","v","pid",(void*)scalar_store_double);
+  func_scalar_store_float = jit->DefineLinkFunction("scalar_store_float","v","pif",(void*)scalar_store_float);
+  func_vector_store_int32 = jit->DefineLinkFunction("vector_store_int32","v","piii",(void*)vector_store_int32);
+  func_vector_store_double = jit->DefineLinkFunction("vector_store_double","v","piid",(void*)vector_store_double);
+  func_vector_store_float = jit->DefineLinkFunction("vector_store_float","v","piif",(void*)vector_store_float);
+  func_matrix_store_int32 = jit->DefineLinkFunction("matrix_store_int32","v","piiii",(void*)matrix_store_int32);
+  func_matrix_store_double = jit->DefineLinkFunction("matrix_store_double","v","piiid",(void*)matrix_store_double);
+  func_matrix_store_float = jit->DefineLinkFunction("matrix_store_float","v","piiif",(void*)matrix_store_float);  
 }
 
 static int countm = 0;

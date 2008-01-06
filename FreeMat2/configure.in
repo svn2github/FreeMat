@@ -252,13 +252,14 @@ echo \
 "    PORTAUDIO       Audio I/O                             Not Found"
 fi
 
-if (test x"$found_cycle" == xyes); then
+if (test x"$found_llvm" == xyes); then
 echo \
-"    CYCLE COUNTER   Profiling Functions                   Found"
+"    LLVM            Low Level Virtual Machine (JIT)       Found"
 else
 echo \
-"    CYCLE COUNTER   Profiling Functions                   Not Found"
+"    LLVM            Low Level Virtual Machine (JIT)       Not Found"
 fi
+
 
 echo \
 "********************************************************************"
@@ -267,24 +268,6 @@ if (test x"$found_blas" == xno) || (test x"$found_lapack" == xno) || (test x"$fo
 AC_MSG_ERROR([
 One or more of the required external dependencies was not found.  Please
 install the missing dependencies (as listed above) and rerun configure.])
-fi
-
-AC_ARG_WITH([llvm],
-	    [AC_HELP_STRING([--with-llvm],
-	    [support Just In Time compiler (requires llvm > 2.0)])],
-	    use_llvm="yes",
-	    use_llvm="no")
-
-if (test "$use_llvm" = "yes"); then
-   AC_PATH_PROG(LLVM_CONFIG, llvm-config, no)
-   if test "$LLVM_CONFIG" = "no" ; then
-      AC_MSG_NOTICE([Unable to find llvm-config.  JIT support disabled.])
-   else
-      CXXFLAGS="`$LLVM_CONFIG --cxxflags` $CXXFLAGS"
-      LIBS="`$LLVM_CONFIG --libs all` $LIBS";
-      LDFLAGS="`$LLVM_CONFIG --ldflags` $LDFLAGS";
-   fi
-   AC_DEFINE(HAVE_LLVM, 1, [Set to 1 if you have LLVM installed])
 fi
 
 AM_CONDITIONAL(USECLI, test x$ismingw = xfalse)

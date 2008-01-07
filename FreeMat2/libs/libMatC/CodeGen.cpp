@@ -521,12 +521,22 @@ void CodeGen::compile(Tree* t) {
 
 #warning - How to detect non-integer loop bounds?
 void CodeGen::compile_for_block(Tree* t) {
+  JITScalar loop_start, loop_stop, loop_step;
+
   if (!(t->first()->is('=') && t->first()->second()->is(':'))) 
     throw Exception("For loop cannot be compiled - need scalar bounds");
-  if (t->first()->second()->first()->is(':'))
-    throw Exception("For loop does not work with triple format bounds");
-  JITScalar loop_start = compile_expression(t->first()->second()->first());
-  JITScalar loop_stop = compile_expression(t->first()->second()->second());
+
+  if (t->first()->second()->first()->is(':')){ //triple format 
+        loop_start = compile_expression(t->first()->second()->first()->first());
+	loop_step = compile_expression(t->first()->second()->first()->second());
+	loop_stop = compile_expression(t->first()->second()->second());
+  }
+  else{ //double format
+     loop_start = compile_expression(t->first()->second()->first());
+     loop_step = jit->DoubleValue( 1 );
+     loop_stop = compile_expression(t->first()->second()->second());
+  }
+
   string loop_index_name(t->first()->first()->text());
   SymbolInfo* v = add_argument_scalar(loop_index_name,loop_start,true);
   JITScalar loop_index_address = v->address;
@@ -539,7 +549,7 @@ void CodeGen::compile_for_block(Tree* t) {
   jit->SetCurrentBlock(loopbody);
   compile_block(t->second());
   JITScalar loop_index_value = jit->Load(loop_index_address);
-  JITScalar next_loop_value = jit->Add(loop_index_value,jit->DoubleValue(1));
+  JITScalar next_loop_value = jit->Add(loop_index_value,loop_step);
   jit->Store(next_loop_value,loop_index_address);
   jit->Jump(looptest);
   jit->SetCurrentBlock(looptest);

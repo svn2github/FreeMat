@@ -156,8 +156,60 @@ void CodeGen::compile_statement(Tree* t) {
   compile_statement_type(t->first());
 }
 
-JITScalar CodeGen::compile_function_call(Tree* t) {
+JITScalar CodeGen::compile_scalar_function(string symname) {
   
+}
+
+JITScalar CodeGen::compile_function_call(Tree* t) {
+#if 0
+  // First, make sure it is a function
+  string symname(t->first()->text());
+  FuncPtr funcval;
+  if (!m_eval->lookupFunction(symname,funcval)) 
+    throw Exception("Couldn't find function " + symname);
+  if (funcval->type() != FM_BUILT_IN_FUNCTION)
+    throw Exception("Can only JIT built in functions - not " + symname);
+  if (t->numChildren() != 2) 
+    return compile_scalar_function(symname,m_eval);
+  // Evaluate the argument
+  Tree* s(t->second());
+  if (!s->is(TOK_PARENS))
+    throw Exception("Expecting function arguments.");
+  if (s->numChildren() > 1)
+    throw Exception("Cannot JIT functions that take more than one argument");
+  if (s->numChildren() == 0) 
+    return compile_scalar_function(symname,m_eval);
+  else {
+    JITScalar arg = compile_expression(s->first(),m_eval);
+    // First look up direct functions - also try double arg functions, as type
+    // promotion means sin(int32) --> sin(double)
+    JITFunc *fun = NULL;
+    if (isi(arg)) {
+      fun = JITIntFuncs.findSymbol(symname);
+      if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
+    } else if (isf(arg)) {
+      fun = JITFloatFuncs.findSymbol(symname);
+      if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
+    } else if (isd(arg)) {
+      fun = JITDoubleFuncs.findSymbol(symname);
+    }
+    if (!fun) throw Exception("No JIT version of function " + symname);
+    if (!fun->argType) throw Exception("JIT version of function " + symname + " takes no arguments");
+    //The function exists and is defined - call it
+    return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""),"",ip);
+  }
+#endif
+}
+
+void CodeGen::handle_success_code(JITScalar success_code) {
+  JITBlock if_failed = jit->NewBlock("exported_call_failed");
+  JITBlock if_success = jit->NewBlock("exported_call_sucess");
+  // Add the branch logic
+  jit->Branch(if_success,if_failed,jit->Equals(success_code,jit->Zero(jit->Int32Type())));
+  jit->SetCurrentBlock(if_failed);
+  jit->Store(success_code,retcode);
+  jit->Jump(epilog);
+  jit->SetCurrentBlock(if_success);
 }
 
 JITScalar CodeGen::compile_rhs(Tree* t) {
@@ -188,24 +240,37 @@ JITScalar CodeGen::compile_rhs(Tree* t) {
   if (s->numChildren() > 2)
     throw Exception("Expecting at most 2 array references for dereference...");
   if (s->numChildren() == 1) {
-    JITScalar arg1 = jit->Cast(compile_expression(s->first()),jit->Int32Type());
+    JITScalar arg1 = jit->Cast(compile_expression(s->first()),jit->Int32Type()); 
+    JITScalar ret = jit->Alloc(v->type, "vector_load_of_" + symname);
+    JITScalar success_code;
     if (jit->IsDouble(v->type))
-      return jit->Call(func_vector_load_double, this_ptr, jit->Int32Value(v->argument_num), arg1);
+      success_code = jit->Call(func_vector_load_double, this_ptr, jit->Int32Value(v->argument_num), arg1, ret);
     else if (jit->IsFloat(v->type))
-      return jit->Call(func_vector_load_float, this_ptr, jit->Int32Value(v->argument_num), arg1);
+      success_code = jit->Call(func_vector_load_float, this_ptr, jit->Int32Value(v->argument_num), arg1, ret);
     else if (jit->IsInteger(v->type))
-      return jit->Call(func_vector_load_int32, this_ptr, jit->Int32Value(v->argument_num), arg1);
-    throw Exception("Unsupported JIT type in Load");
+      success_code = jit->Call(func_vector_load_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, ret);
+    else
+      throw Exception("Unsupported JIT type in Load");
+    handle_success_code(success_code);
+    return jit->Load(ret);
   } else if (s->numChildren() == 2) {
     JITScalar arg1 = jit->Cast(compile_expression(s->first()),jit->Int32Type());
     JITScalar arg2 = jit->Cast(compile_expression(s->second()),jit->Int32Type());
+    JITScalar ret = jit->Alloc(v->type, "matrix_load_of_" + symname);
+    JITScalar success_code;
     if (jit->IsDouble(v->type))
-      return jit->Call(func_matrix_load_double, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2);
+      success_code = jit->Call(func_matrix_load_double, this_ptr, jit->Int32Value(v->argument_num), 
+			       arg1, arg2, ret);
     else if (jit->IsFloat(v->type))
-      return jit->Call(func_matrix_load_float, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2);
+      success_code = jit->Call(func_matrix_load_float, this_ptr, jit->Int32Value(v->argument_num), 
+			       arg1, arg2, ret);
     else if (jit->IsInteger(v->type))
-      return jit->Call(func_matrix_load_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2);
-    throw Exception("Unsupported JIT type in Load");
+      success_code = jit->Call(func_matrix_load_int32, this_ptr, jit->Int32Value(v->argument_num), 
+			       arg1, arg2, ret);
+    else
+      throw Exception("Unsupported JIT type in Load");
+    handle_success_code(success_code);
+    return jit->Load(ret);
   }
   throw Exception("dereference not handled yet...");
 }
@@ -309,27 +374,37 @@ void CodeGen::compile_assignment(Tree* t) {
     throw Exception("Expecting at most 2 array references for dereference...");
   if (q->numChildren() == 1) {
     JITScalar arg1 = jit->Cast(compile_expression(q->first()),jit->Int32Type());
+    JITScalar success_code;
     if (jit->IsDouble(v->type))
-      jit->Call(func_vector_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, 
-		jit->Cast(rhs,v->type));
+      success_code = jit->Call(func_vector_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, 
+			       jit->Cast(rhs,v->type));
     else if (jit->IsFloat(v->type))
-      jit->Call(func_vector_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, 
-		jit->Cast(rhs,v->type));
+      success_code = jit->Call(func_vector_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, 
+			       jit->Cast(rhs,v->type));
     else if (jit->IsInteger(v->type))
-      jit->Call(func_vector_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, 
-		jit->Cast(rhs,v->type));
+      success_code = jit->Call(func_vector_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, 
+			       jit->Cast(rhs,v->type));
+    else
+      throw Exception("unhandled type for vector store");
+    handle_success_code(success_code);
+    return;
   } else if (q->numChildren() == 2) {
     JITScalar arg1 = jit->Cast(compile_expression(q->first()),jit->Int32Type());
     JITScalar arg2 = jit->Cast(compile_expression(q->second()),jit->Int32Type());
+    JITScalar success_code;
     if (jit->IsDouble(v->type))
-      jit->Call(func_matrix_store_double, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2,
-		jit->Cast(rhs,v->type));
+      success_code = jit->Call(func_matrix_store_double, this_ptr, jit->Int32Value(v->argument_num), 
+			       arg1, arg2, jit->Cast(rhs,v->type));
     else if (jit->IsFloat(v->type))
-      jit->Call(func_matrix_store_float, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2,
-		jit->Cast(rhs,v->type));
+      success_code = jit->Call(func_matrix_store_float, this_ptr, jit->Int32Value(v->argument_num), 
+			       arg1, arg2, jit->Cast(rhs,v->type));
     else if (jit->IsInteger(v->type))
-      jit->Call(func_matrix_store_int32, this_ptr, jit->Int32Value(v->argument_num), arg1, arg2,
-		jit->Cast(rhs,v->type));
+      success_code = jit->Call(func_matrix_store_int32, this_ptr, jit->Int32Value(v->argument_num), 
+			       arg1, arg2, jit->Cast(rhs,v->type));
+    else
+      throw Exception("unhandled type for matrix store");
+    handle_success_code(success_code);
+    return;    
   }
 }
 
@@ -365,123 +440,205 @@ void CodeGen::compile_if_statement(Tree* t) {
   jit->SetCurrentBlock(if_exit);
 }
 
+template<class T> 
+inline T scalar_load(void* base, int argnum) {
+  CodeGen *this_ptr = static_cast<CodeGen*>(base);
+  return ((T*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
+}
+
+template<class T>
+inline void scalar_store(void* base, int argnum, T value) {
+  CodeGen *this_ptr = static_cast<CodeGen*>(base);
+  ((T*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = value;
+}
+
+template<class T>
+inline int32 vector_load(void* base, int argnum, int32 ndx, T* address) {
+  try {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    Array *a = this_ptr->array_inputs[argnum];
+    if (ndx < 1) {
+      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      return -1;
+    }
+    if (ndx > a->getLength()) {
+      this_ptr->exception_store = Exception("Array bounds exceeded in A(n) expression");
+      return -1;
+    }
+    address[0] = ((T*)(a->getDataPointer()))[ndx-1];
+    return 0;
+  } catch (Exception &e) {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    this_ptr->exception_store = e;
+    return -1;
+  }
+  return 0;
+}
+
+template<class T>
+inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
+  try {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    Array *a = this_ptr->array_inputs[argnum];
+    if (ndx < 1) {
+      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      return -1;      
+    }
+    if (ndx >= a->getLength()) {
+      a->vectorResize(ndx);
+    }
+    ((T*)(a->getReadWriteDataPointer()))[ndx-1] = value;
+    return 0;
+  } catch (Exception &e) {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    this_ptr->exception_store = e;
+    return -1;
+  }
+  return 0;
+}
+
+template<class T>
+inline int32 matrix_load(void* base, int argnum, int32 row, int32 col, T* address) {
+  try {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    Array *a = this_ptr->array_inputs[argnum];
+    if ((row < 1) || (col < 1)) {
+      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      return -1;      
+    }
+    if ((row > a->rows()) || (col > a->columns())) {
+      this_ptr->exception_store = Exception("Array index exceed bounds");
+      return -1;
+    }
+    address[0] = ((T*)(a->getDataPointer()))[row-1+(col-1)*a->rows()];
+    return 0;
+  } catch (Exception &e) {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    this_ptr->exception_store = e;
+    return -1;
+  }
+  return 0;
+}
+
+template<class T>
+inline int32 matrix_store(void* base, int argnum, int32 row, int32 col, T value) {
+  try {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    Array *a = this_ptr->array_inputs[argnum];
+    if ((row < 1) || (col < 1)) {
+      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      return -1;      
+    }
+    if ((row > a->rows()) || (col > a->columns())) {
+      int n_row = (row > a->rows()) ? row : a->rows();
+      int n_col = (col > a->columns()) ? col : a->columns();
+      Dimensions dim(n_row,n_col);
+      a->resize(dim);
+    }
+    ((T*)(a->getReadWriteDataPointer()))[row-1+(col-1)*a->rows()] = value;
+    return 0;
+  } catch (Exception &e) {
+    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    this_ptr->exception_store = e;
+    return -1;
+  }
+  return 0;
+}
+
 extern "C" {
-JIT_EXPORT double scalar_load_double(void* base, int argnum) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
-}
-
-JIT_EXPORT float scalar_load_float(void* base, int argnum) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
-}
-
-JIT_EXPORT int32 scalar_load_int32(void* base, int argnum) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
-}
-
-JIT_EXPORT void scalar_store_double(void* base, int argnum, double rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
-}
-
-JIT_EXPORT void scalar_store_float(void* base, int argnum, float rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
-}
-
-JIT_EXPORT void scalar_store_int32(void* base, int argnum, int32 rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = rhs;
-}
-
-JIT_EXPORT double vector_load_double(void* base, int argnum, int32 ndx) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
-}
-
-JIT_EXPORT float vector_load_float(void* base, int argnum, int32 ndx) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
-}
-
-JIT_EXPORT int32 vector_load_int32(void* base, int argnum, int32 ndx) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[ndx-1];
-}
-
-JIT_EXPORT void vector_store_double(void* base, int argnum, int32 ndx, double rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
-}
-
-JIT_EXPORT void vector_store_float(void* base, int argnum, int32 ndx, float rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
-}
-
-JIT_EXPORT void vector_store_int32(void* base, int argnum, int32 ndx, int32 rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[ndx-1] = rhs;
-}
-
-JIT_EXPORT double matrix_load_double(void* base, int argnum, int32 row, int32 col) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  int rows = this_ptr->array_inputs[argnum]->rows();
-  return ((double*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
-}
-
-JIT_EXPORT float matrix_load_float(void* base, int argnum, int32 row, int32 col) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  int rows = this_ptr->array_inputs[argnum]->rows();
-  return ((float*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
-}
-
-JIT_EXPORT int32 matrix_load_int32(void* base, int argnum, int32 row, int32 col) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  int rows = this_ptr->array_inputs[argnum]->rows();
-  return ((int32*)(this_ptr->array_inputs[argnum]->getDataPointer()))[(col-1)*rows+row-1];
-}
-
-JIT_EXPORT void matrix_store_double(void* base, int argnum, int32 row, int32 col, double rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  int rows = this_ptr->array_inputs[argnum]->rows();
-  ((double*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
-}
-
-JIT_EXPORT void matrix_store_float(void* base, int argnum, int32 row, int32 col, float rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  int rows = this_ptr->array_inputs[argnum]->rows();
-  ((float*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
-}
-
-JIT_EXPORT void matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 rhs) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
-  int rows = this_ptr->array_inputs[argnum]->rows();
-  ((int32*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[(col-1)*rows+row-1] = rhs;
-}
+  JIT_EXPORT double scalar_load_double(void* base, int argnum) {
+    return scalar_load<double>(base,argnum);
+  }
+  JIT_EXPORT float scalar_load_float(void* base, int argnum) {
+    return scalar_load<float>(base,argnum);
+  }
+  JIT_EXPORT int32 scalar_load_int32(void* base, int argnum) {
+    return scalar_load<int32>(base,argnum);
+  }
+  JIT_EXPORT void scalar_store_double(void* base, int argnum, double val) {
+    scalar_store<double>(base,argnum,val);
+  }
+  JIT_EXPORT void scalar_store_float(void* base, int argnum, float val) {
+    scalar_store<float>(base,argnum,val);
+  }
+  JIT_EXPORT void scalar_store_int32(void* base, int argnum, int32 val) {
+    scalar_store<int32>(base,argnum,val);
+  }
+  JIT_EXPORT int32 vector_load_double(void* base, int argnum, int32 ndx, double* address) {
+    return vector_load<double>(base,argnum,ndx,address);
+  }
+  JIT_EXPORT int32 vector_load_float(void* base, int argnum, int32 ndx, float* address) {
+    return vector_load<float>(base,argnum,ndx,address);
+  }
+  JIT_EXPORT int32 vector_load_int32(void* base, int argnum, int32 ndx, int32* address) {
+    return vector_load<int32>(base,argnum,ndx,address);
+  }
+  JIT_EXPORT int32 vector_store_double(void* base, int argnum, int32 ndx, double val) {
+    return vector_store<double>(base,argnum,ndx,val);
+  }
+  JIT_EXPORT int32 vector_store_float(void* base, int argnum, int32 ndx, float val) {
+    return vector_store<float>(base,argnum,ndx,val);
+  }
+  JIT_EXPORT int32 vector_store_int32(void* base, int argnum, int32 ndx, int32 val) {
+    return vector_store<int32>(base,argnum,ndx,val);
+  }
+  JIT_EXPORT int32 matrix_load_double(void* base, int argnum, int32 row, int32 col, double* address) {
+    return matrix_load<double>(base,argnum,row,col,address);
+  }
+  JIT_EXPORT int32 matrix_load_float(void* base, int argnum, int32 row, int32 col, float* address) {
+    return matrix_load<float>(base,argnum,row,col,address);
+  }
+  JIT_EXPORT int32 matrix_load_int32(void* base, int argnum, int32 row, int32 col, int32* address) {
+    return matrix_load<int32>(base,argnum,row,col,address);
+  }
+  JIT_EXPORT int32 matrix_store_double(void* base, int argnum, int32 row, int32 col, double val) {
+    return matrix_store<double>(base,argnum,row,col,val);
+  }
+  JIT_EXPORT int32 matrix_store_float(void* base, int argnum, int32 row, int32 col, float val) {
+    return matrix_store<float>(base,argnum,row,col,val);
+  }
+  JIT_EXPORT int32 matrix_store_int32(void* base, int argnum, int32 row, int32 col, int32 val) {
+    return matrix_store<int32>(base,argnum,row,col,val);
+  }
+  JIT_EXPORT double csc(double t) {
+    return 1.0/sin(t);
+  }  
+  JIT_EXPORT float cscf(float t) {
+    return 1.0f/sinf(t);
+  }
+  JIT_EXPORT double sec(double t) {
+    return 1.0/cos(t);
+  }
+  JIT_EXPORT float secf(float t) {
+    return 1.0f/cosf(t);
+  }
+  JIT_EXPORT double cot(double t) {
+    return 1.0/tan(t);
+  }
+  JIT_EXPORT float cotf(float t) {
+    return 1.0f/tanf(t);
+  }
 }
 
 void CodeGen::initialize() {
-  func_scalar_load_int32 = jit->DefineLinkFunction("scalar_load_int32","i","pi",(void*)scalar_load_int32);
-  func_scalar_load_double = jit->DefineLinkFunction("scalar_load_double","d","pi",(void*)scalar_load_double);
-  func_scalar_load_float = jit->DefineLinkFunction("scalar_load_float","f","pi",(void*)scalar_load_float);
-  func_vector_load_int32 = jit->DefineLinkFunction("vector_load_int32","i","pii",(void*)vector_load_int32);
-  func_vector_load_double = jit->DefineLinkFunction("vector_load_double","d","pii",(void*)vector_load_double);
-  func_vector_load_float = jit->DefineLinkFunction("vector_load_float","f","pii",(void*)vector_load_float);
-  func_matrix_load_int32 = jit->DefineLinkFunction("matrix_load_int32","i","piii",(void*)matrix_load_int32);
-  func_matrix_load_double = jit->DefineLinkFunction("matrix_load_double","d","piii",(void*)matrix_load_double);
-  func_matrix_load_float = jit->DefineLinkFunction("matrix_load_float","f","piii",(void*)matrix_load_float);
-  func_scalar_store_int32 = jit->DefineLinkFunction("scalar_store_int32","v","pii",(void*)scalar_store_int32);
-  func_scalar_store_double = jit->DefineLinkFunction("scalar_store_double","v","pid",(void*)scalar_store_double);
-  func_scalar_store_float = jit->DefineLinkFunction("scalar_store_float","v","pif",(void*)scalar_store_float);
-  func_vector_store_int32 = jit->DefineLinkFunction("vector_store_int32","v","piii",(void*)vector_store_int32);
-  func_vector_store_double = jit->DefineLinkFunction("vector_store_double","v","piid",(void*)vector_store_double);
-  func_vector_store_float = jit->DefineLinkFunction("vector_store_float","v","piif",(void*)vector_store_float);
-  func_matrix_store_int32 = jit->DefineLinkFunction("matrix_store_int32","v","piiii",(void*)matrix_store_int32);
-  func_matrix_store_double = jit->DefineLinkFunction("matrix_store_double","v","piiid",(void*)matrix_store_double);
-  func_matrix_store_float = jit->DefineLinkFunction("matrix_store_float","v","piiif",(void*)matrix_store_float);  
+  func_scalar_load_int32 = jit->DefineLinkFunction("scalar_load_int32","i","Ii");
+  func_scalar_load_double = jit->DefineLinkFunction("scalar_load_double","d","Ii");
+  func_scalar_load_float = jit->DefineLinkFunction("scalar_load_float","f","Ii");
+  func_scalar_store_int32 = jit->DefineLinkFunction("scalar_store_int32","i","Iii");
+  func_scalar_store_double = jit->DefineLinkFunction("scalar_store_double","i","Iid");
+  func_scalar_store_float = jit->DefineLinkFunction("scalar_store_float","i","Iif");
+  func_vector_load_int32 = jit->DefineLinkFunction("vector_load_int32","i","IiiI");
+  func_vector_load_double = jit->DefineLinkFunction("vector_load_double","i","IiiD");
+  func_vector_load_float = jit->DefineLinkFunction("vector_load_float","i","IiiF");
+  func_vector_store_int32 = jit->DefineLinkFunction("vector_store_int32","i","Iiii");
+  func_vector_store_double = jit->DefineLinkFunction("vector_store_double","i","Iiid");
+  func_vector_store_float = jit->DefineLinkFunction("vector_store_float","i","Iiif");
+  func_matrix_load_int32 = jit->DefineLinkFunction("matrix_load_int32","i","IiiiI");
+  func_matrix_load_double = jit->DefineLinkFunction("matrix_load_double","i","IiiiD");
+  func_matrix_load_float = jit->DefineLinkFunction("matrix_load_float","i","IiiiF");
+  func_matrix_store_int32 = jit->DefineLinkFunction("matrix_store_int32","i","Iiiii");
+  func_matrix_store_double = jit->DefineLinkFunction("matrix_store_double","i","Iiiid");
+  func_matrix_store_float = jit->DefineLinkFunction("matrix_store_float","i","Iiiif");
 }
 
 static int countm = 0;
@@ -489,17 +646,16 @@ static int countm = 0;
 void CodeGen::compile(Tree* t) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
-  if (!jit->Initialized()) {
-    initialize();
-    std::cout << "Initializing\r\n";
-    jit->SetInitialized(true);
-  }
+  initialize();
   argument_count = 0;
-  func = jit->DefineFunction(jit->FunctionType("v","p"),std::string("main") + countm++);
+  func = jit->DefineFunction(jit->FunctionType("i","I"),std::string("main") + countm++);
   jit->SetCurrentFunction(func);
   prolog = jit->NewBlock("prolog");
   main_body = jit->NewBlock("main_body");
   epilog = jit->NewBlock("epilog");
+  jit->SetCurrentBlock(prolog);
+  retcode = jit->Alloc(jit->Int32Type(),"_retcode");
+  jit->Store(jit->Zero(jit->Int32Type()),retcode);
   jit->SetCurrentBlock(main_body);
   llvm::Function::arg_iterator args = func->arg_begin();
   this_ptr = args;
@@ -509,7 +665,7 @@ void CodeGen::compile(Tree* t) {
   jit->SetCurrentBlock(prolog);
   jit->Jump(main_body);
   jit->SetCurrentBlock(epilog);
-  jit->Return();
+  jit->Return(jit->Load(retcode));
   std::cout << "************************************************************\n";
   std::cout << "*  Before optimization \n";
   jit->Dump( "unoptimized.bc.txt" );
@@ -581,7 +737,7 @@ void CodeGen::run() {
       array_inputs[v->argument_num] = &(*ptr);
     }
   }
-  
-  jit->Invoke(func,JITGeneric((void*) this));
-  
+  JITGeneric gv = jit->Invoke(func,JITGeneric((void*) this));
+  if (gv.IntVal != 0)
+    throw exception_store;
 }

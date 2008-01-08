@@ -17,6 +17,7 @@
 #include "llvm/Value.h"
 #include "llvm/Function.h"
 #include "llvm/ExecutionEngine/JIT.h"
+#include "llvm/ExecutionEngine/Interpreter.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
 
 #include <string>
@@ -47,7 +48,6 @@ public:
   void            OptimizeCode();
   JITFunctionType FunctionType(JITType rettype, std::vector<JITType> args);
   JITFunctionType FunctionType(std::string rettype, std::string args);
-  void            LinkFunction(JITFunction func, void* address);
   bool            Initialized();
   void            SetInitialized(bool t);
   JITType         DoubleType();
@@ -107,8 +107,9 @@ public:
   void            SetCurrentFunction(JITFunction A);
   JITFunction     CurrentFunction();
   // Shortcut to define a non-JIT function
-  // Type codes are "v - void, i - int32, f - float, d - double, p - pointer"
-  JITFunction     DefineLinkFunction(std::string name, std::string rettype, std::string args, void* address);
+  // Type codes are "v - void, i - int32, f - float, d - double,
+  //                           I - int32 pointer, F - float pointer, D - double pointer
+  JITFunction     DefineLinkFunction(std::string name, std::string rettype, std::string args);
   JITScalar       FunctionArgument(int n, std::string name);
   void            CloseFunction();
   void            Return(JITScalar t);

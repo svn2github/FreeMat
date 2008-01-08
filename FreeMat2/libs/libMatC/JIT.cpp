@@ -112,10 +112,6 @@ JITFunctionType JIT::FunctionType(std::string rettype, std::string args) {
   return ty;
 }
 
-void JIT::LinkFunction(JITFunction func, void* address) {
-  //  ee->addGlobalMapping(func,address);
-}
-
 JITType JIT::DoubleType() {
   return Type::getPrimitiveType(Type::DoubleTyID);
 }
@@ -172,10 +168,14 @@ JITBlock JIT::NewBlock(std::string name) {
 }
 
 JITScalar JIT::Mul(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on multiply");
   return BinaryOperator::create(Instruction::Mul,A,B,"",ip);
 }
 
 JITScalar JIT::Div(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on division");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return BinaryOperator::create(Instruction::SDiv,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -185,22 +185,32 @@ JITScalar JIT::Div(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::Sub(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on subtraction");
   return BinaryOperator::create(Instruction::Sub,A,B,"",ip);
 }
 
 JITScalar JIT::Add(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on addition");
   return BinaryOperator::create(Instruction::Add,A,B,"",ip);
 }
 
 JITScalar JIT::And(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on AND");
   return BinaryOperator::create(Instruction::And,A,B,"",ip);
 }
 
 JITScalar JIT::Or(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on OR");
   return BinaryOperator::create(Instruction::Or,A,B,"",ip);
 }
 
 JITScalar JIT::Xor(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on XOR");
   return BinaryOperator::create(Instruction::Xor,A,B,"",ip);
 }
 
@@ -213,6 +223,8 @@ JITScalar JIT::Cast(JITScalar A, JITType T) {
 }
 
 JITScalar JIT::LessThan(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on <");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return new ICmpInst(ICmpInst::ICMP_SLT,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -222,6 +234,8 @@ JITScalar JIT::LessThan(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::LessEquals(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on <=");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return new ICmpInst(ICmpInst::ICMP_SLE,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -231,6 +245,8 @@ JITScalar JIT::LessEquals(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::Equals(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on ==");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return new ICmpInst(ICmpInst::ICMP_EQ,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -240,6 +256,8 @@ JITScalar JIT::Equals(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::NotEqual(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on !=");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return new ICmpInst(ICmpInst::ICMP_NE,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -249,6 +267,8 @@ JITScalar JIT::NotEqual(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::GreaterThan(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on >");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return new ICmpInst(ICmpInst::ICMP_SGT,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -258,6 +278,8 @@ JITScalar JIT::GreaterThan(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::GreaterEquals(JITScalar A, JITScalar B) {
+  if (TypeOf(A) != TypeOf(B))
+    throw Exception("Type mismatch on >=");
   if (A->getType()->isInteger() && B->getType()->isInteger()) 
     return new ICmpInst(ICmpInst::ICMP_SGE,A,B,"",ip);
   else if (A->getType()->isFloatingPoint() && B->getType()->isFloatingPoint())
@@ -343,7 +365,9 @@ JITScalar JIT::GetElement(JITScalar BaseAddress, JITScalar Offset) {
 }
 
 JITFunction JIT::DefineFunction(JITFunctionType functype, std::string name) {
-  JITFunction func = new Function(functype,GlobalValue::ExternalLinkage,name,m);
+  JITFunction func = (JITFunction) m->getOrInsertFunction(name, functype);
+  //  JITFunction func = new Function(functype,GlobalValue::ExternalLinkage,name,m);
+  func->setLinkage(GlobalValue::ExternalLinkage);
   func->setCallingConv(CallingConv::C);
   return func;
 }
@@ -358,20 +382,23 @@ JITType JIT::MapTypeCode(char c) {
     return FloatType();
   case 'd':
     return DoubleType();
-  case 'p':
+  case 'I':
     return PointerType(Int32Type());
+  case 'F':
+    return PointerType(FloatType());
+  case 'D':
+    return PointerType(DoubleType());
   default:
     throw Exception("Invalid type map code");
   }
 }
 
-JITFunction JIT::DefineLinkFunction(std::string name, std::string rettype, std::string args, void *address) {
+JITFunction JIT::DefineLinkFunction(std::string name, std::string rettype, std::string args) {
   std::vector<JITType> argv;
   for (int i=0;i<args.size();i++)
     argv.push_back(MapTypeCode(args[i]));
   JITFunctionType ty = FunctionType(MapTypeCode(rettype[0]),argv);
   JITFunction fn = DefineFunction(ty,name);
-  LinkFunction(fn,address);
   return fn;
 }
 

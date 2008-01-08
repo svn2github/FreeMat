@@ -157,20 +157,19 @@ void CodeGen::compile_statement(Tree* t) {
 }
 
 JITScalar CodeGen::compile_scalar_function(string symname) {
-  
+  throw Exception("constant not defined");
 }
 
 JITScalar CodeGen::compile_function_call(Tree* t) {
-#if 0
   // First, make sure it is a function
   string symname(t->first()->text());
   FuncPtr funcval;
-  if (!m_eval->lookupFunction(symname,funcval)) 
+  if (!eval->lookupFunction(symname,funcval)) 
     throw Exception("Couldn't find function " + symname);
   if (funcval->type() != FM_BUILT_IN_FUNCTION)
     throw Exception("Can only JIT built in functions - not " + symname);
   if (t->numChildren() != 2) 
-    return compile_scalar_function(symname,m_eval);
+    return compile_scalar_function(symname);
   // Evaluate the argument
   Tree* s(t->second());
   if (!s->is(TOK_PARENS))
@@ -178,27 +177,23 @@ JITScalar CodeGen::compile_function_call(Tree* t) {
   if (s->numChildren() > 1)
     throw Exception("Cannot JIT functions that take more than one argument");
   if (s->numChildren() == 0) 
-    return compile_scalar_function(symname,m_eval);
+    return compile_scalar_function(symname);
   else {
-    JITScalar arg = compile_expression(s->first(),m_eval);
-    // First look up direct functions - also try double arg functions, as type
-    // promotion means sin(int32) --> sin(double)
-    JITFunc *fun = NULL;
-    if (isi(arg)) {
-      fun = JITIntFuncs.findSymbol(symname);
-      if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
-    } else if (isf(arg)) {
-      fun = JITFloatFuncs.findSymbol(symname);
-      if (!fun) fun = JITDoubleFuncs.findSymbol(symname);
-    } else if (isd(arg)) {
-      fun = JITDoubleFuncs.findSymbol(symname);
+    JITScalar arg = compile_expression(s->first());
+    JITFunction *func = NULL;
+    if (jit->IsFloat(arg)) {
+      func = float_funcs.findSymbol(symname);
+      if (!func) throw Exception("Cannot find function " + symname);
+    } else if (jit->IsDouble(arg)) {
+      func = double_funcs.findSymbol(symname);
+      if (!func) throw Exception("Cannot find function " + symname);
+    } else if (jit->IsInteger(arg)) {
+      func = int_funcs.findSymbol(symname);
+      if (!func) throw Exception("Cannot find function " + symname);
     }
-    if (!fun) throw Exception("No JIT version of function " + symname);
-    if (!fun->argType) throw Exception("JIT version of function " + symname + " takes no arguments");
-    //The function exists and is defined - call it
-    return new CallInst(fun->funcAddress,cast(arg,fun->argType,false,ip,""),"",ip);
+    if (!func) throw Exception("No JIT version of function " + symname);
+    return jit->Call(*func,arg);
   }
-#endif
 }
 
 void CodeGen::handle_success_code(JITScalar success_code) {
@@ -620,6 +615,11 @@ extern "C" {
   }
 }
 
+void CodeGen::register_std_function(std::string name) {
+  double_funcs.insertSymbol(name,jit->DefineLinkFunction(name,"d","d"));
+  float_funcs.insertSymbol(name,jit->DefineLinkFunction(name+"f","f","f"));
+}
+
 void CodeGen::initialize() {
   func_scalar_load_int32 = jit->DefineLinkFunction("scalar_load_int32","i","Ii");
   func_scalar_load_double = jit->DefineLinkFunction("scalar_load_double","d","Ii");
@@ -639,6 +639,16 @@ void CodeGen::initialize() {
   func_matrix_store_int32 = jit->DefineLinkFunction("matrix_store_int32","i","Iiiii");
   func_matrix_store_double = jit->DefineLinkFunction("matrix_store_double","i","Iiiid");
   func_matrix_store_float = jit->DefineLinkFunction("matrix_store_float","i","Iiiif");
+  // Initialize the standard function
+  register_std_function("cos"); register_std_function("sin");
+  register_std_function("sec"); register_std_function("csc");
+  register_std_function("tan"); register_std_function("atan");
+  register_std_function("cot"); register_std_function("exp");
+  register_std_function("expm1"); register_std_function("ceil");
+  register_std_function("floor"); register_std_function("round");
+  double_funcs.insertSymbol("abs",jit->DefineLinkFunction("fabs","d","d"));
+  float_funcs.insertSymbol("abs",jit->DefineLinkFunction("fabsf","f","f"));
+  int_funcs.insertSymbol("abs",jit->DefineLinkFunction("abs","i","i"));
 }
 
 static int countm = 0;
@@ -666,13 +676,13 @@ void CodeGen::compile(Tree* t) {
   jit->Jump(main_body);
   jit->SetCurrentBlock(epilog);
   jit->Return(jit->Load(retcode));
-  std::cout << "************************************************************\n";
-  std::cout << "*  Before optimization \n";
-  jit->Dump( "unoptimized.bc.txt" );
+  //   std::cout << "************************************************************\n";
+  //   std::cout << "*  Before optimization \n";
+  //   jit->Dump( "unoptimized.bc.txt" );
   jit->OptimizeCode();
-  std::cout << "************************************************************\n";
-  std::cout << "*  After optimization \n";
-  jit->Dump( "optimized.bc.txt" );
+  //   std::cout << "************************************************************\n";
+  //   std::cout << "*  After optimization \n";
+  //   jit->Dump( "optimized.bc.txt" );
 }
 
 #warning - How to detect non-integer loop bounds?

@@ -18,6 +18,7 @@ class SymbolInfo {
 class CodeGen {
 public:
   SymbolTable<SymbolInfo> symbols;
+  SymbolTable<JITFunction> double_funcs, float_funcs, int_funcs;
   JIT *jit;
   Interpreter *eval;
   vector<Array*> array_inputs;
@@ -26,6 +27,7 @@ public:
   JITBlock prolog, main_body, epilog;
   JITScalar this_ptr, retcode;
   Exception exception_store;
+  void register_std_function(std::string name);
   SymbolInfo* add_argument_array(string name);
   SymbolInfo* add_argument_scalar(string name, JITScalar val = NULL, bool override = false);
   JITType map_dataclass(Class aclass);

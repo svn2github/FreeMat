@@ -40,7 +40,7 @@
 #include <fstream>
 #include <stdarg.h>
 #include "JIT.hpp"
-#include "CodeGen.hpp"
+#include "JITFunc.hpp"
 
 
 #ifdef WIN32
@@ -1817,8 +1817,8 @@ void Interpreter::forStatement(Tree *t) {
   // Try to compile this block to an instruction stream  
   if (jitcontrol) {
     if (t->JITState() == Tree::UNTRIED) {
-      t->print();
-      CodeGen cg(this);
+      //      t->print();
+      JITFunc cg(this);
       bool success = false;
       try {
 	cg.compile(t);

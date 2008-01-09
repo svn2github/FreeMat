@@ -5,12 +5,12 @@ INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libXP -I@top_srcdi
 libMatC_a_HFILES = MCScanner.hpp \
 MCParser.hpp \
 JIT.hpp \
-CodeGen.hpp
+JITFunc.hpp
 
 libMatC_a_SOURCES = MCScanner.cpp \
 MCParser.cpp \
 JIT.cpp \
-CodeGen.cpp
+JITFunc.cpp
 
 AUTOMAKE_OPTIONS 	= foreign
 

@@ -1,6 +1,7 @@
-#include "CodeGen.hpp"
+#include "JITFunc.hpp"
 #include "Context.hpp"
 #include "Interpreter.hpp"
+#include <sstream>
 
 #if defined(_MSC_VER )
     #define JIT_EXPORT __declspec( dllexport )
@@ -15,7 +16,9 @@ static JITFunction func_vector_store_double, func_vector_store_float, func_vecto
 static JITFunction func_matrix_load_double, func_matrix_load_float, func_matrix_load_int32;
 static JITFunction func_matrix_store_double, func_matrix_store_float, func_matrix_store_int32;
 
-SymbolInfo* CodeGen::add_argument_array(string name) {
+SymbolInfo* JITFunc::add_argument_array(string name) {
+  if (symbol_prefix.size() > 0)
+    return NULL;
   ArrayReference ptr(eval->getContext()->lookupVariable(name));
   Class aclass = FM_FUNCPTR_ARRAY;
   if (!ptr.valid())
@@ -30,10 +33,19 @@ SymbolInfo* CodeGen::add_argument_array(string name) {
   // Map the array class to an llvm type
   JITType type(map_dataclass(aclass));
   symbols.insertSymbol(name,SymbolInfo(false,argument_count++,NULL,type));
+  std::cout << "Define array " << name << " array " << argument_count-1 << "\n";
   return symbols.findSymbol(name);
 }
 
-Class CodeGen::map_dataclass(JITType type) {
+Class JITFunc::map_dataclass(JITScalar val) {
+  if (jit->IsFloat(val))
+    return FM_FLOAT;
+  else if (jit->IsDouble(val))
+    return FM_DOUBLE;
+  return FM_INT32;
+}
+
+Class JITFunc::map_dataclass(JITType type) {
   if (jit->IsFloat(type))
     return FM_FLOAT;
   else if (jit->IsDouble(type))
@@ -41,7 +53,7 @@ Class CodeGen::map_dataclass(JITType type) {
   return FM_INT32;
 }
 
-JITType CodeGen::map_dataclass(Class aclass) {
+JITType JITFunc::map_dataclass(Class aclass) {
   switch (aclass) {
   default:
     throw Exception("JIT does not support");
@@ -55,18 +67,28 @@ JITType CodeGen::map_dataclass(Class aclass) {
   return NULL;
 }
 
+SymbolInfo* JITFunc::define_local_symbol(string name, JITScalar val) {
+  if (!val) throw Exception("undefined variable or argument " + name);
+  JITBlock ip(jit->CurrentBlock());
+  jit->SetCurrentBlock(prolog);
+  JITScalar address = jit->Alloc(jit->TypeOf(val),name);
+  symbols.insertSymbol(name,SymbolInfo(true,-1,address,jit->TypeOf(val)));
+  std::cout << "Define scalar " << name << " argument " << -1 << "\n";
+  jit->SetCurrentBlock(ip);
+  jit->Store(val,address);
+  return symbols.findSymbol(name);
+}
+
 // FIXME - Simplify
-SymbolInfo* CodeGen::add_argument_scalar(string name, JITScalar val, bool override) {
+SymbolInfo* JITFunc::add_argument_scalar(string name, JITScalar val, bool override) {
+  Class aclass;
+  if (symbol_prefix.size() > 0) 
+    return define_local_symbol(name,val);
   ArrayReference ptr(eval->getContext()->lookupVariable(name));
-  Class aclass = FM_FUNCPTR_ARRAY;
+  aclass = FM_FUNCPTR_ARRAY;
   if (!val && !ptr.valid()) return NULL;
   if (!ptr.valid() || override) {
-    if (jit->IsInteger(val))
-      aclass = FM_INT32;
-    else if (jit->IsFloat(val))
-      aclass = FM_FLOAT;
-    else if (jit->IsDouble(val))
-      aclass = FM_DOUBLE;
+    aclass = map_dataclass(val);
   } else {
     if (!ptr->isScalar())
       throw Exception("Expect " + name + " to be a scalar");
@@ -81,6 +103,7 @@ SymbolInfo* CodeGen::add_argument_scalar(string name, JITScalar val, bool overri
   jit->SetCurrentBlock(prolog);
   JITScalar address = jit->Alloc(type,name);
   symbols.insertSymbol(name,SymbolInfo(true,argument_count++,address,type));
+  std::cout << "Define scalar " << name << " argument " << argument_count-1 << "\n";
   if (jit->IsDouble(type))
     jit->Store(jit->Call(func_scalar_load_double, this_ptr, jit->Int32Value(argument_count-1)), address);
   else if (jit->IsFloat(type))
@@ -98,18 +121,18 @@ SymbolInfo* CodeGen::add_argument_scalar(string name, JITScalar val, bool overri
   return symbols.findSymbol(name);
 }
 
-CodeGen::CodeGen(Interpreter *p_eval) {
+JITFunc::JITFunc(Interpreter *p_eval) {
   jit = p_eval->JITPointer();
   eval = p_eval;
 }
 
-void CodeGen::compile_block(Tree* t) {
+void JITFunc::compile_block(Tree* t) {
   const TreeList &statements(t->children());
   for (TreeList::const_iterator i=statements.begin();i!=statements.end();i++) 
     compile_statement(*i);
 }
 
-void CodeGen::compile_statement_type(Tree* t) {
+void JITFunc::compile_statement_type(Tree* t) {
   switch(t->token()) {
   case '=': 
     compile_assignment(t);
@@ -148,7 +171,7 @@ void CodeGen::compile_statement_type(Tree* t) {
   }
 }
 
-void CodeGen::compile_statement(Tree* t) {
+void JITFunc::compile_statement(Tree* t) {
   if (t->is(TOK_STATEMENT) && 
       (t->first()->is(TOK_EXPR) || t->first()->is(TOK_SPECIAL) ||
        t->first()->is(TOK_MULTI) || t->first()->is('=')))
@@ -156,18 +179,16 @@ void CodeGen::compile_statement(Tree* t) {
   compile_statement_type(t->first());
 }
 
-JITScalar CodeGen::compile_scalar_function(string symname) {
+JITScalar JITFunc::compile_scalar_function(string symname) {
   throw Exception("constant not defined");
 }
 
-JITScalar CodeGen::compile_function_call(Tree* t) {
+JITScalar JITFunc::compile_built_in_function_call(Tree* t) {
   // First, make sure it is a function
   string symname(t->first()->text());
   FuncPtr funcval;
   if (!eval->lookupFunction(symname,funcval)) 
     throw Exception("Couldn't find function " + symname);
-  if (funcval->type() != FM_BUILT_IN_FUNCTION)
-    throw Exception("Can only JIT built in functions - not " + symname);
   if (t->numChildren() != 2) 
     return compile_scalar_function(symname);
   // Evaluate the argument
@@ -196,7 +217,69 @@ JITScalar CodeGen::compile_function_call(Tree* t) {
   }
 }
 
-void CodeGen::handle_success_code(JITScalar success_code) {
+static string uid_string(int uid) {
+  char buffer[100];
+  sprintf(buffer,"%d",uid);
+  return string(buffer);
+}
+
+JITScalar JITFunc::compile_m_function_call(Tree* t) {
+  // First, make sure it is a function
+  string symname(t->first()->text());
+  FuncPtr funcval;
+  if (!eval->lookupFunction(symname,funcval)) 
+    throw Exception("Couldn't find function " + symname);
+  if (funcval->type() != FM_M_FUNCTION)
+    throw Exception("Expected M function");
+  MFunctionDef *fptr = (MFunctionDef*) funcval;
+  if ((fptr->inputArgCount() < 0) || (fptr->outputArgCount() < 0))
+    throw Exception("Variable argument functions not handled");
+  if (fptr->scriptFlag) 
+    throw Exception("scripts not handled");
+  // Set up the prefix
+  string new_symbol_prefix = symbol_prefix + "$" + symname + "_" + uid_string(uid);
+  uid++;
+  // Loop through the arguments to the function,
+  // and map them from the defined arguments of the tree
+  Tree* s(t->second());
+  int args_defed = fptr->arguments.size();
+  if (args_defed > s->numChildren())
+    args_defed = s->numChildren();
+  for (int i=0;i<args_defed;i++) {
+    JITScalar arg = compile_expression(s->child(i));
+    define_local_symbol(new_symbol_prefix + fptr->arguments[i],arg);
+  }
+  define_local_symbol(new_symbol_prefix+"nargout",jit->DoubleValue(1));
+  define_local_symbol(new_symbol_prefix+"nargin",jit->DoubleValue(args_defed));
+  // compile the code for the function
+  fptr->code.tree()->print();
+  string save_prefix = symbol_prefix;
+  symbol_prefix = new_symbol_prefix;
+  compile_block(fptr->code.tree());
+  // Lookup the result and return it
+  SymbolInfo *v = symbols.findSymbol(new_symbol_prefix+fptr->returnVals[0]);
+  if (!v) throw Exception("function failed to define return value");
+  symbol_prefix = save_prefix;
+  return jit->Load(v->address);
+}
+
+JITScalar JITFunc::compile_function_call(Tree* t) {
+  // First, make sure it is a function
+  string symname(t->first()->text());
+  FuncPtr funcval;
+  if (!eval->lookupFunction(symname,funcval)) 
+    throw Exception("Couldn't find function " + symname);
+  funcval->updateCode(eval);
+  if (funcval->type() == FM_BUILT_IN_FUNCTION)
+    return compile_built_in_function_call(t);
+  if (funcval->type() == FM_M_FUNCTION)
+    return compile_m_function_call(t);
+  if (t->numChildren() != 2) 
+    return compile_scalar_function(symname);
+  throw Exception("Unsupported function type");
+}
+
+void JITFunc::handle_success_code(JITScalar success_code) {
   JITBlock if_failed = jit->NewBlock("exported_call_failed");
   JITBlock if_success = jit->NewBlock("exported_call_sucess");
   // Add the branch logic
@@ -207,8 +290,8 @@ void CodeGen::handle_success_code(JITScalar success_code) {
   jit->SetCurrentBlock(if_success);
 }
 
-JITScalar CodeGen::compile_rhs(Tree* t) {
-  string symname(t->first()->text());
+JITScalar JITFunc::compile_rhs(Tree* t) {
+  string symname(symbol_prefix+t->first()->text());
   SymbolInfo *v = symbols.findSymbol(symname);
   if (!v) {
     if (t->numChildren() == 1)
@@ -270,7 +353,7 @@ JITScalar CodeGen::compile_rhs(Tree* t) {
   throw Exception("dereference not handled yet...");
 }
 
-JITScalar CodeGen::compile_expression(Tree* t) {
+JITScalar JITFunc::compile_expression(Tree* t) {
   switch(t->token()) {
   case TOK_VARIABLE:     return compile_rhs(t);
   case TOK_INTEGER:      return jit->Int32Value(ArrayToInt32(t->array()));
@@ -336,9 +419,9 @@ JITScalar CodeGen::compile_expression(Tree* t) {
   }  
 }
 
-void CodeGen::compile_assignment(Tree* t) {
+void JITFunc::compile_assignment(Tree* t) {
   Tree* s(t->first());
-  string symname(s->first()->text());
+  string symname(symbol_prefix+s->first()->text());
   JITScalar rhs(compile_expression(t->second()));
   SymbolInfo *v = symbols.findSymbol(symname);
   if (!v) {
@@ -403,7 +486,7 @@ void CodeGen::compile_assignment(Tree* t) {
   }
 }
 
-void CodeGen::compile_if_statement(Tree* t) {
+void JITFunc::compile_if_statement(Tree* t) {
   JITScalar main_cond(jit->Cast(compile_expression(t->first()),jit->BoolType()));
   JITBlock if_true = jit->NewBlock("if_true");
   JITBlock if_continue = jit->NewBlock("if_continue");
@@ -437,20 +520,20 @@ void CodeGen::compile_if_statement(Tree* t) {
 
 template<class T> 
 inline T scalar_load(void* base, int argnum) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
+  JITFunc *this_ptr = static_cast<JITFunc*>(base);
   return ((T*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
 }
 
 template<class T>
 inline void scalar_store(void* base, int argnum, T value) {
-  CodeGen *this_ptr = static_cast<CodeGen*>(base);
+  JITFunc *this_ptr = static_cast<JITFunc*>(base);
   ((T*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = value;
 }
 
 template<class T>
 inline int32 vector_load(void* base, int argnum, int32 ndx, T* address) {
   try {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     Array *a = this_ptr->array_inputs[argnum];
     if (ndx < 1) {
       this_ptr->exception_store = Exception("Array index < 1 not allowed");
@@ -463,7 +546,7 @@ inline int32 vector_load(void* base, int argnum, int32 ndx, T* address) {
     address[0] = ((T*)(a->getDataPointer()))[ndx-1];
     return 0;
   } catch (Exception &e) {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     this_ptr->exception_store = e;
     return -1;
   }
@@ -473,7 +556,7 @@ inline int32 vector_load(void* base, int argnum, int32 ndx, T* address) {
 template<class T>
 inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
   try {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     Array *a = this_ptr->array_inputs[argnum];
     if (ndx < 1) {
       this_ptr->exception_store = Exception("Array index < 1 not allowed");
@@ -485,7 +568,7 @@ inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
     ((T*)(a->getReadWriteDataPointer()))[ndx-1] = value;
     return 0;
   } catch (Exception &e) {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     this_ptr->exception_store = e;
     return -1;
   }
@@ -495,7 +578,7 @@ inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
 template<class T>
 inline int32 matrix_load(void* base, int argnum, int32 row, int32 col, T* address) {
   try {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     Array *a = this_ptr->array_inputs[argnum];
     if ((row < 1) || (col < 1)) {
       this_ptr->exception_store = Exception("Array index < 1 not allowed");
@@ -508,7 +591,7 @@ inline int32 matrix_load(void* base, int argnum, int32 row, int32 col, T* addres
     address[0] = ((T*)(a->getDataPointer()))[row-1+(col-1)*a->rows()];
     return 0;
   } catch (Exception &e) {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     this_ptr->exception_store = e;
     return -1;
   }
@@ -518,7 +601,7 @@ inline int32 matrix_load(void* base, int argnum, int32 row, int32 col, T* addres
 template<class T>
 inline int32 matrix_store(void* base, int argnum, int32 row, int32 col, T value) {
   try {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     Array *a = this_ptr->array_inputs[argnum];
     if ((row < 1) || (col < 1)) {
       this_ptr->exception_store = Exception("Array index < 1 not allowed");
@@ -533,7 +616,7 @@ inline int32 matrix_store(void* base, int argnum, int32 row, int32 col, T value)
     ((T*)(a->getReadWriteDataPointer()))[row-1+(col-1)*a->rows()] = value;
     return 0;
   } catch (Exception &e) {
-    CodeGen *this_ptr = static_cast<CodeGen*>(base);
+    JITFunc *this_ptr = static_cast<JITFunc*>(base);
     this_ptr->exception_store = e;
     return -1;
   }
@@ -615,12 +698,14 @@ extern "C" {
   }
 }
 
-void CodeGen::register_std_function(std::string name) {
+void JITFunc::register_std_function(std::string name) {
   double_funcs.insertSymbol(name,jit->DefineLinkFunction(name,"d","d"));
   float_funcs.insertSymbol(name,jit->DefineLinkFunction(name+"f","f","f"));
 }
 
-void CodeGen::initialize() {
+void JITFunc::initialize() {
+  symbol_prefix = "";
+  uid = 0;
   func_scalar_load_int32 = jit->DefineLinkFunction("scalar_load_int32","i","Ii");
   func_scalar_load_double = jit->DefineLinkFunction("scalar_load_double","d","Ii");
   func_scalar_load_float = jit->DefineLinkFunction("scalar_load_float","f","Ii");
@@ -653,7 +738,7 @@ void CodeGen::initialize() {
 
 static int countm = 0;
 
-void CodeGen::compile(Tree* t) {
+void JITFunc::compile(Tree* t) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
   initialize();
@@ -676,17 +761,17 @@ void CodeGen::compile(Tree* t) {
   jit->Jump(main_body);
   jit->SetCurrentBlock(epilog);
   jit->Return(jit->Load(retcode));
-  //   std::cout << "************************************************************\n";
-  //   std::cout << "*  Before optimization \n";
-  //   jit->Dump( "unoptimized.bc.txt" );
+  std::cout << "************************************************************\n";
+  std::cout << "*  Before optimization \n";
+  jit->Dump( "unoptimized.bc.txt" );
   jit->OptimizeCode();
-  //   std::cout << "************************************************************\n";
-  //   std::cout << "*  After optimization \n";
-  //   jit->Dump( "optimized.bc.txt" );
+  std::cout << "************************************************************\n";
+  std::cout << "*  After optimization \n";
+  jit->Dump( "optimized.bc.txt" );
 }
 
 #warning - How to detect non-integer loop bounds?
-void CodeGen::compile_for_block(Tree* t) {
+void JITFunc::compile_for_block(Tree* t) {
   JITScalar loop_start, loop_stop, loop_step;
 
   if (!(t->first()->is('=') && t->first()->second()->is(':'))) 
@@ -725,7 +810,7 @@ void CodeGen::compile_for_block(Tree* t) {
   jit->SetCurrentBlock(loopexit);
 }
 
-void CodeGen::run() {
+void JITFunc::run() {
   // Collect the list of arguments
   StringVector argumentList(symbols.getCompletions(""));
   // Allocate the argument array
@@ -733,7 +818,7 @@ void CodeGen::run() {
   array_inputs.reserve(argumentList.size());
   for (int i=0;i<argumentList.size();i++) {
     SymbolInfo* v = symbols.findSymbol(argumentList[i]);
-    if (v) {
+    if (v && (v->argument_num>=0)) {
       ArrayReference ptr(eval->getContext()->lookupVariable(argumentList[i]));
       if (!ptr.valid()) {
 	if (!v->isScalar) throw Exception("cannot create array types in the loop");

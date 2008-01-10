@@ -46,7 +46,6 @@ void JIT::OptimizeCode() {
   PassManager PM;
   PM.add(new TargetData(m));
   PM.add(createVerifierPass());                  // Verify that input is correct
-
   PM.add((Pass*)createLowerSetJmpPass());          // Lower llvm.setjmp/.longjmp
 
   // If the -strip-debug command line option was specified, do it.

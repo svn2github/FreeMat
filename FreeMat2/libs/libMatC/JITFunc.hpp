@@ -19,6 +19,7 @@ class JITFunc {
 public:
   SymbolTable<SymbolInfo> symbols;
   SymbolTable<JITFunction> double_funcs, float_funcs, int_funcs;
+  SymbolTable<JITScalar> constants;
   JIT *jit;
   Interpreter *eval;
   vector<Array*> array_inputs;

@@ -9,6 +9,7 @@
 // tree class to be as fast as possible.  And that we want to be able to tag the tree with profile
 // information.
 class Tree;
+class JITFunc;
 
 typedef QList<Tree*> TreeList;
 
@@ -23,23 +24,24 @@ private:
   Token m_node;
   TreeList m_children;
   JITState_t m_jitstate;
+  JITFunc *m_jitfunc;
 public:
-  Tree(): m_node(TOK_INVALID), m_jitstate(UNTRIED)
+  Tree(): m_node(TOK_INVALID), m_jitstate(UNTRIED), m_jitfunc(NULL)
   {}
   Tree(const Token& tok) : m_node(tok), 
-			   m_jitstate(UNTRIED)
+			   m_jitstate(UNTRIED), m_jitfunc(NULL)
   {m_node.fillArray();}
   Tree(byte token, unsigned position) : m_node(Token(token,position)), 
-					m_jitstate(UNTRIED)
+					m_jitstate(UNTRIED), m_jitfunc(NULL)
   {}
   Tree(const Token& tok, Tree* child1, Tree* child2) : m_node(tok), 
-						       m_jitstate(UNTRIED)
+						       m_jitstate(UNTRIED), m_jitfunc(NULL)
   {
     m_children.push_back(child1);
     m_children.push_back(child2);
   }
   Tree(const Token& tok, Tree* child1) : m_node(tok), 
-					 m_jitstate(UNTRIED)
+					 m_jitstate(UNTRIED), m_jitfunc(NULL)
   {
     m_children.push_back(child1);
   }
@@ -49,6 +51,8 @@ public:
   void print() const;
   inline JITState_t JITState() const {return m_jitstate;}
   inline void setJITState(JITState_t t) {m_jitstate = t;}
+  inline JITFunc* JITFunction() const {return m_jitfunc;}
+  inline void setJITFunction(JITFunc *t) {m_jitfunc = t;}
   inline void rename(byte newtok) {m_node.setValue(newtok);}
   inline unsigned context() const {return m_node.position();}
   inline bool valid() const {return !(m_node.is(TOK_INVALID));}

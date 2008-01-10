@@ -180,7 +180,10 @@ void JITFunc::compile_statement(Tree* t) {
 }
 
 JITScalar JITFunc::compile_scalar_function(string symname) {
-  throw Exception("constant not defined");
+  JITScalar *val;
+  val = constants.findSymbol(symname);
+  if (!val) throw Exception("constant not defined");
+  return (*val);
 }
 
 JITScalar JITFunc::compile_built_in_function_call(Tree* t) {
@@ -234,6 +237,8 @@ JITScalar JITFunc::compile_m_function_call(Tree* t) {
   MFunctionDef *fptr = (MFunctionDef*) funcval;
   if ((fptr->inputArgCount() < 0) || (fptr->outputArgCount() < 0))
     throw Exception("Variable argument functions not handled");
+  if (fptr->nestedFunction || fptr->capturedFunction)
+    throw Exception("Nested and/or captured functions not handled");
   if (fptr->scriptFlag) 
     throw Exception("scripts not handled");
   // Set up the prefix
@@ -734,6 +739,8 @@ void JITFunc::initialize() {
   double_funcs.insertSymbol("abs",jit->DefineLinkFunction("fabs","d","d"));
   float_funcs.insertSymbol("abs",jit->DefineLinkFunction("fabsf","f","f"));
   int_funcs.insertSymbol("abs",jit->DefineLinkFunction("abs","i","i"));
+  constants.insertSymbol("pi",jit->DoubleValue(4.0*atan(1.0)));
+  constants.insertSymbol("e",jit->DoubleValue(exp(1.0)));
 }
 
 static int countm = 0;
@@ -761,13 +768,13 @@ void JITFunc::compile(Tree* t) {
   jit->Jump(main_body);
   jit->SetCurrentBlock(epilog);
   jit->Return(jit->Load(retcode));
-  std::cout << "************************************************************\n";
-  std::cout << "*  Before optimization \n";
-  jit->Dump( "unoptimized.bc.txt" );
+  //  std::cout << "************************************************************\n";
+  //  std::cout << "*  Before optimization \n";
+  //  jit->Dump( "unoptimized.bc.txt" );
   jit->OptimizeCode();
-  std::cout << "************************************************************\n";
-  std::cout << "*  After optimization \n";
-  jit->Dump( "optimized.bc.txt" );
+  //  std::cout << "************************************************************\n";
+  //  std::cout << "*  After optimization \n";
+  //  jit->Dump( "optimized.bc.txt" );
 }
 
 #warning - How to detect non-integer loop bounds?

@@ -4806,6 +4806,8 @@ public:
 //   }
 };
 
+ArrayVector CosFunction(int nargout, const ArrayVector& arg);
+
 
 ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
   int test = ArrayToInt32(arg[0]);
@@ -4953,6 +4955,15 @@ ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
       t.tree()->print();
     }
     break;
+  case 15:
+    {
+      Array t;
+      for (int i=0;i<1000000;i++) {
+	ArrayVector x;
+	x.push_back(Array::floatConstructor(i));
+	ArrayVector y(CosFunction(1,x));
+      }
+    }
   }
   return ArrayVector();
 }

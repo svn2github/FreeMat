@@ -543,13 +543,21 @@ void JITFunc::compile_if_statement(Tree* t) {
 template<class T> 
 inline T scalar_load(void* base, int argnum) {
   JITFunc *this_ptr = static_cast<JITFunc*>(base);
-  return ((T*)(this_ptr->array_inputs[argnum]->getDataPointer()))[0];
+  Array *a = this_ptr->array_inputs[argnum];
+  if (a->getLength() != 1) {
+    std::cout << "ACCCKKK!\r\n";
+  }
+  return ((T*)(a->getDataPointer()))[0];
 }
 
 template<class T>
 inline void scalar_store(void* base, int argnum, T value) {
   JITFunc *this_ptr = static_cast<JITFunc*>(base);
-  ((T*)(this_ptr->array_inputs[argnum]->getReadWriteDataPointer()))[0] = value;
+  Array *a = this_ptr->array_inputs[argnum];
+  if (a->getLength() != 1) {
+    std::cout << "ACCCKKK!\r\n";
+  }
+  ((T*)(a->getReadWriteDataPointer()))[0] = value;
 }
 
 template<class T>
@@ -767,7 +775,7 @@ void JITFunc::compile(Tree* t) {
   // int func(void** inputs);
   initialize();
   argument_count = 0;
-  std::cout << "Compiling\r\n";
+  std::cout << "Compiling main " << countm << "\r\n";
   func = jit->DefineFunction(jit->FunctionType("i","I"),std::string("main") + countm++);
   jit->SetCurrentFunction(func);
   prolog = jit->NewBlock("prolog");
@@ -792,14 +800,14 @@ void JITFunc::compile(Tree* t) {
   jit->Jump(main_body);
   jit->SetCurrentBlock(epilog);
   jit->Return(jit->Load(retcode));
-  if (failed) throw exception_store;
   //  std::cout << "************************************************************\n";
   //  std::cout << "*  Before optimization \n";
   jit->Dump( "unoptimized.bc.txt" );
-  jit->OptimizeCode();
+  //  jit->OptimizeCode();
   //  std::cout << "************************************************************\n";
   //  std::cout << "*  After optimization \n";
-  jit->Dump( "optimized.bc.txt" );
+  //  jit->Dump( "optimized.bc.txt" );
+  if (failed) throw exception_store;
 }
 
 #warning - How to detect non-integer loop bounds?

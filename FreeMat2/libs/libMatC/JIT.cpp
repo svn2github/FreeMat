@@ -23,7 +23,7 @@ JIT::JIT() {
   //  m->setTargetTriple("i686-pc-linux-gnu");
   mp = new ExistingModuleProvider(m);
   std::string errorstring;
-  ee = ExecutionEngine::create(mp,false,&errorstring);
+  ee = ExecutionEngine::create(mp,true,&errorstring);
   std::cerr << "Execution engine: " << errorstring << "\n";
   initialized = false;
 }
@@ -392,11 +392,15 @@ JITType JIT::MapTypeCode(char c) {
   }
 }
 
+
+static std::vector<JITFunctionType> bank;
+
 JITFunction JIT::DefineLinkFunction(std::string name, std::string rettype, std::string args) {
   std::vector<JITType> argv;
   for (int i=0;i<args.size();i++)
     argv.push_back(MapTypeCode(args[i]));
   JITFunctionType ty = FunctionType(MapTypeCode(rettype[0]),argv);
+  bank.push_back(ty);
   JITFunction fn = DefineFunction(ty,name);
   return fn;
 }

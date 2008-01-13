@@ -71,6 +71,7 @@ void ApplicationWindow::createActions() {
   cleanHistoryAct = new QAction("&Clear History Tool",this);
   connect(cleanHistoryAct,SIGNAL(triggered()),this,SLOT(cleanhistory()));
   editorAct = new QAction("&Editor",this);
+  editorAct->setShortcut(Qt::Key_E | Qt::CTRL);
   connect(editorAct,SIGNAL(triggered()),this,SLOT(editor()));
   pathAct = new QAction("&Path Tool",this);
   connect(pathAct,SIGNAL(triggered()),this,SLOT(path()));
@@ -80,6 +81,7 @@ void ApplicationWindow::createActions() {
   clearAct = new QAction("&Clear Console",this);
   connect(clearAct,SIGNAL(triggered()),this,SLOT(clearconsole()));
   quitAct = new QAction(QIcon(":/images/quit.png"),"&Quit",this);
+  quitAct->setShortcut(Qt::Key_Q | Qt::CTRL); 
   connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
   copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
   copyAct->setShortcut(Qt::Key_C | Qt::CTRL);
@@ -100,9 +102,13 @@ void ApplicationWindow::createActions() {
   connect(aboutQt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
   pauseAct = new QAction(QIcon(":/images/player_pause.png"),"&Pause",this);
   continueAct = new QAction(QIcon(":/images/player_play.png"),"&Continue",this);
+  continueAct->setShortcut(Qt::Key_Down | Qt::CTRL); 
   stopAct = new QAction(QIcon(":/images/player_stop.png"),"&Stop",this);
+  stopAct->setShortcut(Qt::Key_Escape | Qt::CTRL); 
   dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
+  dbStepAct->setShortcut(Qt::Key_F10); 
   dbTraceAct = new QAction(QIcon(":/images/dbgstep.png"),"&Step Into",this);
+  dbTraceAct->setShortcut(Qt::Key_F11); 
   checkUpdates = new QAction("Check for Updated Software",this);
 }
 

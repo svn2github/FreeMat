@@ -151,10 +151,13 @@ void FMTextEdit::comment() {
   line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
   QTextCursor pos(line1);
   pos.beginEditBlock();
-  while (pos.position() <= line2.position()) {
-    pos.insertText("%");
+  //while (pos.position() <= line2.position()) {
+  while (pos.position() < line2.position()) { 
+    //pos.insertText("%");
+    pos.insertText("% "); 
     pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
   }
+  pos.insertText("% "); 
   pos.endEditBlock();
 }
 
@@ -171,12 +174,25 @@ void FMTextEdit::uncomment() {
   line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
   QTextCursor pos(line1);
   pos.beginEditBlock();
-  while (pos.position() <= line2.position()) {
+  //while (pos.position() <= line2.position()) {
+  while (pos.position() < line2.position()) { 
     pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
-    if (pos.selectedText() == "%")
+    if (pos.selectedText() == "%") {
       pos.deleteChar();
+      pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+      if (pos.selectedText() == " ")  
+        pos.deleteChar();
+    }
     pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
     pos.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  }
+
+  pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+  if (pos.selectedText() == "%") {
+    pos.deleteChar();
+    pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+    if (pos.selectedText() == " ")  
+      pos.deleteChar();
   }
   pos.endEditBlock();
 }
@@ -399,7 +415,7 @@ FMEditPane::FMEditPane(Interpreter* eval) : QWidget() {
   FMIndent *ind = new FMIndent;
 
   connect(tEditor,SIGNAL(indent()),ind,SLOT(update()));
-  new Highlighter(tEditor->document());
+  Highlighter *highlight = new Highlighter(tEditor->document());
   ind->setDocument(tEditor);
 }
 
@@ -611,11 +627,20 @@ void FMEditor::createActions() {
   saveAct->setShortcut(Qt::Key_S | Qt::CTRL);
   connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
   saveAsAct = new QAction("Save &As",this);
+  
+  for (int i = 0; i < MaxRecentFiles; ++i) {
+    recentFileActs[i] = new QAction(this);
+	recentFileActs[i]->setVisible(false);
+	connect(recentFileActs[i], SIGNAL(triggered()),
+		     this, SLOT(openRecentFile()));
+  }
+
   connect(saveAsAct,SIGNAL(triggered()),this,SLOT(saveAs()));
   quitAct = new QAction(QIcon(":/images/quit.png"),"&Quit Editor",this);
   quitAct->setShortcut(Qt::Key_Q | Qt::CTRL);
   connect(quitAct,SIGNAL(triggered()),this,SLOT(close()));
   closeAct = new QAction(QIcon(":/images/close.png"),"&Close Tab",this);
+  closeAct->setShortcut(Qt::Key_W | Qt::CTRL);
   connect(closeAct,SIGNAL(triggered()),this,SLOT(closeTab()));
   copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
   copyAct->setShortcut(Qt::Key_C | Qt::CTRL);
@@ -629,8 +654,10 @@ void FMEditor::createActions() {
   findAct->setShortcut(Qt::Key_F | Qt::CTRL);
   connect(findAct,SIGNAL(triggered()),this,SLOT(find()));
   commentAct = new QAction("Comment Region",this);
+  commentAct->setShortcut(Qt::Key_R | Qt::CTRL); 
   connect(commentAct,SIGNAL(triggered()),this,SLOT(comment()));
   uncommentAct = new QAction("Uncomment Region",this);
+  uncommentAct->setShortcut(Qt::Key_T | Qt::CTRL); 
   connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
   undoAct = new QAction("Undo Edits",this);
   undoAct->setShortcut(Qt::Key_Z | Qt::CTRL);
@@ -639,24 +666,32 @@ void FMEditor::createActions() {
   redoAct->setShortcut(Qt::Key_Y | Qt::CTRL);
   connect(redoAct,SIGNAL(triggered()),this,SLOT(redo()));
   replaceAct = new QAction("Find and Replace",this);
+  replaceAct->setShortcut(Qt::Key_H | Qt::CTRL); 
   connect(replaceAct,SIGNAL(triggered()),this,SLOT(replace()));
   dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
+  dbStepAct->setShortcut(Qt::Key_F10); 
   connect(dbStepAct,SIGNAL(triggered()),this,SLOT(dbstep()));
   dbTraceAct = new QAction(QIcon(":/images/dbgstep.png"),"&Step Into",this);
+  dbTraceAct->setShortcut(Qt::Key_F11); 
   connect(dbTraceAct,SIGNAL(triggered()),this,SLOT(dbtrace()));
   dbContinueAct = new QAction(QIcon(":/images/dbgrun.png"),"&Continue",this);
+  dbContinueAct->setShortcut(Qt::Key_Down | Qt::CTRL); 
   connect(dbContinueAct,SIGNAL(triggered()),this,SLOT(dbcontinue()));
   dbSetClearBPAct = new QAction(QIcon(":/images/stop.png"),"Set/Clear Breakpoint",this);
+  dbSetClearBPAct->setShortcut(Qt::Key_F12); 
   connect(dbSetClearBPAct,SIGNAL(triggered()),this,SLOT(dbsetclearbp()));
   dbStopAct = new QAction(QIcon(":/images/player_stop.png"),"Stop Debugging",this);
+  dbStopAct->setShortcut(Qt::Key_Escape | Qt::CTRL); 
   connect(dbStopAct,SIGNAL(triggered()),this,SLOT(dbstop()));
   colorConfigAct = new QAction("Text Highlighting",this);
   connect(colorConfigAct,SIGNAL(triggered()),this,SLOT(configcolors()));
   indentConfigAct = new QAction("Indenting",this);
   connect(indentConfigAct,SIGNAL(triggered()),this,SLOT(configindent()));
   executeSelectedAct = new QAction("Execute Selected Text",this);
+  executeSelectedAct->setShortcut(Qt::Key_F9); 
   connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
   executeCurrentAct = new QAction("Execute Current Buffer",this);
+  executeCurrentAct->setShortcut(Qt::Key_F5); 
   connect(executeCurrentAct,SIGNAL(triggered()),this,SLOT(execCurrent()));
 }
 
@@ -707,6 +742,13 @@ void FMEditor::createMenus() {
   fileMenu->addAction(saveAct);
   fileMenu->addAction(saveAsAct);
   fileMenu->addAction(closeAct);
+
+  separatorAct = fileMenu->addSeparator();
+  for (int i = 0; i < MaxRecentFiles; ++i)
+    fileMenu->addAction(recentFileActs[i]);
+  fileMenu->addSeparator();
+  updateRecentFileActions();
+
   fileMenu->addAction(quitAct);
   editMenu = menuBar()->addMenu("&Edit");
   editMenu->addAction(undoAct);
@@ -815,7 +857,8 @@ void FMEditor::dbsetclearbp() {
 //   sel.cursor = cursor;
 //   selections.push_back(sel);
 //   te->getEditor()->dsetExtraSelections(selections);
-  m_eval->toggleBP(te->getFileName(),te->getLineNumber());
+
+  m_eval->toggleBP(te->getFileName(),te->getLineNumber()); //chuong 2007-01-07
 }
 
 void FMEditor::dbstop() {
@@ -828,7 +871,7 @@ void FMEditor::createStatusBar() {
 
 static QString lastfile;
 static bool lastfile_set = false;
-
+/*
 static QString GetOpenFileName(QWidget *w) {
   QString retfile;
   if (lastfile_set)
@@ -844,7 +887,27 @@ static QString GetOpenFileName(QWidget *w) {
   }
   return retfile;
 }
+*/
 
+static QString GetOpenFileName(QWidget *w, const QString &filePath = QString()) { 
+  QString retfile;
+  if (!filePath.isEmpty())
+    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",filePath,
+					   "M files (*.m);;Text files (*.txt);;All files (*)");  
+  else if (lastfile_set)
+    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",lastfile,
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  else
+    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",QString(),
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  if (!retfile.isEmpty()) {
+    QFileInfo tokeep(retfile);
+    lastfile = tokeep.absolutePath();
+    lastfile_set = true;
+  }
+  return retfile;
+}
+/*
 static QString GetSaveFileName(QWidget *w) {
   QString retfile;
   if (lastfile_set)
@@ -860,19 +923,78 @@ static QString GetSaveFileName(QWidget *w) {
   }
   return retfile;  
 }
+*/
+static QString GetSaveFileName(QWidget *w, const QString &filePath = QString()) { 
+  QString retfile;
+  if (!filePath.isEmpty())
+    retfile = QFileDialog::getSaveFileName(w,"Save File",filePath,
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  else if (lastfile_set)
+    retfile = QFileDialog::getSaveFileName(w,"Save File",lastfile,
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  else
+    retfile = QFileDialog::getSaveFileName(w,"Save File",QString(),
+					   "M files (*.m);;Text files (*.txt);;All files (*)");
+  if (!retfile.isEmpty()) {
+    QFileInfo tokeep(retfile);
+    lastfile = tokeep.absolutePath();
+    lastfile_set = true;
+  }
+  return retfile;  
+}
+
+bool FMEditor::isFileOpened(const QString &fileName) 
+{
+  // Check for one of the editors that might be editing this file already
+  // if opened, set it as current
+  for (int i=0;i<tab->count();i++) {
+	QWidget *w = tab->widget(i);
+	FMEditPane *te = qobject_cast<FMEditPane*>(w);
+	if (te) {
+	  if (te->getFileName() == fileName) {
+	tab->setCurrentIndex(i);
+	return true;
+	  }
+	}
+  }
+  return false;
+}
 
 void FMEditor::open() {
-  if (currentEditor()->document()->isModified() ||
-      (tab->tabText(tab->currentIndex()) != "untitled.m")) {
+ //if (currentEditor()->document()->isModified() ||
+  //    (tab->tabText(tab->currentIndex()) != "untitled.m")) {
+  QFileInfo fileInfo(currentFilename()); 
+  if (tab->tabText(tab->currentIndex()) != "untitled.m") { 
     tab->addTab(new FMEditPane(m_eval),"untitled.m");
     tab->setCurrentIndex(tab->count()-1);
     updateFont();
   }
-  QString fileName = GetOpenFileName(this);
-  if (!fileName.isEmpty()) {
+  
+  //QString fileName = GetOpenFileName(this);
+  //if (!fileName.isEmpty()) {
+  QString filePath = fileInfo.absolutePath(); 
+  QString fileName = GetOpenFileName(this, filePath); 
+  if (!fileName.isEmpty() && !isFileOpened(fileName) ) { 
     loadFile(fileName);
   }
 }
+
+void FMEditor::openRecentFile() 
+{
+  QAction *action = qobject_cast<QAction *>(sender());
+  QString fileName = action->data().toString();
+  if (action && !fileName.isEmpty() && !isFileOpened(fileName)) {
+	  // Create a new tab
+	  if ((tab->tabText(tab->currentIndex()) != "untitled.m")) {
+		tab->addTab(new FMEditPane(m_eval),"untitled.m");
+		tab->setCurrentIndex(tab->count()-1);
+		updateFont();
+	  }
+	  // Load file
+      loadFile(action->data().toString());
+  }
+}
+
 
 bool FMEditor::save() {
   if (currentFilename().isEmpty()) {
@@ -883,7 +1005,13 @@ bool FMEditor::save() {
 }
 
 bool FMEditor::saveAs() {
-  QString fileName = GetSaveFileName(this);
+  //QString fileName = GetSaveFileName(this);
+  QString fileName;
+  if (currentFilename().isEmpty()) 
+    fileName = GetSaveFileName(this);
+  else { //initial save path name are the same as current
+    fileName = GetSaveFileName(this, currentFilename()); 
+  }
   if (fileName.isEmpty())
     return false;
   // Check for a conflict
@@ -1032,7 +1160,43 @@ void FMEditor::setCurrentFile(const QString &fileName)
   currentEditor()->document()->setModified(false);
   setWindowModified(false);
   updateTitles();
+  
+
+  QSettings settings("FreeMat", "Recent Files");
+  QStringList files = settings.value("recentFileList").toStringList();
+  files.removeAll(fileName);
+  files.prepend(fileName);
+  while (files.size() > MaxRecentFiles)
+    files.removeLast();
+
+  settings.setValue("recentFileList", files);
+
+  foreach (QWidget *widget, QApplication::topLevelWidgets()) {
+    FMEditor *tEditor = qobject_cast<FMEditor *>(widget);
+    if (tEditor)
+      tEditor->updateRecentFileActions();
+  }
 }
+
+void FMEditor::updateRecentFileActions() 
+{
+ QSettings settings("FreeMat", "Recent Files");
+ QStringList files = settings.value("recentFileList").toStringList();
+
+ int numRecentFiles = qMin(files.size(), (int)MaxRecentFiles);
+
+ for (int i = 0; i < numRecentFiles; ++i) {
+     QString text = tr("&%1 %2").arg(i + 1).arg(strippedName(files[i]));
+     recentFileActs[i]->setText(text);
+     recentFileActs[i]->setData(files[i]);
+     recentFileActs[i]->setVisible(true);
+ }
+ for (int j = numRecentFiles; j < MaxRecentFiles; ++j)
+     recentFileActs[j]->setVisible(false);
+
+ separatorAct->setVisible(numRecentFiles > 0);
+}
+
 
 QString FMEditor::strippedName(const QString &fullFileName)
 {

@@ -3,6 +3,7 @@
 
 #include "JIT.hpp"
 #include "SymbolTable.hpp"
+#include "Context.hpp"
 #include "Tree.hpp"
 
 class SymbolInfo {

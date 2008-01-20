@@ -9,21 +9,23 @@
 #include "llvm/PassManager.h"
 #include "llvm/LinkAllPasses.h"
 #include "llvm/Target/TargetData.h"
+#include "llvm/Support/Debug.h"
 #include <fstream>
 #include <iostream>
 
 // We want some basic functions to be available to the JIT
-// such as sin, cos, abs, x^n, tan
+// such as sin, cos, abs, x^n, tano
 // we also need division to work.
 
 using namespace llvm;
 
 JIT::JIT() {
+  //  llvm::DebugFlag = true;
   m = new Module("test");
   //  m->setTargetTriple("i686-pc-linux-gnu");
   mp = new ExistingModuleProvider(m);
   std::string errorstring;
-  ee = ExecutionEngine::create(mp,true,&errorstring);
+  ee = ExecutionEngine::create(mp,false,&errorstring);
   std::cerr << "Execution engine: " << errorstring << "\n";
   initialized = false;
 }
@@ -392,15 +394,11 @@ JITType JIT::MapTypeCode(char c) {
   }
 }
 
-
-static std::vector<JITFunctionType> bank;
-
 JITFunction JIT::DefineLinkFunction(std::string name, std::string rettype, std::string args) {
   std::vector<JITType> argv;
   for (int i=0;i<args.size();i++)
     argv.push_back(MapTypeCode(args[i]));
   JITFunctionType ty = FunctionType(MapTypeCode(rettype[0]),argv);
-  bank.push_back(ty);
   JITFunction fn = DefineFunction(ty,name);
   return fn;
 }

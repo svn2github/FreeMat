@@ -78,6 +78,9 @@ public:
        m_scope->lock();
     return *this;
   }
+  inline Array* pointer() {
+    return m_ptr;
+  }
   inline Array& operator*() {
     return *m_ptr;
   }

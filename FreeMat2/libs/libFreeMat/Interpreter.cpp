@@ -1838,6 +1838,7 @@ static bool prepJITBlock(Tree *t) {
     t->JITFunction()->prep();
     success = true;
   } catch (Exception &e) {
+    std::cout << e.getMessageCopy() << "\r\n";
     success = false;
   }
   return success;

@@ -876,9 +876,7 @@ void JITFunc::prep() {
       array_inputs[v->argument_num] = ptr.pointer();
       if (v->type != map_dataclass(array_inputs[v->argument_num]->dataClass()))
 	throw Exception("DATA mismatch!");
-    } else {
-      throw Exception("Unexpected symbol found");
-    }
+    } 
   }
 }
 

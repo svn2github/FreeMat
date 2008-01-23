@@ -736,7 +736,6 @@ void JITFunc::initialize() {
   symbol_prefix = "";
   uid = 0;
   // Initialize the standard function
-  if (jit->Initialized()) return;
   register_std_function("cos"); register_std_function("sin");
   register_std_function("sec"); register_std_function("csc");
   register_std_function("tan"); register_std_function("atan");
@@ -766,7 +765,6 @@ void JITFunc::initialize() {
   func_matrix_store_int32 = jit->DefineLinkFunction("matrix_store_int32","i","Iiiii");
   func_matrix_store_double = jit->DefineLinkFunction("matrix_store_double","i","Iiiid");
   func_matrix_store_float = jit->DefineLinkFunction("matrix_store_float","i","Iiiif");
-  jit->SetInitialized(true);
 }
 
 static int countm = 0;

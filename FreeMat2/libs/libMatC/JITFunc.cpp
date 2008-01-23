@@ -9,12 +9,16 @@
     #define JIT_EXPORT
 #endif
 
+JITFunc *save_this;
+
+
 static JITFunction func_scalar_load_double, func_scalar_load_float, func_scalar_load_int32;
 static JITFunction func_scalar_store_double, func_scalar_store_float, func_scalar_store_int32;
 static JITFunction func_vector_load_double, func_vector_load_float, func_vector_load_int32;
 static JITFunction func_vector_store_double, func_vector_store_float, func_vector_store_int32;
 static JITFunction func_matrix_load_double, func_matrix_load_float, func_matrix_load_int32;
 static JITFunction func_matrix_store_double, func_matrix_store_float, func_matrix_store_int32;
+static JITFunction func_puts;
 
 SymbolInfo* JITFunc::add_argument_array(string name) {
   if (symbol_prefix.size() > 0)
@@ -246,6 +250,8 @@ JITScalar JITFunc::compile_m_function_call(Tree* t) {
   uid++;
   // Loop through the arguments to the function,
   // and map them from the defined arguments of the tree
+  if (t->numChildren() < 2) 
+    throw Exception("function takes no arguments - not currently supported");
   Tree* s(t->second());
   int args_defed = fptr->arguments.size();
   if (args_defed > s->numChildren())
@@ -542,12 +548,36 @@ void JITFunc::compile_if_statement(Tree* t) {
 
 void stopme() {
   std::cout << "OOOOOKKKK\r\n";
+  exit(1);
+}
+
+void ArrayCheck(Array *a) {
+  if (a->getLength() < 1) {
+    std::cout << "Array has negative or zero length!\r\n";
+    stopme();
+  }
+  if (a->getLength() > 3000*3000) {
+    std::cout << "Array has illegal length!\r\n";
+    stopme();
+  }
+}
+
+void JITCheck(JITFunc *t) {
+  if (t != save_this) {
+    std::cout << "this mismatch\r\n";
+    stopme();
+  }
+  for (int i=0;i<t->argument_count;i++) {
+    ArrayCheck(t->array_inputs[i]);
+  }
 }
 
 template<class T> 
 inline T scalar_load(void* base, int argnum) {
-  JITFunc *this_ptr = static_cast<JITFunc*>(base);
-  Array* a = this_ptr->array_inputs[argnum];
+  JITFunc *tptr = static_cast<JITFunc*>(base);
+  JITCheck(tptr);
+  Array* a = tptr->array_inputs[argnum];
+  ArrayCheck(a);
   if (a->getLength() != 1) {
     stopme();
     std::cout << "read argnum = " << argnum << "\r\n";
@@ -557,8 +587,10 @@ inline T scalar_load(void* base, int argnum) {
 
 template<class T>
 inline void scalar_store(void* base, int argnum, T value) {
-  JITFunc *this_ptr = static_cast<JITFunc*>(base);
-  Array* a = this_ptr->array_inputs[argnum];
+  JITFunc *tptr = static_cast<JITFunc*>(base);
+  JITCheck(tptr);
+  Array* a = tptr->array_inputs[argnum];
+  ArrayCheck(a);
   if (a->getLength() != 1) {
     stopme();
     std::cout << "write argnum = " << argnum << "\r\n";
@@ -569,21 +601,24 @@ inline void scalar_store(void* base, int argnum, T value) {
 template<class T>
 inline int32 vector_load(void* base, int argnum, int32 ndx, T* address) {
   try {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    Array* a = this_ptr->array_inputs[argnum];
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    Array* a = tptr->array_inputs[argnum];
+    ArrayCheck(a);
     if (ndx < 1) {
-      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      tptr->exception_store = Exception("Array index < 1 not allowed");
       return -1;
     }
     if (ndx > a->getLength()) {
-      this_ptr->exception_store = Exception("Array bounds exceeded in A(n) expression");
+      tptr->exception_store = Exception("Array bounds exceeded in A(n) expression");
       return -1;
     }
     address[0] = ((T*)(a->getDataPointer()))[ndx-1];
     return 0;
   } catch (Exception &e) {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    this_ptr->exception_store = e;
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    tptr->exception_store = e;
     return -1;
   }
   return 0;
@@ -592,10 +627,12 @@ inline int32 vector_load(void* base, int argnum, int32 ndx, T* address) {
 template<class T>
 inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
   try {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    Array* a = this_ptr->array_inputs[argnum];
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    Array* a = tptr->array_inputs[argnum];
+    ArrayCheck(a);
     if (ndx < 1) {
-      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      tptr->exception_store = Exception("Array index < 1 not allowed");
       return -1;      
     }
     if (ndx >= a->getLength()) {
@@ -604,8 +641,9 @@ inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
     ((T*)(a->getReadWriteDataPointer()))[ndx-1] = value;
     return 0;
   } catch (Exception &e) {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    this_ptr->exception_store = e;
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    tptr->exception_store = e;
     return -1;
   }
   return 0;
@@ -614,21 +652,24 @@ inline int32 vector_store(void* base, int argnum, int32 ndx, T value) {
 template<class T>
 inline int32 matrix_load(void* base, int argnum, int32 row, int32 col, T* address) {
   try {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    Array* a = this_ptr->array_inputs[argnum];
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    Array* a = tptr->array_inputs[argnum];
+    ArrayCheck(a);
     if ((row < 1) || (col < 1)) {
-      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      tptr->exception_store = Exception("Array index < 1 not allowed");
       return -1;      
     }
     if ((row > a->rows()) || (col > a->columns())) {
-      this_ptr->exception_store = Exception("Array index exceed bounds");
+      tptr->exception_store = Exception("Array index exceed bounds");
       return -1;
     }
     address[0] = ((T*)(a->getDataPointer()))[row-1+(col-1)*a->rows()];
     return 0;
   } catch (Exception &e) {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    this_ptr->exception_store = e;
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    tptr->exception_store = e;
     return -1;
   }
   return 0;
@@ -637,10 +678,12 @@ inline int32 matrix_load(void* base, int argnum, int32 row, int32 col, T* addres
 template<class T>
 inline int32 matrix_store(void* base, int argnum, int32 row, int32 col, T value) {
   try {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    Array *a = this_ptr->array_inputs[argnum];
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    Array *a = tptr->array_inputs[argnum];
+    ArrayCheck(a);
     if ((row < 1) || (col < 1)) {
-      this_ptr->exception_store = Exception("Array index < 1 not allowed");
+      tptr->exception_store = Exception("Array index < 1 not allowed");
       return -1;      
     }
     if ((row > a->rows()) || (col > a->columns())) {
@@ -652,8 +695,9 @@ inline int32 matrix_store(void* base, int argnum, int32 row, int32 col, T value)
     ((T*)(a->getReadWriteDataPointer()))[row-1+(col-1)*a->rows()] = value;
     return 0;
   } catch (Exception &e) {
-    JITFunc *this_ptr = static_cast<JITFunc*>(base);
-    this_ptr->exception_store = e;
+    JITFunc *tptr = static_cast<JITFunc*>(base);
+    JITCheck(tptr);
+    tptr->exception_store = e;
     return -1;
   }
   return 0;
@@ -773,36 +817,7 @@ void JITFunc::initialize() {
   func_matrix_store_int32 = jit->DefineLinkFunction("matrix_store_int32","i","Iiiii");
   func_matrix_store_double = jit->DefineLinkFunction("matrix_store_double","i","Iiiid");
   func_matrix_store_float = jit->DefineLinkFunction("matrix_store_float","i","Iiiif");
-  jit->SetCurrentFunction(jit->DefineFunction(jit->FunctionType("i","i"),std::string("holder")));
-  jit->SetCurrentBlock(jit->NewBlock("body"));
-  jit->Call(func_scalar_load_int32, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0));
-  jit->Call(func_scalar_load_double, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0));
-  jit->Call(func_scalar_load_float, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0));
-  jit->Call(func_scalar_store_int32, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0));
-  jit->Call(func_scalar_store_float, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->FloatValue(0));
-  jit->Call(func_scalar_store_double, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->DoubleValue(0));
-  jit->Call(func_vector_load_int32, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Zero(jit->PointerType(jit->Int32Type())));
-  jit->Call(func_vector_load_double, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Zero(jit->PointerType(jit->DoubleType())));
-  jit->Call(func_vector_load_float, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Zero(jit->PointerType(jit->FloatType())));
-  jit->Call(func_vector_store_int32, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0));
-  jit->Call(func_vector_store_double, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->DoubleValue(0));
-  jit->Call(func_vector_store_float, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->FloatValue(0));
-  jit->Call(func_matrix_load_int32, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Zero(jit->PointerType(jit->Int32Type())));
-  jit->Call(func_matrix_load_double, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Zero(jit->PointerType(jit->DoubleType())));
-  jit->Call(func_matrix_load_float, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Zero(jit->PointerType(jit->FloatType())));
-  jit->Call(func_matrix_store_int32, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->Int32Value(0));
-  jit->Call(func_matrix_store_double, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->DoubleValue(0));
-  jit->Call(func_matrix_store_float, jit->Zero(jit->PointerType(jit->Int32Type())), jit->Int32Value(0), jit->Int32Value(0), jit->Int32Value(0), 
-	    jit->FloatValue(0));
-  jit->Return(jit->Int32Value(0));
+  func_puts = jit->DefineLinkFunction("puts","i","C");
   jit->SetInitialized(true);
 }
 
@@ -811,18 +826,21 @@ static int countm = 0;
 void JITFunc::compile(Tree* t) {
   // The signature for the compiled function should be:
   // int func(void** inputs);
+  countm++;
   initialize();
   argument_count = 0;
   std::cout << "Compiling main " << countm << "\r\n";
-  func = jit->DefineFunction(jit->FunctionType("i","I"),std::string("main") + countm++);
+  func = jit->DefineFunction(jit->FunctionType("i","I"),std::string("main") + countm);
   jit->SetCurrentFunction(func);
   prolog = jit->NewBlock("prolog");
   main_body = jit->NewBlock("main_body");
   epilog = jit->NewBlock("epilog");
   jit->SetCurrentBlock(prolog);
+  jit->Call(func_puts,jit->String(string("prolog of main ") + countm));
   retcode = jit->Alloc(jit->Int32Type(),"_retcode");
   jit->Store(jit->Zero(jit->Int32Type()),retcode);
   jit->SetCurrentBlock(main_body);
+  jit->Call(func_puts,jit->String(string("body of main ") + countm));
   llvm::Function::arg_iterator args = func->arg_begin();
   this_ptr = args;
   this_ptr->setName("this_ptr");
@@ -837,14 +855,15 @@ void JITFunc::compile(Tree* t) {
   jit->SetCurrentBlock(prolog);
   jit->Jump(main_body);
   jit->SetCurrentBlock(epilog);
+  jit->Call(func_puts,jit->String(string("epilog of main ") + countm));
   jit->Return(jit->Load(retcode));
   //  std::cout << "************************************************************\n";
   //  std::cout << "*  Before optimization \n";
-  jit->Dump( "unoptimized.bc.txt" );
-  jit->OptimizeCode();
+  jit->Dump("unoptimized.bc.txt",func);
+  jit->OptimizeCode(func);
   //  std::cout << "************************************************************\n";
   //  std::cout << "*  After optimization \n";
-  jit->Dump( "optimized.bc.txt" );
+  jit->Dump("optimized.bc.txt",func);
   if (failed) throw exception_store;
 }
 
@@ -894,12 +913,13 @@ void JITFunc::compile_for_block(Tree* t) {
   if (failed) throw exception_store;
 }
 
-void JITFunc::run() {
+void JITFunc::prep() {
   // Collect the list of arguments
   StringVector argumentList(symbols.getCompletions(""));
   // Allocate the argument array
   // For each argument in the array, retrieve it from the interpreter
-  array_inputs.resize(argumentList.size());
+  array_inputs = new Array*[argument_count];
+  //  array_inputs.resize(argumentList.size());
   for (int i=0;i<argumentList.size();i++) {
     SymbolInfo* v = symbols.findSymbol(argumentList[i]);
     //    std::cout << "Symbol : " << argumentList[i] << " scalar " << v->isScalar << " argument " << v->argument_num << "\r\n";
@@ -919,16 +939,31 @@ void JITFunc::run() {
       } else {
 	//std::cout << " --> Variable found - getting\n";
       }
+      if (v->isScalar && (!ptr->isScalar()))
+	throw Exception("Expected symbol to be a scalar, and it is not");
       array_inputs[v->argument_num] = ptr.pointer();
-      // Check the type info
+      ArrayCheck(array_inputs[v->argument_num]);
       if (v->type != map_dataclass(array_inputs[v->argument_num]->dataClass()))
 	throw Exception("DATA mismatch!");
+      // Check the type info
     } else {
       throw Exception("Unexpected symbol found");
     }
   }
+}
+
+void JITFunc::run() {
   //std::cout << "Running\r\n";
+  save_this = this;
+  JITCheck(this);
+  printf("JITFunc %p\r\n",this);
+  printf("array %p\r\n",array_inputs);
+  printf("array count %d\r\n",argument_count);
+  for (int i=0;i<argument_count;i++) {
+    printf("array[%d] = %p\r\n",i,array_inputs[i]);
+  }
   JITGeneric gv = jit->Invoke(func,JITGeneric((void*) this));
+  JITCheck(this);
   if (gv.IntVal != 0)
     throw exception_store;
 }

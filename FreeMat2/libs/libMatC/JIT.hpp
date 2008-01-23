@@ -16,6 +16,7 @@
 #include "llvm/CallingConv.h"
 #include "llvm/Value.h"
 #include "llvm/Function.h"
+#include "llvm/PassManager.h"
 #include "llvm/ExecutionEngine/JIT.h"
 #include "llvm/ExecutionEngine/Interpreter.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
@@ -31,6 +32,7 @@ typedef llvm::ExecutionEngine* JITEngine;
 typedef llvm::Module* JITModule;
 typedef llvm::ModuleProvider* JITModuleProvider;
 typedef llvm::GenericValue JITGeneric;
+typedef llvm::FunctionPassManager* JITOptimizer;
 
 // A wrapper interface - this is a way to abstract out the details of the
 // LLVM interface.
@@ -41,17 +43,19 @@ private:
   JITEngine ee;
   JITModule m;
   JITModuleProvider mp;
+  JITOptimizer opt;
   bool initialized;
 public:
   JIT();
   ~JIT();
-  void            OptimizeCode();
+  void            OptimizeCode(JITFunction func);
   JITFunctionType FunctionType(JITType rettype, std::vector<JITType> args);
   JITFunctionType FunctionType(std::string rettype, std::string args);
   bool            Initialized();
   void            SetInitialized(bool t);
   JITType         DoubleType();
   JITType         FloatType();
+  JITType         Int8Type();
   JITType         Int32Type();
   JITType         BoolType();
   JITType         VoidType();
@@ -89,6 +93,7 @@ public:
   JITScalar       NotEqual(JITScalar A, JITScalar B);
   void            Store(JITScalar Value, JITScalar Address);
   JITScalar       Load(JITScalar Address);
+  JITScalar       String(string text);
   void            Jump(JITBlock B);
   void            Branch(JITBlock IfTrue, JITBlock IfFalse, JITScalar TestValue);
   void            SetCurrentBlock(JITBlock B);
@@ -115,7 +120,9 @@ public:
   void            Return(JITScalar t);
   void            Return();
   void            Dump();
+  void            Dump(JITFunction f);
   void		  Dump( const std::string& fname );
+  void		  Dump( const std::string& fname, JITFunction f );
   JITGeneric      Invoke(JITFunction f, JITGeneric arg);
 };
 

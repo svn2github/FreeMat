@@ -1813,32 +1813,58 @@ void ForLoopHelperComplex(Tree *codeBlock, Class indexClass,
 //@}
 //!
 //Works
+
+static bool compileJITBlock(Interpreter *interp, Tree *t) {
+  delete t->JITFunction();
+  JITFunc *cg = new JITFunc(interp);
+  bool success = false;
+  try {
+    cg->compile(t);
+    success = true;
+    t->setJITState(Tree::SUCCEEDED);
+    t->setJITFunction(cg);
+  } catch (Exception &e) {
+    std::cout << e.getMessageCopy() << "\r\n";
+    delete cg;
+    success = false;
+    t->setJITState(Tree::FAILED);
+  }
+  return success;
+}
+
+static bool prepJITBlock(Tree *t) {
+  bool success;
+  try {
+    t->JITFunction()->prep();
+    success = true;
+  } catch (Exception &e) {
+    success = false;
+  }
+  return success;
+}
+
 void Interpreter::forStatement(Tree *t) {
   // Try to compile this block to an instruction stream  
   if (jitcontrol) {
     if (t->JITState() == Tree::UNTRIED) {
-      JITFunc *cg = new JITFunc(this);
-      bool success = false;
-      try {
-	cg->compile(t);
-	success = true;
-	t->setJITState(Tree::SUCCEEDED);
-	t->setJITFunction(cg);
-      } catch (Exception &e) {
-	t->print();
-	std::cout << e.getMessageCopy() << "\r\n";
-	success = false;
-	t->setJITState(Tree::FAILED);
+      bool success = compileJITBlock(this,t);
+      if (success)
+	success = prepJITBlock(t);
+      if (success) {
+	t->JITFunction()->run();
+	return;
+      } 
+    } else if (t->JITState() == Tree::SUCCEEDED) {
+      bool success = prepJITBlock(t);
+      if (!success) {
+	success = compileJITBlock(this,t);
+	if (success)
+	  success = prepJITBlock(t);
       }
       if (success) {
-	cg->run();
+	t->JITFunction()->run();
 	return;
-      } else {
-	delete cg;
       }
-    } else if (t->JITState() == Tree::SUCCEEDED) {
-      t->JITFunction()->run();
-      return;
     }
   }
   Array indexSet;

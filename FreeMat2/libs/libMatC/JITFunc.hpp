@@ -23,7 +23,7 @@ public:
   SymbolTable<JITScalar> constants;
   JIT *jit;
   Interpreter *eval;
-  vector<Array*> array_inputs;
+  Array** array_inputs;
   int argument_count;
   JITFunction func;
   JITBlock prolog, main_body, epilog;
@@ -54,6 +54,7 @@ public:
   void compile_statement_type(Tree* t);
   void compile_block(Tree* t);
   void compile(Tree* t);
+  void prep();
   void run();
 };
 

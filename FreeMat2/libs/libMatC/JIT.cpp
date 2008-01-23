@@ -28,6 +28,39 @@ JIT::JIT() {
   ee = ExecutionEngine::create(mp,false,&errorstring);
   std::cerr << "Execution engine: " << errorstring << "\n";
   initialized = false;
+  // Create the optimizer thingy
+  opt = new FunctionPassManager(mp);
+  opt->add(new TargetData(*ee->getTargetData()));
+  //  opt->add(new TargetData(m));
+  opt->add(createVerifierPass());                  // Verify that input is correct
+  opt->add((Pass*)createCFGSimplificationPass());    // Clean up disgusting code
+  opt->add((Pass*)createPromoteMemoryToRegisterPass());// Kill useless allocas
+  opt->add((Pass*)createInstructionCombiningPass()); // Clean up after IPCP & DAE
+  opt->add((Pass*)createCFGSimplificationPass());    // Clean up after IPCP & DAE
+  opt->add((Pass*)createTailDuplicationPass());      // Simplify cfg by copying code
+  opt->add((Pass*)createInstructionCombiningPass()); // Cleanup for scalarrepl.
+  opt->add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
+  opt->add((Pass*)createScalarReplAggregatesPass()); // Break up aggregate allocas
+  opt->add((Pass*)createInstructionCombiningPass()); // Combine silly seq's
+  opt->add((Pass*)createCondPropagationPass());      // Propagate conditionals
+  opt->add((Pass*)createTailCallEliminationPass());  // Eliminate tail calls
+  opt->add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
+  opt->add((Pass*)createReassociatePass());          // Reassociate expressions
+  opt->add((Pass*)createLoopRotatePass());
+  opt->add((Pass*)createLICMPass());                 // Hoist loop invariants
+  opt->add((Pass*)createLoopUnswitchPass());         // Unswitch loops.
+  opt->add((Pass*)createInstructionCombiningPass()); // Clean up after LICM/reassoc
+  opt->add((Pass*)createIndVarSimplifyPass());       // Canonicalize indvars
+  opt->add((Pass*)createLoopUnrollPass());           // Unroll small loops
+  opt->add((Pass*)createInstructionCombiningPass()); // Clean up after the unroller
+  opt->add((Pass*)createLoadValueNumberingPass());   // GVN for load instructions
+  opt->add((Pass*)createGCSEPass());                 // Remove common subexprs
+  opt->add((Pass*)createSCCPPass());                 // Constant prop with SCCP
+  opt->add((Pass*)createInstructionCombiningPass());
+  opt->add((Pass*)createCondPropagationPass());      // Propagate conditionals
+  opt->add((Pass*)createDeadStoreEliminationPass()); // Delete dead stores
+  opt->add((Pass*)createAggressiveDCEPass());        // SSA based 'Aggressive DCE'
+  opt->add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
 }
 
 JIT::~JIT() {
@@ -44,61 +77,8 @@ void JIT::SetInitialized(bool t) {
   initialized = t;
 }
 
-void JIT::OptimizeCode() {
-  PassManager PM;
-  PM.add(new TargetData(m));
-  PM.add(createVerifierPass());                  // Verify that input is correct
-  PM.add((Pass*)createLowerSetJmpPass());          // Lower llvm.setjmp/.longjmp
-
-  // If the -strip-debug command line option was specified, do it.
-  PM.add((Pass*)createRaiseAllocationsPass());     // call %malloc -> malloc inst
-  PM.add((Pass*)createCFGSimplificationPass());    // Clean up disgusting code
-  PM.add((Pass*)createPromoteMemoryToRegisterPass());// Kill useless allocas
-  PM.add((Pass*)createGlobalOptimizerPass());      // Optimize out global vars
-  PM.add((Pass*)createGlobalDCEPass());            // Remove unused fns and globs
-  PM.add((Pass*)createIPConstantPropagationPass());// IP Constant Propagation
-  PM.add((Pass*)createDeadArgEliminationPass());   // Dead argument elimination
-  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after IPCP & DAE
-  PM.add((Pass*)createCFGSimplificationPass());    // Clean up after IPCP & DAE
-
-  PM.add((Pass*)createPruneEHPass());              // Remove dead EH info
-
-  PM.add((Pass*)createFunctionInliningPass());   // Inline small functions
-  PM.add((Pass*)createArgumentPromotionPass());    // Scalarize uninlined fn args
-
-  PM.add((Pass*)createTailDuplicationPass());      // Simplify cfg by copying code
-  PM.add((Pass*)createInstructionCombiningPass()); // Cleanup for scalarrepl.
-  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
-  PM.add((Pass*)createScalarReplAggregatesPass()); // Break up aggregate allocas
-  PM.add((Pass*)createInstructionCombiningPass()); // Combine silly seq's
-  PM.add((Pass*)createCondPropagationPass());      // Propagate conditionals
-
-  PM.add((Pass*)createTailCallEliminationPass());  // Eliminate tail calls
-  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
-  PM.add((Pass*)createReassociatePass());          // Reassociate expressions
-  PM.add((Pass*)createLoopRotatePass());
-  PM.add((Pass*)createLICMPass());                 // Hoist loop invariants
-  PM.add((Pass*)createLoopUnswitchPass());         // Unswitch loops.
-  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after LICM/reassoc
-  PM.add((Pass*)createIndVarSimplifyPass());       // Canonicalize indvars
-  PM.add((Pass*)createLoopUnrollPass());           // Unroll small loops
-  PM.add((Pass*)createInstructionCombiningPass()); // Clean up after the unroller
-  PM.add((Pass*)createLoadValueNumberingPass());   // GVN for load instructions
-  PM.add((Pass*)createGCSEPass());                 // Remove common subexprs
-  PM.add((Pass*)createSCCPPass());                 // Constant prop with SCCP
-
-  // Run instcombine after redundancy elimination to exploit opportunities
-  // opened up by them.
-  PM.add((Pass*)createInstructionCombiningPass());
-  PM.add((Pass*)createCondPropagationPass());      // Propagate conditionals
-
-  PM.add((Pass*)createDeadStoreEliminationPass()); // Delete dead stores
-  PM.add((Pass*)createAggressiveDCEPass());        // SSA based 'Aggressive DCE'
-  PM.add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
-  PM.add((Pass*)createSimplifyLibCallsPass());     // Library Call Optimizations
-  PM.add((Pass*)createDeadTypeEliminationPass());  // Eliminate dead types
-  PM.add((Pass*)createConstantMergePass());        // Merge dup global constants
-  PM.run(*m);
+void JIT::OptimizeCode(JITFunction func) {
+  opt->run(*func);
 }
 
 JITFunctionType JIT::FunctionType(JITType rettype, std::vector<JITType> args) {
@@ -119,6 +99,10 @@ JITType JIT::DoubleType() {
 
 JITType JIT::FloatType() {
   return Type::getPrimitiveType(Type::FloatTyID);
+}
+
+JITType JIT::Int8Type() {
+  return IntegerType::get(8);
 }
 
 JITType JIT::Int32Type() {
@@ -293,6 +277,21 @@ void JIT::Store(JITScalar Value, JITScalar Address) {
   new StoreInst(Value, Address, ip);
 }
 
+JITScalar JIT::String(string text) {
+  std::cout << "Allocate string :" << text << ":\n";
+  ArrayType* ty = ArrayType::get(IntegerType::get(8),text.size()+1);
+  GlobalVariable* gv = new GlobalVariable(ty,true,
+					  GlobalValue::InternalLinkage,0,".str",m);
+  Constant* t_str = ConstantArray::get(text.c_str(),true);
+  std::vector<Constant*> const_ptr_8_indices;
+  Constant* const_int32_9 = Constant::getNullValue(IntegerType::get(32));
+  const_ptr_8_indices.push_back(const_int32_9);
+  const_ptr_8_indices.push_back(const_int32_9);
+  Constant* const_ptr_8 = ConstantExpr::getGetElementPtr(gv, &const_ptr_8_indices[0], const_ptr_8_indices.size() );
+  gv->setInitializer(t_str);
+  return const_ptr_8;
+}
+
 JITScalar JIT::Load(JITScalar Address) {
   return new LoadInst(Address,"",false,ip);
 }
@@ -315,7 +314,6 @@ JITBlock JIT::CurrentBlock() {
 
 JITScalar JIT::Call(JITFunction F, std::vector<JITScalar> args) {
   CallInst *t = new CallInst(F,args.begin(),args.end(),"",ip);
-  t->setTailCall(false);
   return t;
 }
 
@@ -368,8 +366,8 @@ JITScalar JIT::GetElement(JITScalar BaseAddress, JITScalar Offset) {
 JITFunction JIT::DefineFunction(JITFunctionType functype, std::string name) {
   JITFunction func = (JITFunction) m->getOrInsertFunction(name, functype);
   //  JITFunction func = new Function(functype,GlobalValue::ExternalLinkage,name,m);
-  func->setLinkage(GlobalValue::ExternalLinkage);
-  func->setCallingConv(CallingConv::C);
+  //  func->setLinkage(GlobalValue::ExternalLinkage);
+  //  func->setCallingConv(CallingConv::C);
   return func;
 }
 
@@ -383,12 +381,16 @@ JITType JIT::MapTypeCode(char c) {
     return FloatType();
   case 'd':
     return DoubleType();
+  case 'c':
+    return Int8Type();
   case 'I':
     return PointerType(Int32Type());
   case 'F':
     return PointerType(FloatType());
   case 'D':
     return PointerType(DoubleType());
+  case 'C':
+    return PointerType(Int8Type());
   default:
     throw Exception("Invalid type map code");
   }
@@ -463,6 +465,10 @@ void JIT::Return() {
   new ReturnInst(NULL,ip);
 }
 
+void JIT::Dump(JITFunction f) {
+  std::cout << (*f);
+}
+
 void JIT::Dump() {
   std::cout << (*m);
 }
@@ -470,6 +476,11 @@ void JIT::Dump() {
 void JIT::Dump( const std::string& fname ) {
     std::ofstream fout( fname.c_str() );
     fout << (*m);
+}
+
+void JIT::Dump( const std::string& fname, JITFunction f ) {
+    std::ofstream fout( fname.c_str() );
+    fout << (*f);
 }
 
 JITGeneric JIT::Invoke(JITFunction f, JITGeneric arg) {

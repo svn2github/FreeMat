@@ -36,7 +36,6 @@ SymbolInfo* JITFunc::add_argument_array(string name) {
   // Map the array class to an llvm type
   JITType type(map_dataclass(aclass));
   symbols.insertSymbol(name,SymbolInfo(false,argument_count++,NULL,type));
-  std::cout << "Define array " << name << " array " << argument_count-1 << "\n";
   return symbols.findSymbol(name);
 }
 
@@ -76,7 +75,6 @@ SymbolInfo* JITFunc::define_local_symbol(string name, JITScalar val) {
   jit->SetCurrentBlock(prolog);
   JITScalar address = jit->Alloc(jit->TypeOf(val),name);
   symbols.insertSymbol(name,SymbolInfo(true,-1,address,jit->TypeOf(val)));
-  std::cout << "Define scalar " << name << " argument " << -1 << "\n";
   jit->SetCurrentBlock(ip);
   jit->Store(val,address);
   return symbols.findSymbol(name);
@@ -106,7 +104,6 @@ SymbolInfo* JITFunc::add_argument_scalar(string name, JITScalar val, bool overri
   jit->SetCurrentBlock(prolog);
   JITScalar address = jit->Alloc(type,name);
   symbols.insertSymbol(name,SymbolInfo(true,argument_count++,address,type));
-  std::cout << "Define scalar " << name << " argument " << argument_count-1 << "\n";
   if (jit->IsDouble(type))
     jit->Store(jit->Call(func_scalar_load_double, this_ptr, jit->Int32Value(argument_count-1)), address);
   else if (jit->IsFloat(type))

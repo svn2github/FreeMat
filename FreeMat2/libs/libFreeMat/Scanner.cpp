@@ -244,7 +244,7 @@ void Scanner::fetchNumber() {
     m_ptr++;
   switch (numclass) {
   case integer_class:
-    setToken(TOK_DOUBLE,numtext);
+    setToken(TOK_INTEGER,numtext);
     return;
   case float_class:
     setToken(TOK_FLOAT,numtext);

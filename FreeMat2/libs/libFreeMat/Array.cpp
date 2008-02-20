@@ -3269,13 +3269,13 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata, Interpreter* m_eval)
       setNDimSubsetNumericDispatchBurst<float>(colonIndex,(float*) qp,
 					       (const float*) rdata.getDataPointer(),
 					       outDimsInt,srcDimsInt,
-					       indx, L, 2,advance);
+					       indx, L, 2,advance*2);
       break;
     case FM_DCOMPLEX: 
       setNDimSubsetNumericDispatchBurst<double>(colonIndex,(double*) qp,
 						(const double*) rdata.getDataPointer(),
 						outDimsInt,srcDimsInt,
-						indx, L, 2,advance);
+						indx, L, 2,advance*2);
       break;
     case FM_LOGICAL: 
       setNDimSubsetNumericDispatchReal<logical>(colonIndex,(logical*) qp,

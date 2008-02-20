@@ -317,17 +317,17 @@ void emitComplex(Interpreter* io, T real, T imag, const ArrayFormatInfo &format)
   int width = format.width/2;
   if ((real != 0) || (imag != 0)) {
     if (format.expformat)
-      io->outputMessage("%*.*e",width,format.decimals,real/format.scalefact);
+      io->outputMessage("%*.*e",width,format.decimals,real);
     else
       io->outputMessage("%*.*f",width,format.decimals,real/format.scalefact);
     if (imag < 0) {
       if (format.expformat)
-	io->outputMessage(" -%*.*ei",width-1,format.decimals,-imag/format.scalefact);
+	io->outputMessage(" -%*.*ei",width-1,format.decimals,-imag);
       else
 	io->outputMessage(" -%*.*fi",width-1,format.decimals,-imag/format.scalefact);
     } else {
       if (format.expformat)
-	io->outputMessage(" +%*.*ei",width-1,format.decimals,imag/format.scalefact);
+	io->outputMessage(" +%*.*ei",width-1,format.decimals,imag);
       else
 	io->outputMessage(" +%*.*fi",width-1,format.decimals,imag/format.scalefact);
     }

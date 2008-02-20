@@ -210,11 +210,11 @@ extern "C" {
 
   float snrm2_(int *N, float *X, int *INCX);
   
-  float dnrm2_(int *N, double *X, int *INCX);
+  double dnrm2_(int *N, double *X, int *INCX);
 
   float scnrm2_(int *N, float *X, int *INCX);
   
-  float dznrm2_(int *N, double *X, int *INCX);
+  double dznrm2_(int *N, double *X, int *INCX);
 
   void dgecon_(char *norm, int *N, double *A, int *LDA, double *Anorm,
 	       double *rcond, double *work, int *iwork, int *info);

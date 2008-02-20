@@ -44,6 +44,7 @@
 %@@Tests
 %@$"y=norm([1,0])","1","exact"
 %@$"y=norm([4,3])","5","close"
+%@$"y=norm([1,1])","1.41421356237310","close"
 %!
 % Copyright (c) 2005 Samit Basu
 % Licensed under the GPL

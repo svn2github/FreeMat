@@ -899,7 +899,7 @@ sub job_native_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
     fetch_unpack_pkg(\%freemat_pkg,'build');
-    configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts);
+    configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include\" LDFLAGS=\"-L$prefix/lib\"");
 }
 
 sub relink {

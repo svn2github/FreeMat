@@ -4083,6 +4083,14 @@ ArrayVector BuiltinFunction(int nargout, const ArrayVector& arg,Interpreter* eva
 //@$"y = feval(@cos,pi)","-1","close"
 //@$"y = feval('cos',pi)","-1","close"
 //@$"y = feval(inline('cos(t)'),pi)","-1","close"
+//@{ test_feval1.m
+//function test_val = test_feval1
+//y = 0;
+//test_val = feval('test_feval1_local_func',y);
+//
+//function z = test_feval1_local_func(x)
+//z = 1;
+//@}
 //!
 ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   if (arg.size() == 0)
@@ -4092,9 +4100,12 @@ ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval)
   FuncPtr funcDef;
   if (arg[0].isString()) {
     string fname = arg[0].getContentsAsString();
-    Context *context = eval->getContext();
-    if (!context->lookupFunction(fname,funcDef))
+    eval->popDebug();
+    if (!eval->lookupFunction(fname,funcDef)) {
+      eval->pushDebug("feval","feval");
       throw Exception(std::string("function ") + fname + " undefined!");
+    }
+    eval->pushDebug("feval","feval");
   } else {
     if (!arg[0].isScalar())
       throw Exception("function handle argument to feval must be a scalar");
@@ -4658,6 +4669,125 @@ ArrayVector Conv2Function(int nargout, const ArrayVector& arg) {
   throw Exception("could not recognize which form of conv2 was requested - check help conv2 for details");
 }
 
+#define BENCHLEN 1
+
+class BenchData : public QSharedData
+{
+public:
+  BenchData() {
+    length = BENCHLEN;
+    data = new float[length];
+  }
+  BenchData(const BenchData &other) {
+    length = other.length;
+    data = new float[length];
+    memcpy(data,other.data,length*sizeof(float));
+  }
+  ~BenchData() {
+    delete[] data;
+  }
+  int length;
+  float *data;
+};
+
+class Dims {
+  int64 rows;
+  int64 cols;
+  int64 *extras;
+  int n_extras;
+public:
+  Dims() {
+    n_extras = 0;
+    extras = NULL;
+  }
+  Dims(const Dims& copy) {
+    rows = copy.rows;
+    cols = copy.cols;
+    n_extras = copy.n_extras;
+    if (n_extras) {
+      extras = new int64[n_extras];
+      memcpy(extras,copy.extras,n_extras*sizeof(int64));
+    } else {
+      extras = NULL;
+    }
+  }
+  Dims& operator=(const Dims& copy) {
+    if (extras) delete[] extras;
+    rows = copy.rows;
+    cols = copy.cols;
+    n_extras = copy.n_extras;
+    if (n_extras) {
+      extras = new int64[n_extras];
+      memcpy(extras,copy.extras,n_extras*sizeof(int64));
+    } else {
+      extras = NULL;
+    }    
+  }
+};
+
+class FOO : public QSharedData {
+  int64 dims[16];
+};
+
+class BenchArray {
+  //  std::vector<int64> dims;
+  //  int64 dims[8];
+  //  int64 *dims;
+  //  QVector<int64> dims;
+  //  Dims dims;
+  bool m_isScalar;
+  //  QSharedDataPointer<FOO> p;
+  //  QSharedDataPointer<BenchData> d;
+  float m_scalar;
+  //  QSharedDataPointer<FOO> m_dims;
+  QSharedDataPointer<BenchData> m_data;
+public:
+  BenchArray() {
+    //    m_data = NULL;
+    //    m_dims = NULL;
+    m_isScalar = true;
+    m_scalar = 1.0;
+  }
+  BenchArray(const BenchArray& copy) {
+    m_isScalar = copy.m_isScalar;
+    m_scalar = copy.m_scalar;
+    if (!m_isScalar) {
+      m_data = copy.m_data;
+      //      m_dims = copy.m_dims;
+    }
+  }
+  BenchArray& operator=(const BenchArray& other) {
+    if (m_isScalar && other.m_isScalar) {
+      m_scalar = other.m_scalar;
+      return *this;
+    } else {
+      if (!m_isScalar && other.m_isScalar) {
+	m_data = NULL;
+	//	m_dims = NULL;
+	m_isScalar = true;
+	m_scalar = other.m_scalar;
+	return *this;
+      }
+    }
+    m_data = other.m_data;
+    //    m_dims = other.m_dims;
+    m_isScalar = other.m_isScalar;
+    m_scalar = other.m_scalar;
+  }
+  void resize() {
+    m_data = new BenchData;
+    //    m_dims = new FOO;
+    m_isScalar = false;
+    m_scalar = 0;
+    //    dims.resize(4);
+    //      dims.push_back(3);
+    //      dims.push_back(4);
+    //      dims.push_back(5);
+    //      dims.push_back(6);
+    //    dims[0] = dims[1] = dims[2] = dims[3] = 1;
+  }
+};
+
 template <class T>
 class TList {
   T *d;
@@ -4964,6 +5094,34 @@ ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
 	ArrayVector y(CosFunction(1,x));
       }
     }
+    break;
+  case 16:
+    {
+      BenchArray a;
+      a.resize();
+      for (int i=0;i<1000000;i++) {
+	BenchArray b = a;
+      }
+    }
+    break;
+  case 17:
+    {
+      float *g = new float[BENCHLEN];
+      for (int i=0;i<1000000;i++) {
+	float *h = new float[BENCHLEN];
+	memcpy(h,g,sizeof(float)*BENCHLEN);
+	delete[] h;
+      }
+    }
+    break;
+  case 18:
+    {
+      Array a(Array::int32RangeConstructor(0,1,100,false));
+      for (int i=0;i<1000000;i++) {
+	Array b = a;
+      }
+    }
+    break;
   }
   return ArrayVector();
 }

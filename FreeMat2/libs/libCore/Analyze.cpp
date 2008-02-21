@@ -874,6 +874,10 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 2)
     return LessThan(nargout,arg);
   Array input(arg[0]);
+
+  if( input.isEmpty() )
+	return ArrayVector() << Array::emptyConstructor();
+
   Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("min only defined for numeric types");
@@ -1324,6 +1328,10 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 2)
     return GreaterThan(nargout,arg);
   Array input(arg[0]);
+
+  if( input.isEmpty() )
+	return ArrayVector() << Array::emptyConstructor();
+
   Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
     throw Exception("max only defined for numeric types");

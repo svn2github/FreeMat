@@ -78,6 +78,7 @@ KeyManager::KeyManager()  {
     history.push_back("");
   for (int i=0;i<historyList.size();i++) 
     history.push_back(historyList[i].toStdString());
+  history.push_back(std::string("% ") + QDateTime::currentDateTime().toString().toStdString());
 }
 
 Context* KeyManager::GetCompletionContext() {
@@ -94,6 +95,7 @@ int KeyManager::getTerminalWidth() {
 
 void KeyManager::ClearHistory() {
   history.clear();
+  history.push_back(std::string("% ") + QDateTime::currentDateTime().toString().toStdString());
 }
 
 void KeyManager::SetTermWidth(int w) {

@@ -80,9 +80,11 @@ void HistoryWidget::readSettings() {
 }
 
 void HistoryWidget::clear() {
-  if (QMessageBox::warning(this,"Clear History","Are you sure you want to clear the history?  There is no undo operation",QMessageBox::Yes,QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes)
+  if (QMessageBox::warning(this,"Clear History","Are you sure you want to clear the history?  There is no undo operation",QMessageBox::Yes,QMessageBox::No | QMessageBox::Default) == QMessageBox::Yes) {
     m_flist->clear();
-  emit clearHistory();
+    new QListWidgetItem("% " + QDateTime::currentDateTime().toString(),m_flist);
+    emit clearHistory();
+  }
 }
 
 

@@ -50,6 +50,7 @@ function y = any(A,dim)
   if (nargin == 0)
     error 'any function requires at least one argument'
   end
+  A(find(isnan(A)))=0;
   if (nargin == 1)
     y = max(logical(A(:)));
   else

@@ -3576,7 +3576,10 @@ void Array::deleteVectorSubset(Array& arg, Interpreter* m_eval) {
     for (i=0;i<N;i++) 
       if (!deletionMap[i]) newSize++;
     // Special case - if newSize==getLength, the delete is a no-op
-    if (newSize == getLength()) return;
+    if (newSize == getLength()) {
+      Free(deletionMap);
+      return;
+    }
     // Allocate a new space to hold the rdata.
     qp = allocateArray(dataClass(),newSize,fieldNames());
     // Loop through the indices - copy elements in that 

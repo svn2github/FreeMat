@@ -341,12 +341,16 @@ ArrayVector Interplin1Function(int nargout, const ArrayVector& arg) {
     throw Exception("arguments to interplin1 must be numerical arrays");
   if (x1.isComplex() || xi.isComplex())
     throw Exception("x-coordinates cannot be complex in interplin1");
+  if (x1.dataClass() < FM_FLOAT)
+    x1.promoteType(FM_DOUBLE);
+  if (y1.dataClass() < FM_FLOAT)
+    y1.promoteType(FM_DOUBLE);
+  if (xi.dataClass() < FM_FLOAT)
+    xi.promoteType(FM_DOUBLE);
   if (x1.dataClass() < y1.dataClass())
     x1.promoteType(y1.dataClass());
   else
     y1.promoteType(x1.dataClass());
-  if (x1.dataClass() < FM_FLOAT)
-    x1.promoteType(FM_FLOAT);
   if (xi.dataClass() > x1.dataClass())
     x1.promoteType(xi.dataClass());
   if (x1.dataClass() > xi.dataClass())

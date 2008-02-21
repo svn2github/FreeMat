@@ -2116,8 +2116,38 @@ Array DotLeftDivide(Array A, Array B, Interpreter* m_eval) {
 //@@Tests
 //@$"y=2.^[1:5]","[2,4,8,16,32]","exact"
 //@$"y=2..^[1:5]","[2,4,8,16,32]","exact"
+//@{ test_power1.m
+//function x = test_power1
+//invD_11 = [0.3529    0.4028    0.5812    0.3333];
+//invD_12 = [0.0707   -0.0334   -0.8818    0.0000];
+//invD_22 = [0.4942    0.4028    2.3447    0.5000];
+//d1_k = [-1.2335   -0.3520   -1.5988   -1.8315];
+//d2_k = [1.5265   -1.5861    0.0067    1.0221];
+//vec_max = d1_k.^2.0.*invD_11+2*d1_k.*d2_k.*invD_12+d2_k.^2.0.*invD_22;
+//[value, pos1] = max(vec_max);
+//vec_max = d1_k  .^  2.0   .*invD_11+2*d1_k.*d2_k.*invD_12+d2_k  .^  2.0   .*invD_22;
+//[value, pos2] = max(vec_max);
+//vec_max = d1_k.^2.*invD_11+2*d1_k.*d2_k.*invD_12+d2_k.^2.*invD_22;
+//[value, pos3] = max(vec_max);
+//vec_max = d1_k.^2    .* invD_11+2*d1_k.*d2_k.*invD_12+d2_k.^2   .*invD_22;
+//[value, pos4] = max(vec_max);
+//x = (pos1 == 4) && (pos2 == 4) && (pos3 == 4) && (pos4 == 4);
+//@}
 //!
+
+static Array ScreenIntegerScalars(Array B) {
+  if (B.isScalar() && (B.dataClass() >= FM_FLOAT)
+      && (B.dataClass() <= FM_DOUBLE)) {
+    if (B.getContentsAsIntegerScalar() ==
+	B.getContentsAsDoubleScalar())
+      return Array::int32Constructor(B.getContentsAsIntegerScalar());
+  }
+  return B;
+}
+
 Array DotPower(Array A, Array B, Interpreter* m_eval) {
+  // Special case -- kludge to fix bug 1804267
+  B = ScreenIntegerScalars(B);
   Array C(DoPowerTwoArgFunction(A,B));
   if (A.sparse())
     C.makeSparse();
@@ -5114,10 +5144,14 @@ inline Array PowerMatrixScalar(Array A, Array B, Interpreter* m_eval) {
 //C = A^B
 //@>
 //!
+
 Array Power(Array A, Array B, Interpreter* m_eval){
 
   if (A.isEmpty() || B.isEmpty())
     return Array::emptyConstructor();
+
+  // Special case -- kludge to fix bug 1804267
+  B = ScreenIntegerScalars(B);
 
   if (A.isScalar() && B.isScalar()) return DotPower(A,B,m_eval);
 

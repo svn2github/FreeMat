@@ -262,6 +262,7 @@ void HandleWindow::camRotate(bool active) {
 
 void HandleWindow::save() {
   QString fn = QFileDialog::getSaveFileName();
+  if (fn.isEmpty()) return;
   try {
     HPrintFunction(0,SingleArrayVector(Array::stringConstructor(fn.toStdString())));
   } catch(Exception &e) {

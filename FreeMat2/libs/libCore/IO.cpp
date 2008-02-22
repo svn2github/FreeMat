@@ -2793,38 +2793,43 @@ ArrayVector DlmReadFunction(int nargout, const ArrayVector& arg) {
   QList<QList<double> > data_imag;
   QTextStream str(&ifile);
   while (!str.atEnd()) {
-    QString line = str.readLine(0);
-    QStringList elements;
-    if (no_delimiter) {
-      if (line.contains(QRegExp("[,;:]")))
-	elements = line.split(QRegExp("[,;:]"));
-      else {
-	line = line.simplified();
-	elements = line.split(' ');
-      }
-    } else {
-      elements = line.split(QString::fromStdString(delimiter)[0]);
-    }
-    QList<double> row_data_real;
-    QList<double> row_data_imag;
-    row_count++;
-    for (int i=0;i<elements.size();i++) {
-      QString element(elements[i]);
-      element.replace(" ","");
-      if (element.contains('i') || element.contains('I') ||
-	  element.contains('j') || element.contains('J')) {
-	double real, imag;
-	ParseComplexValue(element,real,imag);
-	row_data_real << real;
-	row_data_imag << imag;
+    QString whole_line = str.readLine(0);
+    QStringList line_pieces(whole_line.split("\r"));
+    for (int i=0;i<line_pieces.size();i++) {
+      QString line = line_pieces[i];
+      qDebug() << "Line " << line;
+      QStringList elements;
+      if (no_delimiter) {
+	if (line.contains(QRegExp("[,;:]")))
+	  elements = line.split(QRegExp("[,;:]"));
+	else {
+	  line = line.simplified();
+	  elements = line.split(' ');
+	}
       } else {
-	row_data_real << element.toDouble();
-	row_data_imag << 0;
+	elements = line.split(QString::fromStdString(delimiter)[0]);
       }
+      QList<double> row_data_real;
+      QList<double> row_data_imag;
+      row_count++;
+      for (int i=0;i<elements.size();i++) {
+	QString element(elements[i]);
+	element.replace(" ","");
+	if (element.contains('i') || element.contains('I') ||
+	    element.contains('j') || element.contains('J')) {
+	  double real, imag;
+	  ParseComplexValue(element,real,imag);
+	  row_data_real << real;
+	  row_data_imag << imag;
+	} else {
+	  row_data_real << element.toDouble();
+	  row_data_imag << 0;
+	}
+      }
+      col_count = qMax(col_count,elements.size());
+      data_real << row_data_real;
+      data_imag << row_data_imag;
     }
-    col_count = qMax(col_count,elements.size());
-    data_real << row_data_real;
-    data_imag << row_data_imag;
   }
   int startrow = 0;
   int startcol = 0;

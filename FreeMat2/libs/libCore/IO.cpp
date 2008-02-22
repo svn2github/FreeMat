@@ -2797,7 +2797,6 @@ ArrayVector DlmReadFunction(int nargout, const ArrayVector& arg) {
     QStringList line_pieces(whole_line.split("\r"));
     for (int i=0;i<line_pieces.size();i++) {
       QString line = line_pieces[i];
-      qDebug() << "Line " << line;
       QStringList elements;
       if (no_delimiter) {
 	if (line.contains(QRegExp("[,;:]")))

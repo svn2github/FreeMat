@@ -2138,8 +2138,8 @@ Array DotLeftDivide(Array A, Array B, Interpreter* m_eval) {
 static Array ScreenIntegerScalars(Array B) {
   if (B.isScalar() && (B.dataClass() >= FM_FLOAT)
       && (B.dataClass() <= FM_DOUBLE)) {
-    if (B.getContentsAsIntegerScalar() ==
-	B.getContentsAsDoubleScalar())
+    double Bval = B.getContentsAsDoubleScalar();
+    if (Bval == rint(Bval))
       return Array::int32Constructor(B.getContentsAsIntegerScalar());
   }
   return B;

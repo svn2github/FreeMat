@@ -1999,6 +1999,7 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
   Dimensions retDims;
   void *dstPtr = NULL;
   bool sparseArg = false;
+  bool initialized = false;
 
   try {
     maxType = FM_FUNCPTR_ARRAY;
@@ -2010,6 +2011,10 @@ Array Array::matrixConstructor(ArrayMatrix& m) {
       ArrayVector ptr = (ArrayVector) *i;
       for (int j=0;j<ptr.size();j++) {
 	const Array& d = ptr[j];
+	if (!initialized) {
+	  initialized = true;
+	  maxType = minType = d.dataClass();
+	}
 	if (d.sparse())
 	  sparseArg = true;
 	if (!d.isEmpty()) {

@@ -632,6 +632,11 @@ void Interpreter::clearStacks() {
 //       5 6 7 8];
 //test_val = 1;
 //@}
+//@{ test_matcat8.m
+//% Check that [1:0] is sane
+//function test_val = test_matcat8
+//test_val = isa([1:0],'int32');
+//@}
 //!
 //Works
 Array Interpreter::matrixDefinition(Tree *t) {

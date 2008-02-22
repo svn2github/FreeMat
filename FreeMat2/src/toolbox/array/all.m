@@ -42,6 +42,8 @@
 %@<
 %all(A,2)
 %@>
+%@@Tests
+%@$"y=all([1,0,0;1,1,1;0,1,1],2)","[0;1;0]","exact"
 %!
 
 % Copyright (c) 2002-2007 Samit Basu
@@ -57,6 +59,6 @@ function y = all(A,dim)
     if (nargin == 1)
        y = min(logical(A(:)));
     else
-       y = min(logical(A),dim);
+       y = min(logical(A),[],dim);
     end
   end

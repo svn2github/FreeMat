@@ -409,7 +409,7 @@ void Interpreter::doCLI() {
 
 void Interpreter::sendGreeting() {
   outputMessage(" " + getVersionString() + "\n");
-  outputMessage(" Copyright (c) 2002-2007 by Samit Basu\n");
+  outputMessage(" Copyright (c) 2002-2008 by Samit Basu\n");
   outputMessage(" Licensed under the GNU Public License (GPL)\n");
   outputMessage(" Type <help license> to find out more\n");
   outputMessage("      <helpwin> for online help\n");

@@ -52,11 +52,11 @@ function y = all(A,dim)
     error 'all function requires at least one argument'
   end
   if( isempty(A) )
-	y = 1;
+    y = 1;
   else
-  	if (nargin == 1)
-    		y = min(logical(A(:)));
-  	else
-    		y = min(logical(A),dim);
-  	end
+    if (nargin == 1)
+       y = min(logical(A(:)));
+    else
+       y = min(logical(A),dim);
+    end
   end

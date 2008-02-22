@@ -1863,6 +1863,19 @@ ArrayVector SprintfFunction(int nargout, const ArrayVector& arg) {
 //string.  Note that this @|printf| command is not vectorized!  Each
 //variable must be a scalar.
 //
+//It is important to point out that the @|printf| function does not
+//add a newline (or carriage return) to the output by default.  That
+//can lead to some confusing behavior if you do not know what to expect.
+//For example, the command @|printf('Hello')| does not appear to
+//produce any output.  In fact, it does produce the text, but it then
+//gets overwritten by the prompt.  To see the text, you need 
+//@|printf('Hello\n')|.  This seems odd, but allows you to assemble a
+//line using multiple @|printf| commands, including the @|'\n'| when
+//you are done with the line.  You can also use the @|'\r'| character
+//as an explicit carriage return (with no line feed).  This allows you
+//to write to the same line many times (to show a progress string, for
+//example).
+//
 //@@Format of the format string:
 //
 //The  format  string  is a character string, beginning and ending in its

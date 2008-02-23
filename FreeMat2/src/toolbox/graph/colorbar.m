@@ -26,7 +26,7 @@ if (isempty(cba))
   %Add a new one
   % Resize axhan
   pos = get(axhan,'outerposition');
-  width = 0.2;
+  width = 0.3;
   pos(3) = pos(3) - width;
   set(gca,'outerposition',pos);
   npos = [pos(1)+pos(3),pos(2),width,pos(4)];
@@ -39,7 +39,8 @@ end
 cmap = get(gcf,'colormap'); N = size(cmap,1);
 cmap = linspace(0,N,N)';
 cmap = repmat(cmap,[1,4]);
-han = himage('cdata',flipud(cmap));
+han = himage('ydata',get(axhan,'clim'),'cdata',flipud(cmap));
+axis('tight');
 axes(axhan);
 
 function cba = findColorBar(axhan)

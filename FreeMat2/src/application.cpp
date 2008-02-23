@@ -194,7 +194,8 @@ void ApplicationWindow::closeEvent(QCloseEvent* ce) {
   writeSettings();
   delete m_tool;
   ce->accept();
-  exit(0);
+  emit shutdown();
+  qApp->exit(0);
 }
 
 void ApplicationWindow::readSettings() {

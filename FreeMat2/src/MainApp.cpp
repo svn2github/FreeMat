@@ -154,6 +154,10 @@ KeyManager* MainApp::GetKeyManager() {
   return m_keys;
 }
 
+ApplicationWindow* MainApp::getApplicationWindow() {
+  return m_win;
+}
+
 void MainApp::SetupDumbTerminalCase() {
 #ifdef Q_WS_X11
   GUIHack = true;
@@ -194,6 +198,8 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     edit = new FMEditor(eval);
     QObject::connect(eval,SIGNAL(RefreshBPLists()),edit,SLOT(RefreshBPLists()));
     QObject::connect(eval,SIGNAL(ShowActiveLine()),edit,SLOT(ShowActiveLine()));
+    ApplicationWindow *m_win = m_app->getApplicationWindow();
+    QObject::connect(m_win,SIGNAL(shutdown()),edit,SLOT(close()));
     // Because of the threading setup, we need the keymanager to relay commands
     // from the editor to the interpreter.  
     QObject::connect(edit,SIGNAL(EvaluateText(QString)),m_app->GetKeyManager(),SLOT(QueueMultiString(QString)));
@@ -222,6 +228,8 @@ ArrayVector EditFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
         SLOT(RefreshBPLists()));
     QObject::connect(eval, SIGNAL(ShowActiveLine()), edit,
         SLOT(ShowActiveLine()));
+    ApplicationWindow *m_win = m_app->getApplicationWindow();
+    QObject::connect(m_win,SIGNAL(shutdown()),edit,SLOT(close()));
     // Because of the threading setup, we need the keymanager to relay commands
     // from the editor to the interpreter.  
     QObject::connect(edit, SIGNAL(EvaluateText(QString)),

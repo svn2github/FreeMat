@@ -65,6 +65,7 @@ signals:
   void startHelp();
   void startEditor();
   void startPathTool();
+  void shutdown();
 public slots:
   void writeSettings();
 private slots:

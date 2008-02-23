@@ -66,6 +66,8 @@ ApplicationWindow::~ApplicationWindow() {
 void ApplicationWindow::createActions() {
   filetoolAct = new QAction("&File Browser",this);
   connect(filetoolAct,SIGNAL(triggered()),this,SLOT(filetool()));
+  workAct = new QAction("&Workspace Tool",this);
+  connect(workAct,SIGNAL(triggered()),this,SLOT(workspacetool()));
   historyAct = new QAction("Show &History Tool",this);
   connect(historyAct,SIGNAL(triggered()),this,SLOT(history()));
   cleanHistoryAct = new QAction("&Clear History Tool",this);
@@ -134,6 +136,7 @@ void ApplicationWindow::createMenus() {
   toolsMenu->addAction(editorAct);
   toolsMenu->addAction(pathAct);
   toolsMenu->addAction(filetoolAct);
+  toolsMenu->addAction(workAct);
   historyMenu = toolsMenu->addMenu("&History");
   historyMenu->addAction(historyAct);
   historyMenu->addAction(cleanHistoryAct);
@@ -330,14 +333,19 @@ void ApplicationWindow::path() {
   emit startPathTool();
 }
 
+void ApplicationWindow::workspacetool() {
+  m_tool->show();
+  m_tool->raiseVariables();
+}
+
 void ApplicationWindow::filetool() {
   m_tool->show();
-  m_tool->getFileTool()->show();
+  m_tool->raiseFileTool();
 }
 
 void ApplicationWindow::history() {
   m_tool->show();
-  m_tool->getHistoryWidget()->show();
+  m_tool->raiseHistoryTool();
 }
 
 void ApplicationWindow::cleanhistory() {

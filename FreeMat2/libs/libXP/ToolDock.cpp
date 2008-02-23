@@ -20,14 +20,14 @@
 #include <QtGui>
 
 ToolDock::ToolDock(QWidget *parent) : QDockWidget(parent) {
-  QToolBox *tb = new QToolBox(this);
-  m_history = new HistoryWidget(tb);
-  tb->addItem(m_history,"History");
-  m_filetool = new FileTool(tb);
-  tb->addItem(m_filetool,"Files");
-  m_variables = new VariablesTool(tb);
-  tb->addItem(m_variables,"Workspace");
-  setWidget(tb);
+  m_tb = new QToolBox(this);
+  m_history = new HistoryWidget(m_tb);
+  m_tb->addItem(m_history,"History");
+  m_filetool = new FileTool(m_tb);
+  m_tb->addItem(m_filetool,"Files");
+  m_variables = new VariablesTool(m_tb);
+  m_tb->addItem(m_variables,"Workspace");
+  setWidget(m_tb);
   setObjectName("tooldock");
 }
 
@@ -47,4 +47,16 @@ FileTool* ToolDock::getFileTool() {
 
 VariablesTool* ToolDock::getVariablesTool() {
   return m_variables;
+}
+
+void ToolDock::raiseHistoryTool() {
+  m_tb->setCurrentWidget(m_history);
+}
+
+void ToolDock::raiseFileTool() {
+  m_tb->setCurrentWidget(m_filetool);
+}
+
+void ToolDock::raiseVariables() {
+  m_tb->setCurrentWidget(m_variables);
 }

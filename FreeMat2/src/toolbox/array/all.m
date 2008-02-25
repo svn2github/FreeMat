@@ -57,7 +57,7 @@ function y = all(A,dim)
     y = 1;
   else
     if (nargin == 1)
-       y = min(logical(A(:)));
+       y = min(logical(A));
     else
        y = min(logical(A),[],dim);
     end

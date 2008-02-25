@@ -52,7 +52,7 @@ function y = any(A,dim)
   end
   A(find(isnan(A)))=0;
   if (nargin == 1)
-    y = max(logical(A(:)));
+    y = max(logical(A));
   else
     y = max(logical(A),[],dim);
   end

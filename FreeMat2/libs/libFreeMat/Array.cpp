@@ -1740,6 +1740,10 @@ Array Array::emptyConstructor() {
   return Array(FM_DOUBLE,Dimensions(0,0),NULL);
 }
 
+Array Array::emptyConstructor(const Dimensions& dims){
+  return Array(FM_DOUBLE,dims,NULL);
+}
+
 Array Array::funcPtrConstructor(FuncPtr fptr) {
   FuncPtr *data = (FuncPtr*) allocateArray(FM_FUNCPTR_ARRAY,1);
   data[0] = fptr;

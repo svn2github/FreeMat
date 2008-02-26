@@ -506,6 +506,7 @@ public:
    * Empty constructor
    */
   static Array emptyConstructor();
+  static Array emptyConstructor(const Dimensions& dims);
   static Array funcPtrConstructor(FuncPtr fptr);
   /**
    * Scalar constructor - Construct an FM_LOGICAL object with a scalar

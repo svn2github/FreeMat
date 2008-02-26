@@ -44,6 +44,8 @@
 %@>
 %@@Tests
 %@$"y=all([1,0,0;1,1,1;0,1,1],2)","[0;1;0]","exact"
+%@$"y=all(eye(3))","[0 0 0]","exact"
+%@$"y=all(ones(0,3),1)","[1 1 1]","exact"
 %!
 
 % Copyright (c) 2002-2007 Samit Basu
@@ -53,12 +55,18 @@ function y = all(A,dim)
   if (nargin == 0)
     error 'all function requires at least one argument'
   end
-  if( isempty(A) )
-    y = 1;
-  else
-    if (nargin == 1)
-       y = min(logical(A));
-    else
-       y = min(logical(A),[],dim);
-    end
+  if (nargin == 1)
+     if  ~isempty(A) 
+        y = min(logical(A));
+     else
+        y = 1;
+     end
+     else
+       if ~isempty(A)
+          y = min(logical(A),[],dim);
+       else
+          v=size(A);
+          v(dim)=1;
+          y=ones(v);
+       end
   end

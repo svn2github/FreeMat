@@ -876,7 +876,7 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   Array input(arg[0]);
 
   if( input.isEmpty() )
-	return ArrayVector() << Array::emptyConstructor();
+	return ArrayVector() << Array::emptyConstructor(input.dimensions());
 
   Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())
@@ -1330,7 +1330,7 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   Array input(arg[0]);
 
   if( input.isEmpty() )
-	return ArrayVector() << Array::emptyConstructor();
+	return ArrayVector() << Array::emptyConstructor(input.dimensions());
 
   Class argType(input.dataClass());
   if (input.isReferenceType() || input.isString())

@@ -591,6 +591,46 @@ void TComplexProd(const T* sp, T* dp, int planes, int planesize, int linesize) {
   }
 }
 
+template <class T>
+void TBitAnd(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  int m, p;
+  m = 0; p = 0;
+  for (int i=0;i<N;i++) {
+    C[i] = A[m] & B[p];
+    m += stride1;
+    p += stride2;
+  }
+}
+
+template <class T>
+void TBitOr(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  int m, p;
+  m = 0; p = 0;
+  for (int i=0;i<N;i++) {
+    C[i] = A[m] | B[p];
+    m += stride1;
+    p += stride2;
+  }
+}
+
+template <class T>
+void TBitXOr(int N, T*C, const T*A, int stride1, const T*B, int stride2) {
+  int m, p;
+  m = 0; p = 0;
+  for (int i=0;i<N;i++) {
+    C[i] = A[m] ^ B[p];
+    m += stride1;
+    p += stride2;
+  }
+}
+
+template <class T>
+void TBitCmp(int N, T*C, const T*A) {
+  for (int i=0;i<N;i++) {
+    C[i] = ~A[i];
+  }
+}
+
 ArrayVector LessThan(int nargout, const ArrayVector& arg) {
   ArrayVector retvec;
   Array x(arg[0]);
@@ -2897,6 +2937,175 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
     retval = Array(FM_DCOMPLEX,outDim,ptr);
     break;
   }
+  }
+  ArrayVector retArray;
+  retArray.push_back(retval);
+  return retArray;
+}
+
+//!
+ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2)
+    throw Exception("bitand requires at least two arguments");
+  Array A(arg[0]);
+  A.promoteType(FM_UINT32);
+  Array B(arg[1]);
+  B.promoteType(FM_UINT32);
+
+  int Astride, Bstride;
+  void *Cp = NULL;
+  int Clen;
+  Dimensions CDim;
+
+  if (A.isScalar()) {
+    Astride = 0;
+    Bstride = 1;
+    CDim = B.dimensions();
+    Clen = B.getLength();
+  } else if (B.isScalar()) {
+    Astride = 1;
+    Bstride = 0;
+    CDim = A.dimensions();
+    Clen = A.getLength();
+  } else {
+    Astride = 1;
+    Bstride = 1;
+    CDim = A.dimensions();
+    Clen = A.getLength();
+  }
+
+  Cp = Malloc(Clen*B.getElementSize());
+  TBitAnd<uint32>( Clen, (uint32*) Cp, (uint32*) A.getDataPointer(), Astride, (uint32*) B.getDataPointer(), Bstride );
+  Array retval;
+  retval = Array(FM_UINT32, CDim, Cp);
+
+  ArrayVector retArray;
+  retArray.push_back(retval);
+  return retArray;
+}
+
+ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2)
+    throw Exception("bitor requires at least two arguments");
+  Array A(arg[0]);
+  A.promoteType(FM_UINT32);
+  Array B(arg[1]);
+  B.promoteType(FM_UINT32);
+
+  int Astride, Bstride;
+  void *Cp = NULL;
+  int Clen;
+  Dimensions CDim;
+
+  if (A.isScalar()) {
+    Astride = 0;
+    Bstride = 1;
+    CDim = B.dimensions();
+    Clen = B.getLength();
+  } else if (B.isScalar()) {
+    Astride = 1;
+    Bstride = 0;
+    CDim = A.dimensions();
+    Clen = A.getLength();
+  } else {
+    Astride = 1;
+    Bstride = 1;
+    CDim = A.dimensions();
+    Clen = A.getLength();
+  }
+
+  Cp = Malloc(Clen*B.getElementSize());
+  TBitOr<uint32>( Clen, (uint32*) Cp, (uint32*) A.getDataPointer(), Astride, (uint32*) B.getDataPointer(), Bstride );
+  Array retval;
+  retval = Array(FM_UINT32, CDim, Cp);
+
+  ArrayVector retArray;
+  retArray.push_back(retval);
+  return retArray;
+}
+
+ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2)
+    throw Exception("bitxor requires at least two arguments");
+  Array A(arg[0]);
+  A.promoteType(FM_UINT32);
+  Array B(arg[1]);
+  B.promoteType(FM_UINT32);
+
+  int Astride, Bstride;
+  void *Cp = NULL;
+  int Clen;
+  Dimensions CDim;
+
+  if (A.isScalar()) {
+    Astride = 0;
+    Bstride = 1;
+    CDim = B.dimensions();
+    Clen = B.getLength();
+  } else if (B.isScalar()) {
+    Astride = 1;
+    Bstride = 0;
+    CDim = A.dimensions();
+    Clen = A.getLength();
+  } else {
+    Astride = 1;
+    Bstride = 1;
+    CDim = A.dimensions();
+    Clen = A.getLength();
+  }
+
+  Cp = Malloc(Clen*B.getElementSize());
+  TBitXOr<uint32>( Clen, (uint32*) Cp, (uint32*) A.getDataPointer(), Astride, (uint32*) B.getDataPointer(), Bstride );
+  Array retval;
+  retval = Array(FM_UINT32, CDim, Cp);
+
+  ArrayVector retArray;
+  retArray.push_back(retval);
+  return retArray;
+}
+//!
+//BITCMP
+//Computes the bit complement of unsigned integers.The output array is
+//of the same integer type as the input. All bits are complemented. This
+//differs from the Matlab implementation, which allows fewer bits than the
+//full resolution to be complemented.
+//!
+ArrayVector BitcmpFunction(int nargout, const ArrayVector& arg) {
+  Array A(arg[0]);
+  Class argType(A.dataClass());
+
+  void *Cp = NULL;
+  int Clen;
+  Dimensions CDim;
+
+  CDim = A.dimensions();
+  Clen = A.getLength();
+
+  Cp = Malloc(Clen*A.getElementSize());
+  Array retval;
+  switch (argType) {
+  case FM_UINT8: {
+    TBitCmp<uint8>( Clen, (uint8*) Cp, (uint8*) A.getDataPointer() );
+    retval = Array(FM_UINT8, CDim, Cp);
+    break;
+  }
+  case FM_UINT16: {
+    TBitCmp<uint16>( Clen, (uint16*) Cp, (uint16*) A.getDataPointer() );
+    retval = Array(FM_UINT16, CDim, Cp);
+    break;
+  }
+  case FM_UINT32: {
+    TBitCmp<uint32>( Clen, (uint32*) Cp, (uint32*) A.getDataPointer() );
+    retval = Array(FM_UINT32, CDim, Cp);
+    break;
+  }
+  case FM_UINT64: {
+    TBitCmp<uint64>( Clen, (uint64*) Cp, (uint64*) A.getDataPointer() );
+    retval = Array(FM_UINT64, CDim, Cp);
+    break;
+  }
+  default:
+    throw Exception("bitcmp: argument type limited to unsigned integers");
   }
   ArrayVector retArray;
   retArray.push_back(retval);

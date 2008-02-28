@@ -193,6 +193,12 @@ ArrayVector IsInfFunction(int, const ArrayVector& arg);
 ArrayVector RepMatFunction(int, const ArrayVector& arg);
 ArrayVector EpsFunction(int, const ArrayVector& arg);
 ArrayVector FepsFunction(int, const ArrayVector& arg);
+// 
+ArrayVector BitandFunction(int, const ArrayVector& arg);
+ArrayVector BitorFunction(int, const ArrayVector& arg);
+ArrayVector BitxorFunction(int, const ArrayVector& arg);
+ArrayVector BitcmpFunction(int, const ArrayVector& arg);
+// 
 ArrayVector Int2BinFunction(int, const ArrayVector& arg);
 ArrayVector Bin2IntFunction(int, const ArrayVector& arg);
 ArrayVector PCodeFunction(int, const ArrayVector& arg, Interpreter* eval);

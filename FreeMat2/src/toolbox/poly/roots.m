@@ -40,6 +40,13 @@
 % Licensed under the GPL
 
 function z = roots(p)
+  if(any(isnan(p) | isinf(p)))
+     error('Input to ROOTS must not contain NaN or Inf.');
+  end
+  while(any(isinf(p./p(1))))
+     p=p(2:end);
+  end
+   
   p = vec(p);
   n = numel(p)-1;
   A = diag(ones(n-1,1),-1);

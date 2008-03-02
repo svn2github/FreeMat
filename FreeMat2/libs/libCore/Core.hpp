@@ -251,6 +251,7 @@ ArrayVector MatLoadFunction(int nargout, string filename, StringVector varnames,
 ArrayVector MatSaveFunction(string filename, StringVector varnames,
 			    Interpreter *eval);
 ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
+ArrayVector ImWriteFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg);
 ArrayVector CtypeSizeFunction(int nargout, const ArrayVector& arg);
 ArrayVector CtypePrintFunction(int nargout, const ArrayVector& arg, Interpreter* eval);

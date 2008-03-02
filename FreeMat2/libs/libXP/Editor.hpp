@@ -34,6 +34,7 @@
 #include "Interpreter.hpp"
 #include "synlightconf.ui.h"
 #include "indentconf.ui.h"
+#include "Context.hpp"
 
 class FMFindDialog : public QDialog {
   Q_OBJECT
@@ -89,8 +90,11 @@ public:
   bool replace(QString text, QString replace, QTextDocument::FindFlags flags);
   int replaceAll(QString text, QString replace, QTextDocument::FindFlags flags);
   void fontUpdate();
+protected:
+  bool event(QEvent *event);
 signals:
   void indent();
+  void showDataTips(QPoint pos, QString textSelected);
 };
 
 class FMIndent : public QObject {
@@ -188,6 +192,7 @@ class FMEditor : public QMainWindow {
   QAction *separatorAct; 
   enum { MaxRecentFiles = 5 }; 
   QAction *recentFileActs[MaxRecentFiles]; 
+  QAction *dataTipConfigAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
@@ -195,6 +200,9 @@ class FMEditor : public QMainWindow {
   FMReplaceDialog *m_replace;
   QMenu *m_popup;
   Interpreter *m_eval;
+  QStringList varNameList, varTypeList, varFlagsList, varSizeList, varValueList;
+  Context *context;
+  bool isShowToolTip;
 public:
   FMEditor(Interpreter* eval);
   virtual ~FMEditor();
@@ -243,6 +251,8 @@ private slots:
   void undo();
   void redo();
   void RefreshBPLists();
+  void refreshContext();
+  void IllegalLineOrCurrentPath(string name, int line);
   void ShowActiveLine();
   void dbstep();
   void dbtrace();
@@ -254,8 +264,11 @@ private slots:
   void execSelected();
   void execCurrent();
   void openRecentFile(); 
+  void showDataTips(QPoint pos, QString textSelected);
+  void configDataTip();
 public:
   void closeEvent(QCloseEvent *event);
+  void setContext(Context *watch);
 };
 
 #endif

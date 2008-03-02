@@ -617,6 +617,10 @@ signals:
   /**
    * Show the current active line
    */
+  void IllegalLineOrCurrentPath(string name, int line);
+  /**
+   * Inform the editor of illegal line or file not on current path
+   */
   void ShowActiveLine();
   /**
    * Enable repainting

@@ -32,6 +32,7 @@
 #include "Core.hpp"
 #include <QThread>
 #include <QImage>
+#include <QImageWriter>
 #include <QColor>
 #include <QFile>
 #include <QTextStream>
@@ -663,45 +664,84 @@ static ArrayVector imreadHelperIndexed(QImage img) {
 }
 
 static ArrayVector imreadHelperRGB32(QImage img) {
-  uint8 *img_data_dp = (uint8*) 
-    Array::allocateArray(FM_UINT8,img.width()*img.height()*3);
-  int imgcnt = img.height()*img.width();
-  for (int row=0;row<img.height();row++) {
-    QRgb *p = (QRgb*) img.scanLine(row);
-    for (int col=0;col<img.width();col++) {
-      int ndx = row+col*img.height();
-      img_data_dp[ndx] = qRed(p[col]);
-      img_data_dp[ndx+1*imgcnt] = qGreen(p[col]);
-      img_data_dp[ndx+2*imgcnt] = qBlue(p[col]);
-    }
+  if (img.allGray()) {
+	  uint8 *img_data_dp = (uint8*) 
+		Array::allocateArray(FM_UINT8,img.width()*img.height());
+	  int imgcnt = img.height()*img.width();
+	  for (int row=0;row<img.height();row++) {
+		QRgb *p = (QRgb*) img.scanLine(row);
+		for (int col=0;col<img.width();col++) {
+		  int ndx = row+col*img.height();
+		  img_data_dp[ndx] = qGray(p[col]);
+		}
+	  }
+	  return ArrayVector() << 
+		Array(FM_UINT8,Dimensions(img.height(),img.width()),img_data_dp)
+				   << Array::emptyConstructor() 
+				   << Array::emptyConstructor();
   }
-  return ArrayVector() << 
-    Array(FM_UINT8,Dimensions(img.height(),img.width(),3),img_data_dp)
-		       << Array::emptyConstructor() 
-		       << Array::emptyConstructor();
+  else {
+	  uint8 *img_data_dp = (uint8*) 
+		Array::allocateArray(FM_UINT8,img.width()*img.height()*3);
+	  int imgcnt = img.height()*img.width();
+	  for (int row=0;row<img.height();row++) {
+		QRgb *p = (QRgb*) img.scanLine(row);
+		for (int col=0;col<img.width();col++) {
+		  int ndx = row+col*img.height();
+		  img_data_dp[ndx] = qRed(p[col]);
+		  img_data_dp[ndx+1*imgcnt] = qGreen(p[col]);
+		  img_data_dp[ndx+2*imgcnt] = qBlue(p[col]);
+		}
+	  }
+	  return ArrayVector() << 
+		Array(FM_UINT8,Dimensions(img.height(),img.width(),3),img_data_dp)
+				   << Array::emptyConstructor() 
+				   << Array::emptyConstructor();
+  }
 }
 
 static ArrayVector imreadHelperARGB32(QImage img) {
-  uint8 *img_alpha_dp = (uint8*) 
-    Array::allocateArray(FM_UINT8,img.width()*img.height());
-  uint8 *img_data_dp = (uint8*) 
-    Array::allocateArray(FM_UINT8,img.width()*img.height()*3);
-  int imgcnt = img.height()*img.width();
-  for (int row=0;row<img.height();row++) {
-    QRgb *p = (QRgb*) img.scanLine(row);
-    for (int col=0;col<img.width();col++) {
-      int ndx = row+col*img.height();
-      img_data_dp[ndx] = qRed(p[col]);
-      img_data_dp[ndx+1*imgcnt] = qGreen(p[col]);
-      img_data_dp[ndx+2*imgcnt] = qBlue(p[col]);
-      img_alpha_dp[ndx] = qAlpha(p[col]);
-    }
+   uint8 *img_alpha_dp = (uint8*) 
+     Array::allocateArray(FM_UINT8,img.width()*img.height());
+  if (img.allGray()) {
+	  uint8 *img_data_dp = (uint8*)
+		Array::allocateArray(FM_UINT8,img.width()*img.height());
+	  int imgcnt = img.height()*img.width();
+	  for (int row=0;row<img.height();row++) {
+		QRgb *p = (QRgb*) img.scanLine(row);
+		for (int col=0;col<img.width();col++) {
+		  int ndx = row+col*img.height();
+		  img_data_dp[ndx] = qGray(p[col]);
+		  img_alpha_dp[ndx] = qAlpha(p[col]);
+		}
+	  }
+	  return ArrayVector() << 
+		Array(FM_UINT8,Dimensions(img.height(),img.width()),img_data_dp)
+				   << Array::emptyConstructor() 
+				   << 
+		Array(FM_UINT8,Dimensions(img.height(),img.width()),img_alpha_dp);
   }
-  return ArrayVector() << 
-    Array(FM_UINT8,Dimensions(img.height(),img.width(),3),img_data_dp)
-		       << Array::emptyConstructor() 
-		       << 
-    Array(FM_UINT8,Dimensions(img.height(),img.width()),img_alpha_dp);
+  else
+  {
+	  uint8 *img_data_dp = (uint8*)
+		Array::allocateArray(FM_UINT8,img.width()*img.height()*3);
+	  int imgcnt = img.height()*img.width();
+	  for (int row=0;row<img.height();row++) {
+		QRgb *p = (QRgb*) img.scanLine(row);
+		for (int col=0;col<img.width();col++) {
+		  int ndx = row+col*img.height();
+		  img_data_dp[ndx] = qRed(p[col]);
+		  img_data_dp[ndx+1*imgcnt] = qGreen(p[col]);
+		  img_data_dp[ndx+2*imgcnt] = qBlue(p[col]);
+		  img_alpha_dp[ndx] = qAlpha(p[col]);
+		}
+	  }
+	  return ArrayVector() << 
+		Array(FM_UINT8,Dimensions(img.height(),img.width(),3),img_data_dp)
+				   << Array::emptyConstructor() 
+				   << 
+		Array(FM_UINT8,Dimensions(img.height(),img.width()),img_alpha_dp);
+  }
 }
 
 ArrayVector ImReadFunction(int nargout, const ArrayVector& arg, 
@@ -726,6 +766,266 @@ ArrayVector ImReadFunction(int nargout, const ArrayVector& arg,
   if (img.format() == QImage::Format_RGB32) return imreadHelperRGB32(img);
   if (img.format() == QImage::Format_ARGB32) return imreadHelperARGB32(img);
   throw Exception("unsupported image format - only 8 bit indexed and 24 bit RGB and 32 bit ARGB images are supported");
+  return ArrayVector();
+}
+
+//!
+//@Module IMWRITE Write Matrix to Image File
+//@@Section IO
+//@@Usage
+//Write the image data from the matrix into a given file.  Note that
+//FreeMat's support for @|imread| is not complete.  Only some of the
+//formats specified in the MATLAB API are implemented.  The syntax
+//for its use is
+//@[
+//  imwrite(filename, A)
+//  imwrite(filename, A, map)
+//  imwrite(filename, A, map, alpha)
+//@]
+//where @|filename| is the name of the file to write to.  The input
+//arrays @|A| contain the image data, @|map| contains the colormap information
+//(for indexed images), and @|alpha| contains the alphamap (transparency).
+//The returned values will depend on the type of the original image.  Generally
+//you can write images in the @|jpg,png,xpm,ppm| and some other formats.
+//!
+QImage imwriteHelperIndexed(Array A, Array ctable, Array trans) {
+  QImage img(A.columns(), A.rows(), QImage::Format_Indexed8);
+  uint8 *img_data_dp = (uint8*) A.getDataPointer();
+  uint8 *ctable_dp = (uint8*) ctable.getDataPointer();
+  uint8 *img_alpha_dp = (uint8*) trans.getDataPointer();
+
+  for (int row=0;row<img.height();row++) {
+    uchar *p = img.scanLine(row);
+    for (int col=0;col<img.width();col++) 
+      p[col] = img_data_dp[row+col*img.height()];
+  }
+  
+  if (ctable_dp) {
+	  QVector<QRgb> colorTable(ctable.getLength()/3);
+	  int numcol = colorTable.size();
+	  for (int i=0;i<numcol;i++)
+		colorTable[i] = qRgb(int(ctable_dp[i]),
+		                     int(ctable_dp[i+numcol]),
+		                     int(ctable_dp[i+2*numcol]));
+	  img.setColorTable(colorTable);
+  }
+  else {
+	  int numrow = 256;
+	  QVector<QRgb> colorTable(numrow);
+	  for (int i=0;i<numrow;i++)
+		colorTable[i] = qRgb(i, i, i);
+	  img.setColorTable(colorTable);
+  }
+  
+  if (img_alpha_dp) {
+	  QImage alpha(A.columns(), A.rows(), QImage::Format_Indexed8);
+	  for (int row=0;row<alpha.height();row++) {
+		uchar *p = alpha.scanLine(row);
+		for (int col=0;col<alpha.width();col++)
+		  p[col] = img_alpha_dp[row+col*img.height()];
+	  }
+	  img.setAlphaChannel(alpha);
+  }
+  return img;
+}
+
+QImage imwriteHelperRGB32(Array A) {
+  uint8 *img_data_dp = (uint8*) A.getDataPointer();
+  QImage img(A.columns(), A.rows(), QImage::Format_RGB32);
+  int imgcnt = img.height()*img.width();
+  for (int row=0;row<img.height();row++) {
+	QRgb *p = (QRgb*) img.scanLine(row);
+	for (int col=0;col<img.width();col++) {
+	  int ndx = row+col*img.height();
+	  p[col] = qRgb(img_data_dp[ndx], 
+	                img_data_dp[ndx+1*imgcnt], 
+	                img_data_dp[ndx+2*imgcnt]);
+	}
+  }
+  return img;
+}
+
+QImage imwriteHelperARGB32(Array A, Array trans) {
+  QImage img(A.columns(), A.rows(), QImage::Format_ARGB32);
+  uint8 *img_data_dp = (uint8*) A.getDataPointer();
+  uint8 *img_alpha_dp = (uint8*) trans.getDataPointer();
+  int imgcnt = img.height()*img.width();
+  for (int row=0;row<img.height();row++) {
+	QRgb *p = (QRgb*) img.scanLine(row);
+	for (int col=0;col<img.width();col++) {
+	  int ndx = row+col*img.height();
+	  p[col] = qRgba(img_data_dp[ndx], 
+	                 img_data_dp[ndx+1*imgcnt], 
+	                 img_data_dp[ndx+2*imgcnt], 
+	                 img_alpha_dp[ndx]);
+	}
+  }
+  return img;
+}
+
+Array convert2uint8(Array A) {
+  if (A.dataClass() ==  FM_UINT8) {
+    return A;
+  }
+  //convert other data types to uint8
+  uint8 *img_data_dp1 = (uint8*) 
+	Array::allocateArray(FM_UINT8,A.getLength());
+  
+  if (A.dataClass() ==  FM_LOGICAL) {
+    uint8 *img_data_dp = (uint8*) A.getDataPointer();
+    int scale = 255;
+    for (int i = 0; i< A.getLength(); i++)
+      if (img_data_dp[i])
+        img_data_dp1[i] = 255;
+      else
+        img_data_dp1[i] = 0;
+  }
+  else if (A.dataClass() ==  FM_INT8) {
+    int8 *img_data_dp = (int8*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_UINT16) {
+    uint16 *img_data_dp = (uint16*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_INT16) {
+    int16 *img_data_dp = (int16*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_UINT32) {
+    uint32 *img_data_dp = (uint32*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_INT32) {
+    int32 *img_data_dp = (int32*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_UINT64) {
+    uint64 *img_data_dp = (uint64*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_INT64) {
+    int64 *img_data_dp = (int64*) A.getDataPointer();
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_FLOAT) {
+    float *img_data_dp = (float*) A.getDataPointer();
+    float scale = 255;
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(scale*img_data_dp[i]);
+  }
+  else if (A.dataClass() ==  FM_DOUBLE) {
+    double *img_data_dp = (double*) A.getDataPointer();
+    double scale = 255;
+    for (int i = 0; i< A.getLength(); i++)
+      img_data_dp1[i] = uint8(scale*img_data_dp[i]);
+  }
+  else
+    throw Exception("invalid data type");
+    
+  return Array(FM_UINT8,A.dimensions(),img_data_dp1);
+}  
+
+ArrayVector ImWriteFunction(int nargout, const ArrayVector& arg, 
+			   Interpreter* eval) {
+  PathSearcher psearch(eval->getTotalPath());
+  if (arg.size() < 2)
+    throw Exception("imwrite requires at least a filename and a matrix");
+  string filename(ArrayToString(arg[0]));
+  QString FileName = QString::fromStdString(filename);
+  QByteArray ImageFormat;
+  ImageFormat.append(QFileInfo(FileName).suffix());
+  // Construct the QImageWriter object
+  QImageWriter imgWriter(FileName,ImageFormat);
+  if (!imgWriter.canWrite()) {
+     throw Exception("unable to write image file " + filename);
+  }
+
+  Array A(arg[1]);
+  if (A.dimensions().getLength() == 2) { // choose QImage::Format_Indexed8
+    if (arg.size() == 2) { // 8-bit grayscale image
+        Array ctable(FM_UINT8, Dimensions(255,1),NULL);
+        Array trans(FM_UINT8, A.dimensions(),NULL);
+        QImage img = imwriteHelperIndexed(convert2uint8(A), ctable, trans);
+	    if (!imgWriter.write(QImage(img)))
+	       throw Exception("cannot create image file" + filename);
+    }
+    else if (arg.size() == 3) { // 8-bit indexed color image
+		Array ctable(arg[2]);
+		if (ctable.getLength() != 0 && ctable.dimensions().getColumns() != 3)
+			throw Exception("color map should be a 3 columns matrix");
+		Array trans(FM_UINT8,A.dimensions(),NULL);
+		QImage img = imwriteHelperIndexed(convert2uint8(A), convert2uint8(ctable), trans);
+		if (!imgWriter.write(img))
+			throw Exception("cannot create image file" + filename);
+	}
+	else if (arg.size() == 4) { // 8-bit indexed color image with alpha channel
+		Array ctable(arg[2]);
+		if (ctable.getLength() != 0 && ctable.dimensions().getColumns() != 3)
+			throw Exception("color map should be a 3 columns matrix");
+		Array trans(arg[3]);
+		eval->warningMessage("saving alpha/transparent channel will increase file size");
+		QImage img = imwriteHelperIndexed(convert2uint8(A), convert2uint8(ctable), convert2uint8(trans));
+		if (!imgWriter.write(img))
+		  throw Exception("cannot create image file" + filename);
+	}
+	else
+		throw Exception("invalide input number of arguments");
+  }
+  else if (A.dimensions().getLength() == 3) { // choose QImage::Format_RGB32 or Format_ARGB32
+    if (arg.size() == 2) {
+        QImage img = imwriteHelperRGB32(convert2uint8(A));
+	    if (!imgWriter.write(QImage(img)))
+	       throw Exception("cannot create image file" + filename);
+	}
+	else if (arg.size() == 3) {
+		Array trans(arg[2]);
+		if (A.rows() == trans.rows() && A.columns() == trans.columns() ) {
+		    // the third argument is alpha channel
+		    QImage img = imwriteHelperARGB32(convert2uint8(A), convert2uint8(trans));
+			if (!imgWriter.write(QImage(img)))
+			   throw Exception("cannot create image file" + filename);
+		}
+		else {
+			if (trans.getLength() != 0)
+		  		eval->warningMessage("ignore colormap argument");
+		    QImage img = imwriteHelperRGB32(convert2uint8(A));
+			if (!imgWriter.write(QImage(img)))
+			   throw Exception("cannot create image file" + filename);
+	    }
+	}
+	else if (arg.size() == 4) {
+		Array ctable(arg[2]);
+		if (ctable.getLength() != 0)
+	  		eval->warningMessage("ignore colormap argument");
+		Array trans(arg[3]);
+		if (A.rows() == trans.rows() && A.columns() == trans.columns() ) {
+		    // the third argument is alpha/transparent channel
+		    QImage img = imwriteHelperARGB32(convert2uint8(A), convert2uint8(trans));
+			if (!imgWriter.write(QImage(img)))
+			   throw Exception("cannot create image file" + filename);
+		}
+		else {
+			if (trans.getLength() != 0)
+		  		eval->warningMessage("ignore invalid transparent argument");
+		    QImage img = imwriteHelperRGB32(convert2uint8(A));
+			if (!imgWriter.write(QImage(img)))
+			   throw Exception("cannot create image file" + filename);
+	    }
+	}
+	else
+		throw Exception("invalide input number of arguments");
+  }
+  else
+    throw Exception("invalid matrix dimension");
+
   return ArrayVector();
 }
 

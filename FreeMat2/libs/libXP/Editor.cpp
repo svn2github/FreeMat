@@ -20,6 +20,9 @@
 #include "Interpreter.hpp"
 #include "highlighter.hpp"
 #include <QtGui>
+#include "Scope.hpp"
+#include "Array.hpp"
+#include "Print.hpp"
 
 FMFindDialog::FMFindDialog(QWidget *parent) : QDialog(parent) {
   ui.setupUi(this);
@@ -226,6 +229,17 @@ void FMTextEdit::keyPressEvent(QKeyEvent*e) {
   if (indentActive)
     if (delayedIndent) 
       emit indent();
+}
+
+bool FMTextEdit::event(QEvent *event){ 
+  if (event->type() == QEvent::ToolTip) {
+    QHelpEvent *helpEvent = static_cast<QHelpEvent *>(event);
+    QTextCursor Cursor = cursorForPosition(helpEvent->pos());
+    Cursor.select(QTextCursor::WordUnderCursor);
+    QString textSelected = Cursor.selectedText();
+    emit showDataTips(helpEvent->globalPos(), textSelected);
+  }
+  return QTextEdit::event(event);
 }
 
 void FMTextEdit::contextMenuEvent(QContextMenuEvent* e) {
@@ -515,6 +529,8 @@ void FMEditor::readSettings() {
     m_font = new_font;
   }
   updateFont();
+  isShowToolTip = settings.value("editor/isShowToolTip", true).toBool();
+  dataTipConfigAct->setChecked(isShowToolTip); 
 }
 
 void FMEditor::updateFont() {
@@ -531,6 +547,7 @@ void FMEditor::writeSettings() {
   settings.setValue("editor/pos", pos());
   settings.setValue("editor/size", size());
   settings.setValue("editor/font", m_font.toString());
+  settings.setValue("editor/isShowToolTip", isShowToolTip);
   settings.sync();
 }
 
@@ -600,10 +617,14 @@ void FMEditor::tabChanged(int newslot) {
   connect(copyAct,SIGNAL(triggered()),currentEditor(),SLOT(copy()));
   connect(pasteAct,SIGNAL(triggered()),currentEditor(),SLOT(paste()));
   // Disconnect each of the contents changed signals
-  if (prevEdit)
+  if (prevEdit) {
     disconnect(prevEdit->document(),SIGNAL(contentsChanged()),0,0);
+    disconnect(prevEdit,SIGNAL(showDataTips(QPoint, QString)),0,0);
+  }
   // NEED TO DISCONNECT...
   connect(currentEditor()->document(),SIGNAL(contentsChanged()),this,SLOT(documentWasModified()));
+  connect(currentEditor(),SIGNAL(showDataTips(QPoint, QString)),
+          this,SLOT(showDataTips(QPoint, QString)));
   updateTitles();
   prevEdit = currentEditor();
 }
@@ -687,6 +708,10 @@ void FMEditor::createActions() {
   connect(colorConfigAct,SIGNAL(triggered()),this,SLOT(configcolors()));
   indentConfigAct = new QAction("Indenting",this);
   connect(indentConfigAct,SIGNAL(triggered()),this,SLOT(configindent()));
+  dataTipConfigAct = new QAction("Enable datatips",this);
+  dataTipConfigAct->setCheckable(true);
+  dataTipConfigAct->setShortcut(Qt::Key_F1 | Qt::SHIFT);
+  connect(dataTipConfigAct,SIGNAL(triggered()),this,SLOT(configDataTip()));
   executeSelectedAct = new QAction("Execute Selected Text",this);
   executeSelectedAct->setShortcut(Qt::Key_F9); 
   connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
@@ -760,6 +785,7 @@ void FMEditor::createMenus() {
   configMenu->addAction(fontAct);
   configMenu->addAction(colorConfigAct);
   configMenu->addAction(indentConfigAct);
+  configMenu->addAction(dataTipConfigAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(findAct);
   toolsMenu->addAction(replaceAct);
@@ -829,6 +855,17 @@ void FMEditor::configindent() {
   FMIndentConf t(this);
   t.exec();
 }
+ 
+void FMEditor::configDataTip() {
+  if (dataTipConfigAct->isChecked()) {
+     isShowToolTip = true;
+     statusBar()->showMessage("Datatips on", 2000);
+  }
+  else {
+     isShowToolTip = false;
+     statusBar()->showMessage("Datatips off", 2000);
+  }
+}
 
 void FMEditor::dbstep() {
   m_eval->ExecuteLine("dbstep\n");  
@@ -858,7 +895,7 @@ void FMEditor::dbsetclearbp() {
 //   selections.push_back(sel);
 //   te->getEditor()->dsetExtraSelections(selections);
 
-  m_eval->toggleBP(te->getFileName(),te->getLineNumber()); //chuong 2007-01-07
+  m_eval->toggleBP(te->getFileName(),te->getLineNumber());
 }
 
 void FMEditor::dbstop() {
@@ -1034,6 +1071,36 @@ void FMEditor::RefreshBPLists() {
   update();
 }
 
+void FMEditor::IllegalLineOrCurrentPath(string name, int line) {
+  QString fullname = QString::fromStdString(name);
+  QFileInfo fileInfo(fullname);
+  QString filePath = QFileInfo(fullname).absolutePath();
+  QString currentPath = QDir::currentPath();
+  if (filePath !=currentPath) {
+     int ret = QMessageBox::warning(this, tr("FreeMat"),
+				   "File " + fullname + " is not on the current path."
+				   " To set breakpoint, do you want to change current "
+				   " path to the path of this file?",
+				   QMessageBox::Yes | QMessageBox::Default,
+				   QMessageBox::No,
+				   QMessageBox::Cancel | QMessageBox::Escape);
+	if (ret == QMessageBox::Yes) {
+	   emit EvaluateText("cd " + filePath + "\n");
+	   // leave some time to finish the above command
+	   sleep(1);
+	   // make sure the current path is the file path
+	   // before execute toggleBP() 
+       currentPath = QDir::currentPath();
+	   if (filePath != currentPath)
+	     m_eval->toggleBP(fullname, line);
+	   else
+         statusBar()->showMessage("Try again", 2000);
+	}
+  }
+  else 
+     statusBar()->showMessage("Illegal line number", 2000);
+}
+
 void FMEditor::ShowActiveLine() {
   // Find the tab with this matching filename
   QString tname(QString::fromStdString(m_eval->getInstructionPointerFileName()));
@@ -1058,6 +1125,146 @@ void FMEditor::ShowActiveLine() {
   }
   loadFile(tname);
   update();
+}
+
+void FMEditor::refreshContext() {
+  if (!context) return;
+  
+  //Reset all the values
+  varNameList = QStringList();
+  varTypeList = QStringList();
+  varFlagsList = QStringList();
+  varSizeList = QStringList();
+  varValueList = QStringList();
+
+  StringVector varnames(context->listAllVariables());
+  varnames = StringVector(context->listAllVariables());
+  std::sort(varnames.begin(),varnames.end());
+  for (int i=0;i<varnames.size();i++) {
+    QString name(QString::fromStdString(varnames[i]));
+    QString type;
+    QString flags;
+    QString size;
+    QString value;
+    Array lookup;
+    ArrayReference ptr;
+    ptr = context->lookupVariable(varnames[i]);
+    if (!ptr.valid()) {
+      type = "undefined";
+    } else {
+      lookup = *ptr;
+      Class t = lookup.dataClass();
+      switch(t) {
+      case FM_CELL_ARRAY:
+	type = "cell";
+	break;
+      case FM_STRUCT_ARRAY:
+	if (lookup.isUserClass())
+	  type = QString::fromStdString(lookup.className().back());
+	else
+	  type = "struct";
+	break;
+      case FM_LOGICAL:
+	type = "logical";
+	break;
+      case FM_UINT8:
+	type = "uint8";
+	break;
+      case FM_INT8:
+	type = "int8";
+	break;
+      case FM_UINT16:
+	type = "uint16";
+	break;
+      case FM_INT16:
+	type = "int16";
+	break;
+      case FM_UINT32:
+	type = "uint32";
+	break;
+      case FM_INT32:
+	type = "int32";
+	break;
+      case FM_UINT64:
+	type = "uint64";
+	break;
+      case FM_INT64:
+	type = "int64";
+	break;
+      case FM_FLOAT:
+	type = "float";
+	break;
+      case FM_DOUBLE:
+	type = "double";
+	break;
+      case FM_COMPLEX:
+	type = "complex";
+	break;
+      case FM_DCOMPLEX:
+	type = "dcomplex";
+	break;
+      case FM_STRING:
+	type = "string";
+	break;
+      case FM_FUNCPTR_ARRAY:
+	type = "func ptr";
+	break;
+      }
+      if (lookup.sparse())
+	flags = "Sparse ";
+      if (context->isVariableGlobal(varnames[i])) {
+	flags += "Global ";
+      } else if (context->isVariablePersistent(varnames[i])) {
+	flags += "Persistent ";
+      }
+      size = QString::fromStdString(lookup.dimensions().asString());
+      try {
+	value = QString::fromStdString(ArrayToPrintableString(lookup));
+      } catch (Exception& e) {
+      }
+    }
+    varNameList << name;
+	varTypeList << type;
+	varFlagsList << flags;
+	varSizeList << size;
+	varValueList << value;	    
+  }
+}
+
+void FMEditor::setContext(Context *watch) {
+  context = watch;
+  refreshContext();
+}
+
+void FMEditor::showDataTips(QPoint pos, QString textSelected) {
+
+  if (!isShowToolTip)
+     return;
+     
+  bool foundTip = 0;
+  if (!textSelected.isEmpty()) {
+    //split selected text into smaller parts and match with existing variable names
+ 	QStringList list = textSelected.split(QRegExp("\\W+"), QString::SkipEmptyParts);
+	 for (int j = 0; j < list.size(); j++)
+		for (int i = 0; i < varNameList.size(); i++)
+		  if (list.at(j) == varNameList.at(i)) {
+			foundTip = 1;
+			if (varValueList.at(i).isEmpty())
+			  QToolTip::showText(pos, varNameList.at(i) + ": " + 
+				                    varSizeList.at(i) + " " + 
+				                    varTypeList.at(i));
+			else
+			  QToolTip::showText(pos, varNameList.at(i) + ": " + 
+				                    varSizeList.at(i) + " " + 
+				                    varTypeList.at(i) + " =\n    " + 
+				                    varValueList.at(i) );
+			break;
+	      }
+    if (!foundTip)
+      QToolTip::hideText();
+  }
+  else
+    QToolTip::hideText();
 }
 
 void FMEditor::closeTab() {

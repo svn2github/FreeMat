@@ -4248,7 +4248,8 @@ void Interpreter::addBreakpoint(string name, int line) {
     }
   }
   if (best_dist > max_line_count)
-    warningMessage(std::string("Cannot set breakpoint at line ")+line+" of file "+name + ".  \r\nThis can be caused by an illegal line number, or a function that is not on the path or in the current directory.");
+//    warningMessage(std::string("Cannot set breakpoint at line ")+line+" of file "+name + ".  \r\nThis can be caused by an illegal line number, or a function that is not on the path or in the current directory.");
+    emit IllegalLineOrCurrentPath(name, line);
   else {
     addBreakpoint(stackentry(fullFileName,allFuncs[best_func],best_dist+line,bpList++));
   }

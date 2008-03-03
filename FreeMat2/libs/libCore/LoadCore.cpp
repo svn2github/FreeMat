@@ -108,7 +108,7 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("bitand",BitandFunction,2,1,"x","n",NULL);
   context->addFunction("bitor",BitorFunction,2,1,"x","n",NULL);
   context->addFunction("bitxor",BitxorFunction,2,1,"x","n",NULL);
-  context->addFunction("bitcmp",BitcmpFunction,1,1,"x",NULL);
+  context->addFunction("bitcmp_cpp",BitcmpFunction,1,1,"x",NULL);
 // 
   context->addFunction("int2bin",Int2BinFunction,2,1,"x","n",NULL);
   context->addFunction("bin2int",Bin2IntFunction,2,1,"x","flags",NULL);

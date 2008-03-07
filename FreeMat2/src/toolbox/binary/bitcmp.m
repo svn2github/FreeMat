@@ -17,8 +17,7 @@
 % 
 % in which case the complement is taken with respect to n bits, where n must be 
 % less than the length of the integer type.
-% bitcmp_cpp, referenced by this function, is a c++ implementation implemented for
-% computational speed, which takes a single argument.
+%
 function Out = bitcmp(In, N)
 Out = bitcmp_cpp(In);
 if(nargin > 1)

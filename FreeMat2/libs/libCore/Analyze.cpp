@@ -2942,7 +2942,19 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   retArray.push_back(retval);
   return retArray;
 }
-
+//!
+//@Module BITAND Bitwise Boolean And Operation
+//@@Section BINARY
+//@@Usage
+//Performs a bitwise binary and operation on the two arguments and
+//returns the result.  The syntax for its use is
+//@[
+//   y = bitand(a,b)
+//@]
+//where @|a| and @|b| are multi-dimensional unsigned integer arrays.
+//The and operation is performed using 32 bit unsigned intermediates.  Note that if a
+//or b is a scalar, then each element of the other array is and'ed with
+// that scalar.  Otherwise the two arrays must match in size.
 //!
 ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
@@ -2984,6 +2996,20 @@ ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
   return retArray;
 }
 
+//!
+//@Module BITOR Bitwise Boolean Or Operation
+//@@Section BINARY
+//@@Usage
+//Performs a bitwise binary or operation on the two arguments and
+//returns the result.  The syntax for its use is
+//@[
+//   y = bitor(a,b)
+//@]
+//where @|a| and @|b| are multi-dimensional unsigned integer arrays.
+//The and operation is performed using 32 bit unsigned intermediates.  Note that if a
+//or b is a scalar, then each element of the other array is or'ed with
+// that scalar.  Otherwise the two arrays must match in size.
+//!
 ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("bitor requires at least two arguments");
@@ -3024,6 +3050,20 @@ ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
   return retArray;
 }
 
+//!
+//@Module BITXOR Bitwise Boolean Exclusive-Or (XOR) Operation
+//@@Section BINARY
+//@@Usage
+//Performs a bitwise binary xor operation on the two arguments and
+//returns the result.  The syntax for its use is
+//@[
+//   y = bitxor(a,b)
+//@]
+//where @|a| and @|b| are multi-dimensional unsigned integer arrays.
+//The and operation is performed using 32 bit unsigned intermediates.  Note that if a
+//or b is a scalar, then each element of the other array is xor'ed with
+// that scalar.  Otherwise the two arrays must match in size.
+//!
 ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("bitxor requires at least two arguments");
@@ -3063,12 +3103,20 @@ ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
   retArray.push_back(retval);
   return retArray;
 }
+
 //!
-//BITCMP
-//Computes the bit complement of unsigned integers.The output array is
-//of the same integer type as the input. All bits are complemented. This
-//differs from the Matlab implementation, which allows fewer bits than the
-//full resolution to be complemented.
+//@Module BITCMP_CPP Bitwise Boolean Complement Operation
+//@@Section BINARY
+//@@Usage
+//Performs a bitwise binary complement operation on the argument and
+//returns the result.  The syntax for its use is
+//@[
+//   y = bitcmp_cpp(a)
+//@]
+//where @|a| is a  multi-dimensional unsigned integer arrays.  This version of the command
+//uses as many bits as required by the type of a.  For example, if 
+//a is an uint8 type, then the complement is formed using 8 bits.
+//
 //!
 ArrayVector BitcmpFunction(int nargout, const ArrayVector& arg) {
   Array A(arg[0]);

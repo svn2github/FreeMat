@@ -1644,7 +1644,7 @@ ArrayVector FtellFunction(int nargout, const ArrayVector& arg) {
 //end of file, and somewhat counter-intuitively, the answer is @|false|.
 //We then attempt to read past the end of the file, which causes an
 //error.  An @|feof| test now returns the expected value of @|true|.
-//@<1
+//@<
 //fp = fopen('test.dat','rb');
 //x = fread(fp,[512,inf],'float');
 //feof(fp)

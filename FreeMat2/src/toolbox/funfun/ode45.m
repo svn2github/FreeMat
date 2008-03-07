@@ -1,6 +1,6 @@
 %!
 %@Module ODE45 Numerical Solution of ODEs
-%@@Section ODE
+%@@Section FUNCTION
 %@@Usage
 % function [t,y] = ode45(f,tspan,y0,options,varargin)
 % function SOL   = ode45(f,tspan,y0,options,varargin)
@@ -74,6 +74,7 @@
 %
 % If the output yn is very different from the input yn, the quality of interpolation
 % may decrease.
+%!
 function varargout = ode45(f,tspan,y0,options,varargin)
 if(nargin<4) options={}; end
 abstol=generic_get(options,'AbsTol',1e-6);

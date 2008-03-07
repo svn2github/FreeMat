@@ -151,12 +151,13 @@ void FMTextEdit::comment() {
     line1.setPosition(cursor.anchor());
   }
   line1.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  QTextCursor line2Copy(line2);
   line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  if (line2.position() == line2Copy.position()) //at beginning of line, ignore this line
+    line2.movePosition(QTextCursor::Up,QTextCursor::MoveAnchor);
   QTextCursor pos(line1);
   pos.beginEditBlock();
-  //while (pos.position() <= line2.position()) {
   while (pos.position() < line2.position()) { 
-    //pos.insertText("%");
     pos.insertText("% "); 
     pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
   }
@@ -174,10 +175,12 @@ void FMTextEdit::uncomment() {
     line1.setPosition(cursor.anchor());
   }
   line1.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  QTextCursor line2Copy(line2);
   line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  if (line2.position() == line2Copy.position()) //at beginning of line, ignore this line
+    line2.movePosition(QTextCursor::Up,QTextCursor::MoveAnchor);
   QTextCursor pos(line1);
   pos.beginEditBlock();
-  //while (pos.position() <= line2.position()) {
   while (pos.position() < line2.position()) { 
     pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
     if (pos.selectedText() == "%") {
@@ -196,6 +199,82 @@ void FMTextEdit::uncomment() {
     pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
     if (pos.selectedText() == " ")  
       pos.deleteChar();
+  }
+  pos.endEditBlock();
+}
+
+void FMTextEdit::increaseIndent() {
+  QString Blanks;
+  Blanks.fill(' ',indentSize);
+  QTextCursor cursor(textCursor());
+  QTextCursor line1(cursor);
+  QTextCursor line2(cursor);
+  if (cursor.position() == cursor.anchor()) { //add blanks to align text
+    QTextCursor pos(cursor);
+    pos.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+    QString NewBlanks(Blanks);
+    NewBlanks.chop((cursor.position()-pos.position()+indentSize)%indentSize);
+    cursor.insertText(NewBlanks);
+    return;
+  }
+  
+  if (cursor.position() < cursor.anchor()) {
+    line2.setPosition(cursor.anchor());
+  } else {
+    line1.setPosition(cursor.anchor());
+  }
+  line1.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  QTextCursor line2Copy(line2);
+  line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  if (line2.position() == line2Copy.position()) //at beginning of line, ignore this line
+    line2.movePosition(QTextCursor::Up,QTextCursor::MoveAnchor);
+ 
+  QTextCursor pos(line1);
+  pos.beginEditBlock();
+  while (pos.position() < line2.position()) { 
+    pos.insertText(Blanks);
+    pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
+  }
+  pos.insertText(Blanks);
+  pos.endEditBlock();
+}
+
+void FMTextEdit::decreaseIndent() {
+  QTextCursor cursor(textCursor());
+  QTextCursor line1(cursor);
+  QTextCursor line2(cursor);
+  if (cursor.position() < cursor.anchor()) {
+    line2.setPosition(cursor.anchor());
+  } else {
+    line1.setPosition(cursor.anchor());
+  }
+  line1.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  QTextCursor line2Copy(line2);
+  line2.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  if (line2.position() == line2Copy.position()) //at beginning of line, ignore this line
+    line2.movePosition(QTextCursor::Up,QTextCursor::MoveAnchor);
+  QTextCursor pos(line1);
+  pos.beginEditBlock();
+  while (pos.position() < line2.position()) { 
+    for (int i=0; i<indentSize; i++) { //remove at most "indentSize" of blank characters
+      pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+      if (pos.selectedText() == " ") {
+        pos.deleteChar();
+      }
+      else
+      	break;
+    }
+    pos.movePosition(QTextCursor::Down,QTextCursor::MoveAnchor);
+    pos.movePosition(QTextCursor::StartOfLine,QTextCursor::MoveAnchor);
+  }
+
+  for (int i=0; i<indentSize; i++) { //remove at most "indentSize" of  blank characters
+    pos.movePosition(QTextCursor::Right,QTextCursor::KeepAnchor);
+    if (pos.selectedText() == " ") {
+      pos.deleteChar();
+    }
+    else
+      break;
   }
   pos.endEditBlock();
 }
@@ -680,6 +759,12 @@ void FMEditor::createActions() {
   uncommentAct = new QAction("Uncomment Region",this);
   uncommentAct->setShortcut(Qt::Key_T | Qt::CTRL); 
   connect(uncommentAct,SIGNAL(triggered()),this,SLOT(uncomment()));
+  increaseIndentAct = new QAction("Increase Indent",this);
+  increaseIndentAct->setShortcut(Qt::Key_Tab); 
+  connect(increaseIndentAct,SIGNAL(triggered()),this,SLOT(increaseIndent()));
+  decreaseIndentAct = new QAction("Decrease Indent",this);
+  decreaseIndentAct->setShortcut(Qt::Key_Tab | Qt::SHIFT); 
+  connect(decreaseIndentAct,SIGNAL(triggered()),this,SLOT(decreaseIndent()));
   undoAct = new QAction("Undo Edits",this);
   undoAct->setShortcut(Qt::Key_Z | Qt::CTRL);
   connect(undoAct,SIGNAL(triggered()),this,SLOT(undo()));
@@ -715,13 +800,13 @@ void FMEditor::createActions() {
   executeSelectedAct = new QAction("Execute Selected Text",this);
   executeSelectedAct->setShortcut(Qt::Key_F9); 
   connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
-  executeCurrentAct = new QAction("Execute Current Buffer",this);
+  executeCurrentAct = new QAction(QIcon(":/images/player_play.png"),"Execute Current Buffer",this);
   executeCurrentAct->setShortcut(Qt::Key_F5); 
   connect(executeCurrentAct,SIGNAL(triggered()),this,SLOT(execCurrent()));
 }
 
 void FMEditor::execSelected() {
-  emit EvaluateText(currentEditor()->textCursor().selectedText());
+  emit EvaluateText(currentEditor()->textCursor().selectedText()+"\n");
 }
 
 void FMEditor::execCurrent() {
@@ -748,6 +833,14 @@ void FMEditor::comment() {
 
 void FMEditor::uncomment() {
   currentEditor()->uncomment();
+}
+
+void FMEditor::increaseIndent() {
+  currentEditor()->increaseIndent();
+}
+
+void FMEditor::decreaseIndent() {
+  currentEditor()->decreaseIndent();
 }
 
 void FMEditor::find() {
@@ -791,6 +884,8 @@ void FMEditor::createMenus() {
   toolsMenu->addAction(replaceAct);
   toolsMenu->addAction(commentAct);
   toolsMenu->addAction(uncommentAct);
+  toolsMenu->addAction(increaseIndentAct);
+  toolsMenu->addAction(decreaseIndentAct);
   debugMenu = menuBar()->addMenu("&Debug");
   debugMenu->addAction(executeCurrentAct);
   debugMenu->addAction(executeSelectedAct);
@@ -838,6 +933,8 @@ void FMEditor::createToolBars() {
   editToolBar->addAction(copyAct);
   editToolBar->addAction(cutAct);
   editToolBar->addAction(pasteAct);
+  executeToolBar = addToolBar("Execute");
+  executeToolBar->addAction(executeCurrentAct);
   debugToolBar = addToolBar("Debug");
   debugToolBar->addAction(dbStepAct);
   debugToolBar->addAction(dbTraceAct);

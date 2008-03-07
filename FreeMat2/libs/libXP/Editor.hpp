@@ -87,6 +87,8 @@ public:
   void contextMenuEvent(QContextMenuEvent*e);
   void comment();
   void uncomment();
+  void increaseIndent();
+  void decreaseIndent();
   bool replace(QString text, QString replace, QTextDocument::FindFlags flags);
   int replaceAll(QString text, QString replace, QTextDocument::FindFlags flags);
   void fontUpdate();
@@ -181,10 +183,11 @@ private:
 class FMEditor : public QMainWindow {
   Q_OBJECT
   QMenu *fileMenu, *editMenu, *toolsMenu, *debugMenu;
-  QToolBar *editToolBar, *fileToolBar, *debugToolBar;
+  QToolBar *editToolBar, *fileToolBar, *executeToolBar, *debugToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
+  QAction *increaseIndentAct, *decreaseIndentAct;
   QAction *dbStepAct, *dbTraceAct, *dbContinueAct;
   QAction *dbSetClearBPAct, *dbStopAct;
   QAction *redoAct, *undoAct, *colorConfigAct, *indentConfigAct;
@@ -248,6 +251,8 @@ private slots:
 		    bool backwards, bool sensitive);
   void comment();
   void uncomment();
+  void increaseIndent();
+  void decreaseIndent();
   void undo();
   void redo();
   void RefreshBPLists();

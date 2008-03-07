@@ -103,7 +103,7 @@ void ApplicationWindow::createActions() {
   aboutQt = new QAction("About &Qt",this);
   connect(aboutQt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));
   pauseAct = new QAction(QIcon(":/images/player_pause.png"),"&Pause",this);
-  continueAct = new QAction(QIcon(":/images/player_play.png"),"&Continue",this);
+  continueAct = new QAction(QIcon(":/images/dbgrun.png"),"&Continue",this);
   continueAct->setShortcut(Qt::Key_Down | Qt::CTRL); 
   stopAct = new QAction(QIcon(":/images/player_stop.png"),"&Stop",this);
   stopAct->setShortcut(Qt::Key_Escape | Qt::CTRL); 

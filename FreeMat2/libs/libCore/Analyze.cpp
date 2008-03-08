@@ -2955,6 +2955,11 @@ ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
 //The and operation is performed using 32 bit unsigned intermediates.  Note that if a
 //or b is a scalar, then each element of the other array is and'ed with
 // that scalar.  Otherwise the two arrays must match in size.
+//@@Example
+//@<
+//bitand(uint16([1,16,255]),uint16([3,17,128]))
+//bitand(uint16([1,16,255]),uint16(3))
+//@>
 //!
 ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
@@ -3008,7 +3013,12 @@ ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
 //where @|a| and @|b| are multi-dimensional unsigned integer arrays.
 //The and operation is performed using 32 bit unsigned intermediates.  Note that if a
 //or b is a scalar, then each element of the other array is or'ed with
-// that scalar.  Otherwise the two arrays must match in size.
+//that scalar.  Otherwise the two arrays must match in size.
+//@@Example
+//@<
+//bitand(uint16([1,16,255]),uint16([3,17,128]))
+//bitand(uint16([1,16,255]),uint16(3))
+//@>
 //!
 ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
@@ -3063,6 +3073,11 @@ ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
 //The and operation is performed using 32 bit unsigned intermediates.  Note that if a
 //or b is a scalar, then each element of the other array is xor'ed with
 // that scalar.  Otherwise the two arrays must match in size.
+//@@Example
+//@<
+//bitand(uint16([1,16,255]),uint16([3,17,128]))
+//bitand(uint16([1,16,255]),uint16(3))
+//@>
 //!
 ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
@@ -3117,6 +3132,9 @@ ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
 //uses as many bits as required by the type of a.  For example, if 
 //a is an uint8 type, then the complement is formed using 8 bits.
 //
+//@<
+//bitcmp_cpp(uint16(2^14-2))
+//@>
 //!
 ArrayVector BitcmpFunction(int nargout, const ArrayVector& arg) {
   Array A(arg[0]);

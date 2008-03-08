@@ -98,7 +98,7 @@ void ApplicationWindow::createActions() {
   aboutAct = new QAction("&About",this);
   connect(aboutAct,SIGNAL(triggered()),this,SLOT(about()));
   manualAct = new QAction("Online &Manual",this);
-  manualAct->setShortcut(Qt::Key_H | Qt::CTRL);
+  manualAct->setShortcut(Qt::Key_F1);
   connect(manualAct,SIGNAL(triggered()),this,SLOT(manual()));
   aboutQt = new QAction("About &Qt",this);
   connect(aboutQt,SIGNAL(triggered()),qApp,SLOT(aboutQt()));

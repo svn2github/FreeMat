@@ -182,12 +182,12 @@ private:
 
 class FMEditor : public QMainWindow {
   Q_OBJECT
-  QMenu *fileMenu, *editMenu, *toolsMenu, *debugMenu;
+  QMenu *fileMenu, *editMenu, *toolsMenu, *debugMenu, *helpMenu;
   QToolBar *editToolBar, *fileToolBar, *executeToolBar, *debugToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
-  QAction *increaseIndentAct, *decreaseIndentAct;
+  QAction *increaseIndentAct, *decreaseIndentAct, *helpWinAct, *helpOnSelectionAct;
   QAction *dbStepAct, *dbTraceAct, *dbContinueAct;
   QAction *dbSetClearBPAct, *dbStopAct;
   QAction *redoAct, *undoAct, *colorConfigAct, *indentConfigAct;
@@ -271,6 +271,8 @@ private slots:
   void openRecentFile(); 
   void showDataTips(QPoint pos, QString textSelected);
   void configDataTip();
+  void helpWin();
+  void helpOnSelection();
 public:
   void closeEvent(QCloseEvent *event);
   void setContext(Context *watch);

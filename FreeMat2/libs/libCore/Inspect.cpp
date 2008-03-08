@@ -31,6 +31,7 @@
 #include <QtGui>
 #include "Module.hpp"
 #include "MemPtr.hpp"
+static HelpWindow *m_helpwin=0;
 
 static std::string helppath;
   
@@ -151,9 +152,10 @@ bool inBundleMode() {
 //@|helpwin| function takes no arguments:
 //@[
 //  helpwin
+//  helpwin FunctionName
 //@]
 //!
-ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {  
   QDir dir;
   if (inBundleMode()) {
     dir = QDir(QString(qApp->applicationDirPath() + "/../Resources/help/html"));
@@ -161,8 +163,17 @@ ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* ev
     QSettings settings("FreeMat","FreeMat");
     dir = QDir(QString(settings.value("root", RESOURCEDIR).toString())+"/help/html");
   }
-  HelpWindow *m_helpwin = new HelpWindow(dir.canonicalPath());
-  m_helpwin->show();
+  if (!m_helpwin)
+    m_helpwin = new HelpWindow(dir.canonicalPath());
+  if (arg.size() == 0)
+    m_helpwin->show();
+  else if (arg.size() == 1) {
+    string fulltext = arg[0].getContentsAsString();
+    m_helpwin->helpText(QString::fromStdString(fulltext));
+    m_helpwin->show();
+  }
+  else
+    throw Exception("helpwin function requires at most 1 argument.");
   return ArrayVector();
 }
 

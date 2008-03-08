@@ -29,7 +29,7 @@
 #endif
 
 void LoadGUICoreFunctions(Context* context) {
-  context->addGfxSpecialFunction("helpwin",HelpWinFunction,0,0,NULL);
+  context->addGfxSpecialFunction("helpwin",HelpWinFunction,1,0,"function",NULL);
   context->addGfxSpecialFunction("pathtool",PathToolFunction,0,0,NULL);
   context->addGfxSpecialFunction("imread",ImReadFunction,1,3,"filename",NULL);
   context->addGfxSpecialFunction("imwrite",ImWriteFunction,4,0,"filename","A","map","alpha",NULL);

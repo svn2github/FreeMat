@@ -774,6 +774,12 @@ void FMEditor::createActions() {
   replaceAct = new QAction("Find and Replace",this);
   replaceAct->setShortcut(Qt::Key_H | Qt::CTRL); 
   connect(replaceAct,SIGNAL(triggered()),this,SLOT(replace()));
+  helpWinAct = new QAction("Online &Manual",this);
+  helpWinAct->setShortcut(Qt::Key_F1); 
+  connect(helpWinAct,SIGNAL(triggered()),this,SLOT(helpWin()));
+  helpOnSelectionAct = new QAction("Help on Selection",this);
+  helpOnSelectionAct->setShortcut(Qt::Key_F2); 
+  connect(helpOnSelectionAct,SIGNAL(triggered()),this,SLOT(helpOnSelection()));
   dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
   dbStepAct->setShortcut(Qt::Key_F10); 
   connect(dbStepAct,SIGNAL(triggered()),this,SLOT(dbstep()));
@@ -853,6 +859,14 @@ void FMEditor::replace() {
   m_replace->raise();
 }
 
+void FMEditor::helpWin() {
+  emit EvaluateText("helpwin\n");
+}
+
+void FMEditor::helpOnSelection() {
+  emit EvaluateText("helpwin " + currentEditor()->textCursor().selectedText() + "\n");
+}
+
 void FMEditor::createMenus() {
   fileMenu = menuBar()->addMenu("&File");
   fileMenu->addAction(newAct);
@@ -895,7 +909,11 @@ void FMEditor::createMenus() {
   debugMenu->addAction(dbContinueAct);
   debugMenu->addAction(dbSetClearBPAct);
   debugMenu->addAction(dbStopAct);
+  helpMenu = menuBar()->addMenu("&Help");
+  helpMenu->addAction(helpWinAct);
+  helpMenu->addAction(helpOnSelectionAct);
   m_popup = new QMenu;
+  m_popup->addAction(helpOnSelectionAct);
   m_popup->addAction(copyAct);
   m_popup->addAction(cutAct);
   m_popup->addAction(pasteAct);

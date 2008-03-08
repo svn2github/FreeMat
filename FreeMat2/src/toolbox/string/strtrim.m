@@ -50,8 +50,11 @@ function y = strtrim_string(x)
     error('strtrim expects string arguments or a cell array of strings');
   end
   ndx = find(~isspace(x(:)));
-  p = numel(x);
-  todel = [1:(min(ndx)-1),(max(ndx)+1):p];
-  y = x;
-  y(todel) = [];
-
+  if (~isempty(ndx))
+    p = numel(x);
+    todel = [1:(min(ndx)-1),(max(ndx)+1):p];
+    y = x;
+    y(todel) = [];
+  else
+   y = [];
+  end

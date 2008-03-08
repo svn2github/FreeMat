@@ -1,6 +1,6 @@
 %!
 %@Module ODE45 Numerical Solution of ODEs
-%@@Section FUNCTION
+%@@Section NUM
 %@@Usage
 % function [t,y] = ode45(f,tspan,y0,options,varargin)
 % function SOL   = ode45(f,tspan,y0,options,varargin)

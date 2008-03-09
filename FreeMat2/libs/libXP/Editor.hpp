@@ -183,7 +183,7 @@ private:
 class FMEditor : public QMainWindow {
   Q_OBJECT
   QMenu *fileMenu, *editMenu, *toolsMenu, *debugMenu, *helpMenu;
-  QToolBar *editToolBar, *fileToolBar, *executeToolBar, *debugToolBar;
+  QToolBar *editToolBar, *fileToolBar, *debugToolBar;
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;

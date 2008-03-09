@@ -951,9 +951,9 @@ void FMEditor::createToolBars() {
   editToolBar->addAction(copyAct);
   editToolBar->addAction(cutAct);
   editToolBar->addAction(pasteAct);
-  executeToolBar = addToolBar("Execute");
-  executeToolBar->addAction(executeCurrentAct);
   debugToolBar = addToolBar("Debug");
+  debugToolBar->addAction(executeCurrentAct);
+  debugToolBar->addSeparator();
   debugToolBar->addAction(dbStepAct);
   debugToolBar->addAction(dbTraceAct);
   debugToolBar->addAction(dbContinueAct);

@@ -2670,35 +2670,45 @@ ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
 //@[
 //  fprintf(fp,format,a1,a2,...).
 //@]
+//or, 
+//@[
+//  fprintf(format,a1,a2,...).
+//@]
 //Here @|format| is the format string, which is a string that
 //controls the format of the output.  The values of the variables
 //@|ai| are substituted into the output as required.  It is
 //an error if there are not enough variables to satisfy the format
 //string.  Note that this @|fprintf| command is not vectorized!  Each
-//variable must be a scalar.  The value @|fp| is the file handle.  For
-//more details on the format string, see @|printf|.  Note also 
-//that @|fprintf| to the file handle @|1| is effectively equivalent to @|printf|.
+//variable must be a scalar.  The value @|fp| is the file handle.  If @|fp| is omitted,
+//file handle @|1| is assumed, and the behavior of @|fprintf| is effectively equivalent to @|printf|. For
+//more details on the format string, see @|printf|.
 //@@Examples
 //A number of examples are present in the Examples section of the @|printf| command.
 //!
  ArrayVector FprintfFunction(int nargout, const ArrayVector& arg, 
 			     Interpreter* eval) {
-  if (arg.size() < 2)
-    throw Exception("fprintf requires at least two arguments, the file handle and theformat string");
-  Array tmp(arg[0]);
-  int handle = tmp.getContentsAsIntegerScalar();
-  if (handle == 1) {
-    ArrayVector argCopy(arg);
-    argCopy.pop_front();
-    return PrintfFunction(nargout,argCopy,eval);
+  if (arg.size() == 0)
+    throw Exception("fprintf requires at least one (string) argument");
+  ArrayVector argCopy(arg);
+  int handle = 1;
+  if (arg.size() > 1) {
+    Array tmp(arg[0]);
+    if (tmp.isScalar()) {
+      handle = tmp.getContentsAsIntegerScalar();
+      argCopy.pop_front();
+    }
+    else {
+      handle=1;
+    }
   }
-  FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
-  Array format(arg[1]);
+  Array format(argCopy[0]);
   if (!format.isString())
     throw Exception("fprintf format argument must be a string");
-  ArrayVector argcopy(arg);
-  argcopy.pop_front();
-  char *op = xprintfFunction(nargout,argcopy);
+  if (handle == 1)
+    return PrintfFunction(nargout,argCopy,eval);
+
+  FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
+  char *op = xprintfFunction(nargout,argCopy);
   char *buff = (char*) malloc(strlen(op)+1);
   convertEscapeSequences(buff,op);
   fprintf(fptr->fp,"%s",buff);

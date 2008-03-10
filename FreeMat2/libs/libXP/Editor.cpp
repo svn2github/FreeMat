@@ -1023,59 +1023,21 @@ void FMEditor::createStatusBar() {
 
 static QString lastfile;
 static bool lastfile_set = false;
-/*
-static QString GetOpenFileName(QWidget *w) {
-  QString retfile;
-  if (lastfile_set)
-    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",lastfile,
-					   "M files (*.m);;Text files (*.txt);;All files (*)");
-  else
-    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",QString(),
-					   "M files (*.m);;Text files (*.txt);;All files (*)");
-  if (!retfile.isEmpty()) {
-    QFileInfo tokeep(retfile);
-    lastfile = tokeep.absolutePath();
-    lastfile_set = true;
-  }
-  return retfile;
-}
-*/
 
-static QString GetOpenFileName(QWidget *w, const QString &filePath = QString()) { 
-  QString retfile;
+static QStringList GetOpenFileNames(QWidget *w, const QString &filePath = QString()) { 
+  QStringList retfiles;
   if (!filePath.isEmpty())
-    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",filePath,
+    retfiles = QFileDialog::getOpenFileNames(w,"Open File in Editor",filePath,
 					   "M files (*.m);;Text files (*.txt);;All files (*)");  
   else if (lastfile_set)
-    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",lastfile,
+    retfiles = QFileDialog::getOpenFileNames(w,"Open File in Editor",lastfile,
 					   "M files (*.m);;Text files (*.txt);;All files (*)");
   else
-    retfile = QFileDialog::getOpenFileName(w,"Open File in Editor",QString(),
+    retfiles = QFileDialog::getOpenFileNames(w,"Open File in Editor",QString(),
 					   "M files (*.m);;Text files (*.txt);;All files (*)");
-  if (!retfile.isEmpty()) {
-    QFileInfo tokeep(retfile);
-    lastfile = tokeep.absolutePath();
-    lastfile_set = true;
-  }
-  return retfile;
+  return retfiles;
 }
-/*
-static QString GetSaveFileName(QWidget *w) {
-  QString retfile;
-  if (lastfile_set)
-    retfile = QFileDialog::getSaveFileName(w,"Save File",lastfile,
-					   "M files (*.m);;Text files (*.txt);;All files (*)");
-  else
-    retfile = QFileDialog::getSaveFileName(w,"Save File",QString(),
-					   "M files (*.m);;Text files (*.txt);;All files (*)");
-  if (!retfile.isEmpty()) {
-    QFileInfo tokeep(retfile);
-    lastfile = tokeep.absolutePath();
-    lastfile_set = true;
-  }
-  return retfile;  
-}
-*/
+
 static QString GetSaveFileName(QWidget *w, const QString &filePath = QString()) { 
   QString retfile;
   if (!filePath.isEmpty())
@@ -1087,11 +1049,6 @@ static QString GetSaveFileName(QWidget *w, const QString &filePath = QString()) 
   else
     retfile = QFileDialog::getSaveFileName(w,"Save File",QString(),
 					   "M files (*.m);;Text files (*.txt);;All files (*)");
-  if (!retfile.isEmpty()) {
-    QFileInfo tokeep(retfile);
-    lastfile = tokeep.absolutePath();
-    lastfile_set = true;
-  }
   return retfile;  
 }
 
@@ -1113,21 +1070,24 @@ bool FMEditor::isFileOpened(const QString &fileName)
 }
 
 void FMEditor::open() {
- //if (currentEditor()->document()->isModified() ||
-  //    (tab->tabText(tab->currentIndex()) != "untitled.m")) {
   QFileInfo fileInfo(currentFilename()); 
-  if (tab->tabText(tab->currentIndex()) != "untitled.m") { 
-    tab->addTab(new FMEditPane(m_eval),"untitled.m");
-    tab->setCurrentIndex(tab->count()-1);
-    updateFont();
-  }
-  
-  //QString fileName = GetOpenFileName(this);
-  //if (!fileName.isEmpty()) {
   QString filePath = fileInfo.absolutePath(); 
-  QString fileName = GetOpenFileName(this, filePath); 
-  if (!fileName.isEmpty() && !isFileOpened(fileName) ) { 
-    loadFile(fileName);
+  QStringList fileNames = GetOpenFileNames(this, filePath);
+  QStringList::Iterator it = fileNames.begin();
+  while(it != fileNames.end()) {
+    QString fileName = *it;
+    if (tab->tabText(tab->currentIndex()) != "untitled.m") { 
+      tab->addTab(new FMEditPane(m_eval),"untitled.m");
+      tab->setCurrentIndex(tab->count()-1);
+      updateFont();
+    }
+    if (!fileName.isEmpty() && !isFileOpened(fileName)) {
+      loadFile(fileName);
+      QFileInfo tokeep(fileName);
+      lastfile = tokeep.absolutePath();
+      lastfile_set = true;
+    }
+    ++it;
   }
 }
 

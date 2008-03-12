@@ -3,6 +3,7 @@ a = [a, ':' pwd '/src/toolbox'];
 a = [a, ':' pwd '/src/toolbox/binary'];
 a = [a, ':' pwd '/src/toolbox/fitting'];
 a = [a, ':' pwd '/src/toolbox/func'];
+a = [a, ':' pwd '/src/toolbox/funfun'];
 a = [a, ':' pwd '/src/toolbox/general'];
 a = [a, ':' pwd '/src/toolbox/geom'];
 a = [a, ':' pwd '/src/toolbox/graph'];

@@ -1324,6 +1324,9 @@ sub job_linux_release {
     my $cross_prefix = shift;
     my $svn_path = shift;
     my $buildtool_path = Cwd::cwd();
+    change_directory($svn_path);
+    delete_file('manifest.am');
+    system('touch manifest.am');
     change_directory($svn_path . '/build');
     system_check('make clean');
     system_check('make');

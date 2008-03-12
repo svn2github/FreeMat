@@ -4,6 +4,8 @@
 function helpgen(source_path)
   global sourcepath section_descriptors genfiles
 
+  diary([source_path,'/help_diary.txt']);
+
   genfiles = {};
   rmdir([source_path,'/help'],'s');
   rmdir([source_path,'/toolbox'],'s');

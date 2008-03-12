@@ -10,7 +10,8 @@ JITFunc.hpp
 libMatC_a_SOURCES = MCScanner.cpp \
 MCParser.cpp \
 JIT.cpp \
-JITFunc.cpp
+JITFunc.cpp \
+$(libMatC_a_HFILES)
 
 AUTOMAKE_OPTIONS 	= foreign
 

@@ -76,6 +76,10 @@ function hout = plot3(varargin)
       varargin(1:4) = [];
     end;
   end
+if ~ishold
+	view( handle, 3 );
+	grid;
+end
 axes(saveca);
 if (nargout > 0)
    hout = h;

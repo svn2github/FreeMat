@@ -2715,7 +2715,11 @@ ArrayReference Interpreter::createVariable(string name) {
 //       z(2+(i-1)*2,j) = y(i,j);
 //     end
 //   end
-//   test_val = all(z==x); 
+//  q = x;
+//  q(:,1) = y(:);
+//  p = [x,x];
+//  p(1,:) = y(:);
+//  test_val = all(vec(z==x)) && all(q(:,1) == y(:)) && all(p(1,:).' == y(:)); 
 //@}
 //@{ test_sparse56.m
 //% Test DeleteSparseMatrix function

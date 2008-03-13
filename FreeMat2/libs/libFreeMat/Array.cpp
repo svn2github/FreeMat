@@ -2470,7 +2470,10 @@ constIndexPtr* ProcessNDimIndexes(bool preserveColons,
   colonIndex = -1;
   for (int i=0;i<index.size();i++) {
     bool isColon = isColonOperator(index[i]);
-    if (!colonFound && isColon && preserveColons) {
+    // Hack - to fix issues with colon operators and complex values
+    // am disabling colon preservation for colons that are not in
+    // the first dimensional slot.
+    if (!colonFound && isColon && preserveColons && (i == 0)) {
       colonFound = true;
       colonIndex = i;
       outndx[i] = NULL;
@@ -3278,13 +3281,13 @@ void Array::setNDimSubset(ArrayVector& index, Array& rdata, Interpreter* m_eval)
       setNDimSubsetNumericDispatchBurst<float>(colonIndex,(float*) qp,
 					       (const float*) rdata.getDataPointer(),
 					       outDimsInt,srcDimsInt,
-					       indx, L, 2,advance*2);
+					       indx, L, 2, advance);
       break;
     case FM_DCOMPLEX: 
       setNDimSubsetNumericDispatchBurst<double>(colonIndex,(double*) qp,
 						(const double*) rdata.getDataPointer(),
 						outDimsInt,srcDimsInt,
-						indx, L, 2,advance*2);
+						indx, L, 2, advance);
       break;
     case FM_LOGICAL: 
       setNDimSubsetNumericDispatchReal<logical>(colonIndex,(logical*) qp,

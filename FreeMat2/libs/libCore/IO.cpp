@@ -1971,7 +1971,9 @@ Array Num2StrHelperReal(const T*dp, Dimensions Xdims, const char *formatspec) {
 	sprintf(elbuffer,formatspec,dp[i+j*rows+offset]);
 	char elbuffer2[1024];
 	convertEscapeSequences(elbuffer2,elbuffer);
-	colbuffer += string(elbuffer2) + " ";
+	if (j > 0)
+	  colbuffer += " ";
+	colbuffer += string(elbuffer2);
       }
       row_string.push_back(colbuffer);
     }
@@ -2017,12 +2019,14 @@ Array Num2StrHelperComplex(const T*dp, Dimensions Xdims, const char *formatspec)
 	char elbuffer2[1024];
 	sprintf(elbuffer,formatspec,dp[2*(i+j*rows+offset)]);
 	convertEscapeSequences(elbuffer2,elbuffer);
-	colbuffer += string(elbuffer2) + " ";
+	if (j > 0)
+	  colbuffer += " ";
+	colbuffer += string(elbuffer2);
 	sprintf(elbuffer,formatspec,dp[2*(i+j*rows+offset)+1]);
 	convertEscapeSequences(elbuffer2,elbuffer);
 	if (dp[2*(i+j*rows+offset)+1]>=0) 
 	  colbuffer += "+";
-	colbuffer += string(elbuffer2) + "i ";
+	colbuffer += string(elbuffer2) + "i";
       }
       row_string.push_back(colbuffer);
     }
@@ -2062,7 +2066,8 @@ ArrayVector Num2StrFunction(int nargout, const ArrayVector& arg) {
   if (X.isIntegerClass())
     sprintf(formatspec,"%%d");
   else
-    sprintf(formatspec,"%%11.4g");
+//    sprintf(formatspec,"%%11.4g");
+    sprintf(formatspec,"%%g"); //without preceding space
   if (arg.size() > 1) {
     Array format(arg[1]);
     if (format.isString())

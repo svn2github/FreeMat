@@ -803,7 +803,7 @@ void FMEditor::createActions() {
   dataTipConfigAct->setCheckable(true);
   dataTipConfigAct->setShortcut(Qt::Key_F1 | Qt::SHIFT);
   connect(dataTipConfigAct,SIGNAL(triggered()),this,SLOT(configDataTip()));
-  executeSelectedAct = new QAction("Execute Selected Text",this);
+  executeSelectedAct = new QAction(QIcon(":/images/player_playselection.png"),"Execute Selected Text",this);
   executeSelectedAct->setShortcut(Qt::Key_F9); 
   connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
   executeCurrentAct = new QAction(QIcon(":/images/player_play.png"),"Execute Current Buffer",this);
@@ -953,6 +953,7 @@ void FMEditor::createToolBars() {
   editToolBar->addAction(pasteAct);
   debugToolBar = addToolBar("Debug");
   debugToolBar->addAction(executeCurrentAct);
+  debugToolBar->addAction(executeSelectedAct);
   debugToolBar->addSeparator();
   debugToolBar->addAction(dbStepAct);
   debugToolBar->addAction(dbTraceAct);

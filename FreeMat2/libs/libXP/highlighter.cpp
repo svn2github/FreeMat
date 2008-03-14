@@ -56,11 +56,11 @@ Highlighter::Highlighter(QTextDocument *parent)
     "\\bwhile\\b";
   foreach (QString pattern, keywordPatterns)
     mappings[pattern] = keywordFormat;
-
+/*
   QTextCharFormat singleLineCommentFormat;
   singleLineCommentFormat.setForeground(commentColor);
   mappings["\\%[^\n]*"] = singleLineCommentFormat;
-
+*/
   stringFormat.setForeground(stringColor);
   untermStringFormat.setForeground(untermStringColor);
 
@@ -120,11 +120,22 @@ void Highlighter::highlightBlock(const QString &text)
   QTextCharFormat singleLineCommentFormat;
   singleLineCommentFormat.setForeground(commentColor);
   QRegExp comment("\\%[^\n]*");
-  index = text.indexOf(comment);
-  while (index >= 0) {
-    int length = comment.matchedLength();
-    setFormat(index, length, singleLineCommentFormat);
-    index = text.indexOf(comment, index + length);
+  int index1 = text.indexOf(comment);
+  QRegExp notcomment("[^'\\]\\)\\}A-Za-z0-9]'[^']*'");
+  int index2 = text.indexOf(notcomment);
+  while (index1 >= 0) {
+    int length1 = comment.matchedLength();
+    bool isComment = true;
+    while (index2 >= 0) {
+      int length2 = notcomment.matchedLength();
+      if (index1 > index2 && index1 < index2+length2) // % inside a string
+        isComment = false;
+      index2 = text.indexOf(notcomment, index2 + length2);
+    }
+    if (isComment)
+      setFormat(index1, length1, singleLineCommentFormat);
+    index1 = text.indexOf(comment, index1 + length1);
   }
+
 }
 

@@ -1217,8 +1217,7 @@ void FMEditor::refreshContext() {
   varSizeList = QStringList();
   varValueList = QStringList();
 
-  StringVector varnames(context->listAllVariables());
-  varnames = StringVector(context->listAllVariables());
+  StringVector varnames = StringVector(context->listAllVariables());
   std::sort(varnames.begin(),varnames.end());
   for (int i=0;i<varnames.size();i++) {
     QString name(QString::fromStdString(varnames[i]));
@@ -1321,14 +1320,14 @@ void FMEditor::showDataTips(QPoint pos, QString textSelected) {
   if (!isShowToolTip)
      return;
      
-  bool foundTip = 0;
+  bool foundTip = false;
   if (!textSelected.isEmpty()) {
     //split selected text into smaller parts and match with existing variable names
  	QStringList list = textSelected.split(QRegExp("\\W+"), QString::SkipEmptyParts);
 	 for (int j = 0; j < list.size(); j++)
 		for (int i = 0; i < varNameList.size(); i++)
 		  if (list.at(j) == varNameList.at(i)) {
-			foundTip = 1;
+			foundTip = true;
 			if (varValueList.at(i).isEmpty())
 			  QToolTip::showText(pos, varNameList.at(i) + ": " + 
 				                    varSizeList.at(i) + " " + 

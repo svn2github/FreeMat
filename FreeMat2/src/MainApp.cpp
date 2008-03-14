@@ -203,6 +203,13 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     // Because of the threading setup, we need the keymanager to relay commands
     // from the editor to the interpreter.  
     QObject::connect(edit,SIGNAL(EvaluateText(QString)),m_app->GetKeyManager(),SLOT(QueueMultiString(QString)));
+    //Allow Editor to see the Context and refresh the content at the right time
+    edit->setContext(m_app->GetKeyManager()->GetCompletionContext());
+    QObject::connect(m_app->GetKeyManager(),SIGNAL(UpdateVariables()), 
+	    edit,SLOT(refreshContext()));
+    //Ask to change current path when setting breakpoint
+    QObject::connect(eval, SIGNAL(IllegalLineOrCurrentPath(string, int)), edit,
+        SLOT(IllegalLineOrCurrentPath(string, int)));
   }
   edit->showNormal();
   edit->raise();

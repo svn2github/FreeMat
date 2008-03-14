@@ -173,7 +173,7 @@ ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* ev
     m_helpwin->show();
   }
   else
-    throw Exception("helpwin function requires at most 1 argument.");
+    throw Exception("helpwin function accepts at most 1 argument.");
   return ArrayVector();
 }
 

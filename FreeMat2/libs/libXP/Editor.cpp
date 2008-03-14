@@ -1171,10 +1171,10 @@ void FMEditor::IllegalLineOrCurrentPath(string name, int line) {
 	  // make sure the current path is the file path
 	  // before execute toggleBP() 
 	  currentPath = QDir::currentPath();
-	  if (filePath != currentPath)
+	  if (filePath == currentPath)
 	     m_eval->toggleBP(fullname, line);
 	   else
-         statusBar()->showMessage("Try again", 2000);
+	     statusBar()->showMessage("Try again", 2000);
 	}
   }
   else 

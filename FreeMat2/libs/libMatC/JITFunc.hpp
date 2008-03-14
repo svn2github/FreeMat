@@ -1,6 +1,8 @@
 #ifndef __JITFunc_hpp__
 #define __JITFunc_hpp__
 
+#ifdef HAVE_LLVM
+
 #include "JIT.hpp"
 #include "SymbolTable.hpp"
 #include "Context.hpp"
@@ -58,5 +60,6 @@ public:
   void run();
 };
 
+#endif
 
 #endif

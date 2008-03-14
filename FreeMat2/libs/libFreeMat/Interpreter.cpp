@@ -1819,6 +1819,7 @@ void ForLoopHelperComplex(Tree *codeBlock, Class indexClass,
 //!
 //Works
 
+#ifdef HAVE_LLVM
 static bool compileJITBlock(Interpreter *interp, Tree *t) {
   delete t->JITFunction();
   JITFunc *cg = new JITFunc(interp);
@@ -1848,9 +1849,11 @@ static bool prepJITBlock(Tree *t) {
   }
   return success;
 }
+#endif
 
 void Interpreter::forStatement(Tree *t) {
   // Try to compile this block to an instruction stream  
+#ifdef HAVE_LLVM
   if (jitcontrol) {
     if (t->JITState() == Tree::UNTRIED) {
       bool success = compileJITBlock(this,t);
@@ -1873,6 +1876,7 @@ void Interpreter::forStatement(Tree *t) {
       }
     }
   }
+#endif
   Array indexSet;
   string indexVarName;
   /* Get the name of the indexing variable */

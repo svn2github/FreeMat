@@ -1,3 +1,5 @@
+#ifdef HAVE_LLVM
+
 #include "JITFunc.hpp"
 #include "Context.hpp"
 #include "Interpreter.hpp"
@@ -883,3 +885,5 @@ void JITFunc::run() {
   if (gv.IntVal != 0)
     throw exception_store;
 }
+
+#endif

@@ -34,9 +34,6 @@
 #include "Parser.hpp"
 #include "List.hpp"
 
-#include "MCScanner.hpp"
-#include "MCParser.hpp"
-
 #include <algorithm>
 #undef max
 #undef min
@@ -4940,6 +4937,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg);
 
 
 ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
+#if 0
   int test = ArrayToInt32(arg[0]);
   switch (test) {
   case 0:
@@ -5123,5 +5121,6 @@ ArrayVector DemoFunction(int nargout, const ArrayVector& arg) {
     }
     break;
   }
+#endif
   return ArrayVector();
 }

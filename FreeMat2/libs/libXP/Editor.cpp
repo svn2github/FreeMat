@@ -1161,13 +1161,17 @@ void FMEditor::IllegalLineOrCurrentPath(string name, int line) {
 				   QMessageBox::No,
 				   QMessageBox::Cancel | QMessageBox::Escape);
 	if (ret == QMessageBox::Yes) {
-	   emit EvaluateText("cd " + filePath + "\n");
-	   // leave some time to finish the above command
-	   sleep(1);
-	   // make sure the current path is the file path
-	   // before execute toggleBP() 
-       currentPath = QDir::currentPath();
-	   if (filePath != currentPath)
+	  emit EvaluateText("cd " + filePath + "\n");
+	  // leave some time to finish the above command
+#ifndef WIN32
+	  sleep(1);
+#else
+	  Sleep(1);
+#endif
+	  // make sure the current path is the file path
+	  // before execute toggleBP() 
+	  currentPath = QDir::currentPath();
+	  if (filePath != currentPath)
 	     m_eval->toggleBP(fullname, line);
 	   else
          statusBar()->showMessage("Try again", 2000);

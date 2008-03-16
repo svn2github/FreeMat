@@ -167,6 +167,18 @@ void ApplicationWindow::createToolBars() {
   debugToolBar->addAction(dbStepAct);
   debugToolBar->addAction(dbTraceAct);
   debugToolBar->setObjectName("debugtoolbar");
+  dirToolBar = addToolBar("Current directory");
+  dirToolBar->setObjectName("dirtoolbar");
+  cdCombo = new QComboBox;
+  cdCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  dirToolBar->addWidget(cdCombo);
+  cdCombo->setVisible(true);
+  cdCombo->setObjectName("cdCombo");
+  cdButton = new QPushButton("...");
+  cdButton->setMaximumWidth(25);
+  cdButton->setObjectName("cdButton");
+  dirToolBar->addWidget(cdButton);
+  cdButton->setVisible(true);
 }
 
 void ApplicationWindow::createStatusBar() {
@@ -187,10 +199,21 @@ ApplicationWindow::ApplicationWindow() : QMainWindow() {
 
 void ApplicationWindow::createToolBox() {
   m_tool = new ToolDock(this);
-  addDockWidget(Qt::RightDockWidgetArea, m_tool);
+  addDockWidget(Qt::LeftDockWidgetArea, m_tool);
 }
 
 void ApplicationWindow::initializeTools() {
+}
+
+void ApplicationWindow::CWDChanged() {
+  QString curdir=QDir::currentPath();
+  int ind = cdCombo->findText(curdir);
+  if (ind>=0)
+    cdCombo->removeItem(ind);
+  cdCombo->insertItem(0,curdir);
+  cdCombo->setCurrentIndex(0);
+  while (cdCombo->count()>12)
+    cdCombo->removeItem(cdCombo->count()-1);
 }
 
 void ApplicationWindow::closeEvent(QCloseEvent* ce) {
@@ -211,6 +234,9 @@ void ApplicationWindow::readSettings() {
   move(pos);
   QByteArray state = settings.value("mainwindow/state").toByteArray();
   restoreState(state);
+  QStringList cdList = settings.value("mainwindow/cdlist").toStringList();
+  if (cdList.count()>0)
+    cdCombo->addItems(cdList);
 }
 
 void ApplicationWindow::writeSettings() {
@@ -218,6 +244,10 @@ void ApplicationWindow::writeSettings() {
   settings.setValue("mainwindow/state",saveState());
   settings.setValue("mainwindow/pos", pos());
   settings.setValue("mainwindow/size", size());
+  QStringList cdList;
+  for (int j=0;j<cdCombo->count();j++)
+    cdList.append(cdCombo->itemText(j));
+  settings.setValue("mainwindow/cdlist",cdList);
   settings.sync();
 }
 
@@ -249,6 +279,8 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
  	  keys,SLOT(QueueMultiString(QString)));
   connect(keys,SIGNAL(UpdateCWD()),
 	  m_tool->getFileTool(),SLOT(updateCWD()));
+  connect(keys,SIGNAL(UpdateCWD()),
+	  this,SLOT(CWDChanged()));
   connect(keys,SIGNAL(UpdateVariables()),
 	  m_tool->getVariablesTool(),SLOT(refresh()));
   connect(pauseAct,SIGNAL(triggered()),m_keys,SIGNAL(RegisterInterrupt()));
@@ -257,6 +289,9 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
   connect(dbStepAct,SIGNAL(triggered()),m_keys,SLOT(DbStepAction()));
   connect(dbTraceAct,SIGNAL(triggered()),m_keys,SLOT(DbTraceAction()));
   connect(checkUpdates,SIGNAL(triggered()),this,SLOT(checkForUpdates()));
+  connect(cdCombo,SIGNAL(activated(const QString&)),
+	  m_keys,SLOT(ChangeDir(const QString&)));
+  connect(cdButton,SIGNAL(clicked()),this,SLOT(dirButtonClicked()));
 }
 
 void ApplicationWindow::save() {
@@ -379,6 +414,15 @@ void ApplicationWindow::init() {
     new_font.fromString(font);
     m_term->setFont(new_font);
   }
+}
+
+void ApplicationWindow::dirButtonClicked() {
+  QString dir = QFileDialog::getExistingDirectory(this,
+						  "Choose a directory",
+						  "",
+						  QFileDialog::ShowDirsOnly);
+  if (!dir.isEmpty()) 
+    m_keys->ChangeDir(dir);
 }
 
 void ApplicationWindow::checkForUpdates() {

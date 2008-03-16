@@ -1140,6 +1140,10 @@ void KeyManager::SetPrompt(string txt) {
   emit UpdateVariables();
 }
 
+void KeyManager::ChangeDir(const QString& dir) {
+  emit ExecuteLine("cd " + dir.toStdString() + "\n");
+}
+
 /*.......................................................................
  * Search backwards for the potential start of a filename. This
  * looks backwards from the specified index in a given string,

@@ -177,6 +177,7 @@ public slots:
   void DbTraceAction();
   void SetPrompt(string);
   void ClearDisplayCommand();
+  void ChangeDir(const QString& dir);
 signals:
   void UpdateTermWidth(int);
   void RegisterInterrupt();

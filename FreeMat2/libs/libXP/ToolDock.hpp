@@ -20,7 +20,7 @@
 #define __ToolDock_hpp__
 
 #include <QDockWidget>
-#include <QToolBox>
+#include <QTabWidget>
 #include "HistoryWidget.hpp"
 #include "FileTool.hpp"
 #include "VariablesTool.hpp"
@@ -30,7 +30,7 @@ class ToolDock : public QDockWidget {
   HistoryWidget *m_history;
   FileTool *m_filetool;
   VariablesTool *m_variables;
-  QToolBox *m_tb;
+  QTabWidget *m_tb;
 public:
   ToolDock(QWidget *parent);
   ~ToolDock();

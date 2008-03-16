@@ -34,13 +34,15 @@ class ApplicationWindow : public QMainWindow {
   QTTerm* m_term;
   KeyManager* m_keys;
   QMenu *fileMenu, *editMenu, *toolsMenu, *historyMenu, *helpMenu, *debugMenu;
-  QToolBar *editToolBar, *debugToolBar;
+  QToolBar *editToolBar, *debugToolBar, *dirToolBar;
   QAction *saveAct, *quitAct, *copyAct, *pasteAct, *fontAct;
   QAction *scrollbackAct;
   QAction *aboutAct, *manualAct, *aboutQt, *editorAct;
   QAction *pathAct, *filetoolAct, *historyAct, *cleanHistoryAct;
   QAction *pauseAct, *continueAct, *stopAct, *clearAct;
   QAction *dbStepAct, *dbTraceAct, *checkUpdates, *workAct;
+  QComboBox *cdCombo;
+  QPushButton *cdButton;
   ToolDock *m_tool;
   QHttp *m_http;
   QBuffer m_buffer;
@@ -87,6 +89,9 @@ private slots:
   void cleanhistory();
   void init();
   void clearconsole();
+  void CWDChanged();
+  //  void UpdateCWD();
+  void dirButtonClicked();
 }; 
 
 #endif

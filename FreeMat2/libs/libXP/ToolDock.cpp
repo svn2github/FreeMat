@@ -20,13 +20,13 @@
 #include <QtGui>
 
 ToolDock::ToolDock(QWidget *parent) : QDockWidget(parent) {
-  m_tb = new QToolBox(this);
+  m_tb = new QTabWidget(this);
   m_history = new HistoryWidget(m_tb);
-  m_tb->addItem(m_history,"History");
+  m_tb->addTab(m_history,"History");
   m_filetool = new FileTool(m_tb);
-  m_tb->addItem(m_filetool,"Files");
+  m_tb->addTab(m_filetool,"Files");
   m_variables = new VariablesTool(m_tb);
-  m_tb->addItem(m_variables,"Workspace");
+  m_tb->addTab(m_variables,"Workspace");
   setWidget(m_tb);
   setObjectName("tooldock");
 }

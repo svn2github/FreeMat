@@ -383,11 +383,6 @@ public:
    */
   void setPath(string);
   /**
-   * Force a rescan of the current path to look for 
-   * new function files.
-   */
-  void rescanPath();
-  /**
    * Return the width of the current "terminal" in
    * characters.
    */
@@ -577,7 +572,11 @@ public:
   bool isBPSet(QString fname, int lineNumber);
   bool isInstructionPointer(QString fname, int lineNumber);
   void toggleBP(QString fname, int lineNumber);
-
+  /**
+   * Force a rescan of the current path to look for 
+   * new function files.
+   */
+  void rescanPath();
   /******************************************
    *  Signals for the Interpreter           *
    ******************************************/

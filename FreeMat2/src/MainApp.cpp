@@ -53,6 +53,7 @@ sig_t signal_suspend_default;
 sig_t signal_resume_default;
 
 Terminal* gterm;
+static FMEditor *edit = NULL;
 
 void signal_suspend(int a) {
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);
@@ -193,7 +194,6 @@ extern MainApp *m_app;
 //@]
 //!
 ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  static FMEditor *edit = NULL;
   if (edit == NULL) {
     edit = new FMEditor(eval);
     QObject::connect(eval,SIGNAL(RefreshBPLists()),edit,SLOT(RefreshBPLists()));
@@ -227,7 +227,6 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //@]
 //!
 ArrayVector EditFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  static FMEditor *edit= NULL;
   //Open the editor
   if (edit == NULL) {
     edit = new FMEditor(eval);

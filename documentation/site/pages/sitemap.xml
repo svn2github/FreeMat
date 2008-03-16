@@ -1,0 +1,13 @@
+<sitemap>
+    <section>
+        <name>Main Menu</name>
+        <page>index.html</page>
+        <page>news.html</page>
+        <page>screenshots.html</page>
+        <page>download.html</page>
+        <page>help.html</page>
+        <link title="Wiki">http://code.google.com/p/freemat/wiki/Development</link>
+        <link title="Blog">http://freemat-blog.blogspot.com/</link>
+        <page>faq.html</page>
+    </section>
+</sitemap>

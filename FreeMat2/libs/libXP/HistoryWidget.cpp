@@ -56,6 +56,7 @@ void HistoryWidget::doubleClicked(QListWidgetItem* item) {
 
 void HistoryWidget::closeEvent(QCloseEvent *ce) {
   //  writeSettings();
+  emit writeHistory();
   ce->accept();
 }
 

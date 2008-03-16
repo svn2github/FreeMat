@@ -39,6 +39,7 @@ protected slots:
 signals:
   void sendCommand(QString t);
   void clearHistory();
+  void writeHistory();
 };
 
 #endif

@@ -241,6 +241,8 @@ void ApplicationWindow::SetKeyManager(KeyManager *keys) {
  	  m_tool->getHistoryWidget(),SLOT(addCommand(QString)));
   connect(m_tool->getHistoryWidget(),SIGNAL(clearHistory()),
 	  keys,SLOT(ClearHistory()));
+  connect(m_tool->getHistoryWidget(),SIGNAL(writeHistory()),
+	  keys,SLOT(WriteHistory()));
   connect(m_tool->getHistoryWidget(),SIGNAL(sendCommand(QString)),
  	  keys,SLOT(QueueCommand(QString)));
   connect(m_tool->getFileTool(),SIGNAL(sendCommand(QString)),

@@ -43,7 +43,7 @@ public:
   FMFindDialog(QWidget *parent = 0);
   void found();
   void notfound();
-
+  void setFindText(QString text);
 signals:
   void doFind(QString text, bool backwards, bool sensitive);
 private slots:
@@ -58,6 +58,7 @@ class FMReplaceDialog : public QDialog {
 
 public:
   FMReplaceDialog(QWidget *parent = 0);
+  void setReplaceText(QString text);
   void found();
   void notfound();
   void showrepcount(int cnt);

@@ -34,6 +34,11 @@ FMFindDialog::FMFindDialog(QWidget *parent) : QDialog(parent) {
   ui.btClose->setIcon(QIcon(QString::fromUtf8(":/images/close.png")));
 }
 
+void FMFindDialog::setFindText(QString text) {
+  ui.cmFindText->insertItem(0, text);
+  ui.cmFindText->setCurrentIndex(0);
+}
+
 void FMFindDialog::find() {
   emit doFind(ui.cmFindText->currentText(), ui.cbBackwards->checkState() == Qt::Checked,
  	      ui.cbSensitive->checkState() == Qt::Checked);
@@ -60,6 +65,11 @@ FMReplaceDialog::FMReplaceDialog(QWidget *parent) : QDialog(parent) {
   setWindowTitle("Find - " + QString::fromStdString(Interpreter::getVersionString()));
   ui.btFind->setIcon(QIcon(QString::fromUtf8(":/images/find.png")));
   ui.btClose->setIcon(QIcon(QString::fromUtf8(":/images/close.png")));
+}
+
+void FMReplaceDialog::setReplaceText(QString text) {
+  ui.cmFindText->insertItem(0, text);
+  ui.cmFindText->setCurrentIndex(0);
 }
 
 void FMReplaceDialog::find() {
@@ -852,11 +862,13 @@ void FMEditor::decreaseIndent() {
 }
 
 void FMEditor::find() {
+  m_find->setFindText(currentEditor()->textCursor().selectedText());
   m_find->show();
   m_find->raise();
 }
 
 void FMEditor::replace() {
+  m_replace->setReplaceText(currentEditor()->textCursor().selectedText());
   m_replace->show();
   m_replace->raise();
 }

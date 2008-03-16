@@ -1336,7 +1336,6 @@ sub job_linux_release {
     delete_file('manifest.am');
     system('touch manifest.am');
     change_directory($svn_path . '/build');
-    system_check
     system_check('make clean');
     system_check('make');
     change_directory($svn_path);

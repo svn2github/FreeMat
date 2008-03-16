@@ -17,7 +17,11 @@ function endmodule(&p)
       fprintf(fp,'\\[\n');
       g = p.eqnlist{i};
       if (g(end) == 10) g = g(1:(end-1)); end
-      fprintf(fp,'%s',strrep(g,'\\','\\\\'));
+      g = strrep(g,'\\','\\\\');
+      g = strrep(g,'\r','\\r');
+      g = strrep(g,'\t','\\t');
+      g = strrep(g,'\n','\\n');
+      fprintf(fp,'%s\n',g);
       fprintf(fp,'\\]\n');
       fprintf(fp,'\\pagebreak\n');
     end
@@ -25,7 +29,12 @@ function endmodule(&p)
     fclose(fp);
     cdir = pwd;
     cd('../tmp');
-    system(sprintf('latex %s_eqn.tex',p.modulename));
+    a = system(sprintf('latex %s_eqn.tex',p.modulename));
+    for i=1:numel(a)
+      if (~isempty(regexp(a{i},'Emergency stop')))
+        printf('Warning: equations for %s failed\n',p.modulename);
+      end
+    end
     cd(cdir);
     system(sprintf('dvipng -T tight ../tmp/%s_eqn.dvi',p.modulename));
   end

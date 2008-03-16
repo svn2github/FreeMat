@@ -670,7 +670,7 @@ sub job_mac_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
     fetch_unpack_pkg(\%freemat_pkg,'build');
-    configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
+    configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$prefix/include/QtCore -I$prefix/include/QtGui -I$prefix/include/QtOpenGL -I$prefix/include/QtNetwork -I$prefix/include/QtSvg -I$prefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$prefix/lib\"");
 }
 
 sub job_macppc_freemat {
@@ -786,7 +786,7 @@ sub job_macppc_freemat {
     print "    Starting FreeMat Installation\n";
     print "************************************************************\n";
     fetch_unpack_pkg(\%freemat_pkg,'cross');
-    configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$crossprefix/include -I$crossprefix/include/QtCore -I$crossprefix/include/QtGui -I$crossprefix/include/QtOpenGL -I$crossprefix/include/QtNetwork -I$crossprefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$crossprefix/lib\"");
+    configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include -I$crossprefix/include -I$crossprefix/include/QtCore -I$crossprefix/include/QtGui -I$crossprefix/include/QtOpenGL -I$crossprefix/include/QtNetwork -I$crossprefix/include/QtSvg -I$crossprefix/include/QtXml\" LDFLAGS=\"-L$prefix/lib -F$crossprefix/lib\"");
 
 }
 

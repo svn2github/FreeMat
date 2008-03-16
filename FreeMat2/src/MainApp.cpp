@@ -83,6 +83,8 @@ void signal_resize(int a) {
 
 #endif
 
+static FMEditor *edit = NULL;
+
 MainApp::MainApp() {
   guimode = true;
   GUIHack = false;

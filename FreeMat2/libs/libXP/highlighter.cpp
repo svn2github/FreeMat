@@ -116,20 +116,21 @@ void Highlighter::highlightBlock(const QString &text)
     index = text.indexOf(sttest, index + length);
   }
 
-
   QTextCharFormat singleLineCommentFormat;
   singleLineCommentFormat.setForeground(commentColor);
-  QRegExp comment("\\%[^\n]*");
+  QRegExp comment("\\%[^\n|\\%]*");
   int index1 = text.indexOf(comment);
   QRegExp notcomment("[^'\\]\\)\\}A-Za-z0-9]'[^']*'");
-  int index2 = text.indexOf(notcomment);
   while (index1 >= 0) {
     int length1 = comment.matchedLength();
     bool isComment = true;
+    int index2 = text.indexOf(notcomment);
     while (index2 >= 0) {
       int length2 = notcomment.matchedLength();
-      if (index1 > index2 && index1 < index2+length2) // % inside a string
+      if (index1 > index2 && index1 < index2+length2) {// '%' is inside a string
         isComment = false;
+        break;
+      }
       index2 = text.indexOf(notcomment, index2 + length2);
     }
     if (isComment)

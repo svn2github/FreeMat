@@ -106,13 +106,18 @@ my %freemat_pkg = ('url' => 'http://downloads.sourceforge.net/freemat/',
 		   'root' => 'FreeMat-3.6',
 		   'version' => '3.6');
 
+sub fancy_box {
+    my $msg = shift;
+    print "************************************************************\n";
+    print "  $msg\n";
+    print "************************************************************\n";
+}
+
 # Find a MD5 Sum program
 sub find_program {
     my $title = shift;
     my $prog;
-    print "************************************************************\n";
-    print "  Searching for $title\n";
-    print "************************************************************\n";
+    fancy_box("earching for $title");
     while ($prog = shift) {
 	print "Looking for program $prog\n";
 	my $retcode = system("$prog < /dev/null > /dev/null 2> /dev/null");
@@ -856,9 +861,7 @@ sub job_native_freemat {
     autopackage_check_pkg($prefix,'ffcall','avcall','__structcpy','avcall.h',
 			  $platform_opts,'build',\%ffcall_pkg);
 
-    print "************************************************************\n";
-    print "    Handling package ARPACK\n";
-    print "************************************************************\n";
+    fancy_box("Handling package ARPACK");
 
     if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
 	fetch_unpack_pkg(\%arpack_pkg,'build');
@@ -869,9 +872,7 @@ sub job_native_freemat {
 	    die "Installation of ARPACK failed";
     }
 
-    print "************************************************************\n";
-    print "    Handling package SparseSuite\n";
-    print "************************************************************\n";
+    fancy_box("Handling package SparseSuite");
 
     my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
     if ($amd_found) {
@@ -895,9 +896,8 @@ sub job_native_freemat {
 	    die "Installation of UMFPACK package from sparse suite package failed!\n";
     }
 
-    print "************************************************************\n";
-    print "    Starting FreeMat Installation\n";
-    print "************************************************************\n";
+    fancy_box("Starting FreeMat Installation");
+
     fetch_unpack_pkg(\%freemat_pkg,'build');
     configure_make_install("build/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"CPPFLAGS=\"-I$prefix/include\" LDFLAGS=\"-L$prefix/lib\"");
 }
@@ -1117,9 +1117,7 @@ END
 			  $platform_opts,'build',\%ffcall_pkg,
 			  '--host=i686-mingw32 --build=i686-pc-linux-gnu RANLIB=i686-mingw32-ranlib','cross');
     
-    print "************************************************************\n";
-    print "    Handling package ATLAS\n";
-    print "************************************************************\n";
+    fancy_box("Handling package ATLAS");
 
     if (!test_function($prefix,'atlas','atlas','ATL_sgemm',$platform_opts)) {
 	fetch_unzip_pkg(\%atlas_win_pkg,'cross/atlas');
@@ -1132,9 +1130,8 @@ END
 
     $platform_opts->{'libs'} = '-lf77blas -latlas -lg2c '. $platform_opts->{'libs'};
 
-    print "************************************************************\n";
-    print "    Handling package LAPACK\n";
-    print "************************************************************\n";
+
+    fancy_box("Handling package LAPACK");
 
     if (!test_function($prefix,'lapack','lapack','cheev_',$platform_opts)) {
 	fetch_unpack_pkg(\%lapack_pkg,'cross');
@@ -1152,9 +1149,7 @@ END
 
     $platform_opts->{'libs'} = '-llapack '. $platform_opts->{'libs'};
 
-    print "************************************************************\n";
-    print "    Handling package ARPACK\n";
-    print "************************************************************\n";
+    fancy_box("Handling package ARPACK");
 
     if (!test_function($prefix,'arpack','arpack','znaupd_',$platform_opts)) {
 	fetch_unpack_pkg(\%arpack_pkg,'cross');
@@ -1165,9 +1160,8 @@ END
 	    die "Installation of ARPACK failed";
     }
 
-    print "************************************************************\n";
-    print "    Handling package libZ\n";
-    print "************************************************************\n";
+    fancy_box("Handling package libZ");
+
     if (!test_function($prefix,'z','z','inflate',$platform_opts)) {
 	fetch_unpack_pkg(\%libz_pkg,'cross');
 	my $cwd = Cwd::cwd();
@@ -1179,9 +1173,7 @@ END
 	    die "Installation of libZ failed";
     }
 
-    print "************************************************************\n";
-    print "    Handling package SparseSuite\n";
-    print "************************************************************\n";
+    fancy_box("Handling package SparseSuite");
 
     my $amd_found = test_function($prefix,'SparseSuiteAMD','amd','amd_postorder',$platform_opts);
     if ($amd_found) {
@@ -1205,9 +1197,9 @@ END
 	    die "Installation of UMFPACK package from sparse suite package failed!\n";
     }
 
-    print "************************************************************\n";
-    print "    Starting FreeMat Installation\n";
-    print "************************************************************\n";
+
+    fancy_box("Starting FreeMat Installation");
+
     fetch_unpack_pkg(\%freemat_pkg,'cross');
     configure_make_install("cross/$freemat_pkg{'root'}",$prefix,'build',$platform_opts,"--host=i686-mingw32 --build=i686-pc-linux-gnu --with-qt4dir=$prefix/Qt/4.3.0 WINDRES=\"i686-mingw32-windres\" CFLAGS=-I$prefix/include LDFLAGS=-L$prefix/lib");
     my $baseDir="cross/$freemat_pkg{'root'}-Win32";
@@ -1319,6 +1311,22 @@ sub job_mac_release {
     system_check("hdiutil create -fs HFS+ -srcfolder FreeMat-$freemat_pkg{'version'}.app FreeMat-$freemat_pkg{'version'}.dmg");
 }
 
+sub job_linux_prerelease {
+    my $prefix = shift;
+    my $cross_prefix = shift;
+    my $svn_path = shift;
+    my $buildtool_path = Cwd::cwd();
+    change_directory($svn_path . '/build');
+    system_check('make');
+    system_check('make dist');
+    copy_file("$freemat_pkg{'file'}","$buildtool_path/files");
+    change_directory($buildtool_path);
+    job_native_freemat($prefix);
+    change_directory($buildtool_path);
+    job_win_freemat($cross_prefix);
+    change_directory($buildtool_path);
+}
+
 sub job_linux_release {
     my $prefix = shift;
     my $cross_prefix = shift;
@@ -1328,6 +1336,7 @@ sub job_linux_release {
     delete_file('manifest.am');
     system('touch manifest.am');
     change_directory($svn_path . '/build');
+    system_check
     system_check('make clean');
     system_check('make');
     change_directory($svn_path);
@@ -1363,6 +1372,8 @@ if (not defined $job or not defined $prefix) {
 	"    mac-bundle        - build the bundle (mac) of freemat\n" .
 	"    linux-release     - create a FreeMat release (linux & win) - buildtool\n" .
 	"                        takes a fourth argument (the path to the SVN tree).\n" .
+	"    linux-prerelease  - create a FreeMat prerelease (linux & win) - buildtool\n" .
+	"                        takes a fourth argument (the path to the SVN tree).\n" .
 	"    mac-release       - create a FreeMat release (mac universal).  Assumes\n" .
 	"                        release source is in files directory.\n";
 }
@@ -1397,6 +1408,10 @@ if ($job eq "mac-bundle") {
 
 if ($job eq "linux-release") {
     job_linux_release($prefix,shift,shift);
+}
+
+if ($job eq "linux-prerelease") {
+    job_linux_prerelease($prefix,shift,shift);
 }
 
 if ($job eq "mac-release") {

@@ -778,8 +778,10 @@ void FMEditor::createActions() {
   helpWinAct->setShortcut(Qt::Key_F1); 
   connect(helpWinAct,SIGNAL(triggered()),this,SLOT(helpWin()));
   helpOnSelectionAct = new QAction("Help on Selection",this);
-  helpOnSelectionAct->setShortcut(Qt::Key_F2); 
+  helpOnSelectionAct->setShortcut(Qt::Key_F2);
   connect(helpOnSelectionAct,SIGNAL(triggered()),this,SLOT(helpOnSelection()));
+  openSelectionAct = new QAction("Open Selection",this);
+  connect(openSelectionAct,SIGNAL(triggered()),this,SLOT(openSelection()));
   dbStepAct = new QAction(QIcon(":/images/dbgnext.png"),"&Step Over",this);
   dbStepAct->setShortcut(Qt::Key_F10); 
   connect(dbStepAct,SIGNAL(triggered()),this,SLOT(dbstep()));
@@ -867,6 +869,10 @@ void FMEditor::helpOnSelection() {
   emit EvaluateText("helpwin " + currentEditor()->textCursor().selectedText() + "\n");
 }
 
+void FMEditor::openSelection() {
+  emit EvaluateText("edit " + currentEditor()->textCursor().selectedText() + "\n");
+}
+
 void FMEditor::createMenus() {
   fileMenu = menuBar()->addMenu("&File");
   fileMenu->addAction(newAct);
@@ -913,6 +919,7 @@ void FMEditor::createMenus() {
   helpMenu->addAction(helpWinAct);
   helpMenu->addAction(helpOnSelectionAct);
   m_popup = new QMenu;
+  m_popup->addAction(openSelectionAct);
   m_popup->addAction(helpOnSelectionAct);
   m_popup->addAction(copyAct);
   m_popup->addAction(cutAct);

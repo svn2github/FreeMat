@@ -187,7 +187,8 @@ class FMEditor : public QMainWindow {
   QAction *newAct, *saveAct, *quitAct, *copyAct, *pasteAct;
   QAction *cutAct, *fontAct, *openAct, *saveAsAct, *closeAct;
   QAction *openNewAct, *findAct, *replaceAct, *commentAct, *uncommentAct;
-  QAction *increaseIndentAct, *decreaseIndentAct, *helpWinAct, *helpOnSelectionAct;
+  QAction *increaseIndentAct, *decreaseIndentAct;
+  QAction *helpWinAct, *helpOnSelectionAct, *openSelectionAct;
   QAction *dbStepAct, *dbTraceAct, *dbContinueAct;
   QAction *dbSetClearBPAct, *dbStopAct;
   QAction *redoAct, *undoAct, *colorConfigAct, *indentConfigAct;
@@ -273,6 +274,7 @@ private slots:
   void configDataTip();
   void helpWin();
   void helpOnSelection();
+  void openSelection();
 public:
   void closeEvent(QCloseEvent *event);
   void setContext(Context *watch);

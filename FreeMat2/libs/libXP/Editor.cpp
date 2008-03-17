@@ -1340,7 +1340,7 @@ void FMEditor::showDataTips(QPoint pos, QString textSelected) {
 			break;
 	      }
     if (!foundTip)
-      QToolTip::hideText();
+      QToolTip::hideText(); 
   }
   else
     QToolTip::hideText();

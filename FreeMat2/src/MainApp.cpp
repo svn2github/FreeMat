@@ -53,7 +53,6 @@ sig_t signal_suspend_default;
 sig_t signal_resume_default;
 
 Terminal* gterm;
-static FMEditor *edit = NULL;
 
 void signal_suspend(int a) {
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);

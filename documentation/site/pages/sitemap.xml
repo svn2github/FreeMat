@@ -6,6 +6,7 @@
         <page>screenshots.html</page>
         <page>download.html</page>
         <page>help.html</page>
+        <link title="Documentation">http://freemat.sourceforge.net/help/index.html</link>
         <link title="Wiki">http://code.google.com/p/freemat/wiki/Development</link>
         <link title="Blog">http://freemat-blog.blogspot.com/</link>
         <page>faq.html</page>

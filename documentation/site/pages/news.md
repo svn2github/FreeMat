@@ -1,9 +1,43 @@
 News
 ====
 
-Latest News - 2007-09-23 - FreeMat 3.5 Released
+Latest News - 2008-03-17 - FreeMat 3.6 Released
 -----------------------------------------------
-We are pleased to announce the release of FreeMat 3.5. This is primarily a bugfix release that adds a few new features. Here is the list of changes.
+We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features,
+mostly to the UI. Here is the list of changes:
+
+ * Added ODE45 solver from Sebastien Loisel
+ * Added SVG support for exporting figures.
+ * Added "recent files" to editor.
+ * Added keyboard shortcuts to editor and main application menus.
+ * Added increase/decrease indent by tab/shift-tab in editor
+ * Added execute button to debug toolbar
+ * Added quiver plots
+ * Added execute-selected-text button
+ * Added directory-change tool to main toolbar, and rearranged windows on the main page.
+ * Second pass at the JIT compiler.  Completion of the JIT and it's general activation will wait for FreeMat4.
+ * Display of complex numbers
+ * Helpwin now accepts an argument.
+ * Replaced the toolbox with a tabbed widget.
+ * Code clean up for -Wall.
+ * Improved the behavior of editor when opening and saving (new)files.
+ * Corrected norms of double args on 64 bit machines
+ * Interplin1 now works with more argument types.
+ * Any, all, min and max handle empties more gracefully.
+ * Corrected color display of RGB images
+ * Modified bitcmp function for compatibility with matlab
+ * Modified fprintf to follow matlab's behavior when no handle is specified.
+ * Set default view for 3D plots to view(3).
+ * Fixes for anonymous functions and code block leaks.
+ * Fixed the "comment" and "uncomment" bugs when applying to the whole
+ * Fixed failed feval for local functions
+ * Fixed program crash after clear history.
+ * Fixed bug in complex matrix assignment operators.
+
+
+2007-09-23 - FreeMat 3.5 Released
+---------------------------------
+We are pleased to announce the release of FreeMat 3.5. This is primarily a bugfix release that adds a few new features. Here is the list of changes:
 
  * Fixed path detection problem on win32 (forward vs backward slashes)
  * Added ability to change the scrollback length via edit->preferences menu
@@ -41,7 +75,7 @@ We are pleased to announce the release of FreeMat 3.3. Available for download fr
 
 2007-04-14  FreeMat 3.1 Released
 --------------------------------
-The latest version of FreeMat (3.1) has just been released. Beyond the usual bug fixes, this version of FreeMat includes
+The latest version of FreeMat (3.1) has just been released. Beyond the usual bug fixes, this version of FreeMat includes:
 
  * A new Threading API, which allows you to take advantage of multi-core and multi-processor machines from within your FreeMat programs.
  * You can also perform powerful Perl-style regular expression manipulations in 3.1 using the regexp command, and its variants.

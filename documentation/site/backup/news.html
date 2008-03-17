@@ -20,6 +20,7 @@
                     <li><a href="screenshots.html">Screenshots</a></li>
                     <li><a href="download.html">Download</a></li>
                     <li><a href="help.html">Help</a></li>
+                    <li><a href="http://freemat.sourceforge.net/help/index.html">Documentation</a></li>
                     <li><a href="http://code.google.com/p/freemat/wiki/Development">Wiki</a></li>
                     <li><a href="http://freemat-blog.blogspot.com/">Blog</a></li>
                     <li><a href="faq.html">FAQ</a></li>
@@ -28,7 +29,7 @@
     <div style="text-align:right;">
      <a target="_blank" href="http://sourceforge.net/projects/freemat">
         <img src="http://sourceforge.net/sflogo.php?group_id=91526&amp;type=1" alt="SourceForge.net Logo" border="0" height="31" width="88">
-        </a>
+    </a>
     </div>
 
 </div>
@@ -44,9 +45,69 @@
     
 <h1 id='news'>News</h1>
 
-<h2 id='latest_news__20070923__freemat_35_released'>Latest News - 2007-09-23 - FreeMat 3.5 Released</h2>
+<h2 id='latest_news__20080317__freemat_36_released'>Latest News - 2008-03-17 - FreeMat 3.6 Released</h2>
 
-<p>We are pleased to announce the release of FreeMat 3.5. This is primarily a bugfix release that adds a few new features. Here is the list of changes.</p>
+<p>We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features, mostly to the UI. Here is the list of changes:</p>
+
+<ul>
+<li>Added ODE45 solver from Sebastien Loisel</li>
+
+<li>Added SVG support for exporting figures.</li>
+
+<li>Added &#8220;recent files&#8221; to editor.</li>
+
+<li>Added keyboard shortcuts to editor and main application menus.</li>
+
+<li>Added increase/decrease indent by tab/shift-tab in editor</li>
+
+<li>Added execute button to debug toolbar</li>
+
+<li>Added quiver plots</li>
+
+<li>Added execute-selected-text button</li>
+
+<li>Added directory-change tool to main toolbar, and rearranged windows on the main page.</li>
+
+<li>Second pass at the JIT compiler. Completion of the JIT and it&#8217;s general activation will wait for FreeMat4.</li>
+
+<li>Display of complex numbers</li>
+
+<li>Helpwin now accepts an argument.</li>
+
+<li>Replaced the toolbox with a tabbed widget.</li>
+
+<li>Code clean up for -Wall.</li>
+
+<li>Improved the behavior of editor when opening and saving (new)files.</li>
+
+<li>Corrected norms of double args on 64 bit machines</li>
+
+<li>Interplin1 now works with more argument types.</li>
+
+<li>Any, all, min and max handle empties more gracefully.</li>
+
+<li>Corrected color display of RGB images</li>
+
+<li>Modified bitcmp function for compatibility with matlab</li>
+
+<li>Modified fprintf to follow matlab&#8217;s behavior when no handle is specified.</li>
+
+<li>Set default view for 3D plots to view(3).</li>
+
+<li>Fixes for anonymous functions and code block leaks.</li>
+
+<li>Fixed the &#8220;comment&#8221; and &#8220;uncomment&#8221; bugs when applying to the whole</li>
+
+<li>Fixed failed feval for local functions</li>
+
+<li>Fixed program crash after clear history.</li>
+
+<li>Fixed bug in complex matrix assignment operators.</li>
+</ul>
+
+<h2 id='20070923__freemat_35_released'>2007-09-23 - FreeMat 3.5 Released</h2>
+
+<p>We are pleased to announce the release of FreeMat 3.5. This is primarily a bugfix release that adds a few new features. Here is the list of changes:</p>
 
 <ul>
 <li>Fixed path detection problem on win32 (forward vs backward slashes)</li>
@@ -114,7 +175,7 @@
 
 <h2 id='20070414_freemat_31_released'>2007-04-14 FreeMat 3.1 Released</h2>
 
-<p>The latest version of FreeMat (3.1) has just been released. Beyond the usual bug fixes, this version of FreeMat includes</p>
+<p>The latest version of FreeMat (3.1) has just been released. Beyond the usual bug fixes, this version of FreeMat includes:</p>
 
 <ul>
 <li>A new Threading API, which allows you to take advantage of multi-core and multi-processor machines from within your FreeMat programs.</li>

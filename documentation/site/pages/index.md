@@ -7,25 +7,35 @@ FreeMat is a free environment for rapid engineering and scientific prototyping a
 [!["Screen"](assets/screencap_composite_small.png "Screen")](screenshots.html) [!["Download"](assets/download.png "Download")](download.html)
 
 
-Latest News - 2007-09-23 - FreeMat 3.5 Released
+Latest News - 2008-03-17 - FreeMat 3.6 Released
 -----------------------------------------------
-We are pleased to announce the release of FreeMat 3.5. This is primarily a bugfix release that adds a few new features. Here is the list of changes.
+We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features,
+mostly to the UI. Here is the list of changes:
 
- * Fixed path detection problem on win32 (forward vs backward slashes)
- * Added ability to change the scrollback length via edit->preferences menu
- * Fixed diary command so that commands are echoed as well as their outputs
- * Fixed diary so that the commands are echoed as well as the outputs.
- * Added fflush command.
- * Added ctrl-w to clear the current line
- * Changed sort algorithm to a stable one.
- * Fixed bug in linspace
- * Added the new ctype interface - thanks to Scott McOlash for suggesting it, and GE Global Research for letting us release it under the GPL.
- * Converted FFTW to estimate mode from measure mode - should fix problems with long FFT times for large FFTs
- * Added stack trace on errors, even when not in dbauto on mode.
- * Improved the autoconfig script for mac builds.
- * Moved loadlib and import to external documentation section
- * Added external section to the documentation
- * Changed the default mode for "image" command" to "scaled" instead of "direct". This is less compatible with MATLAB, but I don't think it's unreasonably so.
- * Added "edit" command.
- * Changed default type for zero function to double precision.
- * Added imagesc command. Modified image command to show un-scaled images.
+ * Added ODE45 solver from Sebastien Loisel
+ * Added SVG support for exporting figures.
+ * Added "recent files" to editor.
+ * Added keyboard shortcuts to editor and main application menus.
+ * Added increase/decrease indent by tab/shift-tab in editor
+ * Added execute button to debug toolbar
+ * Added quiver plots
+ * Added execute-selected-text button
+ * Added directory-change tool to main toolbar, and rearranged windows on the main page.
+ * Second pass at the JIT compiler.  Completion of the JIT and it's general activation will wait for FreeMat4.
+ * Display of complex numbers
+ * Helpwin now accepts an argument.
+ * Replaced the toolbox with a tabbed widget.
+ * Code clean up for -Wall.
+ * Improved the behavior of editor when opening and saving (new)files.
+ * Corrected norms of double args on 64 bit machines
+ * Interplin1 now works with more argument types.
+ * Any, all, min and max handle empties more gracefully.
+ * Corrected color display of RGB images
+ * Modified bitcmp function for compatibility with matlab
+ * Modified fprintf to follow matlab's behavior when no handle is specified.
+ * Set default view for 3D plots to view(3).
+ * Fixes for anonymous functions and code block leaks.
+ * Fixed the "comment" and "uncomment" bugs when applying to the whole
+ * Fixed failed feval for local functions
+ * Fixed program crash after clear history.
+ * Fixed bug in complex matrix assignment operators.

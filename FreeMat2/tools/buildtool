@@ -1223,6 +1223,7 @@ END
     copy_files("$prefix/Qt/4.3.0/bin/QtOpenGL4.dll","$baseDir/Contents/bin/QtOpenGL4.dll");
     copy_files("$prefix/Qt/4.3.0/bin/QtNetwork4.dll","$baseDir/Contents/bin/QtNetwork4.dll");
     copy_files("$prefix/Qt/4.3.0/bin/QtXml4.dll","$baseDir/Contents/bin/QtXml4.dll");
+    copy_files("$prefix/Qt/4.3.0/bin/QtSvg4.dll","$baseDir/Contents/bin/QtSvg4.dll");
     copy_files("$prefix/bin/mingwm10.dll","$baseDir/Contents/bin/mingwm10.dll");
     copy_files("$prefix/share/$freemat_pkg{'root'}/help/html","$baseDir/Contents/Resources/help");
     copy_files("$prefix/share/$freemat_pkg{'root'}/help/text","$baseDir/Contents/Resources/help");

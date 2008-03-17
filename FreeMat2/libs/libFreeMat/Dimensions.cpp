@@ -179,11 +179,11 @@ std::string Dimensions::asString() const {
   std::string output;
   output.append("[");
   for (int i=0;i<length-1;i++) {
-    snprintf(msgBuffer,MSGBUFLEN,"%zu ",data[i]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u ",data[i]);
     output.append(msgBuffer);;
   }
   if (length >= 1)
-    snprintf(msgBuffer,MSGBUFLEN,"%zu]",data[length-1]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u]",data[length-1]);
   else
     snprintf(msgBuffer,MSGBUFLEN,"]");
   output.append(msgBuffer);
@@ -195,11 +195,11 @@ void Dimensions::printMe(Interpreter* eval) const {
   snprintf(msgBuffer,MSGBUFLEN,"[");
   eval->outputMessage(msgBuffer);
   for (int i=0;i<length-1;i++) {
-    snprintf(msgBuffer,MSGBUFLEN,"%zu ",data[i]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u ",data[i]);
     eval->outputMessage(msgBuffer);
   }
   if (length >= 1)
-    snprintf(msgBuffer,MSGBUFLEN,"%zu]",data[length-1]);
+    snprintf(msgBuffer,MSGBUFLEN,"%u]",data[length-1]);
   else
     snprintf(msgBuffer,MSGBUFLEN,"]");
   eval->outputMessage(msgBuffer);

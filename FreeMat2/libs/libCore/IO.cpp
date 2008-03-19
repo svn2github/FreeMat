@@ -774,19 +774,21 @@ ArrayVector ImReadFunction(int nargout, const ArrayVector& arg,
 //@@Section IO
 //@@Usage
 //Write the image data from the matrix into a given file.  Note that
-//FreeMat's support for @|imread| is not complete.  Only some of the
-//formats specified in the MATLAB API are implemented.  The syntax
-//for its use is
+//FreeMat's support for @|imwrite| is not complete.
+//You can write images in the @|jpg,png,xpm,ppm| and some other formats.
+//The syntax for its use is
 //@[
 //  imwrite(filename, A)
 //  imwrite(filename, A, map)
 //  imwrite(filename, A, map, alpha)
 //@]
-//where @|filename| is the name of the file to write to.  The input
-//arrays @|A| contain the image data, @|map| contains the colormap information
-//(for indexed images), and @|alpha| contains the alphamap (transparency).
-//The returned values will depend on the type of the original image.  Generally
-//you can write images in the @|jpg,png,xpm,ppm| and some other formats.
+//where @|filename| is the name of the file to write to.  The input array 
+//@|A| contains the image data (2D for gray or indexed, and 3D for color).  
+//If @|A| is an integer array (int8, uint8, int16, uint16, int32, uint32), 
+//the values of its elements should be within 0-255.  If @|A| is a 
+//floating-point array (float or double), the value of its elements should be 
+//within 0-1.  @|map| contains the colormap information (for indexed images),
+//and @|alpha| the alphamap (transparency).
 //!
 QImage imwriteHelperIndexed(Array A, Array ctable, Array trans) {
   QImage img(A.columns(), A.rows(), QImage::Format_Indexed8);

@@ -833,7 +833,7 @@ void FMEditor::execCurrent() {
   else {
     if (!maybeSave())
       return;
-    emit EvaluateText("source " + currentFilename() + "\n");
+    emit EvaluateText("source '" + currentFilename() + "'\n");
   }
 }
 

@@ -8,9 +8,9 @@ The following links point to the latest version of FreeMat. For older versions (
  * [Click to download FreeMat for Fedora Core 7 Linux (RPM)](http://downloads.sourceforge.net/freemat/FreeMat-3.6.i386.fc7.rpm) !["ico-tux"](assets/ico-tux.png)
  * [Click to download FreeMat Manual in PDF](http://freemat.sourceforge.net/FreeMat-3.6.pdf) !["ico-pdf"](assets/ico-pdf.gif)
  
-Note that you will need the ffcall and arpack libraries which are not available in Fedora Core 7. They are available at Dries RPM Repository: [ffcall](http://dries.studentenweb.org/rpm/packages/ffcall/info.html) and ATrpms: [arpack](http://www.atrpms.net/dist/fc6/arpack).
+Note that you will need the ffcall and arpack libraries which are not available in Fedora Core 8. They are available at Dries RPM Repository: [ffcall](http://dries.studentenweb.org/rpm/packages/ffcall/info.html) and ATrpms: [arpack](http://www.atrpms.net/dist/fc6/arpack).
 
- * [Click to download FreeMat for Fedora Core 6 Linux on x86\_64 architecture (RPM)](http://downloads.sourceforge.net/freemat/FreeMat-3.4-1.fc6.x86_64.rpm) currently 3.4 !["ico-tux"](assets/ico-tux.png)
+ * [Click to download FreeMat for Fedora Core 8 Linux on x86\_64 architecture (RPM)](http://downloads.sourceforge.net/freemat/FreeMat-3.6.fc8.x86_64.rpm) currently 3.6 !["ico-tux"](assets/ico-tux.png)
  * [Click to download FreeMat Source Code (All platforms)](http://downloads.sourceforge.net/freemat/FreeMat-3.6.tar.gz)
 
 

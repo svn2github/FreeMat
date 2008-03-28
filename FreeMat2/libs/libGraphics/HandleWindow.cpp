@@ -589,7 +589,7 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
 	    xmaxfrac = qMax(0.,qMin(1.,xmaxfrac));
 	    yminfrac = qMax(0.,qMin(1.,yminfrac));
 	    ymaxfrac = qMax(0.,qMin(1.,ymaxfrac));
-	    if (h->StringCheck("ydir","reverse")) {
+/*	    if (h->StringCheck("ydir","reverse")) {
 	      double y1 = 1-yminfrac;
 	      double y2 = 1-ymaxfrac;
 	      yminfrac = y2;
@@ -600,7 +600,7 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
 	      double x2 = 1-xmaxfrac;
 	      xminfrac = x2;
 	      xmaxfrac = x1;
-	    }
+	    }*/
 	    HPTwoVector *hp = (HPTwoVector*) h->LookupProperty("xlim");
 	    double range = (hp->Data()[1] - hp->Data()[0]);
 	    double mean = (hp->Data()[1] + hp->Data()[0])/2;

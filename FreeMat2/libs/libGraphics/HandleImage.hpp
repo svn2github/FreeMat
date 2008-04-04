@@ -25,6 +25,7 @@
 class HandleImage : public HandleObject {
 protected:
   QImage img;
+  QMatrix MTr;
   void PrepImageRGBNoAlphaMap(const double *dp, int rows, int cols,
 			      QVector<double> &alpha, bool intData);
   double* RGBExpandImage(const double *dp, int rows, int cols, bool floatData);

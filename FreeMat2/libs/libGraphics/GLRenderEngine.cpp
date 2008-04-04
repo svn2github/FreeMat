@@ -449,6 +449,12 @@ void GLRenderEngine::drawImage(double x1, double y1, double x2,
   m_widget->deleteTexture(texid);
 }
 
+void GLRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp, HPTwoVector* xlim, HPTwoVector* ylim,
+			 QImage pic)
+{ 
+    //not yet implemented
+}
+
 void GLRenderEngine::quadStrips(QVector<QVector<cpoint> > faces, bool flatfaces,
 				QVector<QVector<cpoint> > edges, bool flatedges) {
   glDisable(GL_CULL_FACE);

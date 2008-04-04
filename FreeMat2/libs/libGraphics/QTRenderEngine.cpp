@@ -567,6 +567,33 @@ void QTRenderEngine::drawImage(double x1, double y1, double x2, double y2,
   pnt->drawImage(pt,pic);
 }
 
+void QTRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp, HPTwoVector* xlim, HPTwoVector* ylim,
+			 QImage pic)
+{ 
+    float data_x = xp->Data()[0];
+    float data_y = yp->Data()[0];
+    float data_width = xp->Data()[1]-data_x;
+    float data_height = yp->Data()[1]-data_y;
+
+    float viewport_x = xlim->Data()[0];
+    float viewport_y = ylim->Data()[0];
+    float viewport_width = xlim->Data()[1]-viewport_x;
+    float viewport_height = ylim->Data()[1]-viewport_y;
+
+    
+    QPointF topleft( Map(xlim->Data()[0], ylim->Data()[1], 0 ) );
+    QPointF bottomright( Map( xlim->Data()[1], ylim->Data()[0], 0 ));
+    QRectF target( topleft, bottomright );
+
+    float source_x = (viewport_x - data_x)*pic.width()/data_width;
+    float source_y = (viewport_y - data_y)*pic.height()/data_height;
+    float source_width = (pic.width()+1)*viewport_width/data_width;
+    float source_height = (pic.height()+1)*viewport_height/data_height;
+    QRectF source( source_x, source_y, source_width, source_height );
+    pnt->drawImage( target, pic, source );
+}
+
+
 QPainterPath QTRenderEngine::quadToPoly(double x1, double y1, double z1,
 					double x2, double y2, double z2,
 					double x3, double y3, double z3,

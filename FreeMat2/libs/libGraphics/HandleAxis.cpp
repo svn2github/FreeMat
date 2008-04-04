@@ -1158,21 +1158,21 @@ void HandleAxis::DrawGridLines(RenderEngine &gc) {
   if (xvisible && ((HPOnOff*) LookupProperty("xgrid"))->AsBool()) {
     gc.color(xc->Data());
     for (int i=0;i<xticks.size();i++) {
-      GLfloat t = MapX(xticks[i]);
+      double t = MapX(xticks[i]);
       DrawXGridLine(gc,t,limits);
     }
   }
   if (yvisible && ((HPOnOff*) LookupProperty("ygrid"))->AsBool()) {
     gc.color(yc->Data());
     for (int i=0;i<yticks.size();i++) {
-      GLfloat t = MapY(yticks[i]);
+      double t = MapY(yticks[i]);
       DrawYGridLine(gc,t,limits);
     }
   }
   if (zvisible && ((HPOnOff*) LookupProperty("zgrid"))->AsBool()) {
     gc.color(zc->Data());
     for (int i=0;i<zticks.size();i++) {
-      GLfloat t = MapZ(zticks[i]);
+      double t = MapZ(zticks[i]);
       DrawZGridLine(gc,t,limits);
     }
   }
@@ -1283,7 +1283,7 @@ void HandleAxis::DrawMinorGridLines(RenderEngine &gc) {
     sp = (HPLinearLog*) LookupProperty("yscale");
     if (sp->Is("linear")) {
       for (int i=0;i<yticks.size()-1;i++) {
-	GLfloat t = MapY((yticks[i]+yticks[i+1])/2);
+	double t = MapY((yticks[i]+yticks[i+1])/2);
 	DrawYGridLine(gc,t,limits);
       }
     } else {
@@ -1307,7 +1307,7 @@ void HandleAxis::DrawMinorGridLines(RenderEngine &gc) {
     sp = (HPLinearLog*) LookupProperty("zscale");
     if (sp->Is("linear")) {
       for (int i=0;i<zticks.size()-1;i++) {
-	GLfloat t = MapZ((zticks[i]+zticks[i+1])/2);
+	double t = MapZ((zticks[i]+zticks[i+1])/2);
 	DrawZGridLine(gc,t,limits);
       }
     } else {

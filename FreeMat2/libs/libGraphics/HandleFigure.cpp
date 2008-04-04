@@ -160,7 +160,7 @@ void HandleFigure::SetupDefaults() {
 
 void HandleFigure::PaintMe(RenderEngine &gc) {
   try {
-    //    qDebug("size = %d %d",m_width,m_height);
+    qDebug("size = %d %d",m_width,m_height);
     // draw the children...
     //    qDebug() << "paint!\r";
     HPColor *color = (HPColor*) LookupProperty("color");

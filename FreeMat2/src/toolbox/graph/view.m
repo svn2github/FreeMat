@@ -71,6 +71,9 @@ function view(varargin)
     el = varargin{2};
   end
   az = az*pi/180;
+  if el == 0
+     el = .001;
+  end
   el = el*pi/180;
   % The view point is first calculated by transforming to
   % spherical coordinates

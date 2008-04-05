@@ -2282,7 +2282,8 @@ void HandleAxis::DrawTickLabels(RenderEngine& gc,
 				QVector<double>  minortics,
 				StringVector labels,
 				std::string labelname,
-				int ticlen, double ticdir) {
+				int ticlen, double ticdir) 
+{
   gc.color(color);
   // Calculate the tick direction vector
   double dx1, dy1, dx2, dy2;
@@ -2298,155 +2299,157 @@ void HandleAxis::DrawTickLabels(RenderEngine& gc,
   delx = dx2-dx1; dely = dy2-dy1;
   // normalize the tick length
   double norm = sqrt(delx*delx + dely*dely);
-  delx /= norm; dely /= norm;
-  // Draw the minor ticks
-  for (int i=0;i<minortics.size();i++) {
-    double t = minortics[i];
-    // Map the coords ourselves
-    double x1, y1, x2, y2;
-    gc.toPixels(t*unitx+px1,
-		t*unity+py1,
-		t*unitz+pz1,x1,y1);
-    x2 = delx*ticlen*ticdir*0.6 + x1;
-    y2 = dely*ticlen*ticdir*0.6 + y1;
-    gc.setupDirectDraw();
-    gc.line(x1,y1,x2,y2);
-    gc.releaseDirectDraw();
-  }
-  for (int i=0;i<maptics.size();i++) {
-    double t = maptics[i];
-    // Map the coords ourselves
-    double x1, y1, x2, y2;
-    gc.toPixels(t*unitx+px1,
-		t*unity+py1,
-		t*unitz+pz1,x1,y1);
-    x2 = delx*ticlen*ticdir + x1;
-    y2 = dely*ticlen*ticdir + y1;
-    gc.setupDirectDraw();
-    gc.line(x1,y1,x2,y2);
-    gc.releaseDirectDraw();
-    double x3, y3;
-    if (ticdir > 0) {
-      x3 = -delx*0.015*norm + x1;
-      y3 = -dely*0.015*norm + y1;
-    } else {
-      x3 = -delx*0.015*norm + x2;
-      y3 = -dely*0.015*norm + y2;
-    }
-    if (!labels.empty()) {
-      DrawLabel(gc,-delx,-dely,x3,y3,color,
-		labels[i % labels.size()]);
-    }
-    // For a 2D view, draw the opposite tick marks too
-    if (Is2DView()) {
-      gc.toPixels(t*unitx+px2,
-		  t*unity+py2,
-		  t*unitz+pz2,x1,y1);
-      x2 = -delx*ticlen*ticdir + x1;
-      y2 = -dely*ticlen*ticdir + y1;
-      gc.setupDirectDraw();
-      gc.line(x1,y1,x2,y2);
-      gc.releaseDirectDraw();
-    }
-  }
-  // Get the maximum tick metric
-  double maxx, maxy;
-  GetMaxTickMetric(gc,labels,maxx,maxy);
-  // Draw the x label
-  // Calculate the center of the x axis...
-  double x1, x2, x3, y1, y2, y3;
-  double meanval;
-  meanval = (limmin+limmax)/2.0;
-  gc.toPixels(meanval*unitx+px1,
-	      meanval*unity+py1,
-	      meanval*unitz+pz1,x1,y1);
-  // Calculate the tick offset
-  x2 = delx*ticlen*ticdir + x1;
-  y2 = dely*ticlen*ticdir + y1;
-  // Offset by the top of the label
-  if (ticdir > 0) {
-    x3 = -delx*0.015*norm + x1;
-    y3 = -dely*0.015*norm + y1;
-  } else {
-    x3 = -delx*0.015*norm + x2;
-    y3 = -dely*0.015*norm + y2;
-  }
-  double lx, ly;
-  if (delx != 0)
-    lx = fabs(maxx/delx);
-  else
-    lx = 1e10;
-  if (dely != 0)
-    ly = fabs(maxy/dely);
-  else
-    ly = 1e10;
-  double lmax;
-  lmax = qMin(lx,ly);
-  // Set the position of the label
-  HPHandles *lbl = (HPHandles*) LookupProperty(labelname);
-  if (!lbl->Data().empty()) {
-    HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
-    // To calculate the angle, we have to look at the axis
-    // itself.  The direction of the axis is determined by
-    // the projection of [1,0,0] onto the screen plane
-    double axx1, axy1, axx2,axy2;
-    gc.toPixels(0,0,0,axx1,axy1);
-    gc.toPixels(unitx,unity,unitz,axx2,axy2);
-    double angle = atan2(axy2-axy1,axx2-axx1)*180.0/M_PI;
-    if (angle < -90) angle += 180;
-    if (angle > 90) angle -= 180;
-    HPScalar *sp = (HPScalar*) fp->LookupProperty("rotation");
-    // The angle we want is no the rotation angle of the axis, but
-    // the angle of the origin to label position.  We get this
-    // taking the mean limit along the unit direction, and the
-    // average of the two projected axes.
-    double origx, origy;
-    gc.toPixels(meanval*unitx+(px1+px2)/2.0,
-		meanval*unity+(py1+py2)/2.0,
-		meanval*unitz+(pz1+pz2)/2.0,origx,origy);
-    double meanx, meany;
-    gc.toPixels(meanval*unitx+px1,
-		meanval*unity+py1,
-		meanval*unitz+pz1,meanx,meany); 
-     
-    //       int pixpad = 1.5*fp->GetTextHeightInPixels();
-    //       // Offset by the labelsize
-    //       if (lmax == lx)
-    // 	lmax += fabs(pixpad/delx);
-    //       else
-    // 	lmax += fabs(pixpad/dely);
-    double xl1, yl1;
-    xl1 = x3 - lmax*delx;
-    yl1 = y3 - lmax*dely;
-    double angle2 = atan2(y3-origy,x3-origx)*180.0/M_PI;
-    if ((angle == 90) && (angle2 > -90)) {
-      angle = -90;
-    }
-    if (angle2 == 180)
-      angle2 = -180;
-    if (angle2 < 0)
-      if (fabs(angle) != 90)
-	((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("top");
+  if( norm > 0 ){
+      delx /= norm; dely /= norm;
+      // Draw the minor ticks
+      for (int i=0;i<minortics.size();i++) {
+	double t = minortics[i];
+	// Map the coords ourselves
+	double x1, y1, x2, y2;
+	gc.toPixels(t*unitx+px1,
+		    t*unity+py1,
+		    t*unitz+pz1,x1,y1);
+	x2 = delx*ticlen*ticdir*0.6 + x1;
+	y2 = dely*ticlen*ticdir*0.6 + y1;
+	gc.setupDirectDraw();
+	gc.line(x1,y1,x2,y2);
+	gc.releaseDirectDraw();
+      }
+      for (int i=0;i<maptics.size();i++) {
+	double t = maptics[i];
+	// Map the coords ourselves
+	double x1, y1, x2, y2;
+	gc.toPixels(t*unitx+px1,
+		    t*unity+py1,
+		    t*unitz+pz1,x1,y1);
+	x2 = delx*ticlen*ticdir + x1;
+	y2 = dely*ticlen*ticdir + y1;
+	gc.setupDirectDraw();
+	gc.line(x1,y1,x2,y2);
+	gc.releaseDirectDraw();
+	double x3, y3;
+	if (ticdir > 0) {
+	  x3 = -delx*0.015*norm + x1;
+	  y3 = -dely*0.015*norm + y1;
+	} else {
+	  x3 = -delx*0.015*norm + x2;
+	  y3 = -dely*0.015*norm + y2;
+	}
+	if (!labels.empty()) {
+	  DrawLabel(gc,-delx,-dely,x3,y3,color,
+		    labels[i % labels.size()]);
+	}
+	// For a 2D view, draw the opposite tick marks too
+	if (Is2DView()) {
+	  gc.toPixels(t*unitx+px2,
+		      t*unity+py2,
+		      t*unitz+pz2,x1,y1);
+	  x2 = -delx*ticlen*ticdir + x1;
+	  y2 = -dely*ticlen*ticdir + y1;
+	  gc.setupDirectDraw();
+	  gc.line(x1,y1,x2,y2);
+	  gc.releaseDirectDraw();
+	}
+      }
+      // Get the maximum tick metric
+      double maxx, maxy;
+      GetMaxTickMetric(gc,labels,maxx,maxy);
+      // Draw the x label
+      // Calculate the center of the x axis...
+      double x1, x2, x3, y1, y2, y3;
+      double meanval;
+      meanval = (limmin+limmax)/2.0;
+      gc.toPixels(meanval*unitx+px1,
+		  meanval*unity+py1,
+		  meanval*unitz+pz1,x1,y1);
+      // Calculate the tick offset
+      x2 = delx*ticlen*ticdir + x1;
+      y2 = dely*ticlen*ticdir + y1;
+      // Offset by the top of the label
+      if (ticdir > 0) {
+	x3 = -delx*0.015*norm + x1;
+	y3 = -dely*0.015*norm + y1;
+      } else {
+	x3 = -delx*0.015*norm + x2;
+	y3 = -dely*0.015*norm + y2;
+      }
+      double lx, ly;
+      if (delx != 0)
+	lx = fabs(maxx/delx);
       else
-	((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("bottom");
-    else
-      ((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("bottom");
-    if ((angle == -90) && (angle2 == -180))
-      angle = 90;
-    sp->Value(angle);
-    // Move another couple of percent along the radial line
-    xl1 += (x3-origx)*0.04;
-    yl1 += (y3-origy)*0.04;
-    HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
-    // We now have the position of the label in absolute (pixel)
-    // coordinates.  Need to translate this to normalized coordinates
-    // relative to outerposition.
-    QVector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
-    double xnorm, ynorm;
-    xnorm = (xl1-outerpos[0])/outerpos[2];
-    ynorm = (yl1-outerpos[1])/outerpos[3];
-    gp->Value(xnorm,ynorm,0.0);
-  }      
+	lx = 1e10;
+      if (dely != 0)
+	ly = fabs(maxy/dely);
+      else
+	ly = 1e10;
+      double lmax;
+      lmax = qMin(lx,ly);
+      // Set the position of the label
+      HPHandles *lbl = (HPHandles*) LookupProperty(labelname);
+      if (!lbl->Data().empty()) {
+	HandleText *fp = (HandleText*) LookupHandleObject(lbl->Data()[0]);
+	// To calculate the angle, we have to look at the axis
+	// itself.  The direction of the axis is determined by
+	// the projection of [1,0,0] onto the screen plane
+	double axx1, axy1, axx2,axy2;
+	gc.toPixels(0,0,0,axx1,axy1);
+	gc.toPixels(unitx,unity,unitz,axx2,axy2);
+	double angle = atan2(axy2-axy1,axx2-axx1)*180.0/M_PI;
+	if (angle < -90) angle += 180;
+	if (angle > 90) angle -= 180;
+	HPScalar *sp = (HPScalar*) fp->LookupProperty("rotation");
+	// The angle we want is no the rotation angle of the axis, but
+	// the angle of the origin to label position.  We get this
+	// taking the mean limit along the unit direction, and the
+	// average of the two projected axes.
+	double origx, origy;
+	gc.toPixels(meanval*unitx+(px1+px2)/2.0,
+		    meanval*unity+(py1+py2)/2.0,
+		    meanval*unitz+(pz1+pz2)/2.0,origx,origy);
+	double meanx, meany;
+	gc.toPixels(meanval*unitx+px1,
+		    meanval*unity+py1,
+		    meanval*unitz+pz1,meanx,meany); 
+         
+	//       int pixpad = 1.5*fp->GetTextHeightInPixels();
+	//       // Offset by the labelsize
+	//       if (lmax == lx)
+	// 	lmax += fabs(pixpad/delx);
+	//       else
+	// 	lmax += fabs(pixpad/dely);
+	double xl1, yl1;
+	xl1 = x3 - lmax*delx;
+	yl1 = y3 - lmax*dely;
+	double angle2 = atan2(y3-origy,x3-origx)*180.0/M_PI;
+	if ((angle == 90) && (angle2 > -90)) {
+	  angle = -90;
+	}
+	if (angle2 == 180)
+	  angle2 = -180;
+	if (angle2 < 0)
+	  if (fabs(angle) != 90)
+	    ((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("top");
+	  else
+	    ((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("bottom");
+	else
+	  ((HPAlignVert *) fp->LookupProperty("verticalalignment"))->Value("bottom");
+	if ((angle == -90) && (angle2 == -180))
+	  angle = 90;
+	sp->Value(angle);
+	// Move another couple of percent along the radial line
+	xl1 += (x3-origx)*0.04;
+	yl1 += (y3-origy)*0.04;
+	HPThreeVector *gp = (HPThreeVector*) fp->LookupProperty("position");
+	// We now have the position of the label in absolute (pixel)
+	// coordinates.  Need to translate this to normalized coordinates
+	// relative to outerposition.
+	QVector<double> outerpos(GetPropertyVectorAsPixels("outerposition"));
+	double xnorm, ynorm;
+	xnorm = (xl1-outerpos[0])/outerpos[2];
+	ynorm = (yl1-outerpos[1])/outerpos[3];
+	gp->Value(xnorm,ynorm,0.0);
+      }
+    }
 }
 
 void HandleAxis::DrawAxisLabels(RenderEngine& gc) {

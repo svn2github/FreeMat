@@ -422,7 +422,10 @@ QVector<QVector<cpoint> > HandleSurface::BuildQuadsNoTexMap(HPConstrainedStringC
     delete[] dummyline;
   return retval;
 }
- 
+
+QVector<QVector<cpoint> > Saved_surfquads;
+QVector<QVector<cpoint> > Saved_edgequads;
+
 void HandleSurface::PaintMe(RenderEngine& gc) {
   UpdateState();
   if (StringCheck("visible","off"))
@@ -450,8 +453,18 @@ void HandleSurface::PaintMe(RenderEngine& gc) {
 								 LookupProperty("edgecolor"),
 								 (HPConstrainedStringScalar*)
 								 LookupProperty("edgealpha")));
-  gc.quadStrips(surfquads,StringCheck("facecolor","flat"),
-		edgequads,StringCheck("edgecolor","flat"));
+
+  HandleAxis *ax = GetParentAxis();
+  if( ax->StringCheck("nextplot","add") ){
+      Saved_surfquads += surfquads;
+      Saved_edgequads += edgequads;
+  }
+  else{
+      Saved_surfquads = surfquads;
+      Saved_edgequads = edgequads;
+  }
+  gc.quadStrips(Saved_surfquads,StringCheck("facecolor","flat"),
+		Saved_edgequads,StringCheck("edgecolor","flat"));
 #if 0
   HPAutoFlatColor *ec = (HPAutoFlatColor*) LookupProperty("markeredgecolor");
   HPAutoFlatColor *fc = (HPAutoFlatColor*) LookupProperty("markerfacecolor");
@@ -505,3 +518,8 @@ void HandleSurface::PaintMe(RenderEngine& gc) {
 #endif
 }
 
+void HandleSurface::AxisPaintingDone( void )
+{
+    Saved_surfquads.clear();
+    Saved_edgequads.clear();
+}

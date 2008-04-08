@@ -2507,6 +2507,11 @@ void HandleAxis::DrawChildren(RenderEngine& gc) {
     HandleObject *fp = LookupHandleObject(handles[i]);
     fp->PaintMe(gc);
   }
+  //notify all axes that painting is done and it is time to cleanup.
+  for (int i=0;i<handles.size();i++) {
+    HandleObject *fp = LookupHandleObject(handles[i]);
+    fp->AxisPaintingDone();
+  }
 }
 
 void HandleAxis::PaintMe(RenderEngine& gc) {

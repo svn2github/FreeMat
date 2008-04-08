@@ -73,6 +73,7 @@ public:
   void SetPropertyHandle(std::string name, unsigned value);
   bool IsAuto(std::string mode);
   virtual void PaintMe(RenderEngine &gc) = 0;
+  virtual void AxisPaintingDone( void ){};
   HandleAxis* GetParentAxis();
   HandleFigure* GetParentFigure();
   void MarkDirty();

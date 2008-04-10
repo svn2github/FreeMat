@@ -248,8 +248,8 @@ lineset HandleContour::ContourCDriver(Array m, double val, Array x, Array y) {
       double ndx_y = bundledLines[i][j].y;
       // Compute a new x and y using these coordinates as
       // bilinear interpolators into xp and yp
-      int indx_x = (int) ndx_x;
-      int indx_y = (int) ndx_y;
+      int indx_x = qMax(qMin((int) ndx_x, numx-2),0);
+      int indx_y = qMax(qMin((int) ndx_y, numy-2),0);
       double eps_x = ndx_x - indx_x;
       double eps_y = ndx_y - indx_y;
       double xp_out_1 = X(indx_x,indx_y) + 

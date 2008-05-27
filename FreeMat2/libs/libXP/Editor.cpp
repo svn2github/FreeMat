@@ -118,7 +118,12 @@ FMTextEdit::FMTextEdit() : QTextEdit() {
   QSettings settings("FreeMat","FreeMat");
   indentSize = settings.value("editor/tab_size",3).toInt();
   indentActive = settings.value("editor/indent_enable",true).toBool();
+  matchActive = settings.value("editor/match_enable",true).toBool();
+  matchingColor = settings.value("editor/matching_color",Qt::black).value<QColor>();
+  matchingBegin = -1;
+  matchingEnd = -1;
   setLineWrapMode(QTextEdit::NoWrap);
+  connect( this, SIGNAL( cursorPositionChanged() ), this, SLOT( slotCursorPositionChanged()));
 }
 
 FMTextEdit::~FMTextEdit() {
@@ -329,6 +334,350 @@ bool FMTextEdit::event(QEvent *event){
     emit showDataTips(helpEvent->globalPos(), textSelected);
   }
   return QTextEdit::event(event);
+}
+
+void FMTextEdit::slotCursorPositionChanged()
+{
+    if ( matchActive ) {
+      plainText = toPlainText();
+      bool matchbefore = (matchingBegin !=-1 && matchingEnd != -1);
+      bool matchnow = findmatch();
+      if (findmatch() || (!matchnow && matchbefore) )
+        viewport()->update();
+   }
+}
+
+void FMTextEdit::setMatchBracket(bool flag)
+{
+    matchActive  = flag;
+    viewport()->update();
+}
+
+QString simplifiedMCode(const QString Str)
+{
+    enum
+    {
+        NORMAL = -1,
+        NORMAL_WITH_VAR,
+        NORMAL_IN_PAR,
+        COMMENT,
+        STRING
+    };
+   int state = NORMAL;
+   QString SimplifiedString = Str;
+   for (int i = 0; i < SimplifiedString.count(); i++)
+    {
+        QChar ch = SimplifiedString[i];
+        int nPar = 0;
+        switch (state)
+        {
+            case NORMAL:
+                if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || 
+                    (ch >= '0' && ch <= '9') || (ch == ']'))
+                    state = NORMAL_WITH_VAR;                    
+                else if ((ch == '(') ) {
+                    state = NORMAL_IN_PAR;
+                    nPar++;
+                }
+                else if (ch == '%') // remove comments
+                {
+                    state = COMMENT;
+                    SimplifiedString[i] = ' ';
+                }
+                else if (ch == '\'' )
+                {
+                    state = STRING;
+                }
+                break;
+            case NORMAL_WITH_VAR:
+                if ((ch == ' ') || (ch == '[') ) {
+                    if (nPar <= 0)
+                        state = NORMAL;
+                    else
+                        state = NORMAL_IN_PAR;
+                }                   
+                else if ((ch == '(') ) {
+                    state = NORMAL_IN_PAR;
+                    nPar++;
+                }
+                else if (ch == '%') // remove comments
+                {
+                    state = COMMENT;
+                    SimplifiedString[i] = ' ';
+                }
+                break;
+            case NORMAL_IN_PAR:
+                if (ch == ')') {
+                    nPar--;
+                    if (nPar <= 0)
+                        state = NORMAL_WITH_VAR;
+                }
+                else if (SimplifiedString.mid(i, 3) == "end") //remove "end" as index of array
+                {
+                    SimplifiedString[i]   = ' ';
+                    SimplifiedString[i+1] = ' ';
+                    SimplifiedString[i+2] = ' ';
+                }
+                else if (ch == '%') // remove comments
+                {
+                    state = COMMENT;
+                    SimplifiedString[i] = ' ';
+                }
+                break;
+            case COMMENT:
+                if (ch == '\n')
+                {
+                    if (nPar <= 0)
+                        state = NORMAL;
+                    else
+                        state = NORMAL_IN_PAR;
+                }
+                else // remove comments
+                	SimplifiedString[i] = ' ';
+                break;
+            case STRING:
+                if (ch == '\'')
+                {
+                   if (nPar <= 0)
+                        state = NORMAL;
+                    else
+                        state = NORMAL_IN_PAR;
+                }
+                else // remove string
+	                SimplifiedString[i] = ' ';
+                break;
+        }
+    }
+    return SimplifiedString;
+}
+
+bool FMTextEdit::findmatch()
+{
+	QString simpleCodes =  simplifiedMCode( plainText );
+    QTextCursor cursor = textCursor();
+    int pos = cursor.position();
+   	matchingBegin = -1;
+   	matchingEnd = -1;
+    Key = "";
+    matchKey = "";
+    if ( pos==-1  || cursor.atEnd())
+    	return false;
+    
+    QChar ch = simpleCodes.at(pos);
+    if (QString("({[]})").contains(simpleCodes.at(pos)))
+       ch = simpleCodes.at(pos);
+    else if (!cursor.atStart() && QString("({[]})").contains(simpleCodes.at(pos-1))) {
+       pos--;
+       ch = simpleCodes.at(pos);
+    }
+    else {
+       int pos1 = -1;
+       int pos2 = -1;
+        for(int i = pos; i>-1; i--) {
+            if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
+                pos1 = i;
+            else
+                break;
+        }
+        for(int i = pos; i<simpleCodes.size(); i++) {
+            if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
+                pos2 = i;
+            else
+                break;
+        }
+        if (pos1 != -1 && pos2 !=-1) 
+            Key =  simpleCodes.mid(pos1, pos2-pos1+1);
+            
+        if (Key.isEmpty() && pos > 0) { // try move left 1 char and search
+            pos--;
+            for(int i = pos; i>-1; i--) {
+                if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
+                    pos1 = i;
+                else
+                    break;
+            }
+            for(int i = pos; i<simpleCodes.size(); i++) {
+                if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
+                    pos2 = i;
+                else
+                    break;
+            }
+            if (pos1 != -1 && pos2 !=-1) 
+                Key =  simpleCodes.mid(pos1, pos2-pos1+1);
+        }
+         
+        if (Key.isEmpty() || 
+           !QString("if elseif else switch case otherwise for while try catch end").contains(Key))
+            return false;
+        else
+            pos = pos1;
+    }
+    
+    QChar matchCh;
+    int inc = 1;
+    if (ch == '(')
+    	matchCh = ')';
+    else if (ch == '{')
+    	matchCh = '}';
+    else if (ch == '[')
+    	matchCh = ']';
+    else if (ch == ')')
+    {
+    	matchCh = '(';
+    	inc = -1;
+   	}
+    else if(ch == '}')
+    {
+    	matchCh = '{';
+    	inc = -1;
+   	}
+    else if (ch == ']')
+    {
+    	matchCh = '[';
+    	inc = -1;
+   	}
+    else if (ch == ']')
+    {
+    	matchCh = '[';
+    	inc = -1;
+   	}
+    else if (Key.isEmpty())
+    	return false;
+    	
+    matchingBegin = pos;
+    int nb = 0;
+    if (Key.isEmpty()) {
+        do
+        {
+        	if (simpleCodes.at(pos) == ch)
+        		nb++;
+        	else if (simpleCodes.at(pos) == matchCh)
+        	{
+        		nb--;
+        		if (nb == 0)
+        		{
+        			matchingEnd = pos;
+        			break;
+       			}
+       		}
+       		pos += inc;
+       	}
+        while(pos >= 0 && pos < simpleCodes.length());
+        
+        if(matchingEnd !=-1) { //found match, save brackets
+            Key = ch;
+            matchKey = matchCh;
+        }
+    } 
+    else {
+        if (Key == "end" || Key == "else" || Key == "elseif"  || 
+            Key == "case" || Key == "otherwise" || Key == "catch") { // search backward
+            nb = -1;
+            pos-= Key.size();
+            inc = -1;
+        }
+        else { // search forward
+            nb = 1;
+            pos+= Key.size();
+        }
+        do
+        {
+            int KeyWidth;
+        	if (simpleCodes.mid(pos, 2) == "if") {
+        	    if (pos >= 4 && simpleCodes.mid(pos-4, 6) == "elseif") {
+        	        matchKey = "elseif";
+        	    }
+        	    else {
+            		nb++;
+                    matchKey = "if";
+                }
+        	}
+        	else if (simpleCodes.mid(pos, 6) == "switch") {
+        		nb++;
+                matchKey = "switch";
+        	}
+        	else if (simpleCodes.mid(pos, 3) == "for") {
+        		nb++;
+                matchKey = "for";
+        	}
+        	else if (simpleCodes.mid(pos, 3) == "try") {
+        		nb++;
+                matchKey = "try";
+        	}
+        	else if (simpleCodes.mid(pos, 5) == "while") {
+        		nb++;
+                matchKey = "while";
+       		}
+        	else if (simpleCodes.mid(pos, 3) == "end")
+        	{
+        		nb--;
+                matchKey = "end";
+       		}
+       		else
+                matchKey = " ";
+
+    		if (nb == 0)
+    		{
+    			matchingEnd = pos;
+    			break;
+   			}
+                pos += matchKey.size()*inc;
+       	}
+        while(pos >= 0 && pos < simpleCodes.length());
+    }
+
+    if(matchingEnd !=-1) //found match
+      return true;
+    else
+      return false;
+}
+
+void FMTextEdit::paintEvent(QPaintEvent *event) {
+  QPainter painter( viewport() );
+  if (matchActive && matchingBegin != -1 && matchingEnd != -1) {
+	const int contentsY = verticalScrollBar()->value();
+	const qreal pageBottom = contentsY + viewport()->height();
+	
+	for ( QTextBlock block = document()->begin(); block.isValid(); block = block.next() )
+	{
+		QTextLayout* layout = block.layout();
+		const QRectF boundingRect = layout->boundingRect();
+		QPointF position = layout->position();
+		
+		if ( position.y() +boundingRect.height() < contentsY )
+			continue;
+		if ( position.y() > pageBottom )
+			break;
+		
+		const QString txt = block.text();
+		const int len = txt.length();
+		
+		for ( int i=0; i<len; i++)
+		{
+			if( block.position() + i == matchingBegin)
+			{
+				QTextCursor cursor = textCursor();
+				cursor.setPosition( block.position() + i, QTextCursor::MoveAnchor);
+				QRect r1 = cursorRect( cursor );
+				cursor.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor, Key.size());
+				QRect r2 = cursorRect( cursor );
+				painter.setPen( matchingColor );
+                painter.drawLine( r1.x()+r1.width()/2, r1.y()+r1.height()-2, r2.x()+r2.width()/2, r2.y()+r2.height()-2);
+			}
+			else if(block.position() + i == matchingEnd)
+			{
+				QTextCursor cursor = textCursor();
+				cursor.setPosition( block.position() + i, QTextCursor::MoveAnchor);
+				QRect r1 = cursorRect( cursor );
+				cursor.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor, matchKey.size());
+				QRect r2 = cursorRect( cursor );
+				painter.setPen( matchingColor );
+                painter.drawLine( r1.x()+r1.width()/2, r1.y()+r1.height()-2, r2.x()+r2.width()/2, r2.y()+r2.height()-2);
+			}
+		}
+	}
+  }
+  QTextEdit::paintEvent( event );
 }
 
 void FMTextEdit::contextMenuEvent(QContextMenuEvent* e) {
@@ -620,6 +969,8 @@ void FMEditor::readSettings() {
   updateFont();
   isShowToolTip = settings.value("editor/isShowToolTip", true).toBool();
   dataTipConfigAct->setChecked(isShowToolTip); 
+  isMatchBracket = settings.value("editor/isMatchBracket", true).toBool();
+  bracketMatchConfigAct->setChecked(isMatchBracket); 
 }
 
 void FMEditor::updateFont() {
@@ -637,6 +988,7 @@ void FMEditor::writeSettings() {
   settings.setValue("editor/size", size());
   settings.setValue("editor/font", m_font.toString());
   settings.setValue("editor/isShowToolTip", isShowToolTip);
+  settings.setValue("editor/isMatchBracket", isMatchBracket);
   settings.sync();
 }
 
@@ -705,6 +1057,8 @@ void FMEditor::tabChanged(int newslot) {
   connect(cutAct,SIGNAL(triggered()),currentEditor(),SLOT(cut()));
   connect(copyAct,SIGNAL(triggered()),currentEditor(),SLOT(copy()));
   connect(pasteAct,SIGNAL(triggered()),currentEditor(),SLOT(paste()));
+  connect(this,SIGNAL(setMatchBracket(bool)),
+          currentEditor(),SLOT(setMatchBracket(bool)));
   // Disconnect each of the contents changed signals
   if (prevEdit) {
     disconnect(prevEdit->document(),SIGNAL(contentsChanged()),0,0);
@@ -811,10 +1165,14 @@ void FMEditor::createActions() {
   connect(colorConfigAct,SIGNAL(triggered()),this,SLOT(configcolors()));
   indentConfigAct = new QAction("Indenting",this);
   connect(indentConfigAct,SIGNAL(triggered()),this,SLOT(configindent()));
-  dataTipConfigAct = new QAction("Enable datatips",this);
+  dataTipConfigAct = new QAction("Show datatips",this);
   dataTipConfigAct->setCheckable(true);
   dataTipConfigAct->setShortcut(Qt::Key_F1 | Qt::SHIFT);
   connect(dataTipConfigAct,SIGNAL(triggered()),this,SLOT(configDataTip()));
+  bracketMatchConfigAct = new QAction("Match brackets/keywords",this);
+  bracketMatchConfigAct->setCheckable(true);
+  bracketMatchConfigAct->setShortcut(Qt::Key_F2 | Qt::SHIFT);
+  connect(bracketMatchConfigAct,SIGNAL(triggered()),this,SLOT(configBracketMatch()));
   executeSelectedAct = new QAction(QIcon(":/images/player_playselection.png"),"Execute Selected Text",this);
   executeSelectedAct->setShortcut(Qt::Key_F9); 
   connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
@@ -911,6 +1269,7 @@ void FMEditor::createMenus() {
   configMenu->addAction(colorConfigAct);
   configMenu->addAction(indentConfigAct);
   configMenu->addAction(dataTipConfigAct);
+  configMenu->addAction(bracketMatchConfigAct);
   toolsMenu = menuBar()->addMenu("&Tools");
   toolsMenu->addAction(findAct);
   toolsMenu->addAction(replaceAct);
@@ -1000,6 +1359,18 @@ void FMEditor::configDataTip() {
      isShowToolTip = false;
      statusBar()->showMessage("Datatips off", 2000);
   }
+}
+
+void FMEditor::configBracketMatch() {
+  if (bracketMatchConfigAct->isChecked()) {
+     isMatchBracket = true;
+     statusBar()->showMessage("Brackets & keywords matching on", 2000);
+  }
+  else {
+     isMatchBracket = false;
+     statusBar()->showMessage("Brackets & keywords matching off", 2000);
+  }
+  emit setMatchBracket(isMatchBracket);
 }
 
 void FMEditor::dbstep() {
@@ -1340,7 +1711,7 @@ void FMEditor::showDataTips(QPoint pos, QString textSelected) {
 			break;
 	      }
     if (!foundTip)
-      QToolTip::hideText(); 
+      QToolTip::hideText();
   }
   else
     QToolTip::hideText();

@@ -81,11 +81,18 @@ class FMTextEdit : public QTextEdit {
   Q_OBJECT
   int indentSize;
   bool indentActive;
+  bool matchActive;
+  long matchingBegin, matchingEnd;
+  QColor matchingColor;
+  QString plainText;
+  QString Key, matchKey;
 public:
   FMTextEdit();
   virtual ~FMTextEdit();
-  void keyPressEvent(QKeyEvent*e);
-  void contextMenuEvent(QContextMenuEvent*e);
+  void keyPressEvent(QKeyEvent *e);
+  bool findmatch();
+  void paintEvent(QPaintEvent *event);
+  void contextMenuEvent(QContextMenuEvent *e);
   void comment();
   void uncomment();
   void increaseIndent();
@@ -95,6 +102,9 @@ public:
   void fontUpdate();
 protected:
   bool event(QEvent *event);
+private slots:
+  void slotCursorPositionChanged();
+  void setMatchBracket(bool flag);
 signals:
   void indent();
   void showDataTips(QPoint pos, QString textSelected);
@@ -198,6 +208,7 @@ class FMEditor : public QMainWindow {
   enum { MaxRecentFiles = 5 }; 
   QAction *recentFileActs[MaxRecentFiles]; 
   QAction *dataTipConfigAct;
+  QAction *bracketMatchConfigAct;
   QTabWidget *tab;
   FMTextEdit *prevEdit;
   QFont m_font;
@@ -208,6 +219,7 @@ class FMEditor : public QMainWindow {
   QStringList varNameList, varTypeList, varFlagsList, varSizeList, varValueList;
   Context *context;
   bool isShowToolTip;
+  bool isMatchBracket;
 public:
   FMEditor(Interpreter* eval);
   virtual ~FMEditor();
@@ -233,6 +245,7 @@ private:
   bool isFileOpened(const QString &fileName); 
 signals:
   void EvaluateText(QString);
+  void setMatchBracket(bool flag);
 protected:
   void contextMenuEvent(QContextMenuEvent *e);
 private slots:
@@ -273,6 +286,7 @@ private slots:
   void openRecentFile(); 
   void showDataTips(QPoint pos, QString textSelected);
   void configDataTip();
+  void configBracketMatch();
   void helpWin();
   void helpOnSelection();
   void openSelection();

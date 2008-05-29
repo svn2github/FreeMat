@@ -570,16 +570,22 @@ bool FMTextEdit::findmatch()
         }
     } 
     else {
-        if (Key == "end" || Key == "else" || Key == "elseif"  || 
-            Key == "case" || Key == "otherwise" || Key == "catch") { // search backward
+        if (Key == "end" || Key == "else" || Key == "elseif" || 
+            Key == "case" || Key == "otherwise" || Key == "catch") { 
+            // search backward
             nb = -1;
             pos-= Key.size();
             inc = -1;
         }
-        else { // search forward
+        else if (Key == "if" || Key == "switch" || Key == "for" || 
+                 Key == "while" || Key == "try" ) { 
+            // search forward
             nb = 1;
             pos+= Key.size();
         }
+        else
+            return false;
+
         do
         {
             int KeyWidth;

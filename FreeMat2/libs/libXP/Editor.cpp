@@ -973,9 +973,9 @@ void FMEditor::readSettings() {
     m_font = new_font;
   }
   updateFont();
-  isShowToolTip = settings.value("editor/isShowToolTip", true).toBool();
+  isShowToolTip = settings.value("editor/tooltip_enable", true).toBool();
   dataTipConfigAct->setChecked(isShowToolTip); 
-  isMatchBracket = settings.value("editor/isMatchBracket", true).toBool();
+  isMatchBracket = settings.value("editor/match_enable", true).toBool();
   bracketMatchConfigAct->setChecked(isMatchBracket); 
 }
 
@@ -993,8 +993,8 @@ void FMEditor::writeSettings() {
   settings.setValue("editor/pos", pos());
   settings.setValue("editor/size", size());
   settings.setValue("editor/font", m_font.toString());
-  settings.setValue("editor/isShowToolTip", isShowToolTip);
-  settings.setValue("editor/isMatchBracket", isMatchBracket);
+  settings.setValue("editor/tooltip_enable", isShowToolTip);
+  settings.setValue("editor/match_enable", isMatchBracket);
   settings.sync();
 }
 

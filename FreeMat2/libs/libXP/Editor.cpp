@@ -342,7 +342,7 @@ void FMTextEdit::slotCursorPositionChanged()
       plainText = toPlainText();
       bool matchbefore = (matchingBegin !=-1 && matchingEnd != -1);
       bool matchnow = findmatch();
-      if (findmatch() || (!matchnow && matchbefore) )
+      if ( matchnow || (!matchnow && matchbefore) )
         viewport()->update();
    }
 }

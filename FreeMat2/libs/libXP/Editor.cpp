@@ -1188,7 +1188,7 @@ void FMEditor::createActions() {
 }
 
 void FMEditor::execSelected() {
-  emit EvaluateText(currentEditor()->textCursor().selectedText()+"\n");
+  emit EvaluateText(currentEditor()->textCursor().selectedText());
 }
 
 void FMEditor::execCurrent() {

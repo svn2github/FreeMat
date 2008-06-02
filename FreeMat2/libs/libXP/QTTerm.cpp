@@ -92,18 +92,19 @@ void QTTerm::focusInEvent(QFocusEvent *e) {
 
 void QTTerm::setChar(char t, bool flush) {
   if (t == '\r') {
-    MoveBOL();
-    return;
-  }
-  if (t == '\n') {
-    nextLine();
+//    MoveBOL();
     return;
   }
   blinkEnable = false;
   buffer[cursor_y].data[cursor_x].clearCursor();
   buffer[cursor_y].data[cursor_x++].v = t;
   buffer[cursor_y].data[cursor_x].setCursor();
-  if (cursor_x >= m_term_width) {
+   if (t == '\n') {
+    nextLine();
+    return;
+  }
+
+ if (cursor_x >= m_term_width) {
     nextLine(); 
   } else {
     if (flush) {
@@ -255,8 +256,7 @@ void QTTerm::mousePressEvent( QMouseEvent *e ) {
   else if (e->buttons() == Qt::LeftButton) {
     int clickcol = e->x()/m_char_w;
     int clickrow = e->y()/m_char_h;
-    selectionStart = verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width;
-    selectionStart = qMax(0,selectionStart);
+    selectionStart = qMax(0,verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width);
     selectionStop = selectionStart;
   }
 }
@@ -283,8 +283,7 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
   // to a row and column
   int clickcol = x/m_char_w;
   int clickrow = y/m_char_h;
-  selectionStop = verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width;
-  selectionStop = qMax(0,selectionStop);
+  selectionStop = qMax(0,verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width);
 
   clearSelection();
 
@@ -302,18 +301,28 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
   sel_row_stop = qMin(sel_row_stop,buffer.size()-1);
 
   if (sel_row_stop == sel_row_start) {
-    for (int j=sel_col_start;j<sel_col_stop;j++)
+    for (int j=sel_col_start;j<sel_col_stop;j++) {
       buffer[sel_row_start].data[j].setSelection();
+      if (buffer[sel_row_start].data[j].v == '\n')
+        break;
+    }
   } else {
     for (int j=sel_col_start;j<m_term_width;j++) {
       buffer[sel_row_start].data[j].setSelection();
+      if (buffer[sel_row_start].data[j].v == '\n')
+        break;
     }
     for (int i=sel_row_start+1;i<sel_row_stop;i++) 
       for (int j=0;j<m_term_width;j++) {
-	buffer[i].data[j].setSelection();
+	    buffer[i].data[j].setSelection();
+        if (buffer[i].data[j].v == '\n')
+          break;
       }
-    for (int j=0;j<sel_col_stop;j++)
+    for (int j=0;j<sel_col_stop;j++) {
       buffer[sel_row_stop].data[j].setSelection();
+      if (buffer[sel_row_stop].data[j].v == '\n')
+        break;
+    }
   }
   viewport()->update();
 }

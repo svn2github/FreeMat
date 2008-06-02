@@ -248,20 +248,6 @@ ArrayVector EditFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
     for (int i=0; i<arg.size(); ++i ) {
       if (arg[i].isString()) {
         string fname = arg[i].getContentsAsString();
-
-        FuncPtr val;
-        bool isFun = eval->getContext()->lookupFunction(fname,val);
-        if (isFun && (val->type() == FM_M_FUNCTION)) {
-          //if file is a matlab file get the file name from the interpreter
-          MFunctionDef* mfun = (MFunctionDef*)val;
-          if( mfun )
-            fname = mfun->fileName;
-        }
-        else {
-          //otherwise try to find it in the path
-          PathSearcher psearch(eval->getTotalPath());
-          fname = psearch.ResolvePath( fname );
-        }
         edit->loadFile(QString::fromStdString(fname));
       } else {
         throw Exception("Illegal file name");

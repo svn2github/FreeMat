@@ -220,10 +220,12 @@ class FMEditor : public QMainWindow {
   Context *context;
   bool isShowToolTip;
   bool isMatchBracket;
+  QStringList pathList;
 public:
   FMEditor(Interpreter* eval);
   virtual ~FMEditor();
   void loadFile(const QString& filename);
+  QString getFullFileName(QString fname);
 private:
   void createActions();
   void createMenus();

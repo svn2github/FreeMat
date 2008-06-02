@@ -925,6 +925,14 @@ FMEditor::FMEditor(Interpreter* eval) : QMainWindow() {
  	  this,SLOT(doReplace(QString,QString,bool,bool)));
   connect(m_replace,SIGNAL(doReplaceAll(QString,QString,bool,bool)),
  	  this,SLOT(doReplaceAll(QString,QString,bool,bool)));
+  std::string mpath = m_eval->getTotalPath();
+  QString path = QString::fromStdString(mpath);
+#ifdef WIN32
+#define PATHSEP ";"
+#else
+#define PATHSEP ":"
+#endif
+  pathList = path.split(PATHSEP,QString::SkipEmptyParts);
 }
 
 void FMEditor::doFind(QString text, bool backwards, bool sensitive) {
@@ -1246,7 +1254,7 @@ void FMEditor::helpOnSelection() {
 }
 
 void FMEditor::openSelection() {
-  emit EvaluateText("edit " + currentEditor()->textCursor().selectedText() + "\n");
+  loadFile(currentEditor()->textCursor().selectedText());
 }
 
 void FMEditor::createMenus() {
@@ -1785,12 +1793,78 @@ void FMEditor::closeEvent(QCloseEvent *event) {
   event->accept();
 }
 
+QString FMEditor::getFullFileName(QString fname)
+{
+  QFileInfo info(fname);
+  std::string fn = fname.toStdString();
+  FuncPtr val;
+  bool isFun = m_eval->getContext()->lookupFunction(fn,val);
+  if (isFun && (val->type() == FM_M_FUNCTION)) {
+    //if file is a matlab file get the file name from the interpreter
+    MFunctionDef* mfun = (MFunctionDef*)val;
+    if( mfun ) {
+      fn = mfun->fileName;
+      return QString::fromStdString(fn);
+    }
+    else {
+	  return QString();
+    }
+  }
+  else {
+    bool isFound = false;
+    for (int i=0;i<pathList.size();i++) {
+      QDir pdir(pathList[i]);
+      if (pdir.exists(fname)) {
+        return pdir.absoluteFilePath(fname);
+      }
+    }
+    if (!isFound) {
+	  return QString();
+	}
+  }
+}
+
 void FMEditor::loadFile(const QString &fileName)
 {
   // ignore if empty filename
   if (fileName.isEmpty())
     return;
     
+  // check if filename contains line number
+  QString fname = fileName;
+/*    
+  int lineNum = 0;
+  int posPlusSign = fname.indexOf('+');
+  if (posPlusSign > 0) {
+    QString lineNumeSt = fname.mid(posPlusSign);
+    lineNum = lineNumeSt.toInt();
+    fname.remove(posPlusSign, fname.size()-posPlusSign);
+  }
+*/
+
+  QString fn = getFullFileName(fname);
+  if (fn.isEmpty()) {
+       QMessageBox::warning(this, tr("FreeMat"),
+	        tr("Cannot read file %1. No such file found on path list.")
+	        .arg(fname));
+    return;
+  }
+  else
+    fname = fn;
+    
+  // Check for one of the editors that might be editing this file already
+  // if found, show its tab
+  for (int i=0;i<tab->count();i++) {
+    QWidget *w = tab->widget(i);
+    FMEditPane *te = qobject_cast<FMEditPane*>(w);
+    if (te) {
+      if (te->getFileName() == fname) {
+	tab->setCurrentIndex(i);
+	return;
+      }
+    }
+  }
+
   // check if there's already an unmodified "untitled.m" tab
   // if not create a new tab
   if (tab->tabText(tab->currentIndex()) != "untitled.m") { 
@@ -1798,25 +1872,13 @@ void FMEditor::loadFile(const QString &fileName)
     tab->setCurrentIndex(tab->count()-1);
     updateFont();
   }
-  // Check for one of the editors that might be editing this file already
-  // if found, show its tab
-  for (int i=0;i<tab->count();i++) {
-    QWidget *w = tab->widget(i);
-    FMEditPane *te = qobject_cast<FMEditPane*>(w);
-    if (te) {
-      if (te->getFileName() == fileName) {
-	tab->setCurrentIndex(i);
-	return;
-      }
-    }
-  }
 
   // open file and load into editor
-  QFile file(fileName);
+  QFile file(fname);
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
     QMessageBox::warning(this, tr("FreeMat"),
 			 tr("Cannot read file %1:\n%2.")
-			 .arg(fileName)
+			 .arg(fname)
 			 .arg(file.errorString()));
     return;
   }
@@ -1826,11 +1888,14 @@ void FMEditor::loadFile(const QString &fileName)
   QApplication::restoreOverrideCursor();
   
   // remember filename and update recent file list
-  QFileInfo tokeep(fileName);
+  QFileInfo tokeep(fname);
   lastfile = tokeep.absolutePath();
   lastfile_set = true;
-  setCurrentFile(fileName);
+  setCurrentFile(fname);
   statusBar()->showMessage(tr("File loaded"), 2000);
+  
+//  if (lineNum>0)
+//    emit gotoLineNumber(lineNum);
 }
 
 void FMEditor::setCurrentFile(const QString &fileName)

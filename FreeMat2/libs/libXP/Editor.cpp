@@ -390,7 +390,7 @@ QString simplifiedMCode(const QString Str)
                 }
                 break;
             case NORMAL_WITH_VAR:
-                if ((ch == ' ') || (ch == '[') ) {
+                if ((ch == ' ') || (ch == ',') || (ch == '[') ) {
                     if (nPar <= 0)
                         state = NORMAL;
                     else
@@ -460,7 +460,7 @@ bool FMTextEdit::findmatch()
    	matchingEnd = -1;
     Key = "";
     matchKey = "";
-    if ( pos==-1  || cursor.atEnd())
+    if ( pos==-1  || cursor.atEnd() || simpleCodes.at(pos) == '_')
     	return false;
     
     QChar ch = simpleCodes.at(pos);
@@ -471,46 +471,13 @@ bool FMTextEdit::findmatch()
        ch = simpleCodes.at(pos);
     }
     else {
-       int pos1 = -1;
-       int pos2 = -1;
-        for(int i = pos; i>-1; i--) {
-            if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
-                pos1 = i;
-            else
-                break;
-        }
-        for(int i = pos; i<simpleCodes.size(); i++) {
-            if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
-                pos2 = i;
-            else
-                break;
-        }
-        if (pos1 != -1 && pos2 !=-1) 
-            Key =  simpleCodes.mid(pos1, pos2-pos1+1);
-            
-        if (Key.isEmpty() && pos > 0) { // try move left 1 char and search
-            pos--;
-            for(int i = pos; i>-1; i--) {
-                if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
-                    pos1 = i;
-                else
-                    break;
-            }
-            for(int i = pos; i<simpleCodes.size(); i++) {
-                if (simpleCodes[i] >= 'a' && simpleCodes[i] <= 'z')
-                    pos2 = i;
-                else
-                    break;
-            }
-            if (pos1 != -1 && pos2 !=-1) 
-                Key =  simpleCodes.mid(pos1, pos2-pos1+1);
-        }
-         
+        cursor.select(QTextCursor::WordUnderCursor);
+        Key = cursor.selectedText();
         if (Key.isEmpty() || 
            !QString("if elseif else switch case otherwise for while try catch end").contains(Key))
             return false;
         else
-            pos = pos1;
+            pos = cursor.selectionStart(); //readjust to the position of first letter
     }
     
     QChar matchCh;
@@ -570,66 +537,65 @@ bool FMTextEdit::findmatch()
         }
     } 
     else {
-        if (Key == "end" || Key == "else" || Key == "elseif" || 
-            Key == "case" || Key == "otherwise" || Key == "catch") { 
-            // search backward
-            nb = -1;
-            pos-= Key.size();
-            inc = -1;
-        }
-        else if (Key == "if" || Key == "switch" || Key == "for" || 
+        if (Key == "if" || Key == "switch" || Key == "for" || 
                  Key == "while" || Key == "try" ) { 
             // search forward
             nb = 1;
-            pos+= Key.size();
+            inc = 1;
+            pos = cursor.selectionEnd()+inc; 
+        }
+        else if (Key == "end" || Key == "else" || Key == "elseif" || 
+            Key == "case" || Key == "otherwise" || Key == "catch") { 
+            // search backward
+            nb = -1;
+            inc = -1;
+            pos = cursor.selectionStart()+inc; 
         }
         else
             return false;
-
-        do
-        {
-            int KeyWidth;
-        	if (simpleCodes.mid(pos, 2) == "if") {
-        	    if (pos >= 4 && simpleCodes.mid(pos-4, 6) == "elseif") {
-        	        matchKey = "elseif";
-        	    }
-        	    else {
-            		nb++;
-                    matchKey = "if";
+        do {
+            QChar chr = simpleCodes.at(pos);
+            if (chr < 'a' || chr > 'z' ) { //ignore if not a small alphabet character
+                pos += inc;
+            }
+            else {
+                int old_pos = pos;
+                cursor.clearSelection();
+        		cursor.setPosition(pos);
+                cursor.select(QTextCursor::WordUnderCursor);
+                matchKey = cursor.selectedText();
+                if (matchKey.isEmpty()) {
+                    pos += inc;
                 }
-        	}
-        	else if (simpleCodes.mid(pos, 6) == "switch") {
-        		nb++;
-                matchKey = "switch";
-        	}
-        	else if (simpleCodes.mid(pos, 3) == "for") {
-        		nb++;
-                matchKey = "for";
-        	}
-        	else if (simpleCodes.mid(pos, 3) == "try") {
-        		nb++;
-                matchKey = "try";
-        	}
-        	else if (simpleCodes.mid(pos, 5) == "while") {
-        		nb++;
-                matchKey = "while";
-       		}
-        	else if (simpleCodes.mid(pos, 3) == "end")
-        	{
-        		nb--;
-                matchKey = "end";
-       		}
-       		else
-                matchKey = " ";
-
-    		if (nb == 0)
-    		{
-    			matchingEnd = pos;
-    			break;
-   			}
-                pos += matchKey.size()*inc;
-       	}
-        while(pos >= 0 && pos < simpleCodes.length());
+                else {
+                	if (matchKey == "if" || matchKey == "switch" || matchKey == "for" || 
+                	    matchKey == "while" || matchKey == "try" )
+                		nb++;
+                	else if (matchKey == "end")
+                		nb--;
+                         
+            		if (nb == 0)
+            		{
+            			matchingEnd = cursor.selectionStart();
+            			break;
+           			}
+           			if (inc > 0) {
+                        pos = cursor.selectionEnd()+inc;
+                        // some characters cause selection to move backward
+                        // if so force it move forward
+                        if (pos <= old_pos) 
+                            pos = old_pos + inc;                      
+                    }
+                    else {
+                        pos = cursor.selectionStart()+inc;
+                        // some characters may cause selection to move forward
+                        // if so force it move backward
+                        if (pos >= old_pos) 
+                            pos = old_pos + inc;                      
+                    }
+                }
+            }
+       	} while(pos >= 0 && pos < simpleCodes.length());
     }
 
     if(matchingEnd !=-1) //found match

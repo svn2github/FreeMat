@@ -34,7 +34,7 @@ protected:
   void highlightBlock(const QString &text);
 private:
   QHash<QString,QTextCharFormat> mappings;
-  QTextCharFormat multiLineCommentFormat;
+  QTextCharFormat singleLineCommentFormat;
   QTextCharFormat untermStringFormat;
   QTextCharFormat stringFormat;
 

@@ -33,6 +33,7 @@ Highlighter::Highlighter(QTextDocument *parent)
   QTextCharFormat keywordFormat;
   keywordFormat.setForeground(keywordColor);
   keywordFormat.setFontWeight(QFont::Bold);
+
   QStringList keywordPatterns;
   keywordPatterns << "\\bbreak\\b" <<
     "\\bcase\\b" <<
@@ -56,11 +57,8 @@ Highlighter::Highlighter(QTextDocument *parent)
     "\\bwhile\\b";
   foreach (QString pattern, keywordPatterns)
     mappings[pattern] = keywordFormat;
-/*
-  QTextCharFormat singleLineCommentFormat;
+
   singleLineCommentFormat.setForeground(commentColor);
-  mappings["\\%[^\n]*"] = singleLineCommentFormat;
-*/
   stringFormat.setForeground(stringColor);
   untermStringFormat.setForeground(untermStringColor);
 
@@ -95,48 +93,98 @@ void Highlighter::highlightBlock(const QString &text)
 	length--;
       }
     }
-    setFormat(index, length, untermStringFormat);
+    setFormat(index+1, length-1, untermStringFormat);
     index = text.indexOf(sutest, index + length);
   }
 
-
-  QRegExp sttest("[^'\\]\\)\\}A-Za-z0-9]'[^']*'");
-  index = text.indexOf(sttest);
-  while (index >=0) {
-    int length = sttest.matchedLength();
-    if (length>0) {
-      QString first(text[index]); 
-      int q = first.indexOf(droptest);
-      if (q >= 0) {
-	index++;
-	length--;
-      }
+    enum
+    {
+        NORMAL = -1,
+        NORMAL_WITH_VAR,
+        NORMAL_IN_PAR,
+        COMMENT,
+        STRING
+    };
+   int state = NORMAL;
+   int start = 0;
+   int nPar = 0;
+   for (int i = 0; i < text.count(); i++)
+    {
+        QChar ch = text.at(i);
+        switch (state)
+        {
+            case NORMAL:
+                if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || 
+                    (ch >= '0' && ch <= '9') || (ch == ']'))
+                    state = NORMAL_WITH_VAR;                    
+                else if ((ch == '(') ) {
+                    state = NORMAL_IN_PAR;
+                    nPar++;
+                }
+                else if (ch == '%') 
+                {
+                    state = COMMENT;
+                    start = i;
+                    // it looks like each text line is a block
+                    // so format until the end of line and return
+                     setFormat(start, text.size()-start, singleLineCommentFormat);
+                    return;
+                }
+                else if (ch == '\'' )
+                {
+                    state = STRING;
+                    start = i;
+                }
+                break;
+            case NORMAL_WITH_VAR:
+                if ((ch == ' ') || (ch == ',') || (ch == '[') ) {
+                    if (nPar <= 0)
+                        state = NORMAL;
+                    else
+                        state = NORMAL_IN_PAR;
+                }                   
+                else if ((ch == '(') ) {
+                    state = NORMAL_IN_PAR;
+                    nPar++;
+                }
+                else if (ch == '%')
+                {
+                    state = COMMENT;
+                    start = i;
+                     setFormat(start, text.size()-start, singleLineCommentFormat);
+                    return;
+                }
+                break;
+            case NORMAL_IN_PAR:
+                if (ch == ')') {
+                    nPar--;
+                    if (nPar <= 0)
+                        state = NORMAL_WITH_VAR;
+                }
+                else if (ch == '%') 
+                {
+                    state = COMMENT;
+                    start = i;
+                     setFormat(start, text.size()-start, singleLineCommentFormat);
+                    return;
+                }
+                else if (ch == '\'' )
+                {
+                    state = STRING;
+                    start = i;
+                }
+                break;
+            case STRING:
+                if (ch == '\'')
+                {
+                   if (nPar <= 0)
+                        state = NORMAL;
+                   else
+                        state = NORMAL_IN_PAR;
+                   setFormat(start, i-start+1, stringFormat);
+                }
+                break;
+        }
     }
-    setFormat(index, length, stringFormat);
-    index = text.indexOf(sttest, index + length);
-  }
-
-  QTextCharFormat singleLineCommentFormat;
-  singleLineCommentFormat.setForeground(commentColor);
-  QRegExp comment("\\%[^\n|\\%]*");
-  int index1 = text.indexOf(comment);
-  QRegExp notcomment("[^'\\]\\)\\}A-Za-z0-9]'[^']*'");
-  while (index1 >= 0) {
-    int length1 = comment.matchedLength();
-    bool isComment = true;
-    int index2 = text.indexOf(notcomment);
-    while (index2 >= 0) {
-      int length2 = notcomment.matchedLength();
-      if (index1 > index2 && index1 < index2+length2) {// '%' is inside a string
-        isComment = false;
-        break;
-      }
-      index2 = text.indexOf(notcomment, index2 + length2);
-    }
-    if (isComment)
-      setFormat(index1, length1, singleLineCommentFormat);
-    index1 = text.indexOf(comment, index1 + length1);
-  }
-
 }
 

@@ -300,6 +300,23 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
   sel_row_start = qMin(sel_row_start,buffer.size()-1);
   sel_row_stop = qMin(sel_row_stop,buffer.size()-1);
 
+  // Ignore the first line if selected in empty space
+  bool hasText = false;
+  for (int j=sel_col_start+1;j<m_term_width;j++) {
+    if (buffer[sel_row_start].data[j].v == '\n' || 
+        buffer[sel_row_start].data[j].cursor()) {
+      hasText = true;
+      break;
+    }
+  }
+  if (!hasText) { // move to the beginning of the next line
+    sel_col_start = 0;
+    sel_row_start++;
+    if (sel_row_start > sel_row_stop)
+      return;
+  }
+  
+  // Set selection bit for text within selected region
   if (sel_row_stop == sel_row_start) {
     for (int j=sel_col_start;j<sel_col_stop;j++) {
       buffer[sel_row_start].data[j].setSelection();

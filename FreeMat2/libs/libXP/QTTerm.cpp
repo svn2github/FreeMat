@@ -95,23 +95,28 @@ void QTTerm::setChar(char t, bool flush) {
 //    MoveBOL();
     return;
   }
-  blinkEnable = false;
-  buffer[cursor_y].data[cursor_x].clearCursor();
-  buffer[cursor_y].data[cursor_x++].v = t;
-  buffer[cursor_y].data[cursor_x].setCursor();
-   if (t == '\n') {
+  if (t == '\n') {
+    buffer[cursor_y].data[cursor_x].v = t;
     nextLine();
     return;
   }
+
+  blinkEnable = false;
+  buffer[cursor_y].data[cursor_x].clearCursor();
+  buffer[cursor_y].data[cursor_x].v = t;
+  buffer[cursor_y].data[cursor_x].setHasText();
+  cursor_x++;
+  buffer[cursor_y].data[cursor_x].setCursor();
 
  if (cursor_x >= m_term_width) {
     nextLine(); 
   } else {
     if (flush) {
       ensureCursorVisible();
-      viewport()->update(QRect(((cursor_x)-1)*m_char_w,
-			       (cursor_y-verticalScrollBar()->value())*m_char_h,
-			       m_char_w*2,m_char_h));
+//      viewport()->update(QRect(((cursor_x)-2)*m_char_w,
+//			       (cursor_y-verticalScrollBar()->value())*m_char_h,
+//			       m_char_w*3,m_char_h));
+      viewport()->update();
     }
   }
   blinkEnable = true;
@@ -185,17 +190,18 @@ void QTTerm::MoveRight() {
 }
 
 void QTTerm::ClearEOL() {
-  for (int j=cursor_x;j<m_term_width-1;j++) {
+  for (int j=cursor_x;j<m_term_width;j++) {
     buffer[cursor_y].data[j].v = ' ';
     buffer[cursor_y].data[j].flags = 0;
   }
+  buffer[cursor_y].data[cursor_x].setCursor();
   viewport()->update();
 }
 
 void QTTerm::ClearEOD() {
   ClearEOL();
   for (int i=cursor_y+1;i<buffer.size();i++) {
-    for (int j=0;j<m_term_width-1;j++) {
+    for (int j=0;j<m_term_width;j++) {
       buffer[i].data[j].v = ' ';
       buffer[i].data[j].flags = 0;
     }
@@ -244,7 +250,7 @@ void QTTerm::drawLine(int linenum, QPainter *e, int yval) {
 void QTTerm::mousePressEvent( QMouseEvent *e ) {
   // Get the x and y coordinates of the mouse click - map that
   // to a row and column
-  if (e->buttons() == Qt::MidButton) { //chuong 2008-01-28
+  if (e->buttons() == Qt::MidButton) { 
     QClipboard *cb = QApplication::clipboard();
     QString SelectedText = cb->text(QClipboard::Selection);
     SelectedText.remove("--> "); //remove FreeMat prompts in selected text
@@ -301,15 +307,8 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
   sel_row_stop = qMin(sel_row_stop,buffer.size()-1);
 
   // Ignore the first line if selected in empty space
-  bool hasText = false;
-  for (int j=sel_col_start+1;j<m_term_width;j++) {
-    if (buffer[sel_row_start].data[j].v == '\n' || 
-        buffer[sel_row_start].data[j].cursor()) {
-      hasText = true;
-      break;
-    }
-  }
-  if (!hasText) { // move to the beginning of the next line
+  if (!buffer[sel_row_start].data[sel_col_start].hasText()) { 
+  // move to the beginning of the next line
     sel_col_start = 0;
     sel_row_start++;
     if (sel_row_start > sel_row_stop)
@@ -319,26 +318,26 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
   // Set selection bit for text within selected region
   if (sel_row_stop == sel_row_start) {
     for (int j=sel_col_start;j<sel_col_stop;j++) {
-      buffer[sel_row_start].data[j].setSelection();
-      if (buffer[sel_row_start].data[j].v == '\n')
+      if (!buffer[sel_row_start].data[j].hasText())
         break;
+      buffer[sel_row_start].data[j].setSelection();
     }
   } else {
     for (int j=sel_col_start;j<m_term_width;j++) {
-      buffer[sel_row_start].data[j].setSelection();
-      if (buffer[sel_row_start].data[j].v == '\n')
+      if (!buffer[sel_row_start].data[j].hasText())
         break;
+      buffer[sel_row_start].data[j].setSelection();
     }
     for (int i=sel_row_start+1;i<sel_row_stop;i++) 
       for (int j=0;j<m_term_width;j++) {
-	    buffer[i].data[j].setSelection();
-        if (buffer[i].data[j].v == '\n')
+        if (!buffer[i].data[j].hasText())
           break;
+	    buffer[i].data[j].setSelection();
       }
     for (int j=0;j<sel_col_stop;j++) {
-      buffer[sel_row_stop].data[j].setSelection();
-      if (buffer[sel_row_stop].data[j].v == '\n')
+      if (!buffer[sel_row_stop].data[j].hasText())
         break;
+      buffer[sel_row_stop].data[j].setSelection();
     }
   }
   viewport()->update();
@@ -359,24 +358,24 @@ void QTTerm::mouseReleaseEvent( QMouseEvent *e ) {
 
 void QTTerm::drawFragment(QPainter *paint, QString todraw, char flags, int row, int col) {
   if (todraw.size() == 0) return;
-  QRect txtrect(col*m_char_w,row*m_char_h,(col+todraw.size())*m_char_w,m_char_h);
+  QRect txtrect(col*m_char_w,row*m_char_h,todraw.size()*m_char_w,m_char_h);
   QPalette qp(qApp->palette());
-  if (flags == 0) {
-    paint->setPen(qp.color(QPalette::WindowText));
-    paint->setBackground(qp.brush(QPalette::Base));
-    paint->eraseRect(txtrect);
-    paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
-  } else if (flags & CURSORBIT) {
+  if (flags & CURSORBIT) {
     paint->setPen(qp.color(QPalette::Base));
     paint->setBackground(Qt::black);
     paint->eraseRect(txtrect);
     paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
-  } else {
+  } else if (flags & SELECTBIT) {
     paint->setPen(qp.color(QPalette::HighlightedText));
     paint->setBackground(qp.brush(QPalette::Highlight));
     paint->eraseRect(txtrect);
     paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
-  }
+  } else {
+    paint->setPen(qp.color(QPalette::WindowText));
+    paint->setBackground(qp.brush(QPalette::Base));
+    paint->eraseRect(txtrect);
+    paint->drawText(txtrect,Qt::AlignLeft|Qt::AlignTop,todraw);
+   } 
 }
 
 #ifndef __APPLE__
@@ -456,7 +455,7 @@ void QTTerm::calcGeometry() {
   QFontMetrics fmi(fnt);
   m_char_w = fmi.width("w");
   m_char_h = fmi.height();
-  m_term_width = viewport()->width()/m_char_w - 1;
+  m_term_width = viewport()->width()/m_char_w;// - 1;
   m_term_height = viewport()->height()/m_char_h;
   emit SetTextWidth(m_term_width);
 }
@@ -508,15 +507,14 @@ QString QTTerm::getAllText() {
 QString QTTerm::getSelectionText() {
   QString ret;
   for (int i=0;i<buffer.size();i++) {
-    bool lineHasSelectedText = false;
     for (int j=0;j<maxlen;j++)
       if (buffer[i].data[j].selected()) {
 	ret += buffer[i].data[j].v;
-	lineHasSelectedText = true;
       }
-//    chuong 2008-01-28, the next 2 lines causing unnecessary/problematic new line, so commented them
-//    if (lineHasSelectedText)
-//      ret += '\n';
+      else if (buffer[i].data[j].v == '\n') {
+        ret += '\n';
+        break;
+      }
   }
   ret.replace(QRegExp(" +\\n"),"\n");
   return ret;

@@ -37,6 +37,7 @@ QTTerm::QTTerm() {
   QObject::connect(m_timer_blink, SIGNAL(timeout()), this, SLOT(blink()));
   QSettings settings("FreeMat", "FreeMat");
   scrollback = settings.value("console/scrollback",5000).toInt();
+  isCursorVisible = true;
   m_timer_blink->start(settings.value("console/blinkspeed",1000).toInt());
   fnt = QFont("Courier",10);
 }
@@ -72,8 +73,10 @@ void QTTerm::ensureCursorVisible() {
   int cscroll = verticalScrollBar()->value();
   if ((cscroll < cursor_y) && 
       (cursor_y < (cscroll+m_term_height-1))) return;
-  int minval = cursor_y-m_term_height+1;
-  verticalScrollBar()->setValue(minval);
+  if (isCursorVisible) {
+    int minval = cursor_y-m_term_height+1;
+    verticalScrollBar()->setValue(minval);
+  }
 }
 
 void QTTerm::focusOutEvent(QFocusEvent *e) {
@@ -386,7 +389,18 @@ void QTTerm::drawFragment(QPainter *paint, QString todraw, char flags, int row, 
 
 
 bool QTTerm::event(QEvent *e) {
+  // check if cursor is currently visible 
+  // if so keep visible
+  // otherwise don't scroll the vertical
+  int cscroll = verticalScrollBar()->value();
+  if ((cscroll <= cursor_y) && 
+      (cursor_y <= (cscroll+m_term_height-1)))
+      isCursorVisible = true;
+  else
+      isCursorVisible = false;
+
   if (e->type() == QEvent::KeyPress) {
+    isCursorVisible = true; //always show cursor when key pressed
     QKeyEvent *ke = static_cast<QKeyEvent*>(e);
     if (ke->key() == Qt::Key_Tab) {
       emit OnChar(KM_TAB);

@@ -116,7 +116,7 @@ void FMReplaceDialog::showrepcount(int cnt) {
 
 FMTextEdit::FMTextEdit() : QTextEdit() {
   QSettings settings("FreeMat","FreeMat");
-  indentSize = settings.value("editor/tab_size",3).toInt();
+  indentSize = settings.value("editor/tab_size",4).toInt();
   indentActive = settings.value("editor/indent_enable",true).toBool();
   matchActive = settings.value("editor/match_enable",true).toBool();
   matchingColor = settings.value("editor/matching_color",Qt::black).value<QColor>();
@@ -2086,7 +2086,7 @@ FMIndentConf::FMIndentConf(QWidget *parent) : QDialog(parent) {
   ui.setupUi(this);
   QSettings settings("FreeMat","FreeMat");
   ui.indentEnable->setChecked(settings.value("editor/indent_enable",true).toBool());
-  ui.tabsize->setText(settings.value("editor/tab_size",3).toString());
+  ui.tabsize->setText(settings.value("editor/tab_size",4).toString());
   connect(this,SIGNAL(accepted()),this,SLOT(save()));
 }
 

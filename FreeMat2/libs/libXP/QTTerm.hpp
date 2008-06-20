@@ -73,6 +73,7 @@ class QTTerm : public QAbstractScrollArea {
   int selectionStart;
   int selectionStop;
   int scrollback;
+  bool isCursorVisible;
 public:
   QTTerm();
   QString getSelectionText();

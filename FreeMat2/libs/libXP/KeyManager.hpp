@@ -178,6 +178,7 @@ public slots:
   void SetPrompt(string);
   void ClearDisplayCommand();
   void ChangeDir(const QString& dir);
+  void PlaceCursorDXDY(int dx, int dy);
 signals:
   void UpdateTermWidth(int);
   void RegisterInterrupt();

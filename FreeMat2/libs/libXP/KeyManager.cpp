@@ -128,6 +128,25 @@ void KeyManager::PlaceCursor(int n) {
   SetTermCurpos(tmpi);
 }
 
+void KeyManager::PlaceCursorDXDY(int dx, int dy) {
+  int n = buff_curpos + dx + dy*ncolumn;
+  /*
+   * Don't move cursor if out of the bounds of the input
+   * line.
+   */
+  if(n < 0 || n > ntotal)
+    return;
+  /*
+   * Record the new buffer position.
+   */
+  buff_curpos = n;
+  /*
+   * Move the terminal cursor to the corresponding character.
+   */
+  int tmpi = BuffCurposToTermCurpos(n);
+  SetTermCurpos(tmpi);
+}
+
 int KeyManager::DisplayedCharWidth(char c, int aterm_curpos) {
   if(c=='\t')
     return TAB_WIDTH - ((aterm_curpos % ncolumn) % TAB_WIDTH);
@@ -628,10 +647,9 @@ void KeyManager::KillLine() {
 }
 
 void KeyManager::HistorySearchBackward() {
-  if (last_search != keyseq_count-1) {
+  // update search prefix if current buffer is modified
+  if (last_search != keyseq_count-1)
     SearchPrefix(string(lineData),buff_curpos);
-    startsearch = history.size();
-  }
   last_search = keyseq_count;
   HistoryFindBackwards();
   ntotal = lineData.size();
@@ -640,6 +658,7 @@ void KeyManager::HistorySearchBackward() {
 }
 
 void KeyManager::HistorySearchForward() {
+  // update search prefix if current buffer is modified
   if (last_search != keyseq_count-1)
     SearchPrefix(string(lineData),buff_curpos);
   last_search = keyseq_count;
@@ -1111,6 +1130,7 @@ void KeyManager::RegisterTerm(QObject* term) {
 	  SLOT(OutputRawString(string)));
   connect(this,SIGNAL(ClearDisplay()),term,SLOT(ClearDisplay()));
   connect(term,SIGNAL(OnChar(int)),this,SLOT(OnChar(int)));
+  connect(term,SIGNAL(PlaceCursorDXDY(int, int)),this,SLOT(PlaceCursorDXDY(int, int)));
   connect(term,SIGNAL(SetTextWidth(int)),this,SLOT(SetTermWidth(int)));  
 }
 

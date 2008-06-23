@@ -70,10 +70,13 @@ class QTTerm : public QAbstractScrollArea {
   QTimer *m_timer_blink;
   bool blinkEnable;
   bool m_blink_skip;
+  int preSelectionStart;
+  int preSelectionStop;
   int selectionStart;
   int selectionStop;
   int scrollback;
   bool isCursorVisible;
+  bool hasSelection;
 public:
   QTTerm();
   QString getSelectionText();
@@ -117,6 +120,7 @@ public slots:
 signals:
   void OnChar(int c);
   void SetTextWidth(int);
+  void PlaceCursorDXDY(int dx, int dy);
 };
 
 #endif

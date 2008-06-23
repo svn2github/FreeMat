@@ -40,6 +40,7 @@ QTTerm::QTTerm() {
   isCursorVisible = true;
   m_timer_blink->start(settings.value("console/blinkspeed",1000).toInt());
   fnt = QFont("Courier",10);
+  hasSelection = false;
 }
 
 int QTTerm::getScrollbackLimit() {
@@ -73,6 +74,9 @@ void QTTerm::ensureCursorVisible() {
   int cscroll = verticalScrollBar()->value();
   if ((cscroll < cursor_y) && 
       (cursor_y < (cscroll+m_term_height-1))) return;
+  // Make it visible only when it was previously visible,
+  // this allows user to scroll upward while 
+  // new texts are being printing
   if (isCursorVisible) {
     int minval = cursor_y-m_term_height+1;
     verticalScrollBar()->setValue(minval);
@@ -265,18 +269,34 @@ void QTTerm::mousePressEvent( QMouseEvent *e ) {
   else if (e->buttons() == Qt::LeftButton) {
     int clickcol = e->x()/m_char_w;
     int clickrow = e->y()/m_char_h;
+    // place cursor at click point, if possible
+    emit PlaceCursorDXDY(clickcol-cursor_x, clickrow-cursor_y);
+    
     selectionStart = qMax(0,verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width);
     selectionStop = selectionStart;
   }
 }
 
 void QTTerm::clearSelection() {
+  if (!hasSelection)
+    return;
   // clear the selection bits
-  for (int i=0;i<buffer.size();i++) {
+  int lSelectionStart = preSelectionStart;
+  int lSelectionStop  = preSelectionStop;
+  if (lSelectionStart > lSelectionStop) 
+    qSwap(lSelectionStop,lSelectionStart);
+  int sel_row_start = lSelectionStart/m_term_width;
+  int sel_row_stop = lSelectionStop/m_term_width;
+  sel_row_start = qMin(sel_row_start,buffer.size()-1);
+  sel_row_stop = qMin(sel_row_stop,buffer.size()-1);
+  for (int i=sel_row_start;i<=sel_row_stop;i++) {
     for (int j=0;j<maxlen;j++) {
+      if (buffer[i].data[j].noflags())
+        break;
       buffer[i].data[j].clearSelection();
     }
   }
+  hasSelection = false;
 }
 
 void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
@@ -292,14 +312,23 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
   // to a row and column
   int clickcol = x/m_char_w;
   int clickrow = y/m_char_h;
+  // place cursor at click point, if possible
+  emit PlaceCursorDXDY(clickcol-cursor_x, clickrow-cursor_y);
+    
   selectionStop = qMax(0,verticalScrollBar()->value()*m_term_width + clickcol + clickrow*m_term_width);
 
+  // clear previous selection
+  // and update it to the new one
   clearSelection();
+  preSelectionStart = selectionStart;
+  preSelectionStop  = selectionStop;
 
   int lSelectionStart = selectionStart;
   int lSelectionStop = selectionStop;
   if (lSelectionStart > lSelectionStop) 
     qSwap(lSelectionStop,lSelectionStart);
+  if (selectionStart != selectionStop)
+    hasSelection = true;
 
   int sel_row_start = lSelectionStart/m_term_width;
   int sel_col_start = lSelectionStart % m_term_width;
@@ -348,9 +377,9 @@ void QTTerm::mouseMoveEvent( QMouseEvent *e ) {
 
 void QTTerm::mouseReleaseEvent( QMouseEvent *e ) {
   QClipboard *cb = QApplication::clipboard();
-  if (!cb->supportsSelection())
-    return;
   if (selectionStart != selectionStop) {
+    if (!cb->supportsSelection())
+      return;
     cb->setText(getSelectionText(), QClipboard::Selection);
   }
   else { //clear selection if left mouse click without moving
@@ -401,6 +430,7 @@ bool QTTerm::event(QEvent *e) {
 
   if (e->type() == QEvent::KeyPress) {
     isCursorVisible = true; //always show cursor when key pressed
+    clearSelection(); //clear any selection
     QKeyEvent *ke = static_cast<QKeyEvent*>(e);
     if (ke->key() == Qt::Key_Tab) {
       emit OnChar(KM_TAB);
@@ -519,13 +549,24 @@ QString QTTerm::getAllText() {
 }
 
 QString QTTerm::getSelectionText() {
+  int lSelectionStart = selectionStart;
+  int lSelectionStop  = selectionStop;
+  if (lSelectionStart > lSelectionStop) 
+    qSwap(lSelectionStop,lSelectionStart);
+  int sel_row_start = lSelectionStart/m_term_width;
+  int sel_row_stop = lSelectionStop/m_term_width;
+  sel_row_start = qMin(sel_row_start,buffer.size()-1);
+  sel_row_stop = qMin(sel_row_stop,buffer.size()-1);
   QString ret;
-  for (int i=0;i<buffer.size();i++) {
+  for (int i=sel_row_start;i<=sel_row_stop;i++) {
     for (int j=0;j<maxlen;j++)
       if (buffer[i].data[j].selected()) {
-	ret += buffer[i].data[j].v;
+        ret += buffer[i].data[j].v;
       }
-      else if (buffer[i].data[j].v == '\n') {
+      // include "return" if found at the end of current selected line
+      // and there is 1 or more lines to check
+      else if (i<sel_row_stop && buffer[i].data[j].v == '\n' && 
+               j>0 && buffer[i].data[j-1].selected()) {
         ret += '\n';
         break;
       }

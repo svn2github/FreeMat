@@ -35,6 +35,10 @@ FMFindDialog::FMFindDialog(QWidget *parent) : QDialog(parent) {
 }
 
 void FMFindDialog::setFindText(QString text) {
+  int index = ui.cmFindText->findText(text);
+  // remove the same text if found to avoid duplicating text
+  if (index >= 0)
+    ui.cmFindText->removeItem(index);
   ui.cmFindText->insertItem(0, text);
   ui.cmFindText->setCurrentIndex(0);
 }
@@ -68,6 +72,10 @@ FMReplaceDialog::FMReplaceDialog(QWidget *parent) : QDialog(parent) {
 }
 
 void FMReplaceDialog::setReplaceText(QString text) {
+  int index = ui.cmFindText->findText(text);
+  // remove the same text if found to avoid duplicating text
+  if (index >= 0)
+    ui.cmFindText->removeItem(index);
   ui.cmFindText->insertItem(0, text);
   ui.cmFindText->setCurrentIndex(0);
 }

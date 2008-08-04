@@ -254,6 +254,50 @@ void QTTerm::drawLine(int linenum, QPainter *e, int yval) {
   drawFragment(e,outd,gflags,yval,frag_start);
 }
 
+void QTTerm::mouseDoubleClickEvent( QMouseEvent *e ) {
+  int j;
+  if (e->buttons() == Qt::LeftButton) {
+    // clear previous selection
+    clearSelection();
+    int clickcol = e->x()/m_char_w;
+    int clickrow = e->y()/m_char_h;
+    for (j=clickcol;j>0;j--) {
+      if (!buffer[clickrow].data[j].hasText())
+        break;
+      if ((buffer[clickrow].data[j].v >='A' && buffer[clickrow].data[j].v <='Z') || 
+          (buffer[clickrow].data[j].v >='a' && buffer[clickrow].data[j].v <='z') ||
+          (buffer[clickrow].data[j].v >='0' && buffer[clickrow].data[j].v <='9') )
+        buffer[clickrow].data[j].setSelection();
+      else
+        break;
+    }
+    selectionStart = qMax(0,verticalScrollBar()->value()*m_term_width + j+1 + clickrow*m_term_width);
+    selectionStop = selectionStart;
+    for (j=clickcol;j<m_term_width;j++) {
+      if (!buffer[clickrow].data[j].hasText())
+        break;
+      if ((buffer[clickrow].data[j].v >='A' && buffer[clickrow].data[j].v <='Z') || 
+          (buffer[clickrow].data[j].v >='a' && buffer[clickrow].data[j].v <='z') ||
+          (buffer[clickrow].data[j].v >='0' && buffer[clickrow].data[j].v <='9') ||
+          (buffer[clickrow].data[j].v =='_') )
+        buffer[clickrow].data[j].setSelection();
+      else
+        break;
+    }
+    selectionStop = qMax(0,verticalScrollBar()->value()*m_term_width + j + clickrow*m_term_width);
+    if (selectionStart > selectionStop) 
+      qSwap(selectionStop,selectionStart);
+    if (selectionStart != selectionStop)
+      hasSelection = true;
+    // update to the new one
+    preSelectionStart = selectionStart;
+    preSelectionStop  = selectionStop;
+    viewport()->update();
+    // move cursor to the end of selection
+    emit PlaceCursorDXDY(j-cursor_x, clickrow-cursor_y);
+  }
+}
+
 void QTTerm::mousePressEvent( QMouseEvent *e ) {
   // Get the x and y coordinates of the mouse click - map that
   // to a row and column

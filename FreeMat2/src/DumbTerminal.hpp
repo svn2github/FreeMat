@@ -43,6 +43,7 @@ public slots:
 signals:
   void OnChar(int c);
   void SetTextWidth(int);
+  void PlaceCursorDXDY(int dx, int dy);
 };
 
 #endif

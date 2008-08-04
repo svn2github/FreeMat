@@ -97,6 +97,7 @@ protected:
   void resizeEvent(QResizeEvent *e);
   void focusOutEvent(QFocusEvent *e);
   void focusInEvent(QFocusEvent *e);
+  void mouseDoubleClickEvent( QMouseEvent *e );
   void mousePressEvent( QMouseEvent *e );
   void mouseMoveEvent( QMouseEvent *e );
   void mouseReleaseEvent( QMouseEvent *e );

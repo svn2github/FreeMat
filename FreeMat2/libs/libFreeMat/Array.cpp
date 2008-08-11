@@ -1369,7 +1369,7 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i]<0) ? 0 : (char) sp[i]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,qp[i] = (sp[i]<0) ? 0 : (uint8) sp[i]);
 	caseMacro(FM_UINT16,uint16,qp[i] = (sp[i]<0) ? 0 : (uint16) sp[i]);
@@ -1395,7 +1395,7 @@ else\
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,qp[i] = (sp[i]>255) ? 255 : (uint8) sp[i]);
 	caseMacro(FM_INT8,int8,qp[i] = (sp[i]>127) ? 127 : (int8) sp[i]);
-	caseMacro(FM_INT16,int16,qp[i] = (sp[i]>255) ? 255 : (int16) sp[i]);
+	caseMacro(FM_INT16,int16,qp[i] = (sp[i]>32767) ? 32767 : (int16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (uint32) sp[i]);
 	caseMacro(FM_INT32,int32,qp[i] = (int32) sp[i]);
 	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
@@ -1413,9 +1413,9 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i]<0) ? 0 : (char) sp[i]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
-	caseMacro(FM_UINT8,uint8,qp[i] = (sp[i]<0) ? 0 : (uint8) sp[i]);
+	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i], -128, 127));
 	caseMacro(FM_UINT16,uint16,qp[i] = (sp[i]<0) ? 0 : (uint16) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (sp[i]<0) ? 0 : (uint32) sp[i]);
@@ -1439,9 +1439,9 @@ else\
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,qp[i] = (sp[i]>255) ? 255 : (uint8) sp[i]);
 	caseMacro(FM_INT8,int8,qp[i] = (sp[i]>127) ? 127 : (int8) sp[i]);
-	caseMacro(FM_UINT16,uint16,qp[i] = (sp[i]>65535) ? 65535 : (uint16) sp[i]);
 	caseMacro(FM_INT16,int16,qp[i] = (sp[i]>32767) ? 32767 : (int16) sp[i]);
-	caseMacro(FM_INT32,int32,qp[i] = (sp[i]>65535) ? 65535 : (int32) sp[i]);
+	caseMacro(FM_UINT16,uint16,qp[i] = (sp[i]>65535) ? 65535 : (uint16) sp[i]);
+	caseMacro(FM_INT32,int32,qp[i] = (sp[i]>2147483647) ? 2147483647 : (int32) sp[i]);
 	caseMacro(FM_UINT64,uint64,qp[i] = (uint64) sp[i]);
 	caseMacro(FM_INT64,int64,qp[i] = (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
@@ -1457,11 +1457,11 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i]<0) ? 0 : (char) sp[i]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i], -128, 127));
-	caseMacro(FM_UINT16,uint16,qp[i] = (sp[i]<0) ? 0 : (uint16) sp[i]);
+	caseMacro(FM_UINT16,uint16,keepBounds(uint16, qp[i], sp[i], 0, 65535));
 	caseMacro(FM_INT16,int16,keepBounds(int16, qp[i], sp[i], -32768, 32767));
 	caseMacro(FM_UINT32,uint32,qp[i] = (sp[i]<0) ? 0 : (uint32) sp[i]);
 	caseMacro(FM_UINT64,uint64,qp[i] = (sp[i]<0) ? 0 : (uint64) sp[i]);
@@ -1485,8 +1485,8 @@ else\
 	caseMacro(FM_INT8,int8,qp[i] = (sp[i]>127) ? 127 : (int8) sp[i]);
 	caseMacro(FM_UINT16,uint16,qp[i] = (sp[i]>65535) ? 65535 : (uint16) sp[i]);
 	caseMacro(FM_INT16,int16,qp[i] = (sp[i]>32767) ? 32767 : (int16) sp[i]);
-	caseMacro(FM_INT32,int32,qp[i] = (sp[i]>65535) ? 65535 : (int32) sp[i]);
 	caseMacro(FM_UINT32,uint32,qp[i] = (sp[i]>4294967295) ? 4294967295: (uint32) sp[i]);
+	caseMacro(FM_INT32,int32,qp[i] = (sp[i]>2147483647) ? 2147483647 : (int32) sp[i]);
 	caseMacro(FM_INT64,int64,qp[i] = (sp[i]>4294967295) ? 4294967295: (int64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
 	caseMacro(FM_DOUBLE,double,qp[i] = (double) sp[i]);
@@ -1501,13 +1501,13 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i]<0) ? 0 : (char) sp[i]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i], -128, 127));
 	caseMacro(FM_UINT16,uint16,keepBounds(uint16, qp[i], sp[i], 0, 65535));
 	caseMacro(FM_INT16,int16,keepBounds(int16, qp[i], sp[i], -32768, 32767));
-	caseMacro(FM_UINT32,uint32,qp[i] = (sp[i]<0) ? 0 : (uint32) sp[i]);
+	caseMacro(FM_UINT32,uint32,keepBounds(uint32, qp[i], sp[i], 0, 4294967295));
 	caseMacro(FM_INT32,int32,keepBounds(int32, qp[i], sp[i], -2147483648, 2147483647));
 	caseMacro(FM_UINT64,uint64,qp[i] = (sp[i]<0) ? 0 : (uint64) sp[i]);
 	caseMacro(FM_FLOAT,float,qp[i] = (float) sp[i]);
@@ -1523,7 +1523,7 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i]<0) ? 0 : (char) sp[i]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i], -128, 127));
@@ -1545,7 +1545,7 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i]<0) ? 0 : (char) sp[i]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = (sp[i]==0) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i], -128, 127));
@@ -1567,7 +1567,7 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i<<1]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i<<1]<0) ? 0 : (char) sp[i<<1]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = ((sp[i<<1]==0.0) && (sp[(i<<1) + 1] == 0.0)) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i<<1], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i<<1], -128, 127));
@@ -1589,7 +1589,7 @@ else\
       switch (dstClass) {
       default:
 	throw Exception("Unhandled type to promotetype function");
-	caseMacro(FM_STRING,char,qp[i] = (char) sp[i<<1]);
+	caseMacro(FM_STRING,char,qp[i] = (sp[i<<1]<0) ? 0 : (char) sp[i<<1]);
 	caseMacro(FM_LOGICAL,logical,qp[i] = ((sp[i<<1]==0.0) && (sp[(i<<1) + 1] == 0.0)) ? 0 : 1);
 	caseMacro(FM_UINT8,uint8,keepBounds(uint8, qp[i], sp[i<<1], 0, 255));
 	caseMacro(FM_INT8,int8,keepBounds(int8, qp[i], sp[i<<1], -128, 127));

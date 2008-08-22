@@ -14,6 +14,7 @@ a = [a, ':' pwd '/src/toolbox/mpi'];
 a = [a, ':' pwd '/src/toolbox/numerical'];
 a = [a, ':' pwd '/src/toolbox/os'];
 a = [a, ':' pwd '/src/toolbox/poly'];
+a = [a, ':' pwd '/src/toolbox/random'];
 a = [a, ':' pwd '/src/toolbox/signal'];
 a = [a, ':' pwd '/src/toolbox/sparse'];
 a = [a, ':' pwd '/src/toolbox/stat'];

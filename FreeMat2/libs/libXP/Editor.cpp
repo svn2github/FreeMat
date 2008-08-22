@@ -373,10 +373,10 @@ QString simplifiedMCode(const QString Str)
     };
    int state = NORMAL;
    QString SimplifiedString = Str;
+   int nPar = 0;
    for (int i = 0; i < SimplifiedString.count(); i++)
     {
         QChar ch = SimplifiedString[i];
-        int nPar = 0;
         switch (state)
         {
             case NORMAL:
@@ -390,7 +390,7 @@ QString simplifiedMCode(const QString Str)
                 else if (ch == '%') // remove comments
                 {
                     state = COMMENT;
-                    SimplifiedString[i] = ' ';
+                    SimplifiedString[i] = '_';
                 }
                 else if (ch == '\'' )
                 {
@@ -411,7 +411,7 @@ QString simplifiedMCode(const QString Str)
                 else if (ch == '%') // remove comments
                 {
                     state = COMMENT;
-                    SimplifiedString[i] = ' ';
+                    SimplifiedString[i] = '_';
                 }
                 break;
             case NORMAL_IN_PAR:
@@ -422,14 +422,18 @@ QString simplifiedMCode(const QString Str)
                 }
                 else if (SimplifiedString.mid(i, 3) == "end") //remove "end" as index of array
                 {
-                    SimplifiedString[i]   = ' ';
-                    SimplifiedString[i+1] = ' ';
-                    SimplifiedString[i+2] = ' ';
+                    SimplifiedString[i]   = '_';
+                    SimplifiedString[i+1] = '_';
+                    SimplifiedString[i+2] = '_';
                 }
                 else if (ch == '%') // remove comments
                 {
                     state = COMMENT;
-                    SimplifiedString[i] = ' ';
+                    SimplifiedString[i] = '_';
+                }
+                else if (ch == '\'' )
+                {
+                    state = STRING;
                 }
                 break;
             case COMMENT:
@@ -441,7 +445,7 @@ QString simplifiedMCode(const QString Str)
                         state = NORMAL_IN_PAR;
                 }
                 else // remove comments
-                	SimplifiedString[i] = ' ';
+                	SimplifiedString[i] = '_';
                 break;
             case STRING:
                 if (ch == '\'')
@@ -452,7 +456,7 @@ QString simplifiedMCode(const QString Str)
                         state = NORMAL_IN_PAR;
                 }
                 else // remove string
-	                SimplifiedString[i] = ' ';
+	                SimplifiedString[i] = '_';
                 break;
         }
     }

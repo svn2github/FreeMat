@@ -885,12 +885,12 @@ Array convert2uint8(Array A) {
   else if (A.dataClass() ==  FM_INT8) {
     int8 *img_data_dp = (int8*) A.getDataPointer();
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(img_data_dp[i]);
+      img_data_dp1[i] = (img_data_dp[i]<0) ? 0: uint8(img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_UINT16) {
     uint16 *img_data_dp = (uint16*) A.getDataPointer();
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(img_data_dp[i]);
+      img_data_dp1[i] = (img_data_dp[i]>255) ? 255: uint8(img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_INT16) {
     int16 *img_data_dp = (int16*) A.getDataPointer();
@@ -900,34 +900,52 @@ Array convert2uint8(Array A) {
   else if (A.dataClass() ==  FM_UINT32) {
     uint32 *img_data_dp = (uint32*) A.getDataPointer();
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(img_data_dp[i]);
+      img_data_dp1[i] = (img_data_dp[i]>255) ? 255: uint8(img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_INT32) {
     int32 *img_data_dp = (int32*) A.getDataPointer();
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(img_data_dp[i]);
+      if (img_data_dp[i] < 0)
+        img_data_dp1[i] = 0;
+      else if (img_data_dp[i] > 255)
+        img_data_dp1[i] = 255;
+      else
+        img_data_dp1[i] = uint8(img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_UINT64) {
     uint64 *img_data_dp = (uint64*) A.getDataPointer();
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(img_data_dp[i]);
+      img_data_dp1[i] = (img_data_dp[i]>255) ? 255: uint8(img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_INT64) {
     int64 *img_data_dp = (int64*) A.getDataPointer();
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(img_data_dp[i]);
+      if (img_data_dp[i] < 0)
+        img_data_dp1[i] = 0;
+      else if (img_data_dp[i] > 255)
+        img_data_dp1[i] = 255;
+      else
+        img_data_dp1[i] = uint8(img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_FLOAT) {
     float *img_data_dp = (float*) A.getDataPointer();
-    float scale = 255;
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(scale*img_data_dp[i]);
+      if (img_data_dp[i] < 0)
+        img_data_dp1[i] = 0;
+      else if (img_data_dp[i] > 1)
+        img_data_dp1[i] = 255;
+      else
+        img_data_dp1[i] = uint8(255.0*img_data_dp[i]);
   }
   else if (A.dataClass() ==  FM_DOUBLE) {
     double *img_data_dp = (double*) A.getDataPointer();
-    double scale = 255;
     for (int i = 0; i< A.getLength(); i++)
-      img_data_dp1[i] = uint8(scale*img_data_dp[i]);
+      if (img_data_dp[i] < 0)
+        img_data_dp1[i] = 0;
+      else if (img_data_dp[i] > 1)
+        img_data_dp1[i] = 255;
+      else
+        img_data_dp1[i] = uint8(255.0*img_data_dp[i]);
   }
   else
     throw Exception("invalid data type");

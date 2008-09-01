@@ -1609,6 +1609,7 @@ else\
   setData(dstClass,dimensions(),dstPtr);
 }
 
+#undef keepBounds
 #undef caseMacro
 
 void Array::promoteType(Class dstClass) {

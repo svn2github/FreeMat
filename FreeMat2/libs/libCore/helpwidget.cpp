@@ -36,19 +36,25 @@ HelpSearcher::HelpSearcher(QWidget *parent, QString basepath, HelpWindow *mgr) :
   setLayout(vlayout);
   connect(m_search_word,SIGNAL(returnPressed()),this,SLOT(updateSearch()));
   connect(m_results_list,SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-	  mgr,SLOT(activateModule(QListWidgetItem*)));
+	  mgr,SLOT(activateModuleSearch(QListWidgetItem*)));
   connect(m_results_list,SIGNAL(itemActivated(QListWidgetItem*)),
-	  mgr,SLOT(activateModule(QListWidgetItem*)));
+	  mgr,SLOT(activateModuleSearch(QListWidgetItem*)));
+
   m_basepath = basepath;
+  searchString = &mgr->searchString;
 }
 
 void HelpSearcher::updateSearch() {
   m_results_list->clear();
-  QRegExp search_pattern(m_search_word->text());
+  *searchString = m_search_word->text();
+  /* Todo: add ? and * search ability */
+  QRegExp search_pattern("\\b" + m_search_word->text() + "\\b");
+  
   // Get a list of all .html files
   QDir dir(m_basepath);
   dir.setNameFilters(QStringList() << "*.html");
   QFileInfoList list = dir.entryInfoList();
+  bool isFound = false;
   for (int i=0;i<list.size();i++) {
     QFileInfo fileInfo = list.at(i);
     QFile f(fileInfo.absoluteFilePath());
@@ -59,12 +65,19 @@ void HelpSearcher::updateSearch() {
 	QString entry(fileInfo.fileName());
 	QRegExp reg("(\\w*)_(\\w*)");
 	if (reg.indexIn(entry) > -1) {
-	  if (reg.cap(1) != "sec")
+	  if (reg.cap(1) != "sec") {
 	    new QListWidgetItem(reg.cap(2) + " (" + reg.cap(1) + ")",m_results_list);
+	    isFound = true;
+	    }
 	}
       }
     }
   }
+  if (!isFound)
+    QMessageBox::warning(this, "helpwin", 
+                   "Cannot find help document for '" + m_search_word->text() + "'\n",
+                   QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
+    
 }
 
 void HelpWindow::activateModule(QListWidgetItem* item) {
@@ -73,6 +86,32 @@ void HelpWindow::activateModule(QListWidgetItem* item) {
   if (modname_pattern.indexIn(name_and_section) < 0)
     return;
   tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
+}
+
+void HelpWindow::activateModuleSearch(QListWidgetItem* item) {
+  QString name_and_section(item->text());
+  QRegExp modname_pattern("^\\s*(\\b\\w+\\b)\\s*\\((\\b\\w+\\b)\\)");
+  if (modname_pattern.indexIn(name_and_section) < 0)
+    return;
+  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
+
+  /* Highlight search text*/
+  if (!searchString.isEmpty()) {
+    QTextDocument *document = tb->document();
+    QTextCursor highlightCursor(document);
+    QTextCursor cursor(document);
+    cursor.beginEditBlock();
+    QTextCharFormat highLightFormat;
+    while (!highlightCursor.isNull() && !highlightCursor.atEnd()) {
+      highlightCursor = document->find(searchString, highlightCursor, QTextDocument::FindWholeWords);
+      if (!highlightCursor.isNull()) {
+        highLightFormat = highlightCursor.charFormat();
+        highLightFormat.setBackground(Qt::yellow);
+        highlightCursor.setCharFormat(highLightFormat);
+      }
+    }
+    cursor.endEditBlock();
+  }
 }
 
 void HelpWindow::activateModule(QTreeWidgetItem* item, int) {
@@ -98,6 +137,7 @@ void HelpWindow::helpText(QString fulltext) {
   if (modname_pattern.indexIn(name_and_section) < 0)
     return;
   tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
+  m_helpwidget->m_flist->setCurrentItem(item);
 }
 
 HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
@@ -194,22 +234,38 @@ void HelpWindow::readSettings() {
 }
 
 void HelpWindow::createActions() {
-  zoominAct = new QAction(QIcon(":/images/zoomin.png"),"Zoom In",this);
+  zoominAct = new QAction(QIcon(":/images/zoomin.png"),"Zoom &In",this);
+  zoominAct->setShortcut(Qt::Key_Plus | Qt::CTRL); 
   connect(zoominAct,SIGNAL(triggered()),tb,SLOT(zoomIn()));
-  zoomoutAct = new QAction(QIcon(":/images/zoomout.png"),"Zoom Out",this);
+  zoomoutAct = new QAction(QIcon(":/images/zoomout.png"),"Zoom &Out",this);
+  zoomoutAct->setShortcut(Qt::Key_Minus | Qt::CTRL); 
   connect(zoomoutAct,SIGNAL(triggered()),tb,SLOT(zoomOut()));
-  copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy Text",this);
+  copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy Selection",this);
+  copyAct->setShortcut(Qt::Key_C | Qt::CTRL); 
   connect(copyAct,SIGNAL(triggered()),tb,SLOT(copy()));
   exitAct = new QAction(QIcon(":/images/quit.png"),"&Exit Help",this);
+  exitAct->setShortcut(Qt::Key_Q | Qt::CTRL); 
   connect(exitAct,SIGNAL(triggered()),this,SLOT(close()));
-  forwardAct = new QAction(QIcon(":/images/next.png"),"Next",this);
+  forwardAct = new QAction(QIcon(":/images/next.png"),"&Next",this);
+  forwardAct->setShortcut(Qt::Key_Right | Qt::Key_Alt); 
   connect(forwardAct,SIGNAL(triggered()),tb,SLOT(forward()));
-  backAct = new QAction(QIcon(":/images/previous.png"),"Previous",this);
+  backAct = new QAction(QIcon(":/images/previous.png"),"&Previous",this);
+  backAct->setShortcut(Qt::Key_Left | Qt::Key_Alt); 
   connect(backAct,SIGNAL(triggered()),tb,SLOT(backward()));
-  homeAct = new QAction(QIcon(":/images/home.png"),"Home",this);
+  homeAct = new QAction(QIcon(":/images/home.png"),"&Home",this);
+  homeAct->setShortcut(Qt::Key_Home | Qt::CTRL); 
   connect(homeAct,SIGNAL(triggered()),tb,SLOT(home()));
+  executeSelectionAct = new QAction(QIcon(":/images/player_playselection.png"),"&Execute Selection",this);
+  executeSelectionAct->setShortcut(Qt::Key_F9); 
+  connect(executeSelectionAct,SIGNAL(triggered()),this,SLOT(execSelected()));
+  helpOnSelectionAct = new QAction(QIcon(":/images/help_onselection.png"), "&Help on Selection",this);
+  helpOnSelectionAct->setShortcut(Qt::Key_F2);
+  connect(helpOnSelectionAct,SIGNAL(triggered()),this,SLOT(helpOnSelection()));
+  
   connect(tb,SIGNAL(forwardAvailable(bool)),forwardAct,SLOT(setEnabled(bool)));
+  forwardAct->setEnabled(false);
   connect(tb,SIGNAL(backwardAvailable(bool)),backAct,SLOT(setEnabled(bool)));
+  backAct->setEnabled(false);
 }
 
 void HelpWindow::createMenus() {
@@ -217,6 +273,8 @@ void HelpWindow::createMenus() {
   fileMenu->addAction(exitAct);
   editMenu = menuBar()->addMenu("&Edit");
   editMenu->addAction(copyAct);
+  editMenu->addAction(helpOnSelectionAct);
+  editMenu->addAction(executeSelectionAct);
   editMenu->addAction(zoominAct);
   editMenu->addAction(zoomoutAct);
   goMenu = menuBar()->addMenu("&Go");
@@ -234,6 +292,8 @@ void HelpWindow::createToolBars() {
   editToolBar = addToolBar("Edit");
   editToolBar->setObjectName("EditToolBar");
   editToolBar->addAction(copyAct);
+  editToolBar->addAction(helpOnSelectionAct);
+  editToolBar->addAction(executeSelectionAct);
   editToolBar->addAction(zoominAct);
   editToolBar->addAction(zoomoutAct);
 }
@@ -241,4 +301,21 @@ void HelpWindow::createToolBars() {
 void HelpWindow::createStatusBar() {
   statusBar()->showMessage("Ready");
 }
+
+void HelpWindow::execSelected() {
+  QString executeText = tb->textCursor().selectedText();
+  executeText.remove("--> ");
+  executeText.remove("-> ");
+  executeText = executeText.trimmed();
+  if (!executeText.isEmpty())
+    emit EvaluateText(executeText + "\n");
+}
+
+void HelpWindow::helpOnSelection() {
+  QString executeText = tb->textCursor().selectedText();
+  executeText = executeText.trimmed();
+  if (!executeText.isEmpty())
+    helpText(executeText);
+}
+
 

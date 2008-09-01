@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libXP.a
 
-INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex
+INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libCore
 
 libXP_a_MOC = KeyManager.moc.cpp \
 QTTerm.moc.cpp \

@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libCore.a
 
-INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_builddir@/libs/libXP -I@top_srcdir@/libs/libMatC
+INCLUDES = -I@top_srcdir@/libs/libFreeMat -I@top_srcdir@/libs/libMex -I@top_srcdir@/libs/libXP -I@top_builddir@/libs/libXP -I@top_srcdir@/libs/libMatC -I@top_srcdir@/src
 
 libCore_a_MOC = helpwidget.moc.cpp XML.moc.cpp 
 

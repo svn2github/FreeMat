@@ -31,9 +31,11 @@
 #include <QtGui>
 #include "Module.hpp"
 #include "MemPtr.hpp"
-static HelpWindow *m_helpwin=0;
+#include "MainApp.hpp"
 
+static HelpWindow *m_helpwin=0;
 static std::string helppath;
+extern MainApp *m_app;
   
 void Tokenize(const std::string& str, StringVector& tokens,
 	      const std::string& delimiters = " \n") {
@@ -163,8 +165,10 @@ ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* ev
     QSettings settings("FreeMat","FreeMat");
     dir = QDir(QString(settings.value("root", RESOURCEDIR).toString())+"/help/html");
   }
-  if (!m_helpwin)
+  if (!m_helpwin) {
     m_helpwin = new HelpWindow(dir.canonicalPath());
+    QObject::connect(m_helpwin,SIGNAL(EvaluateText(QString)),m_app->GetKeyManager(),SLOT(QueueMultiString(QString)));
+  }
   if (arg.size() == 0)
     m_helpwin->show();
   else if (arg.size() == 1) {

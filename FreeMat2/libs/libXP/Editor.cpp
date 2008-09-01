@@ -23,6 +23,7 @@
 #include "Scope.hpp"
 #include "Array.hpp"
 #include "Print.hpp"
+#include "Core.hpp"
 
 FMFindDialog::FMFindDialog(QWidget *parent) : QDialog(parent) {
   ui.setupUi(this);
@@ -679,7 +680,7 @@ void FMTextEdit::fontUpdate() {
 
 FMIndent::FMIndent() {
   QSettings settings("FreeMat","FreeMat");
-  indentSize = settings.value("editor/tab_size",3).toInt();
+  indentSize = settings.value("editor/tab_size",4).toInt();
 }
 
 FMIndent::~FMIndent() {
@@ -1133,7 +1134,7 @@ void FMEditor::createActions() {
   helpWinAct = new QAction("Online &Manual",this);
   helpWinAct->setShortcut(Qt::Key_F1); 
   connect(helpWinAct,SIGNAL(triggered()),this,SLOT(helpWin()));
-  helpOnSelectionAct = new QAction("Help on Selection",this);
+  helpOnSelectionAct = new QAction(QIcon(":/images/help_onselection.png"),"Help on Selection",this);
   helpOnSelectionAct->setShortcut(Qt::Key_F2);
   connect(helpOnSelectionAct,SIGNAL(triggered()),this,SLOT(helpOnSelection()));
   openSelectionAct = new QAction("Open Selection",this);
@@ -1165,16 +1166,19 @@ void FMEditor::createActions() {
   bracketMatchConfigAct->setCheckable(true);
   bracketMatchConfigAct->setShortcut(Qt::Key_F2 | Qt::SHIFT);
   connect(bracketMatchConfigAct,SIGNAL(triggered()),this,SLOT(configBracketMatch()));
-  executeSelectedAct = new QAction(QIcon(":/images/player_playselection.png"),"Execute Selected Text",this);
-  executeSelectedAct->setShortcut(Qt::Key_F9); 
-  connect(executeSelectedAct,SIGNAL(triggered()),this,SLOT(execSelected()));
+  executeSelectionAct = new QAction(QIcon(":/images/player_playselection.png"),"Execute Selection",this);
+  executeSelectionAct->setShortcut(Qt::Key_F9); 
+  connect(executeSelectionAct,SIGNAL(triggered()),this,SLOT(execSelected()));
   executeCurrentAct = new QAction(QIcon(":/images/player_play.png"),"Execute Current Buffer",this);
   executeCurrentAct->setShortcut(Qt::Key_F5); 
   connect(executeCurrentAct,SIGNAL(triggered()),this,SLOT(execCurrent()));
 }
 
 void FMEditor::execSelected() {
-  emit EvaluateText(currentEditor()->textCursor().selectedText() + "\n");
+  QString executeText = currentEditor()->textCursor().selectedText();
+  executeText = executeText.trimmed();
+  if (!executeText.isEmpty())
+    emit EvaluateText(executeText + "\n");
 }
 
 void FMEditor::execCurrent() {
@@ -1224,15 +1228,21 @@ void FMEditor::replace() {
 }
 
 void FMEditor::helpWin() {
-  emit EvaluateText("helpwin\n");
+  HelpWinFunction(0,ArrayVector(),m_eval);
 }
 
 void FMEditor::helpOnSelection() {
-  emit EvaluateText("helpwin " + currentEditor()->textCursor().selectedText() + "\n");
+  QString selectText = currentEditor()->textCursor().selectedText();
+  selectText = selectText.trimmed();
+  if (!selectText.isEmpty())
+    HelpWinFunction(0,SingleArrayVector(Array::stringConstructor(selectText.toStdString())),m_eval);
 }
 
 void FMEditor::openSelection() {
-  loadFile(currentEditor()->textCursor().selectedText());
+  QString selectText = currentEditor()->textCursor().selectedText();
+  selectText = selectText.trimmed();
+  if (!selectText.isEmpty())
+    loadFile(selectText);
 }
 
 void FMEditor::createMenus() {
@@ -1271,7 +1281,7 @@ void FMEditor::createMenus() {
   toolsMenu->addAction(decreaseIndentAct);
   debugMenu = menuBar()->addMenu("&Debug");
   debugMenu->addAction(executeCurrentAct);
-  debugMenu->addAction(executeSelectedAct);
+  debugMenu->addAction(executeSelectionAct);
   debugMenu->addSeparator();
   debugMenu->addAction(dbStepAct);
   debugMenu->addAction(dbTraceAct);
@@ -1298,7 +1308,7 @@ void FMEditor::createMenus() {
   m_popup->addAction(uncommentAct);
   m_popup->addSeparator();
   m_popup->addAction(executeCurrentAct);
-  m_popup->addAction(executeSelectedAct);
+  m_popup->addAction(executeSelectionAct);
   m_popup->addSeparator();
   m_popup->addAction(dbStepAct);
   m_popup->addAction(dbTraceAct);
@@ -1323,7 +1333,7 @@ void FMEditor::createToolBars() {
   editToolBar->addAction(pasteAct);
   debugToolBar = addToolBar("Debug");
   debugToolBar->addAction(executeCurrentAct);
-  debugToolBar->addAction(executeSelectedAct);
+  debugToolBar->addAction(executeSelectionAct);
   debugToolBar->addSeparator();
   debugToolBar->addAction(dbStepAct);
   debugToolBar->addAction(dbTraceAct);

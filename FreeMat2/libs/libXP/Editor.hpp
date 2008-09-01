@@ -203,7 +203,7 @@ class FMEditor : public QMainWindow {
   QAction *dbStepAct, *dbTraceAct, *dbContinueAct;
   QAction *dbSetClearBPAct, *dbStopAct;
   QAction *redoAct, *undoAct, *colorConfigAct, *indentConfigAct;
-  QAction *executeSelectedAct, *executeCurrentAct;
+  QAction *executeSelectionAct, *executeCurrentAct;
   QAction *separatorAct; 
   enum { MaxRecentFiles = 5 }; 
   QAction *recentFileActs[MaxRecentFiles]; 

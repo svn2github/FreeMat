@@ -71,6 +71,7 @@ ArrayVector WarningFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector LasterrFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector SaveFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector LoadFunction(int, const ArrayVector& arg, Interpreter* eval);
+ArrayVector HDF5WriteFunction(int nargout, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ChangeDirFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector ListFilesFunction(int, const ArrayVector& arg, Interpreter* eval);
 ArrayVector DirFunction(int, const ArrayVector& arg, Interpreter* eval);

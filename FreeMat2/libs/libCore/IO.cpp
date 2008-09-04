@@ -44,6 +44,10 @@
 #endif
 #include "Print.hpp"
 
+#if HAVE_HDF5
+#include "hdf5.h"
+#endif
+
 class FilePtr {
 public:
   FILE *fp;
@@ -2976,6 +2980,201 @@ ArrayVector SaveFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
   else
     return SaveNativeFunction(fname,toSave,eval);
 }
+
+#if HAVE_HDF5
+
+/* Map FreeMat types to HDF5 types*/
+hid_t TypeFMTtoHDF5(Class type) {
+  switch (type)
+    {
+    case FM_UINT8:
+      return H5T_NATIVE_UCHAR;
+
+    case FM_INT8:
+      return H5T_NATIVE_CHAR;
+
+    case FM_UINT16:
+      return H5T_NATIVE_USHORT;
+
+    case FM_INT16:
+      return H5T_NATIVE_SHORT;
+
+    case FM_UINT32:
+      return H5T_NATIVE_UINT;
+
+    case FM_INT32:
+      return H5T_NATIVE_INT;
+
+    case FM_UINT64:
+      return H5T_NATIVE_ULONG;
+
+    case FM_INT64:
+      return H5T_NATIVE_LONG;
+
+    case FM_FLOAT:
+      return H5T_NATIVE_FLOAT;
+
+    case FM_DOUBLE:
+      return H5T_NATIVE_DOUBLE;
+      
+    case FM_STRING:
+      return H5T_STRING;
+
+    case FM_STRUCT_ARRAY:
+      return H5T_COMPOUND;
+
+    default:
+      throw Exception("unsupported data type");
+    }
+}
+    
+#define MAX_HDF5_DIM 10
+
+//!
+//@Module HDF5WRITE Write HDF5 File
+//@@Section IO
+//@@Usage
+//Write an array or a struct to HDF5-format file.
+//The general syntax for the @|hdf5write| function
+//is
+//@[
+//    hdf5write(filename, details, data)
+//    hdf5write(filename, details, data, 'WriteMode', MODE)
+//@]
+//where @|filename| is a string containing the name of the file to write,
+//@|details| a string containing the location and name of data in Unix-path style.
+//@|MODE| can be 'append' or 'overwrite' (default).
+//!
+ArrayVector HDF5WriteFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  ArrayVector argCopy;
+  bool appendMode = false;
+  for (int i=0;i<arg.size();i++) {
+    if (arg[i].isString() && i<arg.size()-1)
+      if (arg[i].getContentsAsStringUpper() == "WRITEMODE")
+	 if (arg[i+1].getContentsAsStringUpper() == "APPEND") {
+	   appendMode = true;
+	   i++;
+	 }
+	 else if (arg[i+1].getContentsAsStringUpper() == "OVERWRITE") {
+	   appendMode = false;
+	   i++;
+	 }
+	 else
+	   throw Exception("unknown WriteMode");
+      else
+        argCopy << arg[i];
+    else
+      argCopy << arg[i];
+  }
+  
+  if (argCopy.size() < 3)
+    throw Exception("hdf5write requires at least 3 inputs");
+  if (!argCopy[0].isString())
+    throw Exception("the first argument must be a string");
+  string filename(ArrayToString(argCopy[0]));
+  
+  if (!argCopy[1].isString())
+    throw Exception("the second argument must be a string");
+  string details(ArrayToString(argCopy[1]));
+  
+  Array A(argCopy[2]);
+  
+  if (argCopy[2].dataClass() == FM_STRUCT_ARRAY) { 
+    int ndims = A.dimensions().getLength();
+    hid_t datatype_id = TypeFMTtoHDF5(A.dataClass());
+    if (ndims > MAX_HDF5_DIM)
+      throw Exception("exceed max number of dimensions");
+    hsize_t  dims[MAX_HDF5_DIM];
+    for (int i = 0; i<ndims; i++)
+      dims[i] = A.dimensions().get(i);
+    hid_t space  = H5Screate_simple(ndims, dims, NULL);
+    hid_t file_id;
+    if (appendMode)
+      file_id = H5Fopen(&filename[0], H5F_ACC_RDWR,  H5P_DEFAULT);
+    else
+      file_id = H5Fcreate(&filename[0], H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    hid_t s1_tid = H5Tcreate (H5T_COMPOUND, A.getByteSize());
+    
+    try {
+      //allocate a buffer to collect struct elements to be save
+      char *bp = (char*)Malloc(A.getByteSize());
+      int offset = 0;
+      for (int i= 0; i<(int)(A.fieldNames().size()); i++) {
+        std::string fName = A.fieldNames().at(i);
+        Array FieldArray = A.getField(fName);
+        
+        if (FieldArray.dataClass() == FM_STRUCT_ARRAY)
+          throw Exception("Struct of struct is not supported");
+        else if (FieldArray.isScalar())
+          H5Tinsert(s1_tid, &fName[0], offset, TypeFMTtoHDF5(FieldArray.dataClass()));
+        else if(FieldArray.dataClass() == FM_STRING){
+          hid_t type_id = H5Tcopy(H5T_C_S1);
+          H5Tset_size(type_id, FieldArray.getLength());
+          H5Tset_strpad(type_id, H5T_STR_NULLTERM);
+          H5Tset_cset(type_id, H5T_CSET_ASCII);
+          H5Tinsert(s1_tid, &fName[0], offset, type_id);
+        }
+        else
+          throw Exception("Fixme: unsupported struct of array");
+          
+        //copy data into buffer
+        const char* tp = (const char*)FieldArray.getDataPointer();
+        for (int i = 0; i<FieldArray.getByteSize(); i++)
+          bp[offset+i] = tp[i];
+        offset += FieldArray.getByteSize();
+      }
+      hid_t dataset = H5Dcreate(file_id, &details[0], s1_tid, space, H5P_DEFAULT);
+      hid_t status  = H5Dwrite(dataset, s1_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, bp);
+      Free(bp);
+      H5Dclose(dataset);
+      H5Tclose(datatype_id);
+      H5Tclose(s1_tid);
+      H5Sclose(space);
+      H5Fclose(file_id);
+    }
+    catch (Exception &e) {
+      H5Tclose(datatype_id);
+      H5Tclose(s1_tid);
+      H5Sclose(space);
+      H5Fclose(file_id);
+      throw;
+    }
+  }
+  else if (argCopy[2].dataClass() == FM_CELL_ARRAY) {
+    throw Exception("Fixme: unsupported FM_CELL_ARRAY");
+  }
+  else if (argCopy[2].dataClass() == FM_STRING) {
+    throw Exception("Fixme: unsupported FM_STRING");
+  }
+  else {
+    // Case of matrix
+    int ndims = A.dimensions().getLength();
+    hid_t datatype_id = TypeFMTtoHDF5(A.dataClass());
+    if (ndims > MAX_HDF5_DIM)
+      throw Exception("exceed max number of dimensions");
+    hsize_t  dims[MAX_HDF5_DIM];
+    for (int i = 0; i<ndims; i++)
+      dims[i] = A.dimensions().get(i);
+    hid_t file_id;
+    if (appendMode)
+      file_id = H5Fopen(&filename[0], H5F_ACC_RDWR,  H5P_DEFAULT);
+    else
+      file_id = H5Fcreate(&filename[0], H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    
+    hid_t dataspace_id = H5Screate_simple (ndims, dims, NULL);
+    hid_t dataset_id = H5Dcreate(file_id, &details[0], datatype_id, dataspace_id, 
+                                 H5P_DEFAULT);
+    herr_t status = H5Dwrite(dataset_id, datatype_id, H5S_ALL, H5S_ALL, 
+                             H5P_DEFAULT, A.getDataPointer());
+    status = H5Dclose(dataset_id);
+    status = H5Fclose(file_id);
+  }
+  return ArrayVector();
+}
+
+#undef MAX_HDF5_DIM
+
+#endif
 
 //!
 //@Module DLMREAD Read ASCII-delimited File

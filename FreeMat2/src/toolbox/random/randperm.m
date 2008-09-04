@@ -2,6 +2,7 @@
 %@Module RANDPERM Random permutation
 %@@Section RANDOM
 %@@USAGE
+%@|randperm| generates random permutation with syntax
 %@[
 %   y = randperm(n)
 %@]

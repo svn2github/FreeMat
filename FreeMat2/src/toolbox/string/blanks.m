@@ -2,12 +2,11 @@
 %@Module BLANKS Create a blank string
 %@@Section String
 %@@Usage
+%Create a string @|str| containing @|n| blank charaters.
 %@[
 %    str = blanks(n)
 %@]
-%Create a string @|str| containing @|n| blank charaters.
 %@@Example
-%A simple example:
 %@<
 %fprintf(['x0123456789y\n','x',blanks(10),'y\n'])
 %@>

@@ -213,6 +213,9 @@ void LoadCoreFunctions(Context* context) {
   context->addFunction("dec2hex",Dec2HexFunction,2,1,"x","n",NULL);
   context->addSpecialFunction("save",SaveFunction,-1,0,NULL);
   context->addSpecialFunction("load",LoadFunction,-1,1,NULL);
+  #if HAVE_HDF5
+  context->addSpecialFunction("hdf5write",HDF5WriteFunction,-1,0,NULL);
+  #endif
   context->addSpecialFunction("clear",ClearFunction,-1,0,NULL);
   context->addSpecialFunction("setprintlimit",SetPrintLimitFunction,1,0,"n",NULL);
   context->addSpecialFunction("getprintlimit",GetPrintLimitFunction,0,1,NULL);

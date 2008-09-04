@@ -252,6 +252,14 @@ echo \
 "    PORTAUDIO       Audio I/O                             Not Found"
 fi
 
+if (test x"$found_hdf5" == xyes); then
+echo \
+"    HDF5            NCSA Hierarchical Data Format 5       Found"
+else
+echo \
+"    HDF5            NCSA Hierarchical Data Format 5       Not Found"
+fi
+
 if (test x"$found_llvm" == xyes); then
 echo \
 "    LLVM            Low Level Virtual Machine (JIT)       Found"

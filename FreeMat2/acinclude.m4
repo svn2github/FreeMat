@@ -450,7 +450,7 @@ fi
 AC_CHECK_LIB(hdf5,inflate,found_hdf5="yes",found_hdf5="no")
 if test x"$found_hdf5" == xyes; then
   LIBS="$LIBS -lhdf5_hl -lhdf5"
-  AC_DEFINE(HAVE_HDF5, 1, [Set to 1 if you have HDF5 installed)])
+  AC_DEFINE(HAVE_HDF5, 1, [Set to 1 if you have HDF5 installed])
 fi
 
 AC_MSG_CHECKING(for LLVM)

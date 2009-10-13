@@ -25,7 +25,7 @@ endforeach(mdfile1)
 	
 add_custom_target(WebSite
 	COMMAND	${xsite_exe} -S ${CMAKE_SOURCE_DIR}/pages -m sitemap.xml -s ../themes/corporate_slave/skin.html  -o ${CMAKE_SOURCE_DIR}/pages
-	DEPENDS DEP_LIST
+	DEPENDS ${DEP_LIST}
 )
 	
 foreach( mdfile ${md_files} )

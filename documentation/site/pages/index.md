@@ -7,35 +7,24 @@ FreeMat is a free environment for rapid engineering and scientific prototyping a
 [!["Screen"](assets/screencap_composite_small.png "Screen")](screenshots.html) [!["Download"](assets/download.png "Download")](download.html)
 
 
-Latest News - 2008-03-17 - FreeMat 3.6 Released
------------------------------------------------
-We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features,
-mostly to the UI. Here is the list of changes:
+Latest News - 2009-10-09 - FreeMat 4.0 Released
+----------------------------------------------
+We are pleased to announce the release of FreeMat 4.0 . This version brings major feature improvements and changes to the internals of FreeMat. Here is a  list of changes:
 
- * Added ODE45 solver from Sebastien Loisel
- * Added SVG support for exporting figures.
- * Added "recent files" to editor.
- * Added keyboard shortcuts to editor and main application menus.
- * Added increase/decrease indent by tab/shift-tab in editor
- * Added execute button to debug toolbar
- * Added quiver plots
- * Added execute-selected-text button
- * Added directory-change tool to main toolbar, and rearranged windows on the main page.
- * Second pass at the JIT compiler.  Completion of the JIT and it's general activation will wait for FreeMat4.
- * Display of complex numbers
- * Helpwin now accepts an argument.
- * Replaced the toolbox with a tabbed widget.
- * Code clean up for -Wall.
- * Improved the behavior of editor when opening and saving (new)files.
- * Corrected norms of double args on 64 bit machines
- * Interplin1 now works with more argument types.
- * Any, all, min and max handle empties more gracefully.
- * Corrected color display of RGB images
- * Modified bitcmp function for compatibility with matlab
- * Modified fprintf to follow matlab's behavior when no handle is specified.
- * Set default view for 3D plots to view(3).
- * Fixes for anonymous functions and code block leaks.
- * Fixed the "comment" and "uncomment" bugs when applying to the whole
- * Fixed failed feval for local functions
- * Fixed program crash after clear history.
- * Fixed bug in complex matrix assignment operators.
+ * Improved Editor with integrated debugger
+ * Improved Main Application UI with dockable workspace browser and command history
+ * Just In Time compiler (enabled by default)
+ * Greatly improved compatibility with Matlab (over 366 compatibility tests pass)
+ * Dynamic linking with BLAS (users can use custom optimized BLAS libraries)
+ * Vectorized fprintf, sprintf, fscanf, sscanf functions
+ * Added patch handle graphics object
+ * Much faster figure drawing
+ * Ability to handle huge arrays (more than 2GB) when compiled under 64 bit OS
+ * Code profiler
+
+Internal changes:
+
+ * New array class implementation
+ * Compatible type handling
+ * JIT compiler
+ * CMake build system  

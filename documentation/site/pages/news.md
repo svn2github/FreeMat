@@ -1,6 +1,28 @@
 News
 ====
 
+Latest News - 2009-10-09 - FreeMat 4.0 Released
+----------------------------------------------
+We are pleased to announce the release of FreeMat 4.0 . This version brings major feature improvements and changes to the internals of FreeMat. Here is a  list of changes:
+
+ * Improved Editor with integrated debugger
+ * Improved Main Application UI with dockable workspace browser and command history
+ * Just In Time compiler (enabled by default)
+ * Greatly improved compatibility with Matlab (over 366 compatibility tests pass)
+ * Dynamic linking with BLAS (users can use custom optimized BLAS libraries)
+ * Vectorized fprintf, sprintf, fscanf, sscanf functions
+ * Added patch handle graphics object
+ * Much faster figure drawing
+ * Ability to handle huge arrays (more than 2GB) when compiled under 64 bit OS
+ * Code profiler
+
+Internal changes:
+
+ * New array class implementation
+ * Compatible type handling
+ * JIT compiler
+ * CMake build system  
+
 Latest News - 2008-03-17 - FreeMat 3.6 Released
 -----------------------------------------------
 We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features,

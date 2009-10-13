@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>POLY Convert Roots To Polynomial Coefficients
+</TITLE>
+</HEAD>
+<BODY>
+<H2>POLY Convert Roots To Polynomial Coefficients
+</H2>
+<P>
+Section: <A HREF=sec_curvefit.html> Optimization and Curve Fitting </A>
+<H3>Usage</H3>
+This function calculates the polynomial coefficients for given roots
+<PRE>
+    p = poly(r)
+</PRE>
+<P>
+when <code>r</code> is a vector, is a vector whose elements are the coefficients 
+of the polynomial whose roots are the elements of <code>r</code>.  Alternately,
+you can provide a matrix
+<PRE>
+    p = poly(A)
+</PRE>
+<P>
+when <code>A</code> is an <code>N x N</code> square matrix, is a row vector with 
+<code>N+1</code> elements which are the coefficients of the
+characteristic polynomial, <code>det(lambda*eye(size(A))-A)</code>.
+
+Contributed by Paulo Xavier Candeias under GPL.
+<H3>Example</H3>
+Here are some examples of the use of <code>poly</code>
+<PRE>
+--&gt; A = [1,2,3;4,5,6;7,8,0]
+
+A = 
+ 1 2 3 
+ 4 5 6 
+ 7 8 0 
+
+--&gt; p = poly(A)
+
+p = 
+    1.0000   -6.0000  -72.0000  -27.0000 
+
+--&gt; r = roots(p)
+
+r = 
+   12.1229 
+   -5.7345 
+   -0.3884 
+</PRE>
+<P>
+</BODY>
+</HTML>

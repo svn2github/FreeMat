@@ -1,0 +1,27 @@
+WHO WHO Describe Currently Defined Variables
+
+Usage
+
+Reports information on either all variables in the current context
+or on a specified set of variables.  For each variable, the who
+function indicates the size and type of the variable as well as 
+if it is a global or persistent.  There are two formats for the 
+function call.  The first is the explicit form, in which a list
+of variables are provided:
+
+  who a1 a2 ...
+
+In the second form
+
+  who
+
+the who function lists all variables defined in the current 
+context (as well as global and persistent variables). Note that
+there are two alternate forms for calling the who function:
+
+  who 'a1' 'a2' ...
+
+and
+
+  who('a1','a2',...)
+

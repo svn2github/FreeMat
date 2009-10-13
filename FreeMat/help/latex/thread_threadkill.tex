@@ -1,0 +1,70 @@
+\section{THREADKILL Halt execution of a thread}
+
+\subsection{Usage}
+
+The \verb|threadkill| function stops (or attempts to stop) execution
+of the given thread.  It works only for functions defined in M-files
+(i.e., not for built in or imported functions), and it works by 
+setting a flag that causes the thread to stop execution at the next
+available statement.  The syntax for this function is 
+\begin{verbatim}
+  threadkill(handle)
+\end{verbatim}
+where \verb|handle| is the value returned by a \verb|threadnew| call.  
+Note that the \verb|threadkill| function returns immediately.  It 
+is still your responsibility to call \verb|threadfree| to free
+the thread you have halted.
+
+You cannot kill the main thread (thread id \verb|1|).
+\subsection{Example}
+
+Here is an example of stopping a runaway thread using \verb|threadkill|.
+Note that the thread function in this case is an M-file function.
+We start by setting up a free running counter, where we can access 
+the counter from the global variables.  
+\begin{verbatim}
+    freecount.m
+function freecount
+  global count
+  if (~exist('count')) count = 0; end  % Initialize the counter
+  while (1)
+    count = count + 1;                 % Update the counter
+  end
+\end{verbatim}
+We now launch this function in a thread, and use \verb|threadkill| to
+stop it:
+\begin{verbatim}
+--> a = threadnew;
+--> global count                   % register the global variable count
+--> count = 0;
+--> threadstart(a,'freecount',0)   % start the thread
+--> count                          % it is counting
+
+ans = 
+ 7145 
+
+--> sleep(1)                       % Wait a bit
+--> count                          % it is still counting
+
+ans = 
+ 485030 
+
+--> threadkill(a)                  % kill the counter
+--> threadwait(a,1000)             % wait for it to finish
+
+ans = 
+ 1 
+
+--> count                          % The count will no longer increase
+
+ans = 
+ 485031 
+
+--> sleep(1)
+--> count
+
+ans = 
+ 485031 
+
+--> threadfree(a)
+\end{verbatim}

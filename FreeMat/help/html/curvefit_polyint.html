@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>POLYINT Polynomial Coefficient Integration
+</TITLE>
+</HEAD>
+<BODY>
+<H2>POLYINT Polynomial Coefficient Integration
+</H2>
+<P>
+Section: <A HREF=sec_curvefit.html> Optimization and Curve Fitting </A>
+<H3>Usage</H3>
+ The polyint function returns the polynomial coefficients resulting
+ from integration of polynomial p. The syntax for its use is either
+<PRE>
+ pint = polyint(p,k)
+</PRE>
+<P>
+ or, for a default <code>k = 0</code>,
+<PRE>
+ pint = polyint(p);
+</PRE>
+<P>
+ where <code>p</code> is a vector of polynomial coefficients assumed to be in
+ decreasing degree and <code>k</code> is the integration constant.
+ Contributed by Paulo Xavier Candeias under GPL
+<H3>Example</H3>
+Here is are some examples of the use of <code>polyint</code>.
+<PRE>
+--&gt; polyint([2,3,4])
+
+ans = 
+    0.6667    1.5000    4.0000         0 
+</PRE>
+<P>
+And
+<PRE>
+--&gt; polyint([2,3,4],5)
+
+ans = 
+    0.6667    1.5000    4.0000    5.0000 
+</PRE>
+<P>
+</BODY>
+</HTML>

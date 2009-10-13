@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>COUNTOUR Contour Object Properties
+</TITLE>
+</HEAD>
+<BODY>
+<H2>COUNTOUR Contour Object Properties
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Below is a summary of the properties for a line series.
+<UL>
+<LI>  <code>contourmatrix</code> - <code>array</code> - the matrix containing contour data
+ for the plot.  This is a <code>2 x N</code> matrix containing x and y coordinates
+ for points on the contours.  In addition, each contour line starts with
+ a column containing the number of points and the contour value.
+ </LI>
+<LI>  <code>displayname</code> - <code>string</code> - The name of this line series as it
+    appears in a legend.
+ </LI>
+<LI>  <code>floating</code> - <code>{'on','off'}</code> - set to on to have floating (3D) contours
+ </LI>
+<LI>  <code>levellist</code> - <code>vector</code> - a vector of Z-values for the contours
+ </LI>
+<LI>  <code>levellistmode</code> - <code>{'auto','manual'}</code> - set to auto for 
+    automatic selection  of Z-values of the contours.
+ </LI>
+<LI>  <code>linecolor</code> - color of the contour lines.
+ </LI>
+<LI>  <code>linestyle</code> - <code>{'-','--',':','-.','none'}</code> - the line style to draw the contour in.
+ </LI>
+<LI>  <code>linewidth</code> - <code>scalar</code> - the width of the lines
+ </LI>
+<LI>  <code>parent</code> - <code>handle</code> - The axis that contains this object
+ </LI>
+<LI>  <code>tag</code> - <code>string</code> - A string that can be used to tag the object.
+ </LI>
+<LI>  <code>type</code> - <code>string</code> - Returns the string <code>'contour'</code>.
+ </LI>
+<LI>  <code>userdata</code> - <code>array</code> - Available to store any variable you
+ want in the handle object.
+ </LI>
+<LI>  <code>visible</code> - <code>{'on','off'}</code> - Controls visibility of the the line.
+ </LI>
+<LI>  <code>xdata</code> - <code>matrix</code> - Contains the x coordinates of the 
+ surface on which the zdata is defined.  This can either be a monotonic
+ vector of the same number of columns as <code>zdata</code>, or a 2D matrix
+ that is the same size as <code>zdata</code>.
+ </LI>
+<LI>  <code>xdatamode</code> - <code>{'auto','manual'}</code> - When set to <code>'auto'</code> 
+FreeMat will autogenerate the x coordinates for the contours.  
+These values will be <code>1,..,N</code> where <code>N</code> is the number of columns
+of <code>zdata</code>.
+ </LI>
+<LI>  <code>ydata</code> - <code>matrix</code> - Contains the y coordinates of the
+ surface on which the zdata is defined.  This can either be a monotonic
+ vector of the same number of rows as <code>zdata</code> or a 2D matrix that is
+ the same size as <code>zdata</code>.
+ </LI>
+<LI>  <code>ydatamode</code> - <code>{'auto','manual'}</code> - When set to <code>'auto'</code> 
+FreeMat will autogenerate the y coordinates for the contour data.
+ </LI>
+<LI>  <code>zdata</code> - <code>matrix</code> - The matrix of z values that are to
+ be contoured.
+ </LI>
+</UL>
+</BODY>
+</HTML>

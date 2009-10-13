@@ -1,0 +1,10 @@
+ISEMPTY ISEMPTY Test For Variable Empty
+
+Usage
+
+The isempty function returns a boolean that indicates
+if the argument variable is empty or not.  The general
+syntax for its use is
+
+  y = isempty(x).
+

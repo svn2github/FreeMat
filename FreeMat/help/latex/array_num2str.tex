@@ -1,0 +1,23 @@
+\section{NUM2STR Convert Numbers To Strings}
+
+\subsection{Usage}
+
+Converts an array into its string representation.  The general syntax
+for this function is
+\begin{verbatim}
+   s = num2str(X)
+\end{verbatim}
+where \verb|s| is a string (or string matrix) and \verb|X| is an array.  By
+default, the \verb|num2str| function uses 4 digits of precision and an 
+exponent if required.  If you want more digits of precision, you can 
+specify the precition via the form
+\begin{verbatim}
+   s = num2str(X, precision)
+\end{verbatim}
+where \verb|precision| is the number of digits to include in the string
+representation.  For more control over the format of the output, you 
+can also specify a format specifier (see \verb|printf| for more details).
+\begin{verbatim}
+   s = num2str(X, format)
+\end{verbatim}
+where \verb|format| is the specifier string.

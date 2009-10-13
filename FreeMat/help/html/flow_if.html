@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>IF-ELSEIF-ELSE Conditional Statements
+</TITLE>
+</HEAD>
+<BODY>
+<H2>IF-ELSEIF-ELSE Conditional Statements
+</H2>
+<P>
+Section: <A HREF=sec_flow.html> Flow Control </A>
+<H3>Usage</H3>
+The <code>if</code> and <code>else</code> statements form a control structure for
+conditional execution.  The general syntax involves an <code>if</code>
+test, followed by zero or more <code>elseif</code> clauses, and finally
+an optional <code>else</code> clause:
+<PRE>
+  if conditional_expression_1
+    statements_1
+  elseif conditional_expression_2
+    statements_2
+  elseif conditional_expresiion_3
+    statements_3
+  ...
+  else
+    statements_N
+  end
+</PRE>
+<P>
+Note that a conditional expression is considered true if 
+the real part of the result of the expression contains
+any non-zero elements (this strange convention is adopted
+for compatibility with MATLAB).
+<H3>Examples</H3>
+Here is an example of a function that uses an <code>if</code> statement
+<P>
+<PRE>
+     if_test.m
+function c = if_test(a)
+  if (a == 1)
+     c = 'one';
+  elseif (a==2)
+     c = 'two';
+  elseif (a==3)
+     c = 'three';
+  else
+     c = 'something else';
+  end
+
+</PRE>
+<P>
+Some examples of <code>if_test</code> in action:
+<PRE>
+--&gt; if_test(1)
+
+ans = 
+one
+--&gt; if_test(2)
+
+ans = 
+two
+--&gt; if_test(3)
+
+ans = 
+three
+--&gt; if_test(pi)
+
+ans = 
+something else
+</PRE>
+<P>
+</BODY>
+</HTML>

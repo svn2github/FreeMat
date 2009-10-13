@@ -1,0 +1,10 @@
+ASINH ASINH Inverse Hyperbolic Sine Function
+
+Usage
+
+Computes the inverse hyperbolic sine of its argument.  The general
+syntax for its use is
+
+  y = asinh(x)
+
+where x is an n-dimensional array of numerical type.

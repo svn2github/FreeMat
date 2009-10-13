@@ -1,0 +1,22 @@
+SUB2IND SUB2IND Convert Multiple Indexing To Linear Indexing
+
+Usage
+
+The sub2ind function converts a multi-dimensional indexing expression
+into a linear (or vector) indexing expression.  The syntax for its use
+is
+
+   y = sub2ind(sizevec,d1,d2,...,dn)
+
+where sizevec is the size of the array being indexed into, and each
+di is a vector of the same length, containing index values.  The basic
+idea behind sub2ind is that it makes
+
+  [z(d1(1),d2(1),...,dn(1)),...,z(d1(n),d2(n),...,dn(n))]
+
+equivalent to
+
+  z(sub2ind(size(z),d1,d2,...,dn))
+
+where the later form is using vector indexing, and the former one is using
+native, multi-dimensional indexing.

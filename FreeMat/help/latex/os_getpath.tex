@@ -1,0 +1,21 @@
+\section{GETPATH Get Current Search Path}
+
+\subsection{Usage}
+
+Returns a \verb|string| containing the current FreeMat search path.  The general syntax for
+its use is
+\begin{verbatim}
+  y = getpath
+\end{verbatim}
+The delimiter between the paths depends on the system being used.  For Win32, the
+delimiter is a semicolon.  For all other systems, the delimiter is a colon.
+
+\subsection{Example}
+
+The \verb|getpath| function is straightforward.
+\begin{verbatim}
+--> getpath
+
+ans = 
+  Empty array 1 0
+\end{verbatim}

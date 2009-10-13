@@ -1,0 +1,22 @@
+ZLABEL ZLABEL Plot Z-axis Label Function
+
+Usage
+
+This command adds a label to the z-axis of the plot.  The general syntax
+for its use is
+
+  zlabel('label')
+
+or in the alternate form
+
+  zlabel 'label'
+
+or simply
+
+  zlabel label
+
+Here label is a string variable.  You can also specify properties
+for that label using the syntax
+
+  zlabel('label',properties...) 
+

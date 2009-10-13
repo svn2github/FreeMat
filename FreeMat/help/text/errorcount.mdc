@@ -1,0 +1,9 @@
+ERRORCOUNT ERRORCOUNT Retrieve the Error Counter for the Interpreter
+
+Usage
+
+This routine retrieves the internal counter for the interpreter,
+and resets it to zero.  The general syntax for its use is
+
+   count = errorcount
+

@@ -1,0 +1,16 @@
+\section{BUILTIN Evaulate Builtin Function}
+
+\subsection{Usage}
+
+The \verb|builtin| function evaluates a built in function
+with the given name, bypassing any overloaded functions.
+The syntax of \verb|builtin| is
+\begin{verbatim}
+  [y1,y2,...,yn] = builtin(fname,x1,x2,...,xm)
+\end{verbatim}
+where \verb|fname| is the name of the function to call.  Apart
+from the fact that \verb|fname| must be a string, and that \verb|builtin|
+always calls the non-overloaded method, it operates exactly like
+\verb|feval|.  Note that unlike MATLAB, \verb|builtin| does not force
+evaluation to an actual compiled function.  It simply subverts
+the activation of overloaded method calls.

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>IMWRITE Write Matrix to Image File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>IMWRITE Write Matrix to Image File
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+Write the image data from the matrix into a given file.  Note that
+FreeMat's support for <code>imwrite</code> is not complete.
+You can write images in the <code>jpg,png,xpm,ppm</code> and some other formats.
+The syntax for its use is
+<PRE>
+  imwrite(A, filename)
+  imwrite(A, map, filename)
+  imwrite(A, map, filename, 'Alpha', alpha)
+
+or Octave-style syntax:
+  imwrite(filename, A)
+  imwrite(filename, A, map)
+  imwrite(filename, A, map, alpha)
+</PRE>
+<P>
+where <code>filename</code> is the name of the file to write to.  The input array 
+<code>A</code> contains the image data (2D for gray or indexed, and 3D for color).  
+If <code>A</code> is an integer array (int8, uint8, int16, uint16, int32, uint32), 
+the values of its elements should be within 0-255.  If <code>A</code> is a 
+floating-point array (float or double), the value of its elements should
+be in the range [0,1].  <code>map</code> contains the colormap information
+(for indexed images), and <code>alpha</code> the alphamap (transparency).
+<H3>Example</H3>
+Here is a simple example of <code>imread</code>/<code>imwrite</code>.  First, we generate
+a grayscale image and save it to an image file.
+<PRE>
+--&gt; a =  uint8(255*rand(64));
+--&gt; figure(1), image(a), colormap(gray)
+--&gt; title('image to save')
+Warning: Newly defined variable nargin shadows a function of the same name.  Use clear nargin to recover access to the function
+--&gt; imwrite(a, 'test.bmp')
+</PRE>
+<P>
+Then, we read image file and show it:
+<PRE>
+--&gt; b = imread('test.bmp');
+--&gt; figure(2), image(b), colormap(gray)
+--&gt; title('loaded image')
+Warning: Newly defined variable nargin shadows a function of the same name.  Use clear nargin to recover access to the function
+</PRE>
+<P>
+</BODY>
+</HTML>

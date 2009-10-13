@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>STRTRIM Trim Spaces from a String
+</TITLE>
+</HEAD>
+<BODY>
+<H2>STRTRIM Trim Spaces from a String
+</H2>
+<P>
+Section: <A HREF=sec_string.html> String Functions </A>
+<H3>Usage</H3>
+Removes the white-spaces at the beginning and end of a string (or a 
+cell array of strings). See <code>isspace</code> for a definition of a white-space.
+There are two forms for the <code>strtrim</code> function.  The first is for
+single strings
+<PRE>
+   y = strtrim(strng)
+</PRE>
+<P>
+where <code>strng</code> is a string.  The second form operates on a cell array
+of strings
+<PRE>
+   y = strtrim(cellstr)
+</PRE>
+<P>
+and trims each string in the cell array.
+<H3>Example</H3>
+Here we apply <code>strtrim</code> to a simple string
+<PRE>
+--&gt; strtrim('  lot of blank spaces    ');
+</PRE>
+<P>
+and here we apply it to a cell array
+<PRE>
+--&gt; strtrim({'  space','enough ',' for ',''})
+
+ans = 
+ [space] [enough] [for] [] 
+</PRE>
+<P>
+</BODY>
+</HTML>

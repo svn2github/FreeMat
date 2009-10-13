@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GLLINES Create a GL Lineset
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GLLINES Create a GL Lineset
+</H2>
+<P>
+Section: <A HREF=sec_glwin.html> OpenGL Models </A>
+<H3>Usage</H3>
+Defines a set of lines that can be treated as a node.
+A GL Lines is defined by a vector consisting of the
+following elements:
+<PRE>
+   [m1 x1 y1 z1 ... xn yn zn m2 x1 y1 z1 .... ]
+</PRE>
+<P>
+i.e., a point count followed by that number of triplets.
+The usage of this function is 
+<PRE>
+  gllines(name,vector,color)
+</PRE>
+<P>
+where <code>name</code> is the name of the lineset and <code>vector</code>
+is the aforementioned vector of points.
+</BODY>
+</HTML>

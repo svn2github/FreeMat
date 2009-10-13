@@ -1,0 +1,99 @@
+\section{NORM Norm Calculation}
+
+\subsection{Usage}
+
+Calculates the norm of a matrix.  There are two ways to
+use the \verb|norm| function.  The general syntax is
+\begin{verbatim}
+   y = norm(A,p)
+\end{verbatim}
+where \verb|A| is the matrix to analyze, and \verb|p| is the
+type norm to compute.  The following choices of \verb|p|
+are supported
+\begin{itemize}
+\item  \verb|p = 1| returns the 1-norm, or the max column sum of A
+
+\item  \verb|p = 2| returns the 2-norm (largest singular value of A)
+
+\item  \verb|p = inf| returns the infinity norm, or the max row sum of A
+
+\item  \verb|p = 'fro'| returns the Frobenius-norm (vector Euclidean norm, or RMS value)
+
+\end{itemize}
+For a vector, the regular norm calculations are performed:
+\begin{itemize}
+\item  \verb|1 <= p < inf| returns \verb|sum(abs(A).^p)^(1/p)|
+
+\item  \verb|p| unspecified returns \verb|norm(A,2)|
+
+\item  \verb|p = inf| returns max(abs(A))
+
+\item  \verb|p = -inf| returns min(abs(A))
+
+\end{itemize}
+\subsection{Examples}
+
+Here are the various norms calculated for a sample matrix
+\begin{verbatim}
+--> A = float(rand(3,4))
+
+A = 
+    0.0063    0.2224    0.7574    0.9848 
+    0.7319    0.1965    0.7191    0.7010 
+    0.8319    0.6392    0.8905    0.9280 
+
+--> norm(A,1)
+
+ans = 
+    2.6138 
+
+--> norm(A,2)
+
+ans = 
+    2.3403 
+
+--> norm(A,inf)
+
+ans = 
+    3.2896 
+
+--> norm(A,'fro')
+
+ans = 
+    2.4353 
+\end{verbatim}
+Next, we calculate some vector norms.
+\begin{verbatim}
+--> A = float(rand(4,1))
+
+A = 
+    0.5011 
+    0.3269 
+    0.8192 
+    0.7321 
+
+--> norm(A,1)
+
+ans = 
+    2.3792 
+
+--> norm(A,2)
+
+ans = 
+    1.2510 
+
+--> norm(A,7)
+
+ans = 
+    0.8671 
+
+--> norm(A,inf)
+
+ans = 
+    0.8192 
+
+--> norm(A,-inf)
+
+ans = 
+    0.3269 
+\end{verbatim}

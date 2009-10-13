@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SPRANDN Sparse Normal Random Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SPRANDN Sparse Normal Random Matrix
+</H2>
+<P>
+Section: <A HREF=sec_sparse.html> Sparse Matrix Support </A>
+<H3>Usage</H3>
+Creates a sparse matrix with normally distributed random entries (mean 0, sigma 1).  The
+syntax for its use is
+<PRE>
+  y = sprandn(x)
+</PRE>
+<P>
+where <code>x</code> is a sparse matrix, where <code>y</code> is a sparse matrix that has
+random entries where <code>x</code> is nonzero.  The second form specifies the
+size of the matrix and the density
+<PRE>
+  y = sprandn(m,n,density)
+</PRE>
+<P>
+where <code>m</code> is the number of rows in the output, <code>n</code> is the number of 
+columns in the output, and <code>density</code> (which is between 0 and 1) is
+the density of nonzeros in the resulting matrix.  Note that for very
+high densities the actual density of the output matrix may differ from
+the density you specify.  This difference is a result of the way the
+random entries into the matrix are generated.  If you need a very dense
+random matrix, it is better to generate a full matrix and zero out the 
+entries you do not need.
+<H3>Examples</H3>
+Here we seed <code>sprandn</code> with a full matrix (to demonstrate how the structure
+of the output is determined by the input matrix when using the first form).
+<PRE>
+--&gt; x = [1,0,0;0,0,1;1,0,0]
+
+x = 
+ 1 0 0 
+ 0 0 1 
+ 1 0 0 
+
+--&gt; y = sprandn(x)
+
+y = 
+ 1 1 0.770419
+ 3 1 0.332694
+ 2 3 -0.589851
+--&gt; full(y)
+
+ans = 
+    0.7704         0         0 
+         0         0   -0.5899 
+    0.3327         0         0 
+</PRE>
+<P>
+The more generic version with a density of <code>0.001</code>.  On many systems the
+following is impossible using full matrices
+<PRE>
+--&gt; y = sprandn(10000,10000,.001);
+--&gt; nnz(y)/10000^2
+
+ans = 
+ 9.9953e-04 
+</PRE>
+<P>
+</BODY>
+</HTML>

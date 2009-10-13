@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>BITAND Bitwise Boolean And Operation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>BITAND Bitwise Boolean And Operation
+</H2>
+<P>
+Section: <A HREF=sec_binary.html> Bitwise Operations </A>
+<H3>Usage</H3>
+Performs a bitwise binary and operation on the two arguments and
+returns the result.  The syntax for its use is
+<PRE>
+   y = bitand(a,b)
+</PRE>
+<P>
+where <code>a</code> and <code>b</code> are multi-dimensional unsigned integer arrays.
+The and operation is performed using 32 bit unsigned intermediates.  Note that if a
+or b is a scalar, then each element of the other array is and'ed with
+ that scalar.  Otherwise the two arrays must match in size.
+<H3>Example</H3>
+<PRE>
+--&gt; bitand(uint16([1,16,255]),uint16([3,17,128]))
+
+ans = 
+   1  16 128 
+
+--&gt; bitand(uint16([1,16,255]),uint16(3))
+
+ans = 
+ 1 0 3 
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>IFFTSHIFT Inverse Shift FFT Output
+</TITLE>
+</HEAD>
+<BODY>
+<H2>IFFTSHIFT Inverse Shift FFT Output
+</H2>
+<P>
+Section: <A HREF=sec_transforms.html> Transforms/Decompositions </A>
+<H3>Usage</H3>
+The <code>ifftshift</code> function shifts the DC component (zero-frequency)
+of the output from the center of the array back to the first position
+and iseffectively the inverse of <code>fftshift</code>.  For vectors
+this means swapping the two halves of the vector.  For matrices,
+the first and third quadrants are swapped.  So on for N-dimensional
+arrays.  The syntax for its use is
+<PRE>
+     y = ifftshift(x).
+</PRE>
+<P>
+Alternately, you can specify that only one dimension be shifted
+<PRE>
+     y = ifftshift(x,dim).
+</PRE>
+<P>
+</BODY>
+</HTML>

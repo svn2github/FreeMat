@@ -1,0 +1,17 @@
+\section{SUBSINDEX Overloaded Class Indexing}
+
+\subsection{Usage}
+
+This method is called for classes in the expressions
+of the form
+\begin{verbatim}
+  c = subsindex(a)
+\end{verbatim}
+where \verb|a| is an object, and \verb|c| is an index vector.
+It is also called for
+\begin{verbatim}
+  c = b(a)
+\end{verbatim}
+in which case \verb|subsindex(a)| must return a vector containing
+integers between \verb|0| and \verb|N-1| where \verb|N| is the number
+of elements in the vector \verb|b|.

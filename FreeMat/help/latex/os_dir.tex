@@ -1,0 +1,39 @@
+\section{DIR List Files Function}
+
+\subsection{Usage}
+
+In some versions of FreeMat (pre 3.1), the \verb|dir| function was aliased
+to the \verb|ls| function.  Starting with version \verb|3.1|, the \verb|dir| function
+has been rewritten to provide compatibility with MATLAB.  The general syntax
+for its use is
+\begin{verbatim}
+  dir
+\end{verbatim}
+in which case, a listing of the files in the current directory are output to the
+console.  Alternately, you can specify a target via
+\begin{verbatim}
+  dir('name')
+\end{verbatim}
+or using the string syntax
+\begin{verbatim}
+  dir name
+\end{verbatim}
+If you want to capture the output of the \verb|dir| command, you can assign the output
+to an array
+\begin{verbatim}
+  result = dir('name')
+\end{verbatim}
+(or you can omit \verb|'name'| to get a directory listing of the current directory.  The
+resulting array \verb|result| is a structure array containing the fields:
+\begin{itemize}
+\item  \verb|name| the filename as a string
+
+\item  \verb|date| the modification date and time stamp as a string
+
+\item  \verb|bytes| the size of the file in bytes as a \verb|uint64|
+
+\item  \verb|isdir| a logical that is \verb|1| if the file corresponds to a directory.
+
+\end{itemize}
+Note that \verb|'name'| can also contain wildcards (e.g., \verb|dir *.m| to get a listing of
+all FreeMat scripts in the current directory.

@@ -1,0 +1,58 @@
+\section{LINEPROPERTIES Line Series Object Properties}
+
+\subsection{Usage}
+
+Below is a summary of the properties for a line series.
+\begin{itemize}
+\item  \verb|color| - \verb|colorspec| - The color that is used to 
+ draw the line.
+
+\item  \verb|children| - Not used.
+
+\item  \verb|displayname| - The name of this line series as it
+ appears in a legend.
+
+\item  \verb|linestyle| - \verb|{'-','--',':','-.','none'}| - The style of the line.
+
+\item  \verb|linewidth| - \verb|scalar| - The width of the line.
+
+\item  \verb|marker| - \verb|{'+','o','*','.','x','square','s','diamond','d','^','v','>','<'}| - 
+ The marker for data points on the line.  Some of these are redundant, as \verb|'square'| 
+ \verb|'s'| are synonyms, and \verb|'diamond'| and \verb|'d'| are also synonyms.
+
+\item  \verb|markeredgecolor| - \verb|colorspec| - The color used to draw the marker.  For some
+ of the markers (circle, square, etc.) there are two colors used to draw the marker.
+ This property controls the edge color (which for unfilled markers) is the primary
+ color of the marker.
+
+\item  \verb|markerfacecolor| - \verb|colorspec| - The color used to fill the marker.  For some
+ of the markers (circle, square, etc.) there are two colors used to fill the marker.
+
+\item  \verb|markersize| - \verb|scalar| - Control the size of the marker.  Defaults to 6, which
+ is effectively the radius (in pixels) of the markers.
+
+\item  \verb|parent| - \verb|handle| - The axis that contains this object.
+
+\item  \verb|tag| - \verb|string| - A string that can be used to tag the object.
+
+\item  \verb|type| - \verb|string| - Returns the string \verb|'line'|.
+
+\item  \verb|visible| - \verb|{'on','off'}| - Controls visibility of the the line.
+
+\item  \verb|xdata| - \verb|vector| - Vector of x coordinates of points on the line.  Must be
+ the same size as the \verb|ydata| and \verb|zdata| vectors.
+
+\item  \verb|ydata| - \verb|vector| - Vector of y coordinates of points on the line.  Must be
+ the same size as the \verb|xdata| and \verb|zdata| vectors.
+
+\item  \verb|zdata| - \verb|vector| - Vector of z coordinates of points on the line.  Must be
+ the same size as the \verb|xdata| and \verb|ydata| vectors.
+
+\item  \verb|xdatamode| - \verb|{'auto','manual'}| - When set to \verb|'auto'| FreeMat will autogenerate
+ the x coordinates for the points on the line.  These values will be \verb|1,..,N| where
+ \verb|N| is the number of points in the line.
+
+\item  \verb|userdata| - \verb|array| - Available to store any variable you
+ want in the handle object.
+
+\end{itemize}

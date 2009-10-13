@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>IMREAD Read Image File To Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>IMREAD Read Image File To Matrix
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+Reads the image data from the given file into a matrix.  Note that
+FreeMat's support for <code>imread</code> is not complete.  Only some of the
+formats specified in the MATLAB API are implemented.  The syntax
+for its use is
+<PRE>
+  [A,map,alpha] = imread(filename)
+</PRE>
+<P>
+where <code>filename</code> is the name of the file to read from.  The returned
+arrays <code>A</code> contain the image data, <code>map</code> contains the colormap information
+(for indexed images), and <code>alpha</code> contains the alphamap (transparency).
+The returned values will depend on the type of the original image.  Generally
+you can read images in the <code>jpg,png,xpm,ppm</code> and some other formats.
+</BODY>
+</HTML>

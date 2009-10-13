@@ -1,0 +1,27 @@
+\section{LOGICAL Convert to Logical}
+
+\subsection{Usage}
+
+Converts the argument to a logical array.  The syntax
+for its use is
+\begin{verbatim}
+   y = logical(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional numerical array.  Any nonzero 
+element maps to a logical 1.
+\subsection{Example}
+
+Here we convert an integer array to \verb|logical|:
+\begin{verbatim}
+--> logical([1,2,3,0,0,0,5,2,2])
+
+ans = 
+ 1 1 1 0 0 0 1 1 1 
+\end{verbatim}
+The same example with double precision values:
+\begin{verbatim}
+--> logical([pi,pi,0,e,0,-1])
+
+ans = 
+ 1 1 0 1 0 1 
+\end{verbatim}

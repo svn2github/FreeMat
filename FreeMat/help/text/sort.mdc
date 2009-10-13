@@ -1,0 +1,40 @@
+SORT SORT Sort 
+
+Usage
+
+Sorts an n-dimensional array along the specified dimensional.  The first
+form sorts the array along the first non-singular dimension.
+
+  B = sort(A)
+
+Alternately, the dimension along which to sort can be explicitly specified
+
+  B = sort(A,dim)
+
+FreeMat does not support vector arguments for dim - if you need A to be
+sorted along multiple dimensions (i.e., row first, then columns), make multiple
+calls to sort.  Also, the direction of the sort can be specified using the 
+mode argument
+
+  B = sort(A,dim,mode)
+
+where mode = 'ascend' means to sort the data in ascending order (the default),
+and mode = 'descend' means to sort the data into descending order.  
+
+When two outputs are requested from sort, the indexes are also returned.
+Thus, for 
+
+  [B,IX] = sort(A)
+  [B,IX] = sort(A,dim)
+  [B,IX] = sort(A,dim,mode)
+
+an array IX of the same size as A, where IX records the indices of A
+(along the sorting dimension) corresponding to the output array B. 
+
+Two additional issues worth noting.  First, a cell array can be sorted if each 
+cell contains a string, in which case the strings are sorted by lexical order.
+The second issue is that FreeMat uses the same method as MATLAB to sort complex
+numbers.  In particular, a complex number a is less than another complex
+number b if abs(a) < abs(b).  If the magnitudes are the same then we 
+test the angle of a, i.e. angle(a) < angle(b), where angle(a) is the
+phase of a between -pi,pi.

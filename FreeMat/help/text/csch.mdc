@@ -1,0 +1,9 @@
+CSCH CSCH Hyperbolic Cosecant Function
+
+Usage
+
+Computes the hyperbolic cosecant of the argument.
+The syntax for its use is
+
+   y = csch(x)
+

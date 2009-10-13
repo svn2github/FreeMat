@@ -1,0 +1,116 @@
+\section{REGEXP Regular Expression Matching Function}
+
+\subsection{Usage}
+
+Matches regular expressions in the provided string.  This function is
+complicated, and compatibility with MATLABs syntax is not perfect.  The
+syntax for its use is
+\begin{verbatim}
+  regexp('str','expr')
+\end{verbatim}
+which returns a row vector containing the starting index of each substring
+of \verb|str| that matches the regular expression described by \verb|expr|.  The
+second form of \verb|regexp| returns six outputs in the following order:
+\begin{verbatim}
+  [start stop tokenExtents match tokens names] = regexp('str','expr')
+\end{verbatim}
+where the meaning of each of the outputs is defined below.
+\begin{itemize}
+\item  \verb|start| is a row vector containing the starting index of each 
+substring that matches the regular expression.
+
+\item  \verb|stop| is a row vector containing the ending index of each 
+substring that matches the regular expression.
+
+\item  \verb|tokenExtents| is a cell array containing the starting and ending
+indices of each substring that matches the \verb|tokens| in the regular
+expression.  A token is a captured part of the regular expression.
+If the \verb|'once'| mode is used, then this output is a \verb|double| array.
+
+\item  \verb|match| is a cell array containing the text for each substring
+that matches the regular expression.  In \verb|'once'| mode, this is a 
+string.
+
+\item  \verb|tokens| is a cell array of cell arrays of strings that correspond
+to the tokens in the regular expression.  In \verb|'once'| mode, this is a
+cell array of strings.
+
+\item  \verb|named| is a structure array containing the named tokens captured
+in a regular expression. Each named token is assigned a field in the resulting
+structure array, and each element of the array corresponds to a different
+match.
+
+\end{itemize}
+If you want only some of the the outputs,  you can use the 
+following variant of \verb|regexp|:
+\begin{verbatim}
+  [o1 o2 ...] = regexp('str','expr', 'p1', 'p2', ...)
+\end{verbatim}
+where \verb|p1| etc. are the names of the outputs (and the order we want
+the outputs in).  As a final variant, you can supply some mode 
+flags to \verb|regexp|
+\begin{verbatim}
+  [o1 o2 ...] = regexp('str','expr', p1, p2, ..., 'mode1', 'mode2')
+\end{verbatim}
+where acceptable \verb|mode| flags are:
+\begin{itemize}
+\item  \verb|'once'| - only the first match is returned.
+
+\item  \verb|'matchcase'| - letter case must match (selected by default for \verb|regexp|)
+
+\item  \verb|'ignorecase'| - letter case is ignored (selected by default for \verb|regexpi|)
+
+\item  \verb|'dotall'| - the \verb|'.'| operator matches any character (default)
+
+\item  \verb|'dotexceptnewline'| - the \verb|'.'| operator does not match the newline character
+
+\item  \verb|'stringanchors'| - the \verb|^| and \verb|$| operators match at the beginning and 
+end (respectively) of a string.
+
+\item  \verb|'lineanchors'| - the \verb|^| and \verb|$| operators match at the beginning and
+end (respectively) of a line.
+
+\item  \verb|'literalspacing'| - the space characters and comment characters \verb|#| are matched
+as literals, just like any other ordinary character (default).
+
+\item  \verb|'freespacing'| - all spaces and comments are ignored in the regular expression.
+You must use '\ ' and '\#' to match spaces and comment characters, respectively.
+
+\end{itemize}
+Note the following behavior differences between MATLABs regexp and FreeMats:
+\begin{itemize}
+\item  If you have an old version of \verb|pcre| installed, then named tokens must use the
+older \verb|<?P<name>| syntax, instead of the new \verb|<?<name>| syntax.  
+
+\item  The \verb|pcre| library is pickier about named tokens and their appearance in 
+expressions.  So, for example, the regexp from the MATLAB 
+manual \verb|'(?<first>\\w+)\\s+(?<last>\\w+)|(?<last>\\w+),\\s+(?<first>\\w+)'|
+does not work correctly (as of this writing) because the same named 
+tokens appear multiple
+times.  The workaround is to assign different names to each token, and then collapse
+the results later.
+
+\end{itemize}
+\subsection{Example}
+
+Some examples of using the \verb|regexp| function
+\begin{verbatim}
+--> [start,stop,tokenExtents,match,tokens,named] = regexp('quick down town zoo','(.)own')
+start = 
+  7 12 
+
+stop = 
+ 10 15 
+
+tokenExtents = 
+ [1 2 double array] [1 2 double array] 
+
+match = 
+ [down] [town] 
+
+tokens = 
+ [1 1 cell array] [1 1 cell array] 
+
+named = 
+  []
+\end{verbatim}

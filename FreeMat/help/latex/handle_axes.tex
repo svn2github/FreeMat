@@ -1,0 +1,26 @@
+\section{AXES Create Handle Axes}
+
+\subsection{Usage}
+
+This function has three different syntaxes.  The first takes
+no arguments,
+\begin{verbatim}
+  h = axes
+\end{verbatim}
+and creates a new set of axes that are parented to the current
+figure (see \verb|gcf|).  The newly created axes are made the current
+axes (see \verb|gca|) and are added to the end of the list of children 
+for the current figure.
+The second form takes a set of property names and values
+\begin{verbatim}
+  h = axes(propertyname,value,propertyname,value,...)
+\end{verbatim}
+Creates a new set of axes, and then sets the specified properties
+to the given value.  This is a shortcut for calling 
+\verb|set(h,propertyname,value)| for each pair.
+The third form takes a handle as an argument
+\begin{verbatim}
+  axes(handle)
+\end{verbatim}
+and makes \verb|handle| the current axes, placing it at the head of
+the list of children for the current figure.

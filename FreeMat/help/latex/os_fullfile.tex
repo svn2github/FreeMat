@@ -1,0 +1,19 @@
+\section{FULLFILE Build a Full Filename From Pieces}
+
+\subsection{Usage}
+
+The \verb|fullfile| routine constructs a full filename from a set of
+pieces, namely, directory names and a filename.  The syntax is:
+\begin{verbatim}
+  x = fullfile(dir1,dir2,...,dirn,filename)
+\end{verbatim}
+where each of the arguments are strings.  The \verb|fullfile| function
+is equivalent to \verb|[dir1 dirsep dir2 dirsep ... dirn dirsep filename]|.
+\subsection{Example}
+
+\begin{verbatim}
+--> fullfile('path','to','my','file.m')
+
+ans = 
+path/to/my/file.m
+\end{verbatim}

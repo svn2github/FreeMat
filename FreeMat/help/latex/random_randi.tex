@@ -1,0 +1,23 @@
+\section{RANDI Uniformly Distributed Integer}
+
+\subsection{Usage}
+
+Generates an array of uniformly distributed integers between
+the two supplied limits.  The general syntax for \verb|randi| is
+\begin{verbatim}
+   y = randi(low,high)
+\end{verbatim}
+where \verb|low| and \verb|high| are arrays of integers.  Scalars
+can be used for one of the arguments.  The output \verb|y| is
+a uniformly distributed pseudo-random number between \verb|low|
+and \verb|high| (inclusive).
+\subsection{Example}
+
+Here is an example of a set of random integers between 
+zero and 5:
+\begin{verbatim}
+--> randi(zeros(1,6),5*ones(1,6))
+
+ans = 
+ 1 0 4 1 5 0 
+\end{verbatim}

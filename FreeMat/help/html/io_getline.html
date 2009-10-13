@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GETLINE Get a Line of Input from User
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GETLINE Get a Line of Input from User
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+Reads a line (as a string) from the user.  This function has
+two syntaxes.  The first is 
+<PRE>
+  a = getline(prompt)
+</PRE>
+<P>
+where <code>prompt</code> is a prompt supplied to the user for the query.
+The second syntax omits the <code>prompt</code> argument:
+<PRE>
+  a = getline
+</PRE>
+<P>
+Note that this function requires command line input, i.e., it 
+will only operate correctly for programs or scripts written
+to run inside the FreeMat GUI environment or from the X11 terminal.
+If you build a stand-alone application and expect it to operate 
+cross-platform, do not use this function (unless you include
+the FreeMat console in the final application).
+</BODY>
+</HTML>

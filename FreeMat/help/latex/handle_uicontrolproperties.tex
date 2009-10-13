@@ -1,0 +1,160 @@
+\section{UICONTROLPROPERTIES UI Control Properties}
+
+\subsection{Usage}
+
+Below is a summary of the properties for user interface
+controls.
+\begin{itemize}
+\item  \verb|backgroundcolor| - \verb|colorspec| - The background color
+ for the widget.
+
+\item  \verb|busyaction| - Not used.
+
+\item  \verb|buttondownfcn| - Not used.
+
+\item  \verb|callback| - \verb|string| - the callback to execute when the 
+GUI control does its action.  Clicking a button or moving a 
+scroller will cause the callback to be executed.  Also, pressing 
+enter in a text box causes the callback to be executed.
+
+\item  \verb|cdata| - an \verb|M x N x 3| array that represents an RGB image
+to use as the truecolor image displayed on push bottons or toggle
+buttons.  The values must be between 0 and 1.
+
+\item  \verb|children| - Not used.
+
+\item  \verb|createfcn| - Not used.
+
+\item  \verb|deletefcn| - Not used;
+
+\item  \verb|enable| - \verb|{'on','inactive','off'}| - For \verb|on| (the
+default) the uicontrol behaves normally.  For inactive, it is not
+operational, but looks the same as \verb|on|.  For \verb|off|, the
+control is grayed out.
+
+\item  \verb|extent| - a read only property that contains the extent of
+the text for the control.
+
+\item  \verb|fontangle| - \verb|{'normal','italic','oblique'}| - The angle of the fonts used
+ for text labels (e.g., tick labels).
+
+\item  \verb|fontsize| - \verb|scalar| - The size of fonts used for text labels (tick labels).
+
+\item  \verb|fontunits| - Not used.
+
+\item  \verb|fontname| - \verb|string| - The name of the font to use for the widget.
+
+\item  \verb|fontweight| - \verb|{'normal','bold','light','demi'}| - The weight of the font used
+
+\item  \verb|foregroundcolor| - \verb|colorspec| - the foreground color for text.
+
+\item  \verb|handlevisibility| - Not used.
+
+\item  \verb|hittest| - Not used.
+
+\item  \verb|horizontalalignment| - \verb|{'left','center','right}| - determines
+the justification of text.
+
+\item  \verb|interruptible| - Not used.
+
+\item  \verb|keypressfcn| - \verb|functionspec| - a string or function handle
+ that is called when a key is pressed and a uicontrol object has focus.
+
+\item  \verb|listboxtop| - a scalar (used only by the listbox style of
+uicontrols) that specifies which string appears at the top of the list
+box.
+
+\item  \verb|max| - a scalar that specifies the largest value allowed
+for the \verb|value| property.  The interpretation varies depending on
+the type of the control
+\begin{itemize}
+
+\item  \verb|check boxes| - specifies what \verb|value| is set to when the
+check box is selected.
+
+\item  \verb|edit box| - if \verb|max-min>1| then the text box allows for
+multiple lines of input.  Otherwise, it is a single line only.
+
+\item  \verb|list box| - if \verb|max-min>1| then multiple item selections
+are allowed.  Otherwise, only single item selections are allowed.
+
+\item  \verb|radio buttons| - specifies what \verb|value| is set to when the
+radio button is selected.
+
+\item  \verb|slider| - the maximum value the slider can take.
+
+\item  \verb|toggle button| - specifies what \verb|value| is set to when 
+the toggle button is selected.
+
+\end{itemize}
+\item \verb|min| - a scalar that specifies the smallest value for the
+\verb|value| property.  The interpretation of it depends on the type
+of the control
+\begin{itemize}
+\item  \verb|check boxes| - specifies what \verb|value| is set to when the
+check box is not selected.
+
+\item  \verb|edit box| - if \verb|max-min>1| then the text box allows for
+multiple lines of input.  Otherwise, it is a single line only.
+
+\item  \verb|list box| - if \verb|max-min>1| then multiple item selections
+are allowed.  Otherwise, only single item selections are allowed.
+
+\item  \verb|radio buttons| - specifies what \verb|value| is set to when the
+radio button is not selected.
+
+\item  \verb|slider| - the minimum value the slider can take.
+
+\item  \verb|toggle button| - specifies what \verb|value| is set to when 
+the toggle button is not selected.
+
+\end{itemize}
+\item \verb|parent| - the handle of the parent object.
+\item \verb|position| - size and location of the uicontrol as a 
+four vector \verb|[left, bottom, width, height]|.  If \verb|width>height|
+then sliders are horizontal, otherwise the slider is oriented
+vertically.
+\item \verb|selected| - \verb|{'on','off'}| - not used.
+\item \verb|selectionhighlight| - \verb|{'on','off'}| - not used.
+\item \verb|sliderstep| - a two vector \verb|[min_step max_step]|
+that controls the amount the slider \verb|value| changes when
+you click the mouse on the control.  If you click the arrow
+for the slider, the value changes by \verb|min_step|, while if
+you click the trough, the value changes by \verb|max_step|.  
+Each value must be in the range \verb|[0,1]|, and is a percentage
+of the range \verb|max-min|.
+\item \verb|string| - \verb|string| - the text for the control.
+\item \verb|style| - @|{'pushbutton','toggle','radiobutton','checkbox',
+'edit','text','slider','frame','listbox','popupmenu'}|.
+\item \verb|tag| - \verb|string| - user specified label.
+\item \verb|tooltipstring| - \verb|string| the tooltip for the control.
+\item \verb|type| - \verb|string| - the text is set to \verb|'uicontrol'|.
+\item \verb|uicontextmenu| - \verb|handle| the handle of the \verb|uicontextmenu|
+that shows up when you right-click over the control.
+\item \verb|units| - not used.
+\item \verb|userdata| - \verb|array| - any data you want to associate with the
+control.
+\item \verb|value| - The meaning of this property depends on the type of the
+control:
+\begin{itemize}
+\item  check box - set to \verb|max| when checked, and \verb|min| when off.
+
+\item  list box - set to a vector of indices corresponding to selected
+items, with \verb|1| corresponding to the first item in the list.
+
+\item  pop up menu - set to the index of the item selected (starting with 1)
+
+\item  radio buttons - set to \verb|max| when selected, and set to \verb|min| when
+not selected.
+
+\item  sliders - set to the value of the slider
+
+\item  toggle buttons - set to \verb|max| when selected, and set to \verb|min| when
+not selected.
+
+\item  text controls, push buttons - do not use this property.
+
+\end{itemize}
+\item \verb|visible| - \verb|{'on','off'}| - controls whether the control is 
+visible or not
+\end{itemize}

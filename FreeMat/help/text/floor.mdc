@@ -1,0 +1,16 @@
+FLOOR FLOOR Floor Function
+
+Usage
+
+Computes the floor of an n-dimensional array elementwise.  The
+floor of a number is defined as the smallest integer that is
+less than or equal to that number. The general syntax for its use
+is
+
+   y = floor(x)
+
+where x is a multidimensional array of numerical type.  The floor 
+function preserves the type of the argument.  So integer arguments 
+are not modified, and float arrays return float arrays as 
+outputs, and similarly for double arrays.  The floor function 
+is not defined for complex types.

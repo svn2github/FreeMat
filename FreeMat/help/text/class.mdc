@@ -1,0 +1,27 @@
+CLASS CLASS Class Support Function
+
+Usage
+
+There are several uses for the class function.  The first
+version takes a single argument, and returns the class of
+that variable.  The syntax for this form is
+
+  classname = class(variable)
+
+and it returns a string containing the name of the class for
+variable.  The second form of the class function is used
+to construct an object of a specific type based on a structure
+which contains data elements for the class.  The syntax for
+this version is
+
+  classvar = class(template, classname, parent1, parent2,...)
+
+This should be called inside the constructor for the class.
+The resulting class will be of the type classname, and will
+be derived from parent1, parent2, etc.  The template
+argument should be a structure array that contains the members
+of the class.  See the constructors help for some details
+on how to use the class function.  Note that if the
+template argument is an empty structure matrix, then the
+resulting variable has no fields beyond those inherited from
+the parent classes.

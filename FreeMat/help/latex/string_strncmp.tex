@@ -1,0 +1,65 @@
+\section{STRNCMP String Compare Function To Length N }
+
+\subsection{USAGE}
+
+Compares two strings for equality, but only looks at the
+first N characters from each string.  The general syntax 
+for its use is
+\begin{verbatim}
+  p = strncmp(x,y,n)
+\end{verbatim}
+where \verb|x| and \verb|y| are two strings.  Returns \verb|true| if \verb|x|
+and \verb|y| are each at least \verb|n| characters long, and if the
+first \verb|n| characters from each string are the same.  Otherwise,
+it returns \verb|false|.
+In the second form, \verb|strncmp| can be applied to a cell array of
+strings.  The syntax for this form is
+\begin{verbatim}
+  p = strncmp(cellstra,cellstrb,n)
+\end{verbatim}
+where \verb|cellstra| and \verb|cellstrb| are cell arrays of a strings
+to compare.  Also, you can also supply a character matrix as
+an argument to \verb|strcmp|, in which case it will be converted
+via \verb|cellstr| (so that trailing spaces are removed), before being
+compared.
+\subsection{Example}
+
+The following piece of code compares two strings:
+\begin{verbatim}
+--> x1 = 'astring';
+--> x2 = 'bstring';
+--> x3 = 'astring';
+--> strncmp(x1,x2,4)
+
+ans = 
+ 0 
+
+--> strncmp(x1,x3,4)
+
+ans = 
+ 1 
+\end{verbatim}
+Here we use a cell array strings
+\begin{verbatim}
+--> x = {'ast','bst',43,'astr'}
+
+x = 
+ [ast] [bst] [43] [astr] 
+
+--> p = strncmp(x,'ast',3)
+
+p = 
+ 1 0 0 1 
+\end{verbatim}
+Here we compare two cell arrays of strings
+\begin{verbatim}
+--> strncmp({'this','is','a','pickle'},{'think','is','to','pickle'},3)
+
+ans = 
+ 1 0 0 1 
+\end{verbatim}
+Finally, the case where one of the arguments is a matrix
+string
+\begin{verbatim}
+--> strncmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4);
+\end{verbatim}

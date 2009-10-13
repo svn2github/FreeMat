@@ -1,0 +1,12 @@
+RANDCHI RANDCHI Generate Chi-Square Random Variable
+
+Usage
+
+Generates a vector of chi-square random variables with the
+given number of degrees of freedom.  The general syntax for
+its use is 
+
+   y = randchi(n)
+
+where n is an array containing the degrees of freedom for
+each generated random variable.

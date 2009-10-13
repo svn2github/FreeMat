@@ -1,0 +1,13 @@
+SQUEEZE SQUEEZE Remove Singleton Dimensions of an Array
+
+Usage
+
+This function removes the singleton dimensions of an array.  The
+syntax for its use is
+
+   y = squeeze(x)
+
+where x is a multidimensional array.  Generally speaking, if
+x is of size d1 x 1 x d2 x ..., then squeeze(x) is of
+size d1 x d2 x ..., i.e., each dimension of x that was
+singular (size 1) is squeezed out.

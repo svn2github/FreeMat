@@ -1,0 +1,14 @@
+EXP EXP Exponential Function
+
+Usage
+
+Computes the exp function for its argument.  The general
+syntax for its use is
+
+   y = exp(x)
+
+where x is an n-dimensional array of numerical type.
+Integer types are promoted to the double type prior to
+calculation of the exp function.  Output y is of the
+same size and type as the input x, (unless x is an
+integer, in which case y is a double type).

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>I-J Square Root of Negative One
+</TITLE>
+</HEAD>
+<BODY>
+<H2>I-J Square Root of Negative One
+</H2>
+<P>
+Section: <A HREF=sec_constants.html> Base Constants </A>
+<H3>Usage</H3>
+Returns a <code>complex</code> value that represents the square root of -1.  There are two
+functions that return the same value:
+<PRE>
+   y = i
+</PRE>
+<P>
+and 
+<PRE>
+   y = j.
+</PRE>
+<P>
+This allows either <code>i</code> or <code>j</code> to be used as loop indices.  The returned value is a 32-bit complex value.
+<H3>Example</H3>
+The following examples demonstrate a few calculations with <code>i</code>.
+<PRE>
+--&gt; i
+
+ans = 
+   0.0000 +  1.0000i 
+
+--&gt; i^2
+
+ans = 
+  -1.0000 +  0.0000i 
+</PRE>
+<P>
+The same calculations with <code>j</code>:
+<PRE>
+--&gt; j
+
+ans = 
+   0.0000 +  1.0000i 
+
+--&gt; j^2
+
+ans = 
+  -1.0000 +  0.0000i 
+</PRE>
+<P>
+Here is an example of how <code>i</code> can be used as a loop index and then recovered as the square root of -1.
+<PRE>
+--&gt; accum = 0; for i=1:100; accum = accum + i; end; accum
+
+ans = 
+ 5050 
+
+--&gt; i
+
+ans = 
+ 100 
+
+--&gt; clear i
+--&gt; i
+
+ans = 
+   0.0000 +  1.0000i 
+</PRE>
+<P>
+</BODY>
+</HTML>

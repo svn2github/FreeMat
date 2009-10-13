@@ -1,0 +1,11 @@
+WHERE WHERE Get Information on Program Stack
+
+Usage
+
+Returns information on the current stack.  The usage is
+
+   where
+
+The result is a kind of stack trace that indicates the state
+of the current call stack, and where you are relative to the
+stack.

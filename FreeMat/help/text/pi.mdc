@@ -1,0 +1,9 @@
+PI PI Constant Pi
+
+Usage
+
+Returns a double (64-bit floating point number) value that represents pi (ratio between the circumference and diameter of a circle...).  Typical usage 
+
+   y = pi
+
+This value is approximately 3.141592653589793.

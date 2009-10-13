@@ -1,0 +1,60 @@
+\section{CHAR Convert to character array or string}
+
+\subsection{Usage}
+
+The \verb|char| function can be used to convert an array
+into a string.  It has several forms.  The first form
+is
+\begin{verbatim}
+   y = char(x)
+\end{verbatim}
+where \verb|x| is a numeric array containing character codes.
+FreeMat does not currently support Unicode, so the
+character codes must be in the range of \verb|[0,255]|.  The
+output is a string of the same size as \verb|x|.  A second
+form is
+\begin{verbatim}
+   y = char(c)
+\end{verbatim}
+where \verb|c| is a cell array of strings, creates a matrix string
+where each row contains a string from the corresponding cell array.
+The third form is
+\begin{verbatim}
+   y = char(s1, s2, s3, ...)
+\end{verbatim}
+where \verb|si| are a character arrays.  The result is a matrix string
+where each row contains a string from the corresponding argument.
+\subsection{Example}
+
+Here is an example of the first technique being used to generate
+a string containing some ASCII characters
+\begin{verbatim}
+--> char([32:64;65:97])
+
+ans = 
+ !"#$%&'()*+,-./0123456789:;<=>?@
+ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`a
+\end{verbatim}
+In the next example, we form a character array from a set of
+strings in a cell array.  Note that the character array is padded
+with spaces to make the rows all have the same length.
+\begin{verbatim}
+--> char({'hello','to','the','world'})
+
+ans = 
+hello
+to   
+the  
+world
+\end{verbatim}
+In the last example, we pass the individual strings as explicit
+arguments to \verb|char|
+\begin{verbatim}
+--> char('hello','to','the','world')
+
+ans = 
+hello
+to   
+the  
+world
+\end{verbatim}

@@ -1,0 +1,59 @@
+\section{NAN Not-a-Number Constant}
+
+\subsection{Usage}
+
+Returns a value that represents ``not-a-number'' for both 32 and 64-bit 
+floating point values.  This constant is meant to represent the result of
+arithmetic operations whose output cannot be meaningfully defined (like 
+zero divided by zero).  There are several forms for the \verb|NaN| function.
+The first form returns a double precision \verb|NaN|.
+\begin{verbatim}
+   y = nan
+\end{verbatim}
+The next form takes a class name that can be either \verb|'double'| 
+\begin{verbatim}
+   y = nan('double')
+\end{verbatim}
+or \verb|'single'|:
+\begin{verbatim}
+   y = nan('single')
+\end{verbatim}
+With a single parameter it generates a square matrix of \verb|nan|s.
+\begin{verbatim}
+   y = nan(n)
+\end{verbatim}
+Alternatively, you can specify the dimensions of the array via
+\begin{verbatim}
+   y = nan(m,n,p,...)
+\end{verbatim}
+or
+\begin{verbatim}
+   y = nan([m,n,p,...])
+\end{verbatim}
+Finally, you can add a classname of either \verb|'single'| or \verb|'double'|.
+\subsection{Example}
+
+The following examples demonstrate a few calculations with the not-a-number constant.
+\begin{verbatim}
+--> nan*0
+
+ans = 
+ NaN 
+
+--> nan-nan
+
+ans = 
+ NaN 
+\end{verbatim}
+Note that \verb|NaN|s are preserved under type conversion to floating point types (i.e., \verb|float|, \verb|double|, \verb|complex| and \verb|dcomplex| types), but not integer  types.
+\begin{verbatim}
+--> uint32(nan)
+
+ans = 
+ 0 
+
+--> complex(nan)
+
+ans = 
+ NaN 
+\end{verbatim}

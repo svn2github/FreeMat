@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>DEAL Multiple Simultaneous Assignments
+</TITLE>
+</HEAD>
+<BODY>
+<H2>DEAL Multiple Simultaneous Assignments
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+When making a function call, it is possible to assign
+multiple outputs in a single call, (see, e.g., <code>max</code> for
+an example).  The <code>deal</code> call allows you to do the 
+same thing with a simple assignment.  The syntax for its
+use is
+<PRE>
+   [a,b,c,...] = deal(expr)
+</PRE>
+<P>
+where <code>expr</code> is an expression with multiple values.  The simplest
+example is where <code>expr</code> is the dereference of a cell array, e.g.
+<code>expr &lt;-- A{:}</code>.  In this case, the <code>deal</code> call is equivalent
+to
+<PRE>
+   a = A{1}; b = A{2}; C = A{3}; 
+</PRE>
+<P>
+Other expressions which are multivalued are structure arrays with
+multiple entries (non-scalar), where field dereferencing has been
+applied.
+</BODY>
+</HTML>

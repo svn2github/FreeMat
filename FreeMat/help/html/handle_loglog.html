@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>LOGLOG Log-Log Plot Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>LOGLOG Log-Log Plot Function
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+This command has the exact same syntax as the <code>plot</code> command:
+<PRE>
+  loglog(&lt;data 1&gt;,{linespec 1},&lt;data 2&gt;,{linespec 2}...,properties...)
+</PRE>
+<P>
+in fact, it is a simple wrapper around <code>plot</code> that sets the
+x and y axis to have a logarithmic scale.
+<H3>Example</H3>
+Here is an example of a doubly exponential signal plotted first on a linear
+plot:
+<PRE>
+--&gt; x = linspace(1,100);
+--&gt; y = x;
+--&gt; plot(x,y,'r-');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="loglog1.png">
+</DIV>
+<P>
+and now on a log-log plot
+<PRE>
+--&gt; loglog(x,y,'r-');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="loglog2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,9 @@
+SECH SECH Hyperbolic Secant Function
+
+Usage
+
+Computes the hyperbolic secant of the argument.
+The syntax for its use is
+
+   y = sech(x)
+

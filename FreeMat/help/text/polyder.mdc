@@ -1,0 +1,21 @@
+POLYDER POLYDER Polynomial Coefficient Differentiation
+
+Usage
+
+The polyder function returns the polynomial coefficients resulting
+from differentiation of polynomial p. The syntax for its use is either
+
+ pder = polyder(p)
+
+ for the derivitave of polynomial p, or
+
+ convp1p2der = polyder(p1,p2)
+
+ for the derivitave of polynomial conv(p1,p2), or still
+
+ [nder,dder] = polyder(n,d)
+
+for the derivative of polynomial n/d (nder is the numerator
+and dder is the denominator). In all cases the polynomial 
+coefficients are assumed to be in decreasing degree.
+Contributed by Paulo Xavier Candeias under GPL

@@ -1,0 +1,13 @@
+SETPRINTLIMIT SETPRINTLIMIT Set Limit For Printing Of Arrays
+
+Usage
+
+Changes the limit on how many elements of an array are printed
+using either the disp function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling
+
+  setprintlimit(n)
+
+where n is the new limit to use.

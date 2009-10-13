@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>LOGICAL Convert to Logical
+</TITLE>
+</HEAD>
+<BODY>
+<H2>LOGICAL Convert to Logical
+</H2>
+<P>
+Section: <A HREF=sec_typecast.html> Type Conversion Functions </A>
+<H3>Usage</H3>
+Converts the argument to a logical array.  The syntax
+for its use is
+<PRE>
+   y = logical(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional numerical array.  Any nonzero 
+element maps to a logical 1.
+<H3>Example</H3>
+Here we convert an integer array to <code>logical</code>:
+<PRE>
+--&gt; logical([1,2,3,0,0,0,5,2,2])
+
+ans = 
+ 1 1 1 0 0 0 1 1 1 
+</PRE>
+<P>
+The same example with double precision values:
+<PRE>
+--&gt; logical([pi,pi,0,e,0,-1])
+
+ans = 
+ 1 1 0 1 0 1 
+</PRE>
+<P>
+</BODY>
+</HTML>

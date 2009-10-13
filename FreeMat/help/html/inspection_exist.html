@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>EXIST Test for Existence
+</TITLE>
+</HEAD>
+<BODY>
+<H2>EXIST Test for Existence
+</H2>
+<P>
+Section: <A HREF=sec_inspection.html> Inspection Functions </A>
+<H3>Usage</H3>
+Tests for the existence of a variable, function, directory or
+file.  The general syntax for its use is
+<PRE>
+  y = exist(item,kind)
+</PRE>
+<P>
+where <code>item</code> is a string containing the name of the item
+to look for, and <code>kind</code> is a string indicating the type 
+of the search.  The <code>kind</code> must be one of 
+<UL>
+<LI>  <code>'builtin'</code> checks for built-in functions
+ </LI>
+<LI>  <code>'dir'</code> checks for directories
+ </LI>
+<LI>  <code>'file'</code> checks for files
+ </LI>
+<LI>  <code>'var'</code> checks for variables
+ </LI>
+<LI>  <code>'all'</code> checks all possibilities (same as leaving out <code>kind</code>)
+ </LI>
+</UL>
+You can also leave the <code>kind</code> specification out, in which case
+the calling syntax is
+<PRE>
+  y = exist(item)
+</PRE>
+<P>
+The return code is one of the following:
+<UL>
+<LI>  0 - if <code>item</code> does not exist
+ </LI>
+<LI>  1 - if <code>item</code> is a variable in the workspace
+ </LI>
+<LI>  2 - if <code>item</code> is an M file on the search path, a full pathname
+ to a file, or an ordinary file on your search path
+ </LI>
+<LI>  5 - if <code>item</code> is a built-in FreeMat function
+ </LI>
+<LI>  7 - if <code>item</code> is a directory
+ </LI>
+</UL>
+Note: previous to version <code>1.10</code>, <code>exist</code> used a different notion
+of existence for variables: a variable was said to exist if it 
+was defined and non-empty.  This test is now performed by <code>isset</code>.
+<H3>Example</H3>
+Some examples of the <code>exist</code> function.  Note that generally <code>exist</code>
+is used in functions to test for keywords.  For example,
+<PRE>
+  function y = testfunc(a, b, c)
+  if (~exist('c'))
+    % c was not defined, so establish a default
+    c = 13;
+  end
+  y = a + b + c;
+</PRE>
+<P>
+An example of <code>exist</code> in action.
+<PRE>
+--&gt; a = randn(3,5,2)
+
+a = 
+
+(:,:,1) = 
+    0.0744   -0.7000   -1.8022   -0.0255   -0.2933 
+   -0.0152   -0.5401   -0.2030   -0.5437    0.9261 
+   -0.4359   -1.2334    0.5156    0.0821   -0.5065 
+
+(:,:,2) = 
+    0.7408    0.6302   -0.2798    0.7279    1.7674 
+    0.9063   -1.7321   -0.8851   -0.4091   -0.5516 
+    1.4880    0.5030    0.6747   -0.5492    1.1867 
+
+--&gt; b = []
+
+b = 
+  []
+--&gt; who
+  Variable Name       Type   Flags             Size
+              a    double                    [3 5 2]
+              b    double                    [0 0]
+--&gt; exist('a')
+
+ans = 
+ 1 
+
+--&gt; exist('b')
+
+ans = 
+ 1 
+
+--&gt; exist('c')
+
+ans = 
+ 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

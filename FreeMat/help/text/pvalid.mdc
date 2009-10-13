@@ -1,0 +1,14 @@
+PVALID PVALID Validate Property Name
+
+Usage
+
+This function checks to see if the given string is a valid
+property name for an object of the given type.  The syntax
+for its use is
+
+  b = pvalid(type,propertyname)
+
+where string is a string that contains the name of a 
+ valid graphics object type, and
+propertyname is a string that contains the name of the
+property to test for.

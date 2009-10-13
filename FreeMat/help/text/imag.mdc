@@ -1,0 +1,16 @@
+IMAG IMAG Imaginary Function
+
+Usage
+
+Returns the imaginary part of the input array for all elements.  The 
+general syntax for its use is
+
+   y = imag(x)
+
+where x is an n-dimensional array of numerical type.  The output 
+is the same numerical type as the input, unless the input is complex
+or dcomplex.  For complex inputs, the imaginary part is a floating
+point array, so that the return type is float.  For dcomplex
+inputs, the imaginary part is a double precision floating point array, so that
+the return type is double.  The imag function returns zeros for 
+real and integer types.

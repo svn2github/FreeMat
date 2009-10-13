@@ -1,0 +1,12 @@
+RANDBIN RANDBIN Generate Binomial Random Variables
+
+Usage
+
+Generates random variables with a binomial distribution.
+The general syntax for its use is
+
+   y = randbin(N,p)
+
+where N is a vector representing the number of Bernoulli
+trials, and p is the success probability associated with each
+trial.

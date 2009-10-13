@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>ANGLE Phase Angle Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>ANGLE Phase Angle Function
+</H2>
+<P>
+Section: <A HREF=sec_mathfunctions.html> Mathematical Functions </A>
+<H3>Usage</H3>
+Compute the phase angle in radians of a complex matrix.  The general
+syntax for its use is
+<PRE>
+  p = angle(c)
+</PRE>
+<P>
+where <code>c</code> is an <code>n</code>-dimensional array of numerical type.
+<H3>Function Internals</H3>
+For a complex number <code>x</code>, its polar representation is
+given by
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="angle_eqn1.png">
+</DIV>
+<P>
+and we can compute 
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="angle_eqn2.png">
+</DIV>
+<P>
+<H3>Example</H3>
+Here are some examples of the use of <code>angle</code> in the polar decomposition
+of a complex number.
+<PRE>
+--&gt; x = 3+4*i
+
+x = 
+   3.0000 +  4.0000i 
+
+--&gt; a = abs(x)
+
+a = 
+ 5 
+
+--&gt; t = angle(x)
+
+t = 
+    0.9273 
+
+--&gt; a*exp(i*t)
+
+ans = 
+   3.0000 +  4.0000i 
+</PRE>
+<P>
+   M version contributor: M.W. Vogel 01-30-06
+</BODY>
+</HTML>

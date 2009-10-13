@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>MATRIXPOWER Matrix Power Operator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>MATRIXPOWER Matrix Power Operator
+</H2>
+<P>
+Section: <A HREF=sec_operators.html> Mathematical Operators </A>
+<H3>Usage</H3>
+The power operator for scalars and square matrices.  This operator is really a 
+combination of two operators, both of which have the same general syntax:
+<PRE>
+  y = a ^ b
+</PRE>
+<P>
+The exact action taken by this operator, and the size and type of the output, 
+depends on which of the two configurations of <code>a</code> and <code>b</code> is present:
+<OL>
+<LI>  <code>a</code> is a scalar, <code>b</code> is a square matrix
+ </LI>
+<LI>  <code>a</code> is a square matrix, <code>b</code> is a scalar
+ </LI>
+</OL>
+<H3>Function Internals</H3>
+In the first case that <code>a</code> is a scalar, and <code>b</code> is a square matrix, the matrix power is defined in terms of the eigenvalue decomposition of <code>b</code>.  Let <code>b</code> have the following eigen-decomposition (problems arise with non-symmetric matrices <code>b</code>, so let us assume that <code>b</code> is symmetric):
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="matrixpower_eqn1.png">
+</DIV>
+<P>
+Then <code>a</code> raised to the power <code>b</code> is defined as
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="matrixpower_eqn2.png">
+</DIV>
+<P>
+Similarly, if <code>a</code> is a square matrix, then <code>a</code> has the following eigen-decomposition (again, suppose <code>a</code> is symmetric):
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="matrixpower_eqn3.png">
+</DIV>
+<P>
+Then <code>a</code> raised to the power <code>b</code> is defined as
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="matrixpower_eqn4.png">
+</DIV>
+<P>
+<H3>Examples</H3>
+We first define a simple <code>2 x 2</code> symmetric matrix
+<PRE>
+--&gt; A = 1.5
+
+A = 
+    1.5000 
+
+--&gt; B = [1,.2;.2,1]
+
+B = 
+    1.0000    0.2000 
+    0.2000    1.0000 
+</PRE>
+<P>
+First, we raise <code>B</code> to the (scalar power) <code>A</code>:
+<PRE>
+--&gt; C = B^A
+
+C = 
+    1.0150    0.2995 
+    0.2995    1.0150 
+</PRE>
+<P>
+Next, we raise <code>A</code> to the matrix power <code>B</code>:
+<PRE>
+--&gt; C = A^B
+
+C = 
+    1.5049    0.1218 
+    0.1218    1.5049 
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,11 @@
+FILEPARTS FILEPARTS Extract Filename Parts
+
+Usage
+
+The fileparts takes a filename, and returns the path, filename, extension, and
+(for MATLAB-compatibility) an empty version number of the file.  The syntax for its use is
+
+    [path,name,extension,version] = fileparts(filename)
+
+where filename is a string containing the description of the file, and path
+is the path to the file, 

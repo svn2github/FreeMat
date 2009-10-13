@@ -1,0 +1,38 @@
+\section{ABS Absolute Value Function}
+
+\subsection{Usage}
+
+Returns the absolute value of the input array for all elements.  The 
+general syntax for its use is
+\begin{verbatim}
+   y = abs(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional array of numerical type.  The output 
+is the same numerical type as the input, unless the input is \verb|complex|
+or \verb|dcomplex|.  For \verb|complex| inputs, the absolute value is a floating
+point array, so that the return type is \verb|float|.  For \verb|dcomplex|
+inputs, the absolute value is a double precision floating point array, so that
+the return type is \verb|double|.
+\subsection{Example}
+
+The following demonstrates the \verb|abs| applied to a complex scalar.
+\begin{verbatim}
+--> abs(3+4*i)
+
+ans = 
+ 5 
+\end{verbatim}
+The \verb|abs| function applied to integer and real values:
+\begin{verbatim}
+--> abs([-2,3,-4,5])
+
+ans = 
+ 2 3 4 5 
+\end{verbatim}
+For a double-precision complex array,
+\begin{verbatim}
+--> abs([2.0+3.0*i,i])
+
+ans = 
+    3.6056    1.0000 
+\end{verbatim}

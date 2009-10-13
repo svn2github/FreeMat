@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GRID Plot Grid Toggle Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GRID Plot Grid Toggle Function
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Toggles the drawing of grid lines on the currently active plot.  The
+general syntax for its use is
+<PRE>
+   grid(state)
+</PRE>
+<P>
+where <code>state</code> is either
+<PRE>
+   grid('on')
+</PRE>
+<P>
+to activate the grid lines, or
+<PRE>
+   grid('off')
+</PRE>
+<P>
+to deactivate the grid lines.  If you specify no argument then
+<code>grid</code> toggles the state of the grid:
+<PRE>
+   grid
+</PRE>
+<P>
+You can also specify a particular axis to the grid command
+<PRE>
+   grid(handle,...)
+</PRE>
+<P>
+where <code>handle</code> is the handle for a particular axis.
+<H3>Example</H3>
+Here is a simple plot without grid lines.
+<PRE>
+--&gt; x = linspace(-1,1);
+--&gt; y = cos(3*pi*x);
+--&gt; plot(x,y,'r-');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="grid1.png">
+</DIV>
+<P>
+
+Next, we activate the grid lines.
+<PRE>
+--&gt; plot(x,y,'r-');
+--&gt; grid on
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="grid2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

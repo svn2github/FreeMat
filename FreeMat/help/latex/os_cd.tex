@@ -1,0 +1,53 @@
+\section{CD Change Working Directory Function}
+
+\subsection{Usage}
+
+Changes the current working directory to the one specified as the argument.  The general syntax for its use is
+\begin{verbatim}
+  cd('dirname')
+\end{verbatim}
+but this can also be expressed as
+\begin{verbatim}
+  cd 'dirname'
+\end{verbatim}
+or 
+\begin{verbatim}
+  cd dirname
+\end{verbatim}
+Examples of all three usages are given below.
+Generally speaking, \verb|dirname| is any string that would be accepted 
+by the underlying OS as a valid directory name.  For example, on most 
+systems, \verb|'.'| refers to the current directory, and \verb|'..'| refers 
+to the parent directory.  Also, depending on the OS, it may be necessary 
+to ``escape'' the directory seperators.  In particular, if directories 
+are seperated with the backwards-slash character \verb|'\\'|, then the 
+path specification must use double-slashes \verb|'\\\\'|. Note: to get 
+file-name completion to work at this time, you must use one of the 
+first two forms of the command.
+
+\subsection{Example}
+
+The \verb|pwd| command returns the current directory location.  First, 
+we use the simplest form of the \verb|cd| command, in which the directory 
+name argument is given unquoted.
+\begin{verbatim}
+--> pwd
+
+ans = 
+/home/basu/dev/branches/FreeMat4/help/tmp
+--> cd ..
+--> pwd
+
+ans = 
+/home/basu/dev/branches/FreeMat4/help
+\end{verbatim}
+Next, we use the ``traditional'' form of the function call, using 
+both the parenthesis and a variable to store the quoted string.
+\begin{verbatim}
+--> a = pwd;
+--> cd(a)
+--> pwd
+
+ans = 
+/home/basu/dev/branches/FreeMat4/help/tmp
+\end{verbatim}

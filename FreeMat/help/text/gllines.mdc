@@ -1,0 +1,17 @@
+GLLINES GLLINES Create a GL Lineset
+
+Usage
+
+Defines a set of lines that can be treated as a node.
+A GL Lines is defined by a vector consisting of the
+following elements:
+
+   [m1 x1 y1 z1 ... xn yn zn m2 x1 y1 z1 .... ]
+
+i.e., a point count followed by that number of triplets.
+The usage of this function is 
+
+  gllines(name,vector,color)
+
+where name is the name of the lineset and vector
+is the aforementioned vector of points.

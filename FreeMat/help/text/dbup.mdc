@@ -1,0 +1,9 @@
+DBUP DBUP Move Up One Debug Level
+
+Usage
+
+The dbup function moves up one level in the debug
+hierarchy.  The syntax for the dbup function is
+
+ dbup
+

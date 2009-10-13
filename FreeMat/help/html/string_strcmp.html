@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>STRCMP String Compare Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>STRCMP String Compare Function
+</H2>
+<P>
+Section: <A HREF=sec_string.html> String Functions </A>
+<H3>USAGE</H3>
+Compares two strings for equality.  The general
+syntax for its use is
+<PRE>
+  p = strcmp(x,y)
+</PRE>
+<P>
+where <code>x</code> and <code>y</code> are two strings.  Returns <code>true</code> if <code>x</code>
+and <code>y</code> are the same size, and are equal (as strings).  Otherwise,
+it returns <code>false</code>.
+In the second form, <code>strcmp</code> can be applied to a cell array of
+strings.  The syntax for this form is
+<PRE>
+  p = strcmp(cellstra,cellstrb)
+</PRE>
+<P>
+where <code>cellstra</code> and <code>cellstrb</code> are cell arrays of a strings
+to compare.  Also, you can also supply a character matrix as
+an argument to <code>strcmp</code>, in which case it will be converted
+via <code>cellstr</code> (so that trailing spaces are removed), before being
+compared.
+<H3>Example</H3>
+The following piece of code compares two strings:
+<PRE>
+--&gt; x1 = 'astring';
+--&gt; x2 = 'bstring';
+--&gt; x3 = 'astring';
+--&gt; strcmp(x1,x2)
+
+ans = 
+ 0 
+
+--&gt; strcmp(x1,x3)
+
+ans = 
+ 1 
+</PRE>
+<P>
+Here we use a cell array strings
+<PRE>
+--&gt; x = {'astring','bstring',43,'astring'}
+
+x = 
+ [astring] [bstring] [43] [astring] 
+
+--&gt; p = strcmp(x,'astring')
+
+p = 
+ 1 0 0 1 
+</PRE>
+<P>
+Here we compare two cell arrays of strings
+<PRE>
+--&gt; strcmp({'this','is','a','pickle'},{'what','is','to','pickle'})
+
+ans = 
+ 0 1 0 1 
+</PRE>
+<P>
+Finally, the case where one of the arguments is a matrix
+string
+<PRE>
+--&gt; strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'])
+
+ans = 
+ 0 0 0 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

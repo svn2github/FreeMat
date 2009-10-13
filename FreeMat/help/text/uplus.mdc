@@ -1,0 +1,13 @@
+UPLUS UPLUS Overloaded Unary Plus Operator
+
+Usage
+
+This is a method that is invoked when a variable is preceeded by a "+",
+and is invoked when you call
+
+   c = uplus(a)
+
+or for 
+
+   c = +a
+

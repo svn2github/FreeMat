@@ -1,0 +1,10 @@
+ISSCALAR ISSCALAR Test For Scalar
+
+Usage
+
+The syntax for isscalar is
+
+   x = isscalar(y)
+
+and it returns a logical 1 if the argument is a scalar,
+ and a logical 0 otherwise.

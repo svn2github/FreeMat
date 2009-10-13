@@ -1,0 +1,34 @@
+\section{RCOND Reciprocal Condition Number Estimate}
+
+\subsection{Usage}
+
+The \verb|rcond| function is a FreeMat wrapper around LAPACKs
+function \verb|XGECON|, which estimates the 1-norm condition
+number (reciprocal).  For the details of the algorithm see
+the LAPACK documentation.  The syntax for its use is
+\begin{verbatim}
+   x = rcond(A)
+\end{verbatim}
+where \verb|A| is a matrix.
+\subsection{Example}
+
+Here is the reciprocal condition number for a random square
+matrix
+\begin{verbatim}
+--> A = rand(30);
+--> rcond(A)
+
+ans = 
+ 3.5040e-04 
+\end{verbatim}
+And here we calculate the same value using the definition of
+(reciprocal) condition number
+\begin{verbatim}
+--> 1/(norm(A,1)*norm(inv(A),1))
+
+ans = 
+ 3.5040e-04 
+\end{verbatim}
+Note that the values are very similar.  LAPACKs \verb|rcond|
+function is far more efficient than the explicit calculation
+(which is also used by the \verb|cond| function.

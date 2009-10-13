@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CLOCKTOTIME Convert Clock Vector to Epoch Time
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CLOCKTOTIME Convert Clock Vector to Epoch Time
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+Given the output of the <code>clock</code> command, this function computes
+the epoch time, i.e, the time in seconds since January 1,1970 
+at 00:00:00 UTC.  This function is most useful for calculating elapsed
+times using the clock, and should be accurate to less than a millisecond
+(although the true accuracy depends on accuracy of the argument vector). 
+The usage for <code>clocktotime</code> is
+<PRE>
+   y = clocktotime(x)
+</PRE>
+<P>
+where <code>x</code> must be in the form of the output of <code>clock</code>, that is
+<PRE>
+   x = [year month day hour minute seconds]
+</PRE>
+<P>
+<H3>Example</H3>
+Here is an example of using <code>clocktotime</code> to time a delay of 1 second
+<PRE>
+--&gt; x = clock
+
+x = 
+
+   1.0e+03 * 
+    2.0090    0.0100    0.0040    0.0220    0.0260    0.0322 
+
+--&gt; sleep(1)
+--&gt; y = clock
+
+y = 
+
+   1.0e+03 * 
+    2.0090    0.0100    0.0040    0.0220    0.0260    0.0332 
+
+--&gt; clocktotime(y) - clocktotime(x)
+
+ans = 
+    1.0010 
+</PRE>
+<P>
+</BODY>
+</HTML>

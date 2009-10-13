@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>BREAK Exit Execution In Loop
+</TITLE>
+</HEAD>
+<BODY>
+<H2>BREAK Exit Execution In Loop
+</H2>
+<P>
+Section: <A HREF=sec_flow.html> Flow Control </A>
+<H3>Usage</H3>
+The <code>break</code> statement is used to exit a loop prematurely.
+It can be used inside a <code>for</code> loop or a <code>while</code> loop.  The
+syntax for its use is
+<PRE>
+   break
+</PRE>
+<P>
+inside the body of the loop.  The <code>break</code> statement forces
+execution to exit the loop immediately.
+<H3>Example</H3>
+Here is a simple example of how <code>break</code> exits the loop.
+We have a loop that sums integers from <code>1</code> to <code>10</code>, but
+that stops prematurely at <code>5</code> using a <code>break</code>.  We will
+use a <code>while</code> loop.
+<P>
+<PRE>
+     break_ex.m
+function accum = break_ex
+  accum = 0;
+  i = 1;
+  while (i&lt;=10) 
+    accum = accum + i;
+    if (i == 5)
+      break;
+    end
+    i = i + 1;
+  end
+
+</PRE>
+<P>
+The function is exercised here:
+<PRE>
+--&gt; break_ex
+
+ans = 
+ 15 
+
+--&gt; sum(1:5)
+
+ans = 
+ 15 
+</PRE>
+<P>
+</BODY>
+</HTML>

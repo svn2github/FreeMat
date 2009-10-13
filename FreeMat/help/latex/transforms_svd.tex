@@ -1,0 +1,82 @@
+\section{SVD Singular Value Decomposition of a Matrix}
+
+\subsection{Usage}
+
+Computes the singular value decomposition (SVD) of a matrix.  The 
+\verb|svd| function has three forms.  The first returns only the singular
+values of the matrix:
+\begin{verbatim}
+  s = svd(A)
+\end{verbatim}
+The second form returns both the singular values in a diagonal
+matrix \verb|S|, as well as the left and right eigenvectors.
+\begin{verbatim}
+  [U,S,V] = svd(A)
+\end{verbatim}
+The third form returns a more compact decomposition, with the
+left and right singular vectors corresponding to zero singular
+values being eliminated.  The syntax is
+\begin{verbatim}
+  [U,S,V] = svd(A,0)
+\end{verbatim}
+\subsection{Function Internals}
+
+Recall that \verb|sigma_i| is a singular value of an \verb|M x N|
+matrix \verb|A| if there exists two vectors \verb|u_i, v_i| where \verb|u_i| is
+of length \verb|M|, and \verb|v_i| is of length \verb|u_i| and
+\[
+  A v_i = \sigma_i u_i
+\]
+and generally
+\[
+  A = \sum_{i=1}^{K} \sigma_i u_i*v_i',
+\]
+where \verb|K| is the rank of \verb|A|.  In matrix form, the left singular
+vectors \verb|u_i| are stored in the matrix \verb|U| as
+\[
+  U = [u_1,\ldots,u_m], V = [v_1,\ldots,v_n]
+\]
+The matrix \verb|S| is then of size \verb|M x N| with the singular
+values along the diagonal.  The SVD is computed using the 
+\verb|LAPACK| class of functions \verb|GESVD| (Note that this has
+changed.  Previous versions of FreeMat used \verb|GESDD|, which
+yields a valid, but slightly different choice of the decomposition.
+Starting in version 4, it was changed to \verb|GESVD| to improve
+compatibility.
+\subsection{Examples}
+
+Here is an example of a partial and complete singular value
+decomposition.
+\begin{verbatim}
+--> A = float(randn(2,3))
+
+A = 
+   -0.9542    1.2478   -0.2295 
+    0.3075    1.0686   -0.4849 
+
+--> [U,S,V] = svd(A)
+U = 
+   -0.8410   -0.5411 
+   -0.5411    0.8410 
+
+S = 
+    1.8058         0         0 
+         0    0.8549         0 
+
+V = 
+    0.3522    0.9064    0.2331 
+   -0.9013    0.2614    0.3454 
+    0.2521   -0.3317    0.9091 
+
+--> U*S*V'
+
+ans = 
+   -0.9542    1.2478   -0.2295 
+    0.3075    1.0686   -0.4849 
+
+--> svd(A)
+
+ans = 
+    1.8058 
+    0.8549 
+\end{verbatim}

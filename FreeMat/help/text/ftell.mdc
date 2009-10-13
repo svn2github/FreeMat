@@ -1,0 +1,12 @@
+FTELL FTELL File Position Function
+
+Usage
+
+Returns the current file position for a valid file handle.
+The general use of this function is
+
+  n = ftell(handle)
+
+The handle argument must be a valid and active file handle.  The
+return is the offset into the file relative to the start of the
+file (in bytes).

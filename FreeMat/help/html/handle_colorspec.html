@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>COLORSPEC Color Property Description
+</TITLE>
+</HEAD>
+<BODY>
+<H2>COLORSPEC Color Property Description
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+There are a number of ways of specifying a color value for
+a color-based property.  Examples include line colors, 
+marker colors, and the like.  One option is to specify
+color as an RGB triplet
+<PRE>
+   set(h,'color',[r,g,b])
+</PRE>
+<P>
+where <code>r,g,b</code> are between @[0,1]@.  Alternately, you can
+use color names to specify a color.
+<UL>
+<LI>  <code>'none'</code> - No color.
+ </LI>
+<LI>  <code>'y','yellow'</code> - The color @[1,1,0]@ in RGB space.
+ </LI>
+<LI>  <code>'m','magenta'</code> - The color @[1,0,1]@ in RGB space.
+ </LI>
+<LI>  <code>'c','cyan'</code> - The color @[0,1,1]@ in RGB space.
+ </LI>
+<LI>  <code>'r','red'</code> - The color @[1,0,0]@ in RGB space.
+ </LI>
+<LI>  <code>'g','green'</code> - The color @[0,1,0]@ in RGB space.
+ </LI>
+<LI>  <code>'b','blue'</code> - The color @[0,0,1]@ in RGB space.
+ </LI>
+<LI>  <code>'w','white'</code> - The color @[1,1,1]@ in RGB space.
+ </LI>
+<LI>  <code>'k','black'</code> - The color @[0,0,0]@ in RGB space.
+ </LI>
+</UL>
+</BODY>
+</HTML>

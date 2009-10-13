@@ -1,0 +1,29 @@
+FOR FOR For Loop
+
+Usage
+
+The for loop executes a set of statements with an 
+index variable looping through each element in a vector.
+The syntax of a for loop is one of the following:
+
+  for (variable=expression)
+     statements
+  end
+
+Alternately, the parenthesis can be eliminated
+
+  for variable=expression
+     statements
+  end
+
+or alternately, the index variable can be pre-initialized
+with the vector of values it is going to take:
+
+  for variable
+     statements
+  end
+
+The third form is essentially equivalent to for variable=variable,
+where variable is both the index variable and the set of values
+over which the for loop executes.  See the examples section for
+an example of this form of the for loop.

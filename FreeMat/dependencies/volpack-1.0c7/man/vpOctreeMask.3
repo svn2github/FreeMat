@@ -1,0 +1,129 @@
+.\" Copyright (c) 1995-2008, Stanford University
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions are met:
+.\"     * Redistributions of source code must retain the above copyright
+.\"       notice, this list of conditions and the following disclaimer.
+.\"     * Redistributions in binary form must reproduce the above copyright
+.\"       notice, this list of conditions and the following disclaimer in the
+.\"       documentation and/or other materials provided with the distribution.
+.\"     * Neither the name of Stanford University nor the
+.\"       names of its contributors may be used to endorse or promote products
+.\"       derived from this software without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY STANFORD UNIVERSITY ''AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+.\" WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+.\" DISCLAIMED. IN NO EVENT SHALL STANFORD UNIVERSITY BE LIABLE FOR ANY
+.\" DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+.\" (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+.\" LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+.\" SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+.\" 
+.\" Author:
+.\"    Phil Lacroute
+.\"    Computer Systems Laboratory
+.\"    Electrical Engineering Dept.
+.\"    Stanford University
+.\" 
+.\" Macros
+.\" .FS <type>  --  function start
+.\"     <type> is return type of function
+.\"     name and arguments follow on next line
+.de FS
+.PD 0v
+.PP
+\\$1
+.HP 8
+..
+.\" .FA  --  function arguments
+.\"     one argument declaration follows on next line
+.de FA
+.IP " " 4
+..
+.\" .FE  --  function end
+.\"     end of function declaration
+.de FE
+.PD
+..
+.\" .DS  --  display start
+.de DS
+.IP " " 4
+..
+.\" .DE  --  display done
+.de DE
+.LP
+..
+.TH vpOctreeMask 3 "" VolPack
+.SH NAME
+vpOctreeMask \- compute a mask representing one level of a min-max octree
+.SH SYNOPSIS
+#include <volpack.h>
+.sp
+.FS vpResult
+\fBvpOctreeMask(\fIvpc, array, array_size, max_level\fB)\fR
+.FA
+vpContext \fI*vpc;\fR
+.FA
+unsigned char *\fIarray;\fR
+.FA
+int \fIarray_size;\fR
+.FA
+int \fImax_level;\fR
+.FE
+.SH ARGUMENTS
+.IP \fIvpc\fR
+VolPack context from \fBvpCreateContext.\fR
+.IP \fIarray\fR
+A 3D array for storing the mask.
+.IP \fIarray_size\fR
+Size of \fIarray\fR in bytes.
+.IP \fImax_level\fR
+Maximum octree level to descend to.
+.SH DESCRIPTION
+\fBvpOctreeMask\fR is used for performance debugging when rendering
+volumes with a min-max octree.  During rendering the min-max octree is
+used to help determine which voxels are transparent.  The time
+required to make this determination can be minimized by an appropriate
+choice for the range parameters for \fBvpMinMaxOctreeThreshold\fR
+and the node size parameters for \fBvpCreateMinMaxOctree\fR.
+\fBvpOctreeMask\fR provides information that can help to determine
+whether a set of parameters works effectively or not.
+.PP
+The output of the routine is stored in a 3D array of bytes that has
+the same dimensions as the volume (although each element is only one
+byte, regardless of the size of a voxel).  For each voxel in the volume the
+corresponding byte in the output array is set by \fBvpOctreeMask\fR to
+one of three values: 0 if the voxel is definitely transparent, 255 if
+the voxel may be non-transparent, or 128 if the voxel may be
+non-transparent and there is more detailed information available at
+unvisited levels of the octree.  The \fImax_level\fR argument
+specifies the deepest level of the octree to be visited (the root
+level is level 0).
+.PP
+A suggested way to use this routine is to compute an octree using a
+particular set of parameters and then call \fBvpOctreeMask\fR with
+several different values for \fImax_level.\fR  For each resulting
+mask array, look at slices (or create a volume rendering!) and see how
+accurately the mask captures the general shape of the data in the
+original volume.  The best set of parameters results in a mask that captures
+the general shape without an excessively small value for the minimum
+octree node size (which would result in a very large data structure
+and a lot of traversal overhead).
+.SH ERRORS
+The normal return value is VP_OK.  The following error return values are
+possible:
+.IP VPERROR_BAD_SIZE
+There is no octree or the output array has the wrong size.
+.IP VPERROR_BAD_VOXEL
+The voxel size or the voxel fields have not been specified or have
+been incorrectly specified.
+.IP VPERROR_BAD_CLASSIFIER
+The opacity transfer function tables have invalid sizes or are
+associated with invalid voxel fields or have been incorrectly
+specified.
+.SH SEE ALSO
+VolPack(3), vpCreateContext(3), vpCreateMinMaxOctree(3)

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SUBSREF Array Dereferencing
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SUBSREF Array Dereferencing
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+This function can be used to index into basic array
+types (or structures).  It provides a functional interface
+to execute complex indexing expressions such as 
+<code>a.b(3){5}</code> at run time (i.e. while executing a script or
+a function) without resorting to using <code>eval</code>.  Note that
+this function should be overloaded for use with user defined
+classes, and that it cannot be overloaeded for base types.
+The basic syntax of the function is:
+<PRE>
+   b = subsref(a,s)
+</PRE>
+<P>
+where <code>s</code> is a structure array with two fields. The
+first field is
+<UL>
+<LI>  <code>type</code>  is a string containing either <code>'()'</code> or
+ <code>'{}'</code> or <code>'.'</code> depending on the form of the call.
+ </LI>
+<LI>  <code>subs</code> is a cell array or string containing the
+ the subscript information.
+ </LI>
+</UL>
+When multiple indexing experssions are combined together
+such as <code>b = a(5).foo{:}</code>, the <code>s</code> array should contain
+the following entries
+<PRE>
+  s(1).type = '()'  s(1).subs = {5}
+  s(2).type = '.'   s(2).subs = 'foo'
+  s(3).type = '{}'  s(3).subs = ':'
+</PRE>
+<P>
+</BODY>
+</HTML>

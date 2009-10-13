@@ -1,0 +1,9 @@
+LINE LINE Line Display Function
+
+Usage
+
+The line command has the following general syntax
+
+   handle = line(x,y,z,properties...)
+
+where...

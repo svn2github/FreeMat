@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>LOG Natural Logarithm Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>LOG Natural Logarithm Function
+</H2>
+<P>
+Section: <A HREF=sec_mathfunctions.html> Mathematical Functions </A>
+<H3>Usage</H3>
+Computes the <code>log</code> function for its argument.  The general
+syntax for its use is
+<PRE>
+  y = log(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional array of numerical type.
+Integer types are promoted to the <code>double</code> type prior to
+calculation of the <code>log</code> function.  Output <code>y</code> is of the
+same size as the input <code>x</code>. For strictly positive, real inputs, 
+the output type is the same as the input.
+For negative and complex arguments, the output is complex.
+<H3>Function Internals</H3>
+Mathematically, the <code>log</code> function is defined for all real
+valued arguments <code>x</code> by the integral
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="log_eqn1.png">
+</DIV>
+<P>
+For complex-valued arguments, <code>z</code>, the complex logarithm is
+defined as
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="log_eqn2.png">
+</DIV>
+<P>
+where <code>arg</code> is the complex argument of <code>z</code>.
+<H3>Example</H3>
+The following piece of code plots the real-valued <code>log</code>
+function over the interval <code>[1,100]</code>:
+<PRE>
+--&gt; x = linspace(1,100);
+--&gt; plot(x,log(x))
+--&gt; xlabel('x');
+--&gt; ylabel('log(x)');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="logplot.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

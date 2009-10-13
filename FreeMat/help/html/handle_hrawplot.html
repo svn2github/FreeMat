@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>HRAWPLOT Generate a Raw Plot File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>HRAWPLOT Generate a Raw Plot File
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+This function takes a sequence of commands, and generates
+a raw plot (to a file) that renders the commands.  It is 
+a useful tool for creating high quality fully customized 
+PDF plots from within FreeMat scripts that are portable.  The
+syntax for its use 
+<PRE>
+  hrawplot(filename,commands)
+</PRE>
+<P>
+where <code>filename</code> is the name of the file to plot to, 
+and <code>commands</code> is a cell array of strings.  Each entry in the 
+cell array contains a string with a command text.  The
+commands describe a simple mini-language for describing
+plots.  The complete dictionary of commands is given
+<UL>
+<LI>  <code>LINE x1 y1 x2 y2</code> -- draw a line
+ </LI>
+<LI>  <code>FONT name size</code> -- select a font of the given name and size
+ </LI>
+<LI>  <code>TEXT x1 y1 string</code> -- draw the given text string at the given location
+ </LI>
+<LI>  <code>STYLE style</code> -- select line style ('solid' or 'dotted')
+ </LI>
+<LI>  <code>PAGE</code> -- force a new page
+ </LI>
+<LI>  <code>SIZE x1 y1</code> -- Set the page mapping
+ </LI>
+</UL>
+</BODY>
+</HTML>

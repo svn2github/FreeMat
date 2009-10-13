@@ -1,0 +1,13 @@
+RDIVIDE RDIVIDE Overloaded Right Divide Operator
+
+Usage
+
+This is a method that is invoked when two variables are divided
+and is invoked when you call
+
+   c = rdivide(a,b)
+
+or for
+
+   c = a ./ b
+

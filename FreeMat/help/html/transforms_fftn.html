@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FFTN N-Dimensional Forward FFT 
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FFTN N-Dimensional Forward FFT 
+</H2>
+<P>
+Section: <A HREF=sec_transforms.html> Transforms/Decompositions </A>
+<H3>Usage</H3>
+Computes the DFT of an N-dimensional numerical array along all
+dimensions.  The general syntax for its use is
+<PRE>
+  y = fftn(x)
+</PRE>
+<P>
+which computes the same-size FFTs for each dimension of <code>x</code>.
+Alternately, you can specify the size vector
+<PRE>
+  y = fftn(x,dims)
+</PRE>
+<P>
+where <code>dims</code> is a vector of sizes.  The array <code>x</code> is zero padded
+or truncated as necessary in each dimension so that the output
+is of size <code>dims</code>. The <code>fftn</code> function is implemented by a sequence
+of calls to <code>fft</code>.
+</BODY>
+</HTML>

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>ISA Test Type of Variable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>ISA Test Type of Variable
+</H2>
+<P>
+Section: <A HREF=sec_inspection.html> Inspection Functions </A>
+<H3>Usage</H3>
+Tests the type of a variable.  The syntax for its
+use is
+<PRE>
+   y = isa(x,type)
+</PRE>
+<P>
+where <code>x</code> is the variable to test, and <code>type</code> is
+the type.  Supported built-in types are
+<UL>
+<LI>  <code>'cell'</code> for cell-arrays
+ </LI>
+<LI>  <code>'struct'</code> for structure-arrays
+ </LI>
+<LI>  <code>'logical'</code> for logical arrays
+ </LI>
+<LI>  <code>'uint8'</code> for unsigned 8-bit integers
+ </LI>
+<LI>  <code>'int8'</code> for signed 8-bit integers
+ </LI>
+<LI>  <code>'uint16'</code> for unsigned 16-bit integers
+ </LI>
+<LI>  <code>'int16'</code> for signed 16-bit integers
+ </LI>
+<LI>  <code>'uint32'</code> for unsigned 32-bit integers
+ </LI>
+<LI>  <code>'int32'</code> for signed 32-bit integers
+ </LI>
+<LI>  <code>'uint64'</code> for unsigned 64-bit integers
+ </LI>
+<LI>  <code>'int64'</code> for signed 64-bit integers
+ </LI>
+<LI>  <code>'single'</code> for 32-bit floating point numbers
+ </LI>
+<LI>  <code>'double'</code> for 64-bit floating point numbers
+ </LI>
+<LI>  <code>'char'</code> for string arrays
+ </LI>
+</UL>
+If the argument is a user-defined type (via the <code>class</code> function), then
+the name of that class is returned.
+<H3>Examples</H3>
+Here are some examples of the <code>isa</code> call.
+<PRE>
+--&gt; a = {1}
+
+a = 
+ [1] 
+
+--&gt; isa(a,'char')
+
+ans = 
+ 0 
+
+--&gt; isa(a,'cell')
+
+ans = 
+ 1 
+</PRE>
+<P>
+Here we use <code>isa</code> along with shortcut boolean evaluation to 
+safely determine if a variable contains the string <code>'hello'</code>
+<PRE>
+--&gt; a = 'hello'
+
+a = 
+hello
+--&gt; isa(a,'char') &amp;&amp; strcmp(a,'hello')
+
+ans = 
+ 1 
+</PRE>
+<P>
+</BODY>
+</HTML>

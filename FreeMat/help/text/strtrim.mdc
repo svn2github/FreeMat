@@ -1,0 +1,17 @@
+STRTRIM STRTRIM Trim Spaces from a String
+
+Usage
+
+Removes the white-spaces at the beginning and end of a string (or a 
+cell array of strings). See isspace for a definition of a white-space.
+There are two forms for the strtrim function.  The first is for
+single strings
+
+   y = strtrim(strng)
+
+where strng is a string.  The second form operates on a cell array
+of strings
+
+   y = strtrim(cellstr)
+
+and trims each string in the cell array.

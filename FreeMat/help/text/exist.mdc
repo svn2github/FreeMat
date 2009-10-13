@@ -1,0 +1,42 @@
+EXIST EXIST Test for Existence
+
+Usage
+
+Tests for the existence of a variable, function, directory or
+file.  The general syntax for its use is
+
+  y = exist(item,kind)
+
+where item is a string containing the name of the item
+to look for, and kind is a string indicating the type 
+of the search.  The kind must be one of 
+  -  'builtin' checks for built-in functions
+
+  -  'dir' checks for directories
+
+  -  'file' checks for files
+
+  -  'var' checks for variables
+
+  -  'all' checks all possibilities (same as leaving out kind)
+
+You can also leave the kind specification out, in which case
+the calling syntax is
+
+  y = exist(item)
+
+The return code is one of the following:
+  -  0 - if item does not exist
+
+  -  1 - if item is a variable in the workspace
+
+  -  2 - if item is an M file on the search path, a full pathname
+ to a file, or an ordinary file on your search path
+
+  -  5 - if item is a built-in FreeMat function
+
+  -  7 - if item is a directory
+
+Note: previous to version 1.10, exist used a different notion
+of existence for variables: a variable was said to exist if it 
+was defined and non-empty.  This test is now performed by isset.

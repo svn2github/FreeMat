@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>PERSISTENT Persistent Variables
+</TITLE>
+</HEAD>
+<BODY>
+<H2>PERSISTENT Persistent Variables
+</H2>
+<P>
+Section: <A HREF=sec_variables.html> Variables and Arrays </A>
+<H3>Usage</H3>
+Persistent variables are variables whose value persists between
+calls to a function or script.  The general syntax for its
+use is
+<PRE>
+   persistent variable1 variable2 ... variableN
+</PRE>
+<P>
+The <code>persistent</code> statement must occur before the variable
+is the tagged as persistent.  Per the MATLAB API documentation
+an empty variable is created when the <code>persistent</code> statement
+is called.
+<H3>Example</H3>
+Here is an example of a function that counts how many
+times it has been called.
+<P>
+<PRE>
+     count_calls.m
+function count_calls
+  persistent ccount
+  if (~exist('ccount')) ccount = 0; end;
+  ccount = ccount + 1;
+  printf('Function has been called %d times\n',ccount);
+
+</PRE>
+<P>
+We now call the function several times:
+<PRE>
+--&gt; for i=1:10; count_calls; end
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+Function has been called 0 times
+</PRE>
+<P>
+</BODY>
+</HTML>

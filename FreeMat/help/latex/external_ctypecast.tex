@@ -1,0 +1,16 @@
+\section{CTYPECAST Cast FreeMat Structure to C Structure}
+
+\subsection{Usage}
+
+The \verb|ctypecast| function is a convenience function for ensuring that
+a FreeMat structure fits the definition of a C struct (as defined
+via \verb|ctypedefine|.  It does so by encoding the structure
+to a byte array using \verb|ctypefreeze| and then recovering it using
+the \verb|ctypethaw| function.  The usage is simply
+\begin{verbatim}
+   s = ctypecast(s,typename)
+\end{verbatim}
+where \verb|s| is the structure and \verb|typename| is the name of the
+C structure that describes the desired layout and types for elements
+of \verb|s|.  This function is equivalent to calling \verb|ctypefreeze|
+and \verb|ctypethaw| in succession on a FreeMat structure.

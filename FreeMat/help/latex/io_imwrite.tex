@@ -1,0 +1,43 @@
+\section{IMWRITE Write Matrix to Image File}
+
+\subsection{Usage}
+
+Write the image data from the matrix into a given file.  Note that
+FreeMat's support for \verb|imwrite| is not complete.
+You can write images in the \verb|jpg,png,xpm,ppm| and some other formats.
+The syntax for its use is
+\begin{verbatim}
+  imwrite(A, filename)
+  imwrite(A, map, filename)
+  imwrite(A, map, filename, 'Alpha', alpha)
+
+or Octave-style syntax:
+  imwrite(filename, A)
+  imwrite(filename, A, map)
+  imwrite(filename, A, map, alpha)
+\end{verbatim}
+where \verb|filename| is the name of the file to write to.  The input array 
+\verb|A| contains the image data (2D for gray or indexed, and 3D for color).  
+If \verb|A| is an integer array (int8, uint8, int16, uint16, int32, uint32), 
+the values of its elements should be within 0-255.  If \verb|A| is a 
+floating-point array (float or double), the value of its elements should
+be in the range [0,1].  \verb|map| contains the colormap information
+(for indexed images), and \verb|alpha| the alphamap (transparency).
+\subsection{Example}
+
+Here is a simple example of \verb|imread|/\verb|imwrite|.  First, we generate
+a grayscale image and save it to an image file.
+\begin{verbatim}
+--> a =  uint8(255*rand(64));
+--> figure(1), image(a), colormap(gray)
+--> title('image to save')
+Warning: Newly defined variable nargin shadows a function of the same name.  Use clear nargin to recover access to the function
+--> imwrite(a, 'test.bmp')
+\end{verbatim}
+Then, we read image file and show it:
+\begin{verbatim}
+--> b = imread('test.bmp');
+--> figure(2), image(b), colormap(gray)
+--> title('loaded image')
+Warning: Newly defined variable nargin shadows a function of the same name.  Use clear nargin to recover access to the function
+\end{verbatim}

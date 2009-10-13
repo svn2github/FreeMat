@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FLIPLR Reverse the Columns of a Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FLIPLR Reverse the Columns of a Matrix
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>USAGE</H3>
+Reverses the columns of a matrix.  The syntax for its use is
+<PRE>
+   y = fliplr(x)
+</PRE>
+<P>
+where <code>x</code> is matrix.  If <code>x</code> is an N-dimensional array then
+the second dimension is reversed.
+<H3>Example</H3>
+The following example shows <code>fliplr</code> applied to a 2D matrix.
+<PRE>
+--&gt; x = int32(rand(4)*10)
+
+x = 
+  6  2  7  1 
+  1 10 10  4 
+  7  7  6  3 
+  8  0  8  5 
+
+--&gt; fliplr(x)
+
+ans = 
+  1  7  2  6 
+  4 10 10  1 
+  3  6  7  7 
+  5  8  0  8 
+</PRE>
+<P>
+For a 3D array, note how the columns in each slice are flipped.
+<PRE>
+--&gt; x = int32(rand(4,4,3)*10)
+
+x = 
+
+(:,:,1) = 
+  2 10  7  5 
+  0  4  5  6 
+  6  2  3  5 
+  2  0  9  6 
+
+(:,:,2) = 
+  3  3  8  5 
+  1  7  2  5 
+  4  6  8  4 
+  7  1  6  1 
+
+(:,:,3) = 
+  3  3  9  2 
+  5  3  7  6 
+  3  3  3  9 
+  6  4  0  8 
+
+--&gt; fliplr(x)
+
+ans = 
+
+(:,:,1) = 
+  5  7 10  2 
+  6  5  4  0 
+  5  3  2  6 
+  6  9  0  2 
+
+(:,:,2) = 
+  5  8  3  3 
+  5  2  7  1 
+  4  8  6  4 
+  1  6  1  7 
+
+(:,:,3) = 
+  2  9  3  3 
+  6  7  3  5 
+  9  3  3  3 
+  8  0  4  6 
+</PRE>
+<P>
+</BODY>
+</HTML>

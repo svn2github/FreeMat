@@ -1,0 +1,26 @@
+\section{BITOR Bitwise Boolean Or Operation}
+
+\subsection{Usage}
+
+Performs a bitwise binary or operation on the two arguments and
+returns the result.  The syntax for its use is
+\begin{verbatim}
+   y = bitor(a,b)
+\end{verbatim}
+where \verb|a| and \verb|b| are multi-dimensional unsigned integer arrays.
+The and operation is performed using 32 bit unsigned intermediates.  Note that if a
+or b is a scalar, then each element of the other array is or'ed with
+that scalar.  Otherwise the two arrays must match in size.
+\subsection{Example}
+
+\begin{verbatim}
+--> bitand(uint16([1,16,255]),uint16([3,17,128]))
+
+ans = 
+   1  16 128 
+
+--> bitand(uint16([1,16,255]),uint16(3))
+
+ans = 
+ 1 0 3 
+\end{verbatim}

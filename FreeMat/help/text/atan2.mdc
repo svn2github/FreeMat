@@ -1,0 +1,16 @@
+ATAN2 ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function
+
+Usage
+
+Computes the atan2 function for its argument.  The general
+syntax for its use is
+
+  z = atan2(y,x)
+
+where x and y are n-dimensional arrays of numerical type.
+Integer types are promoted to the double type prior to
+calculation of the atan2 function. The size of the output depends
+on the size of x and y.  If x is a scalar, then z
+is the same size as y, and if y is a scalar, then z
+is the same size as x.  The type of the output is equal to the type of
+|y/x|.  

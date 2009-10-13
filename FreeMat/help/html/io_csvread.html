@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CSVREAD Read Comma Separated Value (CSV) File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CSVREAD Read Comma Separated Value (CSV) File
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+The <code>csvread</code> function reads a text file containing comma
+separated values (CSV), and returns the resulting numeric
+matrix (2D).  The function supports multiple syntaxes.  The
+first syntax for <code>csvread</code> is 
+<PRE>
+   x = csvread('filename')
+</PRE>
+<P>
+which attempts to read the entire CSV file into array <code>x</code>.
+The file can contain only numeric values.  Each entry in the
+file should be separated from other entries by a comma.  However,
+FreeMat will attempt to make sense of the entries if the comma
+is missing (e.g., a space separated file will also parse correctly).
+For complex values, you must be careful with the spaces).  The second
+form of <code>csvread</code> allows you to specify the first row and column 
+(zero-based index)
+<PRE>
+  x = csvread('filename',firstrow,firstcol)
+</PRE>
+<P>
+The last form allows you to specify the range to read also.  This form
+is
+<PRE>
+  x = csvread('filename',firstrow,firstcol,readrange)
+</PRE>
+<P>
+where <code>readrange</code> is either a 4-vector of the form <code>[R1,C1,R2,C2]</code>,
+where <code>R1,C1</code> is the first row and column to use, and <code>R2,C2</code> is the
+last row and column to use.  You can also specify the <code>readrange</code> as
+a spreadsheet range <code>B12..C34</code>, in which case the index for the
+range is 1-based (as in a typical spreadsheet), so that <code>A1</code> is the
+first cell in the upper left corner. Note also that <code>csvread</code> is
+somewhat limited. 
+<H3>Example</H3>
+Here is an example of a CSV file that we wish to read in
+<P>
+<PRE>
+     sample_data.csv
+10, 12, 13, 00, 45, 16
+09, 11, 52, 93, 05, 06
+01, 03, 04, 04, 90, -3
+14, 17, 13, 67, 30, 43
+21, 33, 14, 44, 01, 00
+
+</PRE>
+<P>
+We start by reading the entire file
+<PRE>
+--&gt; csvread('sample_data.csv')
+
+ans = 
+ 10 12 13  0 45 16 
+  9 11 52 93  5  6 
+  1  3  4  4 90 -3 
+ 14 17 13 67 30 43 
+ 21 33 14 44  1  0 
+</PRE>
+<P>
+Next, we read everything starting with the second row, and third column
+<PRE>
+--&gt; csvread('sample_data.csv',1,2)
+
+ans = 
+ 52 93  5  6 
+  4  4 90 -3 
+ 13 67 30 43 
+ 14 44  1  0 
+</PRE>
+<P>
+Finally, we specify that we only want the <code>3 x 3</code> submatrix starting
+with the second row, and third column
+<PRE>
+--&gt; csvread('sample_data.csv',1,2,[1,2,3,4])
+
+ans = 
+ 52 93  5 
+  4  4 90 
+ 13 67 30 
+</PRE>
+<P>
+</BODY>
+</HTML>

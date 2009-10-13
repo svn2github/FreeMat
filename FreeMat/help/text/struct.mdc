@@ -1,0 +1,23 @@
+STRUCT STRUCT Structure Array Constructor
+
+Usage
+
+Creates an array of structures from a set of field, value pairs.
+The syntax is
+
+   y = struct(n_1,v_1,n_2,v_2,...)
+
+where n_i are the names of the fields in the structure array, and
+v_i are the values.  The values v_i must either all be
+scalars, or be cell-arrays of all the same dimensions.  In the latter 
+case, the
+output structure array will have dimensions dictated by this common
+size.  Scalar entries for the v_i are replicated to fill out
+their dimensions. An error is raised if the inputs are not properly matched (i.e., are
+not pairs of field names and values), or if the size of any two non-scalar
+values cell-arrays are different.
+
+Another use of the struct function is to convert a class into a 
+structure.  This allows you to access the members of the class, directly 
+but removes the class information from the object.
+

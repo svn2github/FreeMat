@@ -1,0 +1,16 @@
+DEBLANK DEBLANK Remove trailing blanks from a string
+
+Usage
+
+The deblank function removes spaces at the end of a string
+when used with the syntax
+
+   y = deblank(x)
+
+where x is a string, in which case, all of the extra spaces
+in x are stripped from the end of the string.  Alternately,
+you can call deblank with a cell array of strings
+
+   y = deblank(c)
+
+in which case each string in the cell array is deblanked.

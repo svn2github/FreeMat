@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CSVWRITE Write Comma Separated Value (CSV) File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CSVWRITE Write Comma Separated Value (CSV) File
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+The <code>csvwrite</code> function writes a given matrix to a text
+file using comma separated value (CSV) notation.  Note that
+you can create CSV files with arbitrary sized matrices, but
+that <code>csvread</code> has limits on line length.  If you need to
+reliably read and write large matrices, use <code>rawwrite</code> and
+<code>rawread</code> respectively.  The syntax for <code>csvwrite</code> is 
+<PRE>
+   csvwrite('filename',x)
+</PRE>
+<P>
+where <code>x</code> is a numeric array.  The contents of <code>x</code> are written
+to <code>filename</code> as comma-separated values.  You can also specify
+a row and column offset to <code>csvwrite</code> to force <code>csvwrite</code> to
+write the matrix <code>x</code> starting at the specified location in the 
+file.  This syntax of the function is
+<PRE>
+   csvwrite('filename',x,startrow,startcol)
+</PRE>
+<P>
+where <code>startrow</code> and <code>startcol</code> are the offsets in zero-based
+indexing.  
+<H3>Example</H3>
+Here we create a simple matrix, and write it to a CSV file
+<PRE>
+--&gt; x = [1,2,3;5,6,7]
+
+x = 
+ 1 2 3 
+ 5 6 7 
+
+--&gt; csvwrite('csvwrite.csv',x)
+--&gt; csvread('csvwrite.csv')
+
+ans = 
+ 1 2 3 
+ 5 6 7 
+</PRE>
+<P>
+Next, we do the same with an offset.
+<PRE>
+--&gt; csvwrite('csvwrite.csv',x,1,2)
+--&gt; csvread('csvwrite.csv')
+
+ans = 
+ 0 0 0 0 
+ 0 1 2 3 
+ 0 5 6 7 
+</PRE>
+<P>
+Note the extra zeros.
+</BODY>
+</HTML>

@@ -1,0 +1,9 @@
+SINH SINH Hyperbolic Sine Function
+
+Usage
+
+Computes the hyperbolic sine of the argument.
+The syntax for its use is
+
+   y = sinh(x)
+

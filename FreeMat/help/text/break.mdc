@@ -1,0 +1,12 @@
+BREAK BREAK Exit Execution In Loop
+
+Usage
+
+The break statement is used to exit a loop prematurely.
+It can be used inside a for loop or a while loop.  The
+syntax for its use is
+
+   break
+
+inside the body of the loop.  The break statement forces
+execution to exit the loop immediately.

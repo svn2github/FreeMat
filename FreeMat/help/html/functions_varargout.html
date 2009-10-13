@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>VARARGOUT Variable Output Arguments
+</TITLE>
+</HEAD>
+<BODY>
+<H2>VARARGOUT Variable Output Arguments
+</H2>
+<P>
+Section: <A HREF=sec_functions.html> Functions and Scripts </A>
+<H3>Usage</H3>
+FreeMat functions can return a variable number of output arguments
+by setting the last argument in the argument list to <code>varargout</code>.
+This special keyword indicates that the number of return values
+is variable.  The general syntax for a function that returns
+a variable number of outputs is
+<PRE>
+  function [out_1,...,out_M,varargout] = fname(in_1,...,in_M)
+</PRE>
+<P>
+The function is responsible for ensuring that <code>varargout</code> is
+a cell array that contains the values to assign to the outputs
+beyond <code>out_M</code>.  Generally, variable output functions use
+<code>nargout</code> to figure out how many outputs have been requested.
+<H3>Example</H3>
+This is a function that returns a varying number of values
+depending on the value of the argument.
+<P>
+<PRE>
+     varoutfunc.m
+function [varargout] = varoutfunc
+  switch(nargout)
+    case 1
+      varargout = {'one of one'};
+    case 2
+      varargout = {'one of two','two of two'};
+    case 3
+      varargout = {'one of three','two of three','three of three'};
+  end
+
+</PRE>
+<P>
+Here are some examples of exercising <code>varoutfunc</code>:
+<PRE>
+--&gt; [c1] = varoutfunc
+c1 = 
+one of one
+--&gt; [c1,c2] = varoutfunc
+c1 = 
+one of two
+c2 = 
+two of two
+--&gt; [c1,c2,c3] = varoutfunc
+c1 = 
+one of three
+c2 = 
+two of three
+c3 = 
+three of three
+</PRE>
+<P>
+</BODY>
+</HTML>

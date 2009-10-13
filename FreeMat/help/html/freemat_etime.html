@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>ETIME Elapsed Time Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>ETIME Elapsed Time Function
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>etime</code> calculates the elapsed time between two <code>clock</code> vectors
+<code>x1</code> and <code>x2</code>.  The syntax for its use is
+<PRE>
+   y = etime(x1,x2)
+</PRE>
+<P>
+where <code>x1</code> and <code>x2</code> are in the <code>clock</code> output format
+<PRE>
+   x = [year month day hour minute seconds]
+</PRE>
+<P>
+<H3>Example</H3>
+Here we use <code>etime</code> as a substitute for <code>tic</code> and <code>toc</code>
+<PRE>
+--&gt; x1 = clock;
+--&gt; sleep(1);
+--&gt; x2 = clock;
+--&gt; etime(x2,x1);
+</PRE>
+<P>
+</BODY>
+</HTML>

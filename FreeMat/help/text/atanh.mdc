@@ -1,0 +1,10 @@
+ATANH ATANH Inverse Hyperbolic Tangent Function
+
+Usage
+
+Computes the inverse hyperbolic tangent of its argument.  The general
+syntax for its use is
+
+  y = atanh(x)
+
+where x is an n-dimensional array of numerical type.

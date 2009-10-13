@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>VEC Reshape to a Vector
+</TITLE>
+</HEAD>
+<BODY>
+<H2>VEC Reshape to a Vector
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+Reshapes an n-dimensional array into a column vector.  The general
+syntax for its use is
+<PRE>
+   y = vec(x)
+</PRE>
+<P>
+where <code>x</code> is an n-dimensional array (not necessarily numeric).  This
+function is equivalent to the expression <code>y = x(:)</code>.
+<H3>Example</H3>
+A simple example of the <code>vec</code> operator reshaping a 2D matrix:
+<PRE>
+--&gt; A = [1,2,4,3;2,3,4,5]
+
+A = 
+ 1 2 4 3 
+ 2 3 4 5 
+
+--&gt; vec(A)
+
+ans = 
+ 1 
+ 2 
+ 2 
+ 3 
+ 4 
+ 4 
+ 3 
+ 5 
+</PRE>
+<P>
+</BODY>
+</HTML>

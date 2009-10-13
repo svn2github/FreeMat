@@ -1,0 +1,11 @@
+DIRSEP DIRSEP Director Seperator
+
+Usage
+
+Returns the directory seperator character for the current platform.  The 
+general syntax for its use is
+
+   y = dirsep
+
+This function can be used to build up paths (or see fullfile for another
+way to do this.

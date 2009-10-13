@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RANK Calculate the Rank of a Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RANK Calculate the Rank of a Matrix
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+Returns the rank of a matrix.  There are two ways to use
+the <code>rank</code> function is
+<PRE>
+   y = rank(A,tol)
+</PRE>
+<P>
+where <code>tol</code> is the tolerance to use when computing the
+rank.  The second form is
+<PRE>
+   y = rank(A)
+</PRE>
+<P>
+in which case the tolerance <code>tol</code> is chosen as
+<PRE>
+   tol = max(size(A))*max(s)*eps,
+</PRE>
+<P>
+where <code>s</code> is the vector of singular values of <code>A</code>.  The
+rank is computed using the singular value decomposition <code>svd</code>.
+<H3>Examples</H3>
+Some examples of matrix rank calculations
+<PRE>
+--&gt; rank([1,3,2;4,5,6])
+
+ans = 
+ 2 
+
+--&gt; rank([1,2,3;2,4,6])
+
+ans = 
+ 1 
+</PRE>
+<P>
+Here we construct an ill-conditioned matrix, and show the use 
+of the <code>tol</code> argument.
+<PRE>
+--&gt; A = [1,0;0,eps/2]
+
+A = 
+    1.0000         0 
+         0    0.0000 
+
+--&gt; rank(A)
+
+ans = 
+ 1 
+
+--&gt; rank(A,eps/8)
+
+ans = 
+ 2 
+</PRE>
+<P>
+</BODY>
+</HTML>

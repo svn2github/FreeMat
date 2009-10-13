@@ -1,0 +1,54 @@
+\section{COMPARISONOPS Array Comparison Operators}
+
+\subsection{Usage}
+
+There are a total of six comparison operators available in FreeMat, all of which are binary operators with the following syntax
+\begin{verbatim}
+  y = a < b
+  y = a <= b
+  y = a > b
+  y = a >= b
+  y = a ~= b
+  y = a == b
+\end{verbatim}
+where \verb|a| and \verb|b| are numerical arrays or scalars, and \verb|y| is a \verb|logical| array of the appropriate size.  Each of the operators has three modes of operation, summarized in the following list:
+\begin{enumerate}
+\item  \verb|a| is a scalar, \verb|b| is an n-dimensional array - the output is then the same size as \verb|b|, and contains the result of comparing each element in \verb|b| to the scalar \verb|a|.
+
+\item  \verb|a| is an n-dimensional array, \verb|b| is a scalar - the output is the same size as \verb|a|, and contains the result of comparing each element in \verb|a| to the scalar \verb|b|.
+
+\item  \verb|a| and \verb|b| are both n-dimensional arrays of the same size - the output is then the same size as both \verb|a| and \verb|b|, and contains the result of an element-wise comparison between \verb|a| and \verb|b|.
+
+\end{enumerate}
+The operators behave the same way as in \verb|C|, with unequal types being promoted using the standard type promotion rules prior to comparisons.  The only difference is that in FreeMat, the not-equals operator is \verb|~=| instead of \verb|!=|.
+\subsection{Examples}
+
+Some simple examples of comparison operations.  First a comparison with a scalar:
+\begin{verbatim}
+--> a = randn(1,5)
+
+a = 
+   -0.1760    0.0212    0.0095    2.0556   -1.1627 
+
+--> a>0
+
+ans = 
+ 0 1 1 1 0 
+\end{verbatim}
+Next, we construct two vectors, and test for equality:
+\begin{verbatim}
+--> a = [1,2,5,7,3]
+
+a = 
+ 1 2 5 7 3 
+
+--> b = [2,2,5,9,4]
+
+b = 
+ 2 2 5 9 4 
+
+--> c = a == b
+
+c = 
+ 0 1 1 0 0 
+\end{verbatim}

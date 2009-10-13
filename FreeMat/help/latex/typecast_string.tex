@@ -1,0 +1,25 @@
+\section{STRING Convert Array to String}
+
+\subsection{Usage}
+
+Converts the argument array into a string.  The syntax for its
+use is
+\begin{verbatim}
+   y = string(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional numerical array.
+\subsection{Example}
+
+Here we take an array containing ASCII codes for a string, and
+convert it into a string.
+\begin{verbatim}
+--> a = [104,101,108,108,111]
+
+a = 
+ 104 101 108 108 111 
+
+--> string(a)
+
+ans = 
+hello
+\end{verbatim}

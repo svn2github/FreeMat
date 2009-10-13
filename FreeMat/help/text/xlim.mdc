@@ -1,0 +1,21 @@
+XLIM XLIM Adjust X Axis limits of plot
+
+Usage
+
+There are several ways to use xlim to adjust the X axis limits of
+a plot.  The various syntaxes are
+
+   xlim
+   xlim([lo,hi])   
+   xlim('auto')
+   xlim('manual')
+   xlim('mode')
+   xlim(handle,...)
+
+The first form (without arguments), returns a 2-vector containing the
+current limits.  The second form sets the limits on the plot to [lo,hi].
+The third and fourth form set the mode for the limit to auto and manual
+respectively.  In auto mode, FreeMat chooses the range for the axis 
+automatically.  The xlim('mode') form returns the current mode for the axis
+(either 'auto' or 'manual').  Finally, you can specify the handle of an
+axis to manipulate instead of using the current one.

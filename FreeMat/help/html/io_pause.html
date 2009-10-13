@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>PAUSE Pause Script Execution
+</TITLE>
+</HEAD>
+<BODY>
+<H2>PAUSE Pause Script Execution
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+The <code>pause</code> function can be used to pause execution of FreeMat
+scripts.  There are several syntaxes for its use.  The first form
+is
+<PRE>
+   pause
+</PRE>
+<P>
+This form of the <code>pause</code> function pauses FreeMat until you press
+any key.  The second form of the <code>pause</code> function takes an argument
+<PRE>
+   pause(p)
+</PRE>
+<P>
+where <code>p</code> is the number of seconds to pause FreeMat for.  The pause
+argument should be accurate to a millisecond on all supported platforms.
+Alternately, you can control all <code>pause</code> statements using:
+<PRE>
+   pause on
+</PRE>
+<P>
+which enables pauses and
+<PRE>
+   pause off
+</PRE>
+<P>
+which disables all <code>pause</code> statements, both with and without arguments.
+</BODY>
+</HTML>

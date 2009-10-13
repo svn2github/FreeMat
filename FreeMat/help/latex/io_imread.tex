@@ -1,0 +1,16 @@
+\section{IMREAD Read Image File To Matrix}
+
+\subsection{Usage}
+
+Reads the image data from the given file into a matrix.  Note that
+FreeMat's support for \verb|imread| is not complete.  Only some of the
+formats specified in the MATLAB API are implemented.  The syntax
+for its use is
+\begin{verbatim}
+  [A,map,alpha] = imread(filename)
+\end{verbatim}
+where \verb|filename| is the name of the file to read from.  The returned
+arrays \verb|A| contain the image data, \verb|map| contains the colormap information
+(for indexed images), and \verb|alpha| contains the alphamap (transparency).
+The returned values will depend on the type of the original image.  Generally
+you can read images in the \verb|jpg,png,xpm,ppm| and some other formats.

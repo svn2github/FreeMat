@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RREF Reduced Row Echelon Form of a Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RREF Reduced Row Echelon Form of a Matrix
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+Calculates the reduced row echelon form of a matrix using Gauss
+Jordan elimination with partial pivoting.  The generic syntax
+for <code>rref</code> is 
+<PRE>
+   R = rref(A)
+</PRE>
+<P>
+A default tolerance of <code>max(size(A))*eps*norm(A,inf)</code> is used to
+detect negligible column elements.  The second form of <code>rref</code> 
+returns a vector <code>k</code> as well as <code>R</code>
+<PRE>
+  [R,k] = rref(A)
+</PRE>
+<P>
+where <code>k</code> is a vector that correponds to the columns of <code>A</code> 
+used as pivot columns.  If you want to control the tolerance
+used to identify negligible elements, you can use the form
+<PRE>
+  [R,k] = rref(A, tolerance)
+</PRE>
+<P>
+This implementation of <code>rref</code> is based on the one from 
+the matcompat lib for octave.  It is copyright Paul Kienzle,
+and distributed under the GNU GPL. 
+</BODY>
+</HTML>

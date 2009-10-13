@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RANDI Uniformly Distributed Integer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RANDI Uniformly Distributed Integer
+</H2>
+<P>
+Section: <A HREF=sec_random.html> Random Number Generation </A>
+<H3>Usage</H3>
+Generates an array of uniformly distributed integers between
+the two supplied limits.  The general syntax for <code>randi</code> is
+<PRE>
+   y = randi(low,high)
+</PRE>
+<P>
+where <code>low</code> and <code>high</code> are arrays of integers.  Scalars
+can be used for one of the arguments.  The output <code>y</code> is
+a uniformly distributed pseudo-random number between <code>low</code>
+and <code>high</code> (inclusive).
+<H3>Example</H3>
+Here is an example of a set of random integers between 
+zero and 5:
+<PRE>
+--&gt; randi(zeros(1,6),5*ones(1,6))
+
+ans = 
+ 1 0 4 1 5 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

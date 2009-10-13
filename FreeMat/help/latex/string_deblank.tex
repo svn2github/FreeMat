@@ -1,0 +1,32 @@
+\section{DEBLANK Remove trailing blanks from a string}
+
+\subsection{Usage}
+
+The \verb|deblank| function removes spaces at the end of a string
+when used with the syntax
+\begin{verbatim}
+   y = deblank(x)
+\end{verbatim}
+where \verb|x| is a string, in which case, all of the extra spaces
+in \verb|x| are stripped from the end of the string.  Alternately,
+you can call \verb|deblank| with a cell array of strings
+\begin{verbatim}
+   y = deblank(c)
+\end{verbatim}
+in which case each string in the cell array is deblanked.
+\subsection{Example}
+
+A simple example
+\begin{verbatim}
+--> deblank('hello   ')
+
+ans = 
+hello
+\end{verbatim}
+and a more complex example with a cell array of strings
+\begin{verbatim}
+--> deblank({'hello  ','there ','  is  ','  sign  '})
+
+ans = 
+ [hello] [there] [  is] [  sign] 
+\end{verbatim}

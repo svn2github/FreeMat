@@ -1,0 +1,51 @@
+\section{PERMUTE Array Permutation Function}
+
+\subsection{Usage}
+
+The \verb|permute| function rearranges the contents of an array according
+to the specified permutation vector.  The syntax for its use is
+\begin{verbatim}
+    y = permute(x,p)
+\end{verbatim}
+where \verb|p| is a permutation vector - i.e., a vector containing the 
+integers \verb|1...ndims(x)| each occuring exactly once.  The resulting
+array \verb|y| contains the same data as the array \verb|x|, but ordered
+according to the permutation.  This function is a generalization of
+the matrix transpose operation.
+\subsection{Example}
+
+Here we use \verb|permute| to transpose a simple matrix (note that permute
+also works for sparse matrices):
+\begin{verbatim}
+--> A = [1,2;4,5]
+
+A = 
+ 1 2 
+ 4 5 
+
+--> permute(A,[2,1])
+
+ans = 
+ 1 4 
+ 2 5 
+
+--> A'
+
+ans = 
+ 1 4 
+ 2 5 
+\end{verbatim}
+Now we permute a larger n-dimensional array:
+\begin{verbatim}
+--> A = randn(13,5,7,2);
+--> size(A)
+
+ans = 
+ 13  5  7  2 
+
+--> B = permute(A,[3,4,2,1]);
+--> size(B)
+
+ans = 
+  7  2  5 13 
+\end{verbatim}

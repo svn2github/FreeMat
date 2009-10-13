@@ -1,0 +1,22 @@
+MOD MOD Modulus Operation
+
+Usage
+
+Computes the modulus of an array.  The syntax for its use is
+
+   y = mod(x,n)
+
+where x is matrix, and n is the base of the modulus.  The
+effect of the mod operator is to add or subtract multiples of n
+to the vector x so that each element x_i is between 0 and n
+(strictly).  Note that n does not have to be an integer.  Also,
+n can either be a scalar (same base for all elements of x), or a
+vector (different base for each element of x).
+
+Note that the following are defined behaviors:
+  1.  mod(x,0) = x@
+
+  2.  mod(x,x) = 0@
+
+  3.  mod(x,n)@ has the same sign as n for all other cases.
+

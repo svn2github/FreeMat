@@ -1,0 +1,43 @@
+\section{WHILE While Loop}
+
+\subsection{Usage}
+
+The \verb|while| loop executes a set of statements as long as
+a the test condition remains \verb|true|.  The syntax of a 
+\verb|while| loop is
+\begin{verbatim}
+  while test_expression
+     statements
+  end
+\end{verbatim}
+Note that a conditional expression is considered true if 
+the real part of the result of the expression contains
+any non-zero elements (this strange convention is adopted
+for compatibility with MATLAB).
+\subsection{Examples}
+
+Here is a \verb|while| loop that adds the integers from \verb|1|
+to \verb|100|:
+\begin{verbatim}
+--> accum = 0;
+--> k=1;
+--> while (k<100), accum = accum + k; k = k + 1; end
+--> accum
+
+ans = 
+ 4950 
+\end{verbatim}
+\begin{verbatim}
+    testeq.m
+function x = testeq(a,b)
+  if (size(a,1) ~= size(b,1) || size(a,2) ~= size(b,2))
+    x = 0;
+    return;
+  end
+  d = full(a)-full(b);
+  if (strcmp(typeof(d),'double') | strcmp(typeof(d),'dcomplex'))
+    x = isempty(find(abs(d)>10*eps));
+  else
+    x = isempty(find(abs(d)>10*feps));
+  end
+\end{verbatim}

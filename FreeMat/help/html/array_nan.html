@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>NAN Not-a-Number Constant
+</TITLE>
+</HEAD>
+<BODY>
+<H2>NAN Not-a-Number Constant
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+Returns a value that represents ``not-a-number'' for both 32 and 64-bit 
+floating point values.  This constant is meant to represent the result of
+arithmetic operations whose output cannot be meaningfully defined (like 
+zero divided by zero).  There are several forms for the <code>NaN</code> function.
+The first form returns a double precision <code>NaN</code>.
+<PRE>
+   y = nan
+</PRE>
+<P>
+The next form takes a class name that can be either <code>'double'</code> 
+<PRE>
+   y = nan('double')
+</PRE>
+<P>
+or <code>'single'</code>:
+<PRE>
+   y = nan('single')
+</PRE>
+<P>
+With a single parameter it generates a square matrix of <code>nan</code>s.
+<PRE>
+   y = nan(n)
+</PRE>
+<P>
+Alternatively, you can specify the dimensions of the array via
+<PRE>
+   y = nan(m,n,p,...)
+</PRE>
+<P>
+or
+<PRE>
+   y = nan([m,n,p,...])
+</PRE>
+<P>
+Finally, you can add a classname of either <code>'single'</code> or <code>'double'</code>.
+<H3>Example</H3>
+The following examples demonstrate a few calculations with the not-a-number constant.
+<PRE>
+--&gt; nan*0
+
+ans = 
+ NaN 
+
+--&gt; nan-nan
+
+ans = 
+ NaN 
+</PRE>
+<P>
+Note that <code>NaN</code>s are preserved under type conversion to floating point types (i.e., <code>float</code>, <code>double</code>, <code>complex</code> and <code>dcomplex</code> types), but not integer  types.
+<PRE>
+--&gt; uint32(nan)
+
+ans = 
+ 0 
+
+--&gt; complex(nan)
+
+ans = 
+ NaN 
+</PRE>
+<P>
+</BODY>
+</HTML>

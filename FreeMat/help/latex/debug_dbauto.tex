@@ -1,0 +1,37 @@
+\section{DBAUTO Control Dbauto Functionality}
+
+\subsection{Usage}
+
+The dbauto functionality in FreeMat allows you to debug your
+FreeMat programs.  When \verb|dbauto| is \verb|on|, then any error
+that occurs while the program is running causes FreeMat to 
+stop execution at that point and return you to the command line
+(just as if you had placed a \verb|keyboard| command there).  You can
+then examine variables, modify them, and resume execution using
+\verb|return|.  Alternately, you can exit out of all running routines
+via a \verb|retall| statement.  Note that errors that occur inside of
+\verb|try|/\verb|catch| blocks do not (by design) cause auto breakpoints.  The
+\verb|dbauto| function toggles the dbauto state of FreeMat.  The
+syntax for its use is
+\begin{verbatim}
+   dbauto(state)
+\end{verbatim}
+where \verb|state| is either
+\begin{verbatim}
+   dbauto('on')
+\end{verbatim}
+to activate dbauto, or
+\begin{verbatim}
+   dbauto('off')
+\end{verbatim}
+to deactivate dbauto.  Alternately, you can use FreeMat's string-syntax
+equivalence and enter
+\begin{verbatim}
+   dbauto on
+\end{verbatim}
+or 
+\begin{verbatim}
+   dbauto off
+\end{verbatim}
+to turn dbauto on or off (respectively).  Entering \verb|dbauto| with no arguments
+returns the current state (either 'on' or 'off').

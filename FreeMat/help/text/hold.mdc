@@ -1,0 +1,27 @@
+HOLD HOLD Plot Hold Toggle Function
+
+Usage
+
+Toggles the hold state on the currently active plot.  The
+general syntax for its use is
+
+   hold(state)
+
+where state is either
+
+   hold('on')
+
+to turn hold on, or
+
+   hold('off')
+
+to turn hold off. If you specify no argument then
+hold toggles the state of the hold:
+
+   hold
+
+You can also specify a particular axis to the hold command
+
+   hold(handle,...)
+
+where handle is the handle for a particular axis.

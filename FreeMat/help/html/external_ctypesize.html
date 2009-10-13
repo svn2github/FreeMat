@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CTYPESIZE Compute Size of C Struct
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CTYPESIZE Compute Size of C Struct
+</H2>
+<P>
+Section: <A HREF=sec_external.html> FreeMat External Interface </A>
+<H3>Usage</H3>
+The <code>ctypesize</code> function is used to compute the size of a C structure
+that is defined using the <code>ctypedefine</code> function.  The usage of 
+<code>ctypesize</code> is 
+<PRE>
+   size = ctypesize('typename')
+</PRE>
+<P>
+where <code>typename</code> is the name of the C structure you want to compute
+the size of.  The returned count is measured in bytes.  Note that as
+indicated in the help for <code>ctypedefine</code> that FreeMat does not 
+automatically pad the entries of the structure to match the particulars
+of your C compiler.  Instead, the assumption is that you have adequate
+padding entries in your structure to align the FreeMat members with the
+C ones.  See <code>ctypedefine</code> for more details.  You can also specify
+an optional count parameter if you want to determine how large multiple
+structures are
+<PRE>
+   size = ctypesize('typename',count)
+</PRE>
+<P>
+</BODY>
+</HTML>

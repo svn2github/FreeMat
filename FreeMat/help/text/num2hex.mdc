@@ -1,0 +1,12 @@
+NUM2HEX NUM2HEX Convert Numbers to IEEE Hex Strings
+
+Usage
+
+Converts single and double precision arrays to IEEE hex strings.  The
+syntax for its use is
+
+   y = num2hex(x)
+
+where x is either a float or double array.  The output y is
+a n-by-p character array, where n is the number of elements in x,
+and p is 16 for double arrays, and 8 for single arrays.

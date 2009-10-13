@@ -1,0 +1,11 @@
+LOGICAL LOGICAL Convert to Logical
+
+Usage
+
+Converts the argument to a logical array.  The syntax
+for its use is
+
+   y = logical(x)
+
+where x is an n-dimensional numerical array.  Any nonzero 
+element maps to a logical 1.

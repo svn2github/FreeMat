@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FLIPDIM Reverse a Matrix Along a Given Dimension
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FLIPDIM Reverse a Matrix Along a Given Dimension
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>USAGE</H3>
+Reverses an array along the given dimension.  The syntax for its use is
+<PRE>
+   y = flipdim(x,n)
+</PRE>
+<P>
+where <code>x</code> is matrix, and <code>n</code> is the dimension to reverse.
+<H3>Example</H3>
+The following examples show some uses of <code>flipdim</code> on N-dimensional
+arrays.
+<PRE>
+--&gt; x = int32(rand(4,5,3)*10)
+
+x = 
+
+(:,:,1) = 
+  5  4  5  3  9 
+  7  7  5  6  7 
+  1  6  8  4  1 
+  5  7  1  8  8 
+
+(:,:,2) = 
+  4  1  2  2  2 
+  5  2  3  5  4 
+  0  3  6  8  7 
+  9  2  3 10  8 
+
+(:,:,3) = 
+  6  8  9  5  5 
+  5  4  4  2  9 
+  8  0  3  0 10 
+  0  2  6  9  0 
+
+--&gt; flipdim(x,1)
+
+ans = 
+
+(:,:,1) = 
+  5  7  1  8  8 
+  1  6  8  4  1 
+  7  7  5  6  7 
+  5  4  5  3  9 
+
+(:,:,2) = 
+  9  2  3 10  8 
+  0  3  6  8  7 
+  5  2  3  5  4 
+  4  1  2  2  2 
+
+(:,:,3) = 
+  0  2  6  9  0 
+  8  0  3  0 10 
+  5  4  4  2  9 
+  6  8  9  5  5 
+
+--&gt; flipdim(x,2)
+
+ans = 
+
+(:,:,1) = 
+  9  3  5  4  5 
+  7  6  5  7  7 
+  1  4  8  6  1 
+  8  8  1  7  5 
+
+(:,:,2) = 
+  2  2  2  1  4 
+  4  5  3  2  5 
+  7  8  6  3  0 
+  8 10  3  2  9 
+
+(:,:,3) = 
+  5  5  9  8  6 
+  9  2  4  4  5 
+ 10  0  3  0  8 
+  0  9  6  2  0 
+
+--&gt; flipdim(x,3)
+
+ans = 
+
+(:,:,1) = 
+  6  8  9  5  5 
+  5  4  4  2  9 
+  8  0  3  0 10 
+  0  2  6  9  0 
+
+(:,:,2) = 
+  4  1  2  2  2 
+  5  2  3  5  4 
+  0  3  6  8  7 
+  9  2  3 10  8 
+
+(:,:,3) = 
+  5  4  5  3  9 
+  7  7  5  6  7 
+  1  6  8  4  1 
+  5  7  1  8  8 
+</PRE>
+<P>
+</BODY>
+</HTML>

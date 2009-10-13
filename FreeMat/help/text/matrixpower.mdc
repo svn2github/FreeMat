@@ -1,0 +1,15 @@
+MATRIXPOWER MATRIXPOWER Matrix Power Operator
+
+Usage
+
+The power operator for scalars and square matrices.  This operator is really a 
+combination of two operators, both of which have the same general syntax:
+
+  y = a ^ b
+
+The exact action taken by this operator, and the size and type of the output, 
+depends on which of the two configurations of a and b is present:
+  1.  a is a scalar, b is a square matrix
+
+  2.  a is a square matrix, b is a scalar
+

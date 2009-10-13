@@ -1,0 +1,28 @@
+\section{FCLOSE File Close Function}
+
+\subsection{Usage}
+
+Closes a file handle, or all open file handles.  The general syntax
+for its use is either
+\begin{verbatim}
+  fclose(handle)
+\end{verbatim}
+or
+\begin{verbatim}
+  fclose('all')
+\end{verbatim}
+In the first case a specific file is closed,  In the second, all open
+files are closed.  Note that until a file is closed the file buffers
+are not flushed.  Returns a '0' if the close was successful and a '-1' if
+the close failed for some reason.
+\subsection{Example}
+
+A simple example of a file being opened with \verb|fopen| and then closed with \verb|fclose|.
+\begin{verbatim}
+--> fp = fopen('test.dat','wb','ieee-le')
+
+fp = 
+ 8 
+
+--> fclose(fp)
+\end{verbatim}

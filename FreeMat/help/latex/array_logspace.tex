@@ -1,0 +1,30 @@
+\section{LOGSPACE Logarithmically Spaced Vector}
+
+\subsection{Usage}
+
+Generates a row vector with the specified number number of elements,
+with entries logarithmically spaced between two specified endpoints.
+The syntax for its use is either
+\begin{verbatim}
+    y = logspace(a,b,count)
+\end{verbatim}
+ or, for a default \verb|count = 50|,
+\begin{verbatim}
+    y = logspace(a,b)
+\end{verbatim}
+ A third special use is when
+\begin{verbatim}
+    y = logspace(a,pi)
+\end{verbatim}
+where it generates points between \verb|10^a| and \verb|pi|
+
+Contributed by Paulo Xavier Candeias under GPL.
+\subsection{Example}
+
+Here is an example of the use of \verb|logspace|
+\begin{verbatim}
+--> logspace(1,2,3)
+
+ans = 
+   10.0000   31.6228  100.0000 
+\end{verbatim}

@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>INPUT Get Input From User
+</TITLE>
+</HEAD>
+<BODY>
+<H2>INPUT Get Input From User
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+The <code>input</code> function is used to obtain input from the user.  There are
+two syntaxes for its use.  The first is
+<PRE>
+    r = input('prompt')
+</PRE>
+<P>
+in which case, the prompt is presented, and the user is allowed to enter
+an expression.  The expression is evaluated in the current workspace or
+context (so it can use any defined variables or functions), and returned
+for assignment to the variable (<code>r</code> in this case).  In the second form
+of the <code>input</code> function, the syntax is
+<PRE>
+    r = input('prompt','s')
+</PRE>
+<P>
+in which case the text entered by the user is copied verbatim to the
+output.
+</BODY>
+</HTML>

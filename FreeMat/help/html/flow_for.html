@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FOR For Loop
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FOR For Loop
+</H2>
+<P>
+Section: <A HREF=sec_flow.html> Flow Control </A>
+<H3>Usage</H3>
+The <code>for</code> loop executes a set of statements with an 
+index variable looping through each element in a vector.
+The syntax of a <code>for</code> loop is one of the following:
+<PRE>
+  for (variable=expression)
+     statements
+  end
+</PRE>
+<P>
+Alternately, the parenthesis can be eliminated
+<PRE>
+  for variable=expression
+     statements
+  end
+</PRE>
+<P>
+or alternately, the index variable can be pre-initialized
+with the vector of values it is going to take:
+<PRE>
+  for variable
+     statements
+  end
+</PRE>
+<P>
+The third form is essentially equivalent to <code>for variable=variable</code>,
+where <code>variable</code> is both the index variable and the set of values
+over which the for loop executes.  See the examples section for
+an example of this form of the <code>for</code> loop.
+<H3>Examples</H3>
+Here we write <code>for</code> loops to add all the integers from
+<code>1</code> to <code>100</code>.  We will use all three forms of the <code>for</code>
+statement.
+<PRE>
+--&gt; accum = 0;
+--&gt; for (i=1:100); accum = accum + i; end
+--&gt; accum
+
+ans = 
+ 5050 
+</PRE>
+<P>
+The second form is functionally the same, without the
+extra parenthesis
+<PRE>
+--&gt; accum = 0;
+--&gt; for i=1:100; accum = accum + i; end
+--&gt; accum
+
+ans = 
+ 5050 
+</PRE>
+<P>
+In the third example, we pre-initialize the loop variable
+with the values it is to take
+<PRE>
+
+</PRE>
+<P>
+</BODY>
+</HTML>

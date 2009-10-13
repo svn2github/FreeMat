@@ -1,0 +1,135 @@
+\section{SURFACEPROPERTIES Surface Object Properties}
+
+\subsection{Usage}
+
+Below is a summary of the properties for the axis.
+\begin{itemize}
+\item  \verb|alphadata| - \verb|vector| - This is a vector that
+ should contain as many elements as the surface data itself \verb|cdata|,
+ or a single scalar.  For a single scalar, all values of the surface
+ take on the same transparency.  Otherwise, the transparency of
+ each pixel is determined by the corresponding value from the \verb|alphadata|
+ vector.
+
+\item  \verb|alphadatamapping| - \verb|{'scaled','direct','none'}| - For \verb|none|
+ mode (the default), no transparency is applied to the data.  For \verb|direct|
+ mode, the vector \verb|alphadata| contains values between @[0,M-1]| where
+ \verb|M| is the length of the alpha map stored in the figure.  For \verb|scaled|
+ mode, the \verb|alim| vector for the figure is used to linearly rescale the 
+ alpha data prior to lookup in the alpha map. 
+
+\item  \verb|ambientstrength| - Not used.
+
+\item  \verb|backfacelighting| - Not used.
+
+\item  \verb|cdata| - \verb|array| - This is either a \verb|M x N| array or an 
+  \verb|M x N x 3| array.  If the data is \verb|M x N| the surface is a scalar
+ surface (indexed mode), where the color associated with each surface pixel
+ is computed using the colormap and the \verb|cdatamapping| mode.  If the
+ data is \verb|M x N x 3| the surface is assumed to be in RGB mode, and the
+ colorpanes are taken directly from \verb|cdata| (the colormap is ignored).
+ Note that in this case, the data values must be between @[0,1]| for each
+ color channel and each point on the surface.
+
+\item  \verb|cdatamapping| - \verb|{'scaled','direct'}| - For \verb|scaled| (the
+ default), the pixel values are scaled using the \verb|clim| vector for the
+ figure prior to looking up in the colormap.  For \verb|direct| mode, the
+ pixel values must be in the range \verb|[0,N-1| where \verb|N| is the number of
+ colors in the colormap.
+
+\item  \verb|children| - Not used.
+
+\item  \verb|diffusestrength| - Not used.
+
+\item  \verb|edgealpha| - \verb|{'flat','interp','scalar'}| - Controls how the
+ transparency is mapped for the edges of the surface.
+
+\item  \verb|edgecolor| - \verb|{'flat','interp','none',colorspec}| - Specifies
+ how the edges are colored.  For \verb|'flat'| the edges are flat colored,
+ meaning that the line segments that make up the edges are not shaded.
+ The color for the line is determined by the first edge point it is connected
+ to.
+
+\item  \verb|edgelighting| - Not used.
+
+\item  \verb|facealpha| - \verb|{'flat','interp','texturemap',scalar}| - Controls
+ how the transparency of the faces of the surface are controlled.  For
+ flat shading, the faces are constant transparency.  For interp mode, the faces
+ are smoothly transparently mapped.  If set to a scalar, all faces have the
+ same transparency.
+
+\item  \verb|facecolor| - \verb|{'none','flat','interp',colorspec}| - Controls
+ how the faces are colored.  For \verb|'none'| the faces are uncolored, and
+ the surface appears as a mesh without hidden lines removed.  For \verb|'flat'|
+ the surface faces have a constant color.  For \verb|'interp'| smooth shading
+ is applied to the surface.  And if a colorspec is provided, then the
+ faces all have the same color.
+
+\item  \verb|facelighting| - Not used.
+
+\item  \verb|linestyle| - \verb|{'-','--',':','-.','none'}| - The style of the line used
+ to draw the edges.
+
+\item  \verb|linewidth| - \verb|scalar| - The width of the line used to draw the edges.
+
+\item  \verb|marker| - \verb|{'+','o','*','.','x','square','s','diamond','d','^','v','>','<'}| - 
+ The marker for data points on the line.  Some of these are redundant, as \verb|'square'| 
+ \verb|'s'| are synonyms, and \verb|'diamond'| and \verb|'d'| are also synonyms.
+
+\item  \verb|markeredgecolor| - \verb|colorspec| - The color used to draw the marker.  For some
+ of the markers (circle, square, etc.) there are two colors used to draw the marker.
+ This property controls the edge color (which for unfilled markers) is the primary
+ color of the marker.
+
+\item  \verb|markerfacecolor| - \verb|colorspec| - The color used to fill the marker.  For some
+ of the markers (circle, square, etc.) there are two colors used to fill the marker.
+
+\item  \verb|markersize| - \verb|scalar| - Control the size of the marker.  Defaults to 6, which
+ is effectively the radius (in pixels) of the markers.
+
+\item  \verb|meshstyle| - \verb|{'both','rows','cols}| - This property controls how the mesh is
+ drawn for the surface.  For \verb|rows| and \verb|cols| modes, only one set of edges is drawn.
+
+\item  \verb|normalmode| - Not used.
+
+\item  \verb|parent| - \verb|handle| - The axis containing the surface.
+
+\item  \verb|specularcolorreflectance| - Not used.
+
+\item  \verb|specularexponent| - Not used.
+
+\item  \verb|specularstrength| - Not used.
+
+\item  \verb|tag| - \verb|string| - You can set this to any string you want.
+
+\item  \verb|type| - \verb|string| - Set to the string \verb|'surface'|.
+
+\item  \verb|userdata| - \verb|array| - Available to store any variable you
+ want in the handle object.
+
+\item  \verb|vertexnormals| - Not used.
+
+\item  \verb|xdata| - \verb|array| - Must be a numeric array of size \verb|M x N| which contains
+ the x location of each point in the defined surface. Must be the same size as \verb|ydata|
+ and \verb|zdata|.  Alternately, you can specify an array of size \verb|1 x N| in which case
+ FreeMat replicates the vector to fill out an \verb|M x N| matrix.
+
+\item  \verb|xdatamode| - \verb|{'auto','manual'}| - When set to \verb|auto| then FreeMat will
+ automatically generate the x coordinates.
+
+\item  \verb|ydata| - \verb|array| - Must be a numeric array of size \verb|M x N| which contains
+ the y location of each point in the defined surface. Must be the same size as \verb|xdata|
+ and \verb|zdata|.   Alternately, you can specify an array of size \verb|M x 1| in which case
+ FreeMat replicates the vector to fill out an \verb|M x N| matrix.
+
+\item  \verb|ydatamode| - \verb|{'auto','manual'}| - When set to \verb|auto| then FreeMat will
+ automatically generate the y coordinates.
+
+\item  \verb|zdata| - \verb|array| - Must be a numeric array of size \verb|M x N| which contains
+ the y location of each point in the defined surface. Must be the same size as \verb|xdata|
+ and \verb|ydata|.
+
+\item  \verb|visible| - \verb|{'on','off'}| - Controls whether the surface is
+ visible or not.
+
+\end{itemize}

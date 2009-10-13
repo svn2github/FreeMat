@@ -1,0 +1,32 @@
+\section{STRREP String Replace Function}
+
+\subsection{Usage}
+
+Replace every occurance of one string with another.  The
+general syntax for its use is
+\begin{verbatim}
+  p = strrep(source,find,replace)
+\end{verbatim}
+Every instance of the string \verb|find| in the string \verb|source| is
+replaced with the string \verb|replace|.  Any of \verb|source|, \verb|find|
+and \verb|replace| can be a cell array of strings, in which case
+each entry has the replace operation applied.
+\subsection{Example}
+
+Here are some examples of the use of \verb|strrep|.  First the case
+where are the arguments are simple strings
+\begin{verbatim}
+--> strrep('Matlab is great','Matlab','FreeMat')
+
+ans = 
+FreeMat is great
+\end{verbatim}
+And here we have the replace operation for a number of strings:
+\begin{verbatim}
+--> strrep({'time is money';'A stitch in time';'No time for games'},'time','money')
+
+ans = 
+ [money is money] 
+ [A stitch in money] 
+ [No money for games] 
+\end{verbatim}

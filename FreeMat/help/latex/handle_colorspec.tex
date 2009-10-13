@@ -1,0 +1,33 @@
+\section{COLORSPEC Color Property Description}
+
+\subsection{Usage}
+
+There are a number of ways of specifying a color value for
+a color-based property.  Examples include line colors, 
+marker colors, and the like.  One option is to specify
+color as an RGB triplet
+\begin{verbatim}
+   set(h,'color',[r,g,b])
+\end{verbatim}
+where \verb|r,g,b| are between @[0,1]@.  Alternately, you can
+use color names to specify a color.
+\begin{itemize}
+\item  \verb|'none'| - No color.
+
+\item  \verb|'y','yellow'| - The color @[1,1,0]@ in RGB space.
+
+\item  \verb|'m','magenta'| - The color @[1,0,1]@ in RGB space.
+
+\item  \verb|'c','cyan'| - The color @[0,1,1]@ in RGB space.
+
+\item  \verb|'r','red'| - The color @[1,0,0]@ in RGB space.
+
+\item  \verb|'g','green'| - The color @[0,1,0]@ in RGB space.
+
+\item  \verb|'b','blue'| - The color @[0,0,1]@ in RGB space.
+
+\item  \verb|'w','white'| - The color @[1,1,1]@ in RGB space.
+
+\item  \verb|'k','black'| - The color @[0,0,0]@ in RGB space.
+
+\end{itemize}

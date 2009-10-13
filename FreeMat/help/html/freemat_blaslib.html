@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>BLASLIB Select BLAS library
+</TITLE>
+</HEAD>
+<BODY>
+<H2>BLASLIB Select BLAS library
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>blaslib</code> function allows you to select the FreeMat blas library.
+It has two modes of operation.  The first is to select blas library:
+<PRE>
+  blaslib LIB_NAME
+</PRE>
+<P>
+If you want to see current blas library selected
+issue a <code>blaslib</code> command with no arguments.
+<PRE>
+   blaslib
+</PRE>
+<P>
+the returned list of libraries will include an asterix next to the library
+currently selected.  If no library is selected, FreeMat will use its internal
+(reference) BLAS implementation, which is slow, but portable.
+</BODY>
+</HTML>

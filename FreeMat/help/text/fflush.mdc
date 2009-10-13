@@ -1,0 +1,10 @@
+FFLUSH FFLUSH Force File Flush
+
+Usage
+
+Flushes any pending output to a given file.  The general use of
+this function is
+
+   fflush(handle)
+
+where handle is an active file handle (as returned by fopen).

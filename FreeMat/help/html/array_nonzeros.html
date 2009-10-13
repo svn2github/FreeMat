@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>NONZEROS Retrieve Nonzero Matrix Entries
+</TITLE>
+</HEAD>
+<BODY>
+<H2>NONZEROS Retrieve Nonzero Matrix Entries
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>USAGE</H3>
+Returns a dense column vector containing the nonzero elements
+of the argument matrix.  The syntax for its use is
+<PRE>
+   y = nonzeros(x)
+</PRE>
+<P>
+where <code>x</code> is the argument array.  The argument matrix may
+be sparse as well as dense.
+<H3>Example</H3>
+Here is an example of using <code>nonzeros</code> on a sparse matrix.
+<PRE>
+--&gt; a = rand(8); a(a&gt;0.2) = 0;
+--&gt; A = sparse(a)
+
+A = 
+ 4 1 0.150467
+ 6 1 0.119605
+ 7 1 0.0450479
+ 3 3 0.0592569
+ 4 3 0.185718
+ 3 4 0.064163
+ 7 4 0.196438
+ 8 4 0.103669
+ 4 5 0.160639
+ 2 6 0.0545093
+ 5 6 0.0226881
+ 8 6 0.0202693
+ 1 7 0.192362
+ 6 8 0.101635
+ 7 8 0.147931
+--&gt; nonzeros(A)
+
+ans = 
+    0.1505 
+    0.1196 
+    0.0450 
+    0.0593 
+    0.1857 
+    0.0642 
+    0.1964 
+    0.1037 
+    0.1606 
+    0.0545 
+    0.0227 
+    0.0203 
+    0.1924 
+    0.1016 
+    0.1479 
+</PRE>
+<P>
+</BODY>
+</HTML>

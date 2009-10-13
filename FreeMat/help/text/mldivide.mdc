@@ -1,0 +1,14 @@
+MLDIVIDE MLDIVIDE Overloaded Matrix Left Divide Operator
+
+Usage
+
+This is a method that is invoked when two variables are divided
+using the matrix (left) divide operator, and is invoked when
+you call
+
+   c = mldivide(a,b)
+
+or for
+
+   c = a \ b
+

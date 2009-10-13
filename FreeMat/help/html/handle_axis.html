@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>AXIS Setup Axis Behavior
+</TITLE>
+</HEAD>
+<BODY>
+<H2>AXIS Setup Axis Behavior
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Control the axis behavior.  There are several versions of the
+axis command based on what you would like the axis command to
+do.  The first versions set scalings for the current plot.
+The general syntax for its use is
+<PRE>
+  axis([xmin xmax ymin ymax zmin zmax cmin cmax])
+</PRE>
+<P>
+which sets the limits in the X, Y, Z and color axes.  You can
+also set only the X, Y and Z axes:
+<PRE>
+  axis([xmin xmax ymin ymax zmin zmax])
+</PRE>
+<P>
+or only the X and Y axes:
+<PRE>
+  axis([xmin xmax ymin ymax])
+</PRE>
+<P>
+To retrieve the current axis limits, use the syntax
+<PRE>
+  x = axis
+</PRE>
+<P>
+where <code>x</code> is a 4-vector for 2D plots, and a 6-vector for
+3D plots.
+
+There are a number of axis options supported by FreeMat.
+The first version sets the axis limits to be automatically
+selected by FreeMat for each dimension.  This state is the
+default one for new axes created by FreeMat.
+<PRE>
+  axis auto
+</PRE>
+<P>
+The next option sets all of the axis limits to <code>manual</code>
+mode.  This state turns off automatic scaling of the axis
+based on the children of the current axis object.  
+<PRE>
+  axis manual
+</PRE>
+<P>
+The next option sets the axis limits to fit tightly around
+the data.
+<PRE>
+  axis tight
+</PRE>
+<P>
+The next option adjusts the axis limits and plotbox aspect
+ratio so that the axis fills the position rectangle.
+<PRE>
+  axis fill
+</PRE>
+<P>
+The next option puts the axis in matrix mode.  This mode
+is equivalent to the standard mode, but with the vertical
+axis reversed.  Thus, the origin of the coordinate system
+is at the top left corner of the plot.  This mode makes
+plots of matrix elements look normal (i.e., an identity
+matrix goes from upper left to lower right).
+<PRE>
+  axis ij
+</PRE>
+<P>
+The next option puts the axis in normal mode, with the origin
+at the lower left corner.
+<PRE>
+  axis xy
+</PRE>
+<P>
+The next option sets the axis parameters (specifically the
+data aspect ratio) so that equal ticks on each axis represent
+equal length.  In this mode, spheres look spherical insteal of
+ellipsoidal.
+<PRE>
+  axis equal
+</PRE>
+<P>
+The next option is the same as <code>axis equal</code>, but sets the
+plot box to fit tightly around the data (so no background shows
+through).  It is the best option to use when displaying images.
+<PRE>
+  axis image
+</PRE>
+<P>
+The next option makes the axis box square.
+<PRE>
+  axis square
+</PRE>
+<P>
+The next option restores many of the normal characteristics of
+the axis.  In particular, it undoes the effects of <code>square</code>
+<code>image</code> and <code>equal</code> modes.
+<PRE>
+  axis normal
+</PRE>
+<P>
+The next mode freezes axis properties so that 3D objects can
+be rotated properly.
+<PRE>
+  axis vis3d
+</PRE>
+<P>
+The next mode turns off all labels, tick marks and background.
+<PRE>
+  axis on
+</PRE>
+<P>
+The next mode turns on all labels, tick marks and background.
+<PRE>
+  axis off
+</PRE>
+<P>
+The next mode is similar to <code>axis off</code>, but also repacks the
+figure as tightly as possible.  The result is a plot box that
+takes up the entire <code>outerposition</code> vector.
+<PRE>
+  axis maximal
+</PRE>
+<P>
+The <code>axis</code> command can also be applied to a particular axis
+(as opposed to the current axis as returned by <code>gca</code>) handle
+<PRE>
+  axis(M,...)
+</PRE>
+<P>
+</BODY>
+</HTML>

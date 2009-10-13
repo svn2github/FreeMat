@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RAWWRITE Write N-dimensional Array From File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RAWWRITE Write N-dimensional Array From File
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+The syntax for <code>rawwrite</code> is
+<PRE>
+   function rawwrite(fname,x,byteorder)
+</PRE>
+<P>
+where <code>fname</code> is the name of the file to write to, and the
+(numeric) array <code>x</code> is writen to the file in its native
+type (e.g. if <code>x</code> is of type <code>int16</code>, then it will be written
+to the file as 16-bit signed integers.  If <code>byteorder</code> is
+left unspecified, the file is assumed to be
+of the same byte-order as the machine <code>FreeMat</code> is running on.
+If you wish to force a particular byte order, specify the <code>byteorder</code>
+argument as
+<UL>
+<LI>  <code>'le','ieee-le','little-endian','littleEndian','little'</code>
+ </LI>
+<LI>  <code>'be','ieee-be','big-endian','bigEndian','big'</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,16 @@
+\section{POINT Get Axis Position From Mouse Click}
+
+\subsection{Usage}
+
+Returns information about the currently displayed image based on a use
+supplied mouse-click.  The general syntax for its use is
+\begin{verbatim}
+   t = point
+\end{verbatim}
+The returned vector \verb|y| has two elements: 
+\[
+  t = [x,y]
+\]
+where \verb|x,y| are the coordinates in the current axes of the click.  This 
+function has changed since FreeMat 1.10.  If the click is not inside the
+active area of any set of axes, a pair of NaNs are returned.

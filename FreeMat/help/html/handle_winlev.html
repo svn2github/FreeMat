@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>WINLEV Image Window-Level Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>WINLEV Image Window-Level Function
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Adjusts the data range used to map the current image to the current
+colormap.  The general syntax for its use is
+<PRE>
+  winlev(window,level)
+</PRE>
+<P>
+where <code>window</code> is the new window, and <code>level</code> is the new level, or
+<PRE>
+  winlev
+</PRE>
+<P>
+in which case it returns a vector containing the current window
+and level for the active image.
+<H3>Function Internals</H3>
+FreeMat deals with scalar images on the range of <code>[0,1]</code>, and must
+therefor map an arbitrary image <code>x</code> to this range before it can
+be displayed.  By default, the <code>image</code> command chooses 
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="winlev_eqn1.png">
+</DIV>
+<P>
+and
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="winlev_eqn2.png">
+</DIV>
+<P>
+This ensures that the entire range of image values in <code>x</code> are 
+mapped to the screen.  With the <code>winlev</code> function, you can change
+the range of values mapped.  In general, before display, a pixel <code>x</code>
+is mapped to <code>[0,1]</code> via:
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="winlev_eqn3.png">
+</DIV>
+<P>
+<H3>Examples</H3>
+The window level function is fairly easy to demonstrate.  Consider
+the following image, which is a Gaussian pulse image that is very 
+narrow:
+<PRE>
+--&gt; t = linspace(-1,1,256);
+--&gt; xmat = ones(256,1)*t; ymat = xmat';
+--&gt; A = exp(-(xmat.^2 + ymat.^2)*100);
+--&gt; image(A);
+</PRE>
+<P>
+The data range of <code>A</code> is <code>[0,1]</code>, as we can verify numerically:
+<PRE>
+--&gt; min(A(:))
+
+ans = 
+ 1.3839e-87 
+
+--&gt; max(A(:))
+
+ans = 
+    0.9969 
+</PRE>
+<P>
+To see the tail behavior, we use the <code>winlev</code> command to force FreeMat
+to map a smaller range of <code>A</code> to the colormap.
+<PRE>
+--&gt; image(A);
+--&gt; winlev(1e-4,0.5e-4)
+</PRE>
+<P>
+The result is a look at more of the tail behavior of <code>A</code>.
+We can also use the winlev function to find out what the
+window and level are once set, as in the following example.
+<PRE>
+--&gt; image(A);
+--&gt; winlev(1e-4,0.5e-4)
+--&gt; winlev
+Warning: Newly defined variable clim shadows a function of the same name.  Use clear clim to recover access to the function
+
+ans = 
+ 1.0000e-04 
+</PRE>
+<P>
+</BODY>
+</HTML>

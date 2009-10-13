@@ -1,0 +1,58 @@
+\section{SWITCH Switch statement}
+
+\subsection{Usage}
+
+The \verb|switch| statement is used to selective execute code
+based on the value of either scalar value or a string.
+The general syntax for a \verb|switch| statement is
+\begin{verbatim}
+  switch(expression)
+    case test_expression_1
+      statements
+    case test_expression_2
+      statements
+    otherwise
+      statements
+  end
+\end{verbatim}
+The \verb|otherwise| clause is optional.  Note that each test
+expression can either be a scalar value, a string to test
+against (if the switch expression is a string), or a 
+\verb|cell-array| of expressions to test against.  Note that
+unlike \verb|C| \verb|switch| statements, the FreeMat \verb|switch|
+does not have fall-through, meaning that the statements
+associated with the first matching case are executed, and
+then the \verb|switch| ends.  Also, if the \verb|switch| expression
+matches multiple \verb|case| expressions, only the first one
+is executed.
+\subsection{Examples}
+
+Here is an example of a \verb|switch| expression that tests
+against a string input:
+\begin{verbatim}
+    switch_test.m
+function c = switch_test(a)
+  switch(a)
+    case {'lima beans','root beer'}
+      c = 'food';
+    case {'red','green','blue'}
+      c = 'color';
+    otherwise
+      c = 'not sure';
+  end
+\end{verbatim}
+Now we exercise the switch statements
+\begin{verbatim}
+--> switch_test('root beer')
+
+ans = 
+food
+--> switch_test('red')
+
+ans = 
+color
+--> switch_test('carpet')
+
+ans = 
+not sure
+\end{verbatim}

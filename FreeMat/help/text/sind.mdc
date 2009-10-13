@@ -1,0 +1,10 @@
+SIND SIND Sine Degrees Function
+
+Usage
+
+Computes the sine of the argument, but takes
+the argument in degrees instead of radians (as is the case
+for cos). The syntax for its use is
+
+   y = sind(x)
+

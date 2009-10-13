@@ -1,0 +1,31 @@
+THREADVALUE THREADVALUE Retrieve the return values from a thread
+
+Usage
+
+The threadvalue function retrieves the values returned
+by the function specified in the threadnew call.  The
+syntax for its use is
+
+   [arg1,arg2,...,argN] = threadvalue(handle)
+
+where handle is the value returned by a threadnew call.
+Note that there are issues with nargout.  See the examples
+section of threadnew for details on how to work around this
+limitation.  Because the function you have spawned with threadnew
+may still be executing, threadvalue must first threadwait
+for the function to complete before retrieving the output values.
+This wait may take an arbitrarily long time if the thread function
+is caught in an infinite loop.  Hence, you can also specify
+a timeout parameter to threadvalue as
+
+   [arg1,arg2,...,argN] = threadvalue(handle,timeout)
+
+where the timeout is specified in milliseconds.  If the
+wait times out, an error is raised (that can be caught with a
+try and catch block.  
+
+In either case, if the thread function itself caused an error
+and ceased execution abruptly, then calling threadvalue will
+cause that function to raise an error, allowing you to retrieve
+the error that was caused and correct it.  See the examples section
+for more information.

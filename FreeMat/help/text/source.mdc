@@ -1,0 +1,12 @@
+SOURCE SOURCE Execute an Arbitrary File
+
+Usage
+
+The source function executes the contents of the given
+filename one line at a time (as if it had been typed at
+the --> prompt).  The source function syntax is
+
+  source(filename)
+
+where filename is a string containing the name of
+the file to process. 

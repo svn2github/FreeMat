@@ -1,0 +1,14 @@
+RETURN RETURN Return From Function
+
+Usage
+
+The return statement is used to immediately return from
+a function, or to return from a keyboard session.  The 
+syntax for its use is
+
+  return
+
+Inside a function, a return statement causes FreeMat
+to exit the function immediately.  When a keyboard session
+is active, the return statement causes execution to
+resume where the keyboard session started.

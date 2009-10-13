@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RANDF Generate F-Distributed Random Variable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RANDF Generate F-Distributed Random Variable
+</H2>
+<P>
+Section: <A HREF=sec_random.html> Random Number Generation </A>
+<H3>Usage</H3>
+Generates random variables with an F-distribution.  The general
+syntax for its use is
+<PRE>
+   y = randf(n,m)
+</PRE>
+<P>
+where <code>n</code> and <code>m</code> are vectors of the number of degrees of freedom
+in the numerator and denominator of the chi-square random variables
+whose ratio defines the statistic.
+<H3>Function Internals</H3>
+The statistic <code>F_{n,m}</code> is defined as the ratio of two chi-square
+random variables:
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="randf_eqn1.png">
+</DIV>
+<P>
+The PDF is given by
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="randf_eqn2.png">
+</DIV>
+<P>
+where <code>B(a,b)</code> is the beta function.
+<H3>Example</H3>
+Here we use <code>randf</code> to generate some F-distributed random variables,
+and then again using the <code>randchi</code> function:
+<PRE>
+--&gt; randf(5*ones(1,9),7)
+
+ans = 
+
+ Columns 1 to 8
+
+    1.1944    0.9069    0.7558    1.5029    0.0621    1.3860    1.8161    0.3755 
+
+ Columns 9 to 9
+
+    3.5794 
+
+--&gt; randchi(5*ones(1,9))./randchi(7*ones(1,9))
+
+ans = 
+
+ Columns 1 to 8
+
+    1.3085    1.2693    1.0684    0.4377    1.1158    0.7171    0.4151    1.8022 
+
+ Columns 9 to 9
+
+    1.4606 
+</PRE>
+<P>
+</BODY>
+</HTML>

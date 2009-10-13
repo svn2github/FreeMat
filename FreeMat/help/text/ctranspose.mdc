@@ -1,0 +1,14 @@
+CTRANSPOSE CTRANSPOSE Overloaded Conjugate Transpose Operator
+
+Usage
+
+This is a method that is invoked when a variable has the
+conjugate transpose operator method applied, and is invoked
+when you call
+
+   c = ctranspose(a)
+
+or
+
+/  c = a'
+

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>UPPER Convert strings to upper case
+</TITLE>
+</HEAD>
+<BODY>
+<H2>UPPER Convert strings to upper case
+</H2>
+<P>
+Section: <A HREF=sec_string.html> String Functions </A>
+<H3>Usage</H3>
+The <code>upper</code> function converts a string to upper case with
+the syntax
+<PRE>
+   y = upper(x)
+</PRE>
+<P>
+where <code>x</code> is a string, in which case all of the lower case
+characters in <code>x</code> (defined as the range <code>'a'-'z'</code>) are
+converted to upper case.  Alternately, you can call <code>upper</code>
+with a cell array of strings
+<PRE>
+   y = upper(c)
+</PRE>
+<P>
+in which case each string in the cell array is converted to upper case.
+<H3>Example</H3>
+A simple example:
+<PRE>
+--&gt; upper('this Is Strange CAPitalizaTion')
+
+ans = 
+THIS IS STRANGE CAPITALIZATION
+</PRE>
+<P>
+and a more complex example with a cell array of strings
+<PRE>
+--&gt; upper({'This','Is','Strange','CAPitalizaTion'})
+
+ans = 
+ [THIS] [IS] [STRANGE] [CAPITALIZATION] 
+</PRE>
+<P>
+</BODY>
+</HTML>

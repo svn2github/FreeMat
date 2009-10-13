@@ -1,0 +1,8 @@
+CLA CLA Clear Current Axis
+
+Usage
+
+Clears the current axes.  The syntax for its use is
+
+  cla
+

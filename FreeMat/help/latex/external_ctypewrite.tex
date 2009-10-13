@@ -1,0 +1,17 @@
+\section{CTYPEWRITE Write a C Typedef To File}
+
+\subsection{Usage }
+
+The \verb|ctypewrite| function is a convenience function for
+writing a C typedef to a file.  This is generally a very
+bad idea, as writing of C typedefs to files is notoriously
+unportable.  Consider yourself warned.  The syntax for this
+function is 
+\begin{verbatim}
+  ctypewrite(fid,a,'typename')
+\end{verbatim}
+where \verb|a| is the FreeMat typedef to write, \verb|'typename'| is
+a string containing the name of the C typedef to use when
+writing the typedef to the file (previously defined using
+\verb|ctypedefine|), and \verb|fid| is the file handle returned
+by \verb|fopen|.

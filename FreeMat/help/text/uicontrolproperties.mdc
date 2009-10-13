@@ -1,0 +1,154 @@
+UICONTROLPROPERTIES UICONTROLPROPERTIES UI Control Properties
+
+Usage
+
+Below is a summary of the properties for user interface
+controls.
+  -  backgroundcolor - colorspec - The background color
+ for the widget.
+
+  -  busyaction - Not used.
+
+  -  buttondownfcn - Not used.
+
+  -  callback - string - the callback to execute when the 
+GUI control does its action.  Clicking a button or moving a 
+scroller will cause the callback to be executed.  Also, pressing 
+enter in a text box causes the callback to be executed.
+
+  -  cdata - an M x N x 3 array that represents an RGB image
+to use as the truecolor image displayed on push bottons or toggle
+buttons.  The values must be between 0 and 1.
+
+  -  children - Not used.
+
+  -  createfcn - Not used.
+
+  -  deletefcn - Not used;
+
+  -  enable - {'on','inactive','off'} - For on (the
+default) the uicontrol behaves normally.  For inactive, it is not
+operational, but looks the same as on.  For off, the
+control is grayed out.
+
+  -  extent - a read only property that contains the extent of
+the text for the control.
+
+  -  fontangle - {'normal','italic','oblique'} - The angle of the fonts used
+ for text labels (e.g., tick labels).
+
+  -  fontsize - scalar - The size of fonts used for text labels (tick labels).
+
+  -  fontunits - Not used.
+
+  -  fontname - string - The name of the font to use for the widget.
+
+  -  fontweight - {'normal','bold','light','demi'} - The weight of the font used
+
+  -  foregroundcolor - colorspec - the foreground color for text.
+
+  -  handlevisibility - Not used.
+
+  -  hittest - Not used.
+
+  -  horizontalalignment - {'left','center','right} - determines
+the justification of text.
+
+  -  interruptible - Not used.
+
+  -  keypressfcn - functionspec - a string or function handle
+ that is called when a key is pressed and a uicontrol object has focus.
+
+  -  listboxtop - a scalar (used only by the listbox style of
+uicontrols) that specifies which string appears at the top of the list
+box.
+
+  -  max - a scalar that specifies the largest value allowed
+for the value property.  The interpretation varies depending on
+the type of the control
+\begin{itemize}
+
+  -  check boxes - specifies what value is set to when the
+check box is selected.
+
+  -  edit box - if max-min>1 then the text box allows for
+multiple lines of input.  Otherwise, it is a single line only.
+
+  -  list box - if max-min>1 then multiple item selections
+are allowed.  Otherwise, only single item selections are allowed.
+
+  -  radio buttons - specifies what value is set to when the
+radio button is selected.
+
+  -  slider - the maximum value the slider can take.
+
+  -  toggle button - specifies what value is set to when 
+the toggle button is selected.
+
+\item min - a scalar that specifies the smallest value for the
+value property.  The interpretation of it depends on the type
+of the control
+  -  check boxes - specifies what value is set to when the
+check box is not selected.
+
+  -  edit box - if max-min>1 then the text box allows for
+multiple lines of input.  Otherwise, it is a single line only.
+
+  -  list box - if max-min>1 then multiple item selections
+are allowed.  Otherwise, only single item selections are allowed.
+
+  -  radio buttons - specifies what value is set to when the
+radio button is not selected.
+
+  -  slider - the minimum value the slider can take.
+
+  -  toggle button - specifies what value is set to when 
+the toggle button is not selected.
+
+\item parent - the handle of the parent object.
+\item position - size and location of the uicontrol as a 
+four vector [left, bottom, width, height].  If width>height
+then sliders are horizontal, otherwise the slider is oriented
+vertically.
+\item selected - {'on','off'} - not used.
+\item selectionhighlight - {'on','off'} - not used.
+\item sliderstep - a two vector [min_step max_step]
+that controls the amount the slider value changes when
+you click the mouse on the control.  If you click the arrow
+for the slider, the value changes by min_step, while if
+you click the trough, the value changes by max_step.  
+Each value must be in the range [0,1], and is a percentage
+of the range max-min.
+\item string - string - the text for the control.
+\item style - @|{'pushbutton','toggle','radiobutton','checkbox',
+'edit','text','slider','frame','listbox','popupmenu'}|.
+\item tag - string - user specified label.
+\item tooltipstring - string the tooltip for the control.
+\item type - string - the text is set to 'uicontrol'.
+\item uicontextmenu - handle the handle of the uicontextmenu
+that shows up when you right-click over the control.
+\item units - not used.
+\item userdata - array - any data you want to associate with the
+control.
+\item value - The meaning of this property depends on the type of the
+control:
+  -  check box - set to max when checked, and min when off.
+
+  -  list box - set to a vector of indices corresponding to selected
+items, with 1 corresponding to the first item in the list.
+
+  -  pop up menu - set to the index of the item selected (starting with 1)
+
+  -  radio buttons - set to max when selected, and set to min when
+not selected.
+
+  -  sliders - set to the value of the slider
+
+  -  toggle buttons - set to max when selected, and set to min when
+not selected.
+
+  -  text controls, push buttons - do not use this property.
+
+\item visible - {'on','off'} - controls whether the control is 
+visible or not
+\end{itemize}

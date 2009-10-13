@@ -1,0 +1,14 @@
+LASTERR LASTERR Retrieve Last Error Message
+
+Usage
+
+Either returns or sets the last error message.  The
+general syntax for its use is either
+
+  msg = lasterr
+
+which returns the last error message that occured, or
+
+  lasterr(msg)
+
+which sets the contents of the last error message.

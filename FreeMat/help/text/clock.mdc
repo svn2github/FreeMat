@@ -1,0 +1,12 @@
+CLOCK CLOCK Get Current Time
+
+Usage
+
+Returns the current date and time as a vector.  The syntax for its use is
+
+   y = clock
+
+where y has the following format:
+
+   y = [year month day hour minute seconds]
+

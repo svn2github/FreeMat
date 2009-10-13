@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>LOADLIB Load Library Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>LOADLIB Load Library Function
+</H2>
+<P>
+Section: <A HREF=sec_external.html> FreeMat External Interface </A>
+<H3>Usage</H3>
+The <code>loadlib</code> function allows a function in an external library
+to be added to FreeMat dynamically.  This interface is generally
+to be used as last resort, as the form of the function being called
+is assumed to match the internal implementation.  In short, this
+is not the interface mechanism of choice.  For all but very complicated
+functions, the <code>import</code> function is the preferred approach. Thus,
+only a very brief summary of it is presented here.  The syntax
+for <code>loadlib</code> is
+<PRE>
+  loadlib(libfile, symbolname, functionname, nargin, nargout)
+</PRE>
+<P>
+where <code>libfile</code> is the complete path to the library to use, <code>symbolname</code>
+is the name of the symbol in the library, <code>functionname</code> is the name
+of the function after it is imported into FreeMat (this is optional, it
+defaults to the <code>symbolname</code>), <code>nargin</code> is the number of input arguments
+(defaults to 0), and <code>nargout</code> is the number of output arguments (defaults
+to 0).  If the number of (input or output) arguments is variable then
+set the corresponding argument to <code>-1</code>.
+</BODY>
+</HTML>

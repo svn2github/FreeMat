@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SPEYE Sparse Identity Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SPEYE Sparse Identity Matrix
+</H2>
+<P>
+Section: <A HREF=sec_sparse.html> Sparse Matrix Support </A>
+<H3>Usage</H3>
+Creates a sparse identity matrix of the given size.  The syntax for
+its use is
+<PRE>
+  y = speye(m,n)
+</PRE>
+<P>
+which forms an <code>m x n</code> sparse matrix with ones on the main diagonal,
+or
+<PRE>
+  y = speye(n)
+</PRE>
+<P>
+which forms an <code>n x n</code> sparse matrix with ones on the main diagonal.  The
+matrix type is a <code>float</code> single precision matrix.
+<H3>Example</H3>
+The following creates a 5000 by 5000 identity matrix, which would be
+difficult to do using <code>sparse(eye(5000))</code> because of the large amount
+of intermediate storage required.
+<PRE>
+--&gt; I = speye(5000);
+--&gt; which I
+Function I is unknown!
+--&gt; full(I(1:10,1:10))
+
+ans = 
+ 1 0 0 0 0 0 0 0 0 0 
+ 0 1 0 0 0 0 0 0 0 0 
+ 0 0 1 0 0 0 0 0 0 0 
+ 0 0 0 1 0 0 0 0 0 0 
+ 0 0 0 0 1 0 0 0 0 0 
+ 0 0 0 0 0 1 0 0 0 0 
+ 0 0 0 0 0 0 1 0 0 0 
+ 0 0 0 0 0 0 0 1 0 0 
+ 0 0 0 0 0 0 0 0 1 0 
+ 0 0 0 0 0 0 0 0 0 1 
+</PRE>
+<P>
+</BODY>
+</HTML>

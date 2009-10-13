@@ -1,0 +1,579 @@
+Introduction and Getting Started
++(introduction) INSTALL Installing FreeMat
+Variables and Arrays
++(variables) CELL Cell Array Definitions
++(variables) Function Handles
++(variables) GLOBAL Global Variables
++(variables) INDEXING Indexing Expressions
++(variables) MATRIX Matrix Definitions
++(variables) PERSISTENT Persistent Variables
++(variables) STRUCT Structure Array Constructor
+Functions and Scripts
++(functions) ANONYMOUS Anonymous Functions
++(functions) FUNCTION Function Declarations
++(functions) KEYWORDS Function Keywords
++(functions) NARGIN Number of Input Arguments
++(functions) NARGOUT Number of Output Arguments
++(functions) SCRIPT Script Files
++(functions) SPECIAL Special Calling Syntax
++(functions) VARARGIN Variable Input Arguments
++(functions) VARARGOUT Variable Output Arguments
+Mathematical Operators
++(operators) COLON Index Generation Operator
++(operators) COMPARISONOPS Array Comparison Operators
++(operators) DOTLEFTDIVIDE Element-wise Left-Division Operator
++(operators) DOTPOWER Element-wise Power Operator
++(operators) DOTRIGHTDIVIDE Element-wise Right-Division Operator
++(operators) DOTTIMES Element-wise Multiplication Operator
++(operators) HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator
++(operators) LEFTDIVIDE Matrix Equation Solver/Divide Operator
++(operators) LOGICALOPS Logical Array Operators
++(operators) MATRIXPOWER Matrix Power Operator
++(operators) MINUS Subtraction Operator
++(operators) PLUS Addition Operator
++(operators) RIGHTDIVIDE Matrix Equation Solver/Divide Operator
++(operators) TIMES Matrix Multiply Operator
++(operators) TRANSPOSE Matrix Transpose Operator
++(operators) TYPERULES Type Rules for Operators
+Flow Control
++(flow) BREAK Exit Execution In Loop
++(flow) CONTINUE Continue Execution In Loop
++(flow) ERROR Causes an Error Condition Raised
++(flow) FOR For Loop
++(flow) IF-ELSEIF-ELSE Conditional Statements
++(flow) KEYBOARD Initiate Interactive Debug Session
++(flow) LASTERR Retrieve Last Error Message
++(flow) RETALL Return From All Keyboard Sessions
++(flow) RETURN Return From Function
++(flow) SWITCH Switch statement
++(flow) TRY-CATCH Try and Catch Statement
++(flow) WARNING Emits a Warning Message
++(flow) WHILE While Loop
+FreeMat Functions
++(freemat) ADDPATH Add 
++(freemat) ASSIGNIN Assign Variable in Workspace
++(freemat) BLASLIB Select BLAS library
++(freemat) BUILTIN Evaulate Builtin Function
++(freemat) CLC Clear Dislplay
++(freemat) CLOCK Get Current Time
++(freemat) CLOCKTOTIME Convert Clock Vector to Epoch Time
++(freemat) COMPUTER Computer System FreeMat is Running On
++(freemat) DIARY Create a Log File of Console
++(freemat) DOCLI Start a Command Line Interface
++(freemat) EDIT Open Editor Window
++(freemat) EDITOR Open Editor Window
++(freemat) ERRORCOUNT Retrieve the Error Counter for the Interpreter
++(freemat) ETIME Elapsed Time Function
++(freemat) EVAL Evaluate a String
++(freemat) EVALIN Evaluate a String in Workspace
++(freemat) EXIT Exit Program
++(freemat) FEVAL Evaluate a Function
++(freemat) FILESEP Directory Separation Character
++(freemat) HELP Help
++(freemat) HELPWIN Online Help Window
++(freemat) JITCONTROL Control the Just In Time Compiler
++(freemat) MFILENAME Name of Current Function
++(freemat) PATH Get or Set FreeMat Path
++(freemat) PATHSEP Path Directories Separation Character
++(freemat) PATHTOOL Open Path Setting Tool
++(freemat) PCODE Convert a Script or Function to P-Code
++(freemat) PROFILER Control Profiling
++(freemat) QUIET Control the Verbosity of the Interpreter
++(freemat) QUIT Quit Program
++(freemat) REHASH Rehash Directory Caches
++(freemat) RESCAN Rescan M Files for Changes
++(freemat) ROOTPATH Set FreeMat Root Path
++(freemat) SIMKEYS Simulate Keypresses from the User
++(freemat) SLEEP Sleep For Specified Number of Seconds
++(freemat) SOURCE Execute an Arbitrary File
++(freemat) STARTUP Startup Script
++(freemat) TIC Start Stopwatch Timer
++(freemat) TOC Stop Stopwatch Timer
++(freemat) TYPE Type
++(freemat) VERSION The Current Version Number
++(freemat) VERSTRING The Current Version String
+Debugging FreeMat Code
++(debug) DBAUTO Control Dbauto Functionality
++(debug) DBDELETE Delete a Breakpoint
++(debug) DBDown Move Down One Debug Level
++(debug) DBLIST List Breakpoints
++(debug) DBSTEP Step N Statements
++(debug) DBSTOP
++(debug) DBUP Move Up One Debug Level
++(debug) FDUMP Dump Information on Function
+Sparse Matrix Support
++(sparse) EIGS Sparse Matrix Eigendecomposition
++(sparse) FULL Convert Sparse Matrix to Full Matrix
++(sparse) SPARSE Construct a Sparse Matrix
++(sparse) SPEYE Sparse Identity Matrix
++(sparse) SPONES Sparse Ones Function
++(sparse) SPRAND Sparse Uniform Random Matrix
++(sparse) SPRANDN Sparse Normal Random Matrix
++(sparse) SPY Visualize Sparsity Pattern of a Sparse Matrix
+Mathematical Functions
++(mathfunctions) ACOS Inverse Trigonometric Arccosine Function
++(mathfunctions) ACOSD Inverse Cosine Degrees Function
++(mathfunctions) ACOSH Inverse Hyperbolic Cosine Function
++(mathfunctions) ACOT Inverse Cotangent Function
++(mathfunctions) ACOTD Inverse Cotangent Degrees Function
++(mathfunctions) ACOTH Inverse Hyperbolic Cotangent Function
++(mathfunctions) ACSC Inverse Cosecant Function
++(mathfunctions) ACSCD Inverse Cosecant Degrees Function
++(mathfunctions) ACSCH Inverse Hyperbolic Cosecant Function
++(mathfunctions) ANGLE Phase Angle Function
++(mathfunctions) ASEC Inverse Secant Function
++(mathfunctions) ASECD Inverse Secant Degrees Function
++(mathfunctions) ASECH Inverse Hyperbolic Secant Function
++(mathfunctions) ASIN Inverse Trigonometric Arcsine Function
++(mathfunctions) ASIND Inverse Sine Degrees Function
++(mathfunctions) ASINH Inverse Hyperbolic Sine Function
++(mathfunctions) ATAN Inverse Trigonometric Arctangent Function
++(mathfunctions) ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function
++(mathfunctions) ATAND Inverse Tangent Degrees Function
++(mathfunctions) ATANH Inverse Hyperbolic Tangent Function
++(mathfunctions) COS Trigonometric Cosine Function
++(mathfunctions) COSD Cosine Degrees Function
++(mathfunctions) COSH Hyperbolic Cosine Function
++(mathfunctions) COT Trigonometric Cotangent Function
++(mathfunctions) COTD Cotangent Degrees Function
++(mathfunctions) COTD Cotangent Degrees Function
++(mathfunctions) COTH Hyperbolic Cotangent Function
++(mathfunctions) CROSS Cross Product of Two Vectors
++(mathfunctions) CSC Trigonometric Cosecant Function
++(mathfunctions) CSCD Cosecant Degrees Function
++(mathfunctions) CSCH Hyperbolic Cosecant Function
++(mathfunctions) DEG2RAD Convert From Degrees To Radians
++(mathfunctions) ERF Error Function
++(mathfunctions) ERFC Complimentary Error Function
++(mathfunctions) EXP Exponential Function
++(mathfunctions) EXPM1 Exponential Minus One Function
++(mathfunctions) FIX Round Towards Zero
++(mathfunctions) GAMMA Gamma Function
++(mathfunctions) GAMMALN Log Gamma Function
++(mathfunctions) IDIV Integer Division Operation
++(mathfunctions) LOG Natural Logarithm Function
++(mathfunctions) LOG10 Base-10 Logarithm Function
++(mathfunctions) LOG1P Natural Logarithm of 1+P Function
++(mathfunctions) LOG2 Base-2 Logarithm Function
++(mathfunctions) MOD Modulus Operation
++(mathfunctions) MPOWER Matrix Power Function
++(mathfunctions) POWER Element-wise Power Function
++(mathfunctions) RAD2DEG Radians To Degrees Conversion Function
++(mathfunctions) REM Remainder After Division
++(mathfunctions) SEC Trigonometric Secant Function
++(mathfunctions) SECD Secant Degrees Function
++(mathfunctions) SECH Hyperbolic Secant Function
++(mathfunctions) SIN Trigonometric Sine Function
++(mathfunctions) SIND Sine Degrees Function
++(mathfunctions) SINH Hyperbolic Sine Function
++(mathfunctions) SQRT Square Root of an Array
++(mathfunctions) TAN Trigonometric Tangent Function
++(mathfunctions) TAND Tangent Degrees Function
++(mathfunctions) TANH Hyperbolic Tangent Function
+Base Constants
++(constants) E Euler Constant (Base of Natural Logarithm)
++(constants) EPS Double Precision Floating Point Relative Machine Precision Epsilon
++(constants) FALSE Logical False
++(constants) FEPS Single Precision Floating Point Relative Machine Precision Epsilon
++(constants) I-J Square Root of Negative One
++(constants) INF Infinity Constant
++(constants) PI Constant Pi
++(constants) TEPS Type-based Epsilon Calculation
++(constants) TRUE Logical TRUE
+Elementary Functions
++(elementary) ABS Absolute Value Function
++(elementary) ALL All True Function
++(elementary) ANY Any True Function
++(elementary) CEIL Ceiling Function
++(elementary) CONJ Conjugate Function
++(elementary) CUMPROD Cumulative Product Function
++(elementary) CUMSUM Cumulative Summation Function
++(elementary) DEAL Multiple Simultaneous Assignments
++(elementary) DEC2HEX Convert Decimal Number to Hexadecimal
++(elementary) DIFF Difference Function
++(elementary) DOT Dot Product Function
++(elementary) FLOOR Floor Function
++(elementary) GETFIELD Get Field Contents
++(elementary) HEX2DEC Convert Hexadecimal Numbers To Decimal
++(elementary) IMAG Imaginary Function
++(elementary) MAX Maximum Function
++(elementary) MEAN Mean Function
++(elementary) MIN Minimum Function
++(elementary) NUM2HEX Convert Numbers to IEEE Hex Strings
++(elementary) PROD Product Function
++(elementary) REAL Real Function
++(elementary) ROUND Round Function
++(elementary) STD Standard Deviation Function
++(elementary) SUB2IND Convert Multiple Indexing To Linear Indexing
++(elementary) SUM Sum Function
++(elementary) TEST Test Function
++(elementary) VAR Variance Function
++(elementary) VEC Reshape to a Vector
+Inspection Functions
++(inspection) CLEAR Clear or Delete a Variable
++(inspection) END End Function
++(inspection) EXIST Test for Existence
++(inspection) FIELDNAMES Fieldnames of a Structure
++(inspection) ISA Test Type of Variable
++(inspection) ISCELL Test For Cell Array
++(inspection) ISCELLSTR Test For Cell Array of Strings
++(inspection) ISCHAR Test For Character Array (string)
++(inspection) ISEMPTY Test For Variable Empty
++(inspection) ISEQUAL Test For Matrix Equality
++(inspection) ISFIELD Test for Existence of a Structure Field
++(inspection) ISHANDLE Test for Graphics Handle
++(inspection) ISINF Test for infinities
++(inspection) ISINTTYPE Test For Integer-type Array
++(inspection) ISLOGICAL Test for Logical Array
++(inspection) ISMATRIX Test For a 2D Matrix
++(inspection) ISNAN Test for Not-a-Numbers
++(inspection) ISNUMERIC Test for Numeric Array
++(inspection) ISREAL Test For Real Array
++(inspection) ISSAME Test If Two Arrays Are Identical
++(inspection) ISSCALAR Test For Scalar
++(inspection) ISSET Test If Variable Set
++(inspection) ISSPARSE Test for Sparse Matrix
++(inspection) ISSQUARE Test For a Square matrix
++(inspection) ISSTR Test For Character Array (string)
++(inspection) ISSTRUCT Test For Structure Array
++(inspection) ISVECTOR Test For a Vector
++(inspection) LENGTH Length of an Array
++(inspection) MAXDIM Maximum Dimension in Array
++(inspection) NDIMS Number of Dimensions in Array
++(inspection) NNZ Number of Nonzeros
++(inspection) NUMEL Number of Elements in an Array
++(inspection) SIZE Size of a Variable
++(inspection) TYPEOF Determine the Type of an Argument
++(inspection) WHERE Get Information on Program Stack
++(inspection) WHICH Get Information on Function
++(inspection) WHO Describe Currently Defined Variables
++(inspection) WHOS Describe Currently Defined Variables With Memory Usage
+Type Conversion Functions
++(typecast) BIN2DEC Convert Binary String to Decimal
++(typecast) BIN2INT Convert Binary Arrays to Integer
++(typecast) CAST Typecast Variable to Specified Type
++(typecast) CHAR Convert to character array or string
++(typecast) COMPLEX Create a Complex Number
++(typecast) DCOMPLEX Convert to Double Precision (deprecated)
++(typecast) DEC2BIN Convert Decimal to Binary String
++(typecast) DOUBLE Convert to 64-bit Floating Point
++(typecast) FLOAT Convert to 32-bit Floating Point
++(typecast) INT16 Convert to Signed 16-bit Integer
++(typecast) INT2BIN Convert Integer Arrays to Binary
++(typecast) INT32 Convert to Signed 32-bit Integer
++(typecast) INT64 Convert to Signed 64-bit Integer
++(typecast) INT8 Convert to Signed 8-bit Integer
++(typecast) LOGICAL Convert to Logical
++(typecast) SINGLE Convert to 32-bit Floating Point
++(typecast) STRING Convert Array to String
++(typecast) UINT16 Convert to Unsigned 16-bit Integer
++(typecast) UINT32 Convert to Unsigned 32-bit Integer
++(typecast) UINT64 Convert to Unsigned 64-bit Integer
++(typecast) UINT8 Convert to Unsigned 8-bit Integer
+Array Generation and Manipulations
++(array) ASSIGN Making assignments
++(array) CELL Cell Array of Empty Matrices
++(array) CIRCSHIFT Circularly Shift an Array
++(array) COND Condition Number of a Matrix
++(array) DET Determinant of a Matrix
++(array) DIAG Diagonal Matrix Construction/Extraction
++(array) EXPM Matrix Exponential
++(array) EYE Identity Matrix
++(array) FIND Find Non-zero Elements of An Array
++(array) FLIPDIM Reverse a Matrix Along a Given Dimension
++(array) FLIPLR Reverse the Columns of a Matrix
++(array) FLIPUD Reverse the Columns of a Matrix
++(array) IPERMUTE Array Inverse Permutation Function
++(array) ISFLOAT Test for Floating Point Array
++(array) ISINTEGER Test for Integer Array
++(array) LINSPACE Linearly Spaced Vector
++(array) LOGSPACE Logarithmically Spaced Vector
++(array) MESHGRID Generate Grid Mesh For Plots
++(array) NAN Not-a-Number Constant
++(array) NDGRID Generate N-Dimensional Grid
++(array) NONZEROS Retrieve Nonzero Matrix Entries
++(array) NORM Norm Calculation
++(array) NUM2STR Convert Numbers To Strings
++(array) ONES Array of Ones
++(array) PERMUTE Array Permutation Function
++(array) PINV Moore-Penrose Pseudoinverse
++(array) RANK Calculate the Rank of a Matrix
++(array) RCOND Reciprocal Condition Number Estimate
++(array) REPMAT Array Replication Function
++(array) RESHAPE Reshape An Array
++(array) RREF Reduced Row Echelon Form of a Matrix
++(array) SHIFTDIM Shift Array Dimensions Function
++(array) SORT Sort 
++(array) SQUEEZE Remove Singleton Dimensions of an Array
++(array) SUBSREF Array Dereferencing
++(array) TRANSPOSE Matrix Transpose 
++(array) UNIQUE Unique
++(array) XNRM2 BLAS Norm Calculation
++(array) ZEROS Array of Zeros
+Random Number Generation
++(random) RAND Uniform Random Number Generator
++(random) RANDBETA Beta Deviate Random Number Generator
++(random) RANDBIN Generate Binomial Random Variables
++(random) RANDCHI Generate Chi-Square Random Variable
++(random) RANDEXP Generate Exponential Random Variable
++(random) RANDF Generate F-Distributed Random Variable
++(random) RANDGAMMA Generate Gamma-Distributed Random Variable
++(random) RANDI Uniformly Distributed Integer
++(random) RANDMULTI Generate Multinomial-distributed Random Variables
++(random) RANDN Gaussian (Normal) Random Number Generator
++(random) RANDNBIN Generate Negative Binomial Random Variables
++(random) RANDNCHI Generate Noncentral Chi-Square Random Variable
++(random) RANDNF Generate Noncentral F-Distribution Random Variable
++(random) RANDP Generate Poisson Random Variable
++(random) RANDPERM Random permutation
++(random) SEED Seed the Random Number Generator
+Input/Ouput Functions
++(io) CSVREAD Read Comma Separated Value (CSV) File
++(io) CSVWRITE Write Comma Separated Value (CSV) File
++(io) DISP Display a Variable or Expression
++(io) DLMREAD Read ASCII-delimited File
++(io) FCLOSE File Close Function
++(io) FEOF End Of File Function
++(io) FFLUSH Force File Flush
++(io) FGETLINE Read a String from a File
++(io) FOPEN File Open Function
++(io) FORMAT Control the Format of Matrix Display
++(io) FPRINTF Formated File Output Function (C-Style)
++(io) FREAD File Read Function
++(io) FSCANF Formatted File Input Function (C-Style)
++(io) FSEEK Seek File To A Given Position
++(io) FTELL File Position Function
++(io) FWRITE File Write Function
++(io) GETLINE Get a Line of Input from User
++(io) GETPRINTLIMIT Get Limit For Printing Of Arrays
++(io) HTMLREAD Read an HTML Document into FreeMat
++(io) IMREAD Read Image File To Matrix
++(io) IMWRITE Write Matrix to Image File
++(io) INPUT Get Input From User
++(io) LOAD Load Variables From A File
++(io) PAUSE Pause Script Execution
++(io) PRINTF Formated Output Function (C-Style)
++(io) RAWREAD Read N-dimensional Array From File
++(io) RAWWRITE Write N-dimensional Array From File
++(io) SAVE Save Variables To A File
++(io) SETPRINTLIMIT Set Limit For Printing Of Arrays
++(io) SPRINTF Formated String Output Function (C-Style)
++(io) SSCANF Formated String Input Function (C-Style)
++(io) STR2NUM Convert a String to a Number
++(io) URLWRITE Retrieve a URL into a File
++(io) WAVPLAY
++(io) WAVREAD Read a WAV Audio File
++(io) WAVRECORD
++(io) WAVWRITE Write a WAV Audio File
++(io) XMLREAD Read an XML Document into FreeMat
+String Functions
++(string) BLANKS Create a blank string
++(string) CELLSTR Convert character array to cell array of strings
++(string) DEBLANK Remove trailing blanks from a string
++(string) ISALPHA Test for Alpha Characters in a String
++(string) ISDIGIT Test for Digit Characters in a String
++(string) ISSPACE Test for Space Characters in a String
++(string) LOWER Convert strings to lower case
++(string) REGEXP Regular Expression Matching Function
++(string) REGEXPREP Regular Expression Replacement Function
++(string) STRCMP String Compare Function
++(string) STRCMPI String Compare Case Insensitive Function
++(string) STRFIND Find Substring in a String
++(string) STRNCMP String Compare Function To Length N 
++(string) STRREP String Replace Function
++(string) STRSTR String Search Function
++(string) STRTRIM Trim Spaces from a String
++(string) UPPER Convert strings to upper case
+Transforms/Decompositions
++(transforms) EIG Eigendecomposition of a Matrix
++(transforms) FFT (Inverse) Fast Fourier Transform Function
++(transforms) FFTN N-Dimensional Forward FFT 
++(transforms) FFTSHIFT Shift FFT Output
++(transforms) HILBERT Hilbert Transform
++(transforms) IFFTN N-Dimensional Inverse FFT 
++(transforms) IFFTSHIFT Inverse Shift FFT Output
++(transforms) INV Invert Matrix
++(transforms) LU LU Decomposition for Matrices
++(transforms) QR QR Decomposition of a Matrix
++(transforms) SVD Singular Value Decomposition of a Matrix
+Signal Processing Functions
++(signal) CONV Convolution Function
++(signal) CONV2 Matrix Convolution
+Numerical Methods
++(num) ODE45 Numerical Solution of ODEs
+Operating System Functions
++(os) CD Change Working Directory Function
++(os) COPYFILE Copy Files
++(os) DELETE Delete a File
++(os) DIR List Files Function
++(os) DIRSEP Director Seperator
++(os) FILEPARTS Extract Filename Parts
++(os) FULLFILE Build a Full Filename From Pieces
++(os) GETPATH Get Current Search Path
++(os) LS List Files Function
++(os) MKDIR Make Directory
++(os) PWD Print Working Directory Function
++(os) RMDIR Remove Directory
++(os) SETPATH Set Current Search Path
++(os) SYSTEM Call an External Program
+Optimization and Curve Fitting
++(curvefit) FITFUN Fit a Function
++(curvefit) GAUSFIT Gaussian Curve Fit
++(curvefit) INTERPLIN1 Linear 1-D Interpolation
++(curvefit) POLY Convert Roots To Polynomial Coefficients
++(curvefit) POLYDER Polynomial Coefficient Differentiation
++(curvefit) POLYFIT Fit Polynomial To Data
++(curvefit) POLYINT Polynomial Coefficient Integration
++(curvefit) POLYVAL Evaluate Polynomial Fit at Selected Points
++(curvefit) ROOTS Find Roots of Polynomial
+Handle-Based Graphics
++(handle) AXES Create Handle Axes
++(handle) AXIS Setup Axis Behavior
++(handle) AXISPROPERTIES Axis Object Properties
++(handle) CLA Clear Current Axis
++(handle) CLABEL Add Labels To Contour Plot
++(handle) CLF Clear Figure
++(handle) CLIM Adjust Color limits of plot
++(handle) CLOSE Close Figure Window
++(handle) COLORBAR Add Colorbar to Current Plot
++(handle) COLORMAP Image Colormap Function
++(handle) COLORSPEC Color Property Description
++(handle) CONTOUR Contour Plot Function
++(handle) CONTOUR3 3D Contour Plot Function
++(handle) COPPER Copper Colormap
++(handle) COPY Copy Figure Window
++(handle) COUNTOUR Contour Object Properties
++(handle) DRAWNOW Flush the Event Queue
++(handle) FIGLOWER Lower a Figure Window
++(handle) FIGRAISE Raise a Figure Window
++(handle) FIGURE Figure Window Select and Create Function
++(handle) FIGUREPROPERTIES Figure Object Properties
++(handle) GCA Get Current Axis
++(handle) GCF Get Current Figure
++(handle) GET Get Object Property
++(handle) GLSHOW Show a GL Assembly in a GL Window
++(handle) GRAY Gray Colormap
++(handle) GRID Plot Grid Toggle Function
++(handle) HCONTOUR Create a contour object
++(handle) HIMAGE Create a image object
++(handle) HIST Histogram Function
++(handle) HLINE Create a line object
++(handle) HOLD Plot Hold Toggle Function
++(handle) HPATCH Create a patch object
++(handle) HPOINT Get Point From Window
++(handle) HRAWPLOT Generate a Raw Plot File
++(handle) HSURFACE Create a surface object
++(handle) HTEXT Create a text object
++(handle) HTEXTBITMAP Get Text Rendered as a Bitmap
++(handle) IMAGE Image Display Function
++(handle) IMAGEPROPERTIES Image Object Properties
++(handle) IMAGESC Image Display Function
++(handle) IS2DVIEW Test Axes For 2D View
++(handle) ISHOLD Test Hold Status
++(handle) LEGEND Add Legent to Plot
++(handle) LINE Line Display Function
++(handle) LINEPROPERTIES Line Series Object Properties
++(handle) LOGLOG Log-Log Plot Function
++(handle) NEWPLOT Get Handle For Next Plot
++(handle) PATCH Patch Graphics Function
++(handle) PCOLOR Pseudocolor Plot
++(handle) PLOT Plot Function
++(handle) PLOT3 Plot 3D Function
++(handle) POINT Get Axis Position From Mouse Click
++(handle) PRINT Print a Figure To A File
++(handle) PVALID Validate Property Name
++(handle) SEMILOGX Semilog X Axis Plot Function
++(handle) SEMILOGY Semilog Y Axis Plot Function
++(handle) SET Set Object Property
++(handle) SIZEFIG Set Size of Figure
++(handle) SUBPLOT Subplot Function
++(handle) SURF Surface Plot Function
++(handle) SURFACEPROPERTIES Surface Object Properties
++(handle) SURFACEPROPERTIES Surface Object Properties
++(handle) TEXT Add Text Label to Plot
++(handle) TEXTPROPERTIES Text Object Properties
++(handle) TITLE Plot Title Function
++(handle) TUBEPLOT Creates a Tubeplot
++(handle) UICONTROL Create a UI Control object
++(handle) UICONTROLPROPERTIES UI Control Properties
++(handle) VIEW Set Graphical View
++(handle) WINLEV Image Window-Level Function
++(handle) XLABEL Plot X-axis Label Function
++(handle) XLIM Adjust X Axis limits of plot
++(handle) YLABEL Plot Y-axis Label Function
++(handle) YLIM Adjust Y Axis limits of plot
++(handle) ZLABEL Plot Z-axis Label Function
++(handle) ZLIM Adjust Z Axis limits of plot
++(handle) ZOOM Image Zoom Function
++(handle) ZPLANE Zero-pole plot
+OpenGL Models
++(glwin) GLASSEMBLY Create a GL Assembly
++(glwin) GLCLUMP Create a GL Clump
++(glwin) GLDEFMATERIAL Defines a GL Material
++(glwin) GLLINES Create a GL Lineset
++(glwin) GLNODE Create a GL Node
+Object Oriented Programming
++(class) AND Overloaded Logical And Operator
++(class) CAT Concatenation of Arrays
++(class) CLASS Class Support Function
++(class) COLON Overloaded Colon Operator
++(class) CONSTRUCTORS Class Constructors
++(class) CTRANSPOSE Overloaded Conjugate Transpose Operator
++(class) EQ Overloaded Equals Comparison Operator
++(class) GE Overloaded Greater-Than-Equals Comparison Operator
++(class) GT Overloaded Greater Than Comparison Operator
++(class) HORZCAT Horizontal Array Concatenation
++(class) HORZCAT Overloaded Horizontal Concatenation
++(class) LDIVIDE Overloaded Left Divide Operator
++(class) LE Overloaded Less-Than-Equals Comparison Operator
++(class) LT Overloaded Less Than Comparison Operator
++(class) MINUS Overloaded Addition Operator
++(class) MLDIVIDE Overloaded Matrix Left Divide Operator
++(class) MPOWER Overloaded Matrix Power Operator
++(class) MRDIVIDE Overloaded Matrix Right Divide Operator
++(class) MTIMES Overloaded Matrix Multiplication Operator
++(class) NE Overloaded Not-Equals Comparison Operator
++(class) NOT Overloaded Logical Not Operator
++(class) OR Overloaded Logical Or Operator
++(class) PLUS Overloaded Addition Operator
++(class) POWER Overloaded Power Operator
++(class) RDIVIDE Overloaded Right Divide Operator
++(class) SUBSASGN Overloaded Class Assignment
++(class) SUBSINDEX Overloaded Class Indexing
++(class) SUBSREF Overloaded Class Indexing
++(class) TIMES Overloaded Multiplication Operator
++(class) TRANSPOSE Overloaded Transpose Operator
++(class) UMINUS Overloaded Unary Minus Operator
++(class) UPLUS Overloaded Unary Plus Operator
++(class) VERTCAT Horizontal Array Concatenation
++(class) VERTCAT Overloaded Vertical Concatenation
+Bitwise Operations
++(binary) BITAND Bitwise Boolean And Operation
++(binary) BITCMP Bitwise Boolean Complement Operation
++(binary) BITOR Bitwise Boolean Or Operation
++(binary) BITXOR Bitwise Boolean Exclusive-Or (XOR) Operation
+FreeMat Threads
++(thread) THREADCALL Call Function In A Thread
++(thread) THREADFREE Free thread resources
++(thread) THREADID Get Current Thread Handle
++(thread) THREADKILL Halt execution of a thread
++(thread) THREADNEW Create a New Thread
++(thread) THREADSTART Start a New Thread Computation
++(thread) THREADVALUE Retrieve the return values from a thread
++(thread) THREADWAIT Wait on a thread to complete execution
+Function Related Functions
++(function) INLINE Construct Inline Function
++(function) SYMVAR Find Symbolic Variables in an Expression
+FreeMat External Interface
++(external) CENUM Lookup Enumerated C Type
++(external) CTYPECAST Cast FreeMat Structure to C Structure
++(external) CTYPEDEFINE Define C Type
++(external) CTYPEFREEZE Convert FreeMat Structure to C Type
++(external) CTYPENEW Create New Instance of C Structure
++(external) CTYPEPRINT Print C Type
++(external) CTYPEREAD Read a C Structure From File
++(external) CTYPESIZE Compute Size of C Struct
++(external) CTYPETHAW Convert C Struct to FreeMat Structure
++(external) CTYPEWRITE Write a C Typedef To File
++(external) IMPORT Foreign Function Import
++(external) LOADLIB Load Library Function

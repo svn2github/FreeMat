@@ -1,0 +1,16 @@
+SIZE SIZE Size of a Variable
+
+Usage
+
+Returns the size of a variable.  There are two syntaxes for its
+use.  The first syntax returns the size of the array as a vector
+of integers, one integer for each dimension
+
+  [d1,d2,...,dn] = size(x)
+
+The other format returns the size of x along a particular
+dimension:
+
+  d = size(x,n)
+
+where n is the dimension along which to return the size.

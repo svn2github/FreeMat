@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RCOND Reciprocal Condition Number Estimate
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RCOND Reciprocal Condition Number Estimate
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+The <code>rcond</code> function is a FreeMat wrapper around LAPACKs
+function <code>XGECON</code>, which estimates the 1-norm condition
+number (reciprocal).  For the details of the algorithm see
+the LAPACK documentation.  The syntax for its use is
+<PRE>
+   x = rcond(A)
+</PRE>
+<P>
+where <code>A</code> is a matrix.
+<H3>Example</H3>
+Here is the reciprocal condition number for a random square
+matrix
+<PRE>
+--&gt; A = rand(30);
+--&gt; rcond(A)
+
+ans = 
+ 3.5040e-04 
+</PRE>
+<P>
+And here we calculate the same value using the definition of
+(reciprocal) condition number
+<PRE>
+--&gt; 1/(norm(A,1)*norm(inv(A),1))
+
+ans = 
+ 3.5040e-04 
+</PRE>
+<P>
+Note that the values are very similar.  LAPACKs <code>rcond</code>
+function is far more efficient than the explicit calculation
+(which is also used by the <code>cond</code> function.
+</BODY>
+</HTML>

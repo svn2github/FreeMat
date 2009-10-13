@@ -1,0 +1,16 @@
+\section{CTYPEFREEZE Convert FreeMat Structure to C Type}
+
+\subsection{Usage}
+
+The \verb|ctypefreeze| function is used to convert a FreeMat structure into
+a C struct as defined by a C structure typedef.  To use the \verb|cstructfreeze|
+function, you must first define the type of the C structure using the 
+\verb|ctypedefine| function.  The \verb|ctypefreeze| function then serializes
+a FreeMat structure to a set of bytes, and returns it as an array.  The
+usage for \verb|ctypefreeze| is
+\begin{verbatim}
+  byte_array = ctypefreeze(mystruct, 'typename')
+\end{verbatim}
+where \verb|mystruct| is the array we want to 'freeze' to a memory array,
+and \verb|typename| is the name of the C type that we want the resulting
+byte array to conform to.

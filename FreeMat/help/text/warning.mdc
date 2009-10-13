@@ -1,0 +1,10 @@
+WARNING WARNING Emits a Warning Message
+
+Usage
+
+The warning function causes a warning message to be
+sent to the user.  The general syntax for its use is
+
+   warning(s)
+
+where s is the string message containing the warning.

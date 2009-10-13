@@ -1,0 +1,12 @@
+HIMAGE HIMAGE Create a image object
+
+Usage
+
+Creates a image object and parents it to the current axis.  The
+syntax for its use is 
+
+  handle = himage(property,value,property,value,...)
+
+where property and value are set.  The handle ID for the
+resulting object is returned.  It is automatically added to
+the children of the current axis.

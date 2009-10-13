@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>REAL Real Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>REAL Real Function
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+Returns the real part of the input array for all elements.  The 
+general syntax for its use is
+<PRE>
+   y = real(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional array of numerical type.  The output 
+is the same numerical type as the input, unless the input is <code>complex</code>
+or <code>dcomplex</code>.  For <code>complex</code> inputs, the real part is a floating
+point array, so that the return type is <code>float</code>.  For <code>dcomplex</code>
+inputs, the real part is a double precision floating point array, so that
+the return type is <code>double</code>.  The <code>real</code> function does
+nothing to real and integer types.
+<H3>Example</H3>
+The following demonstrates the <code>real</code> applied to a complex scalar.
+<PRE>
+--&gt; real(3+4*i)
+
+ans = 
+ 3 
+</PRE>
+<P>
+The <code>real</code> function has no effect on real arguments:
+<PRE>
+--&gt; real([2,3,4])
+
+ans = 
+ 2 3 4 
+</PRE>
+<P>
+For a double-precision complex array,
+<PRE>
+--&gt; real([2.0+3.0*i,i])
+
+ans = 
+ 2 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

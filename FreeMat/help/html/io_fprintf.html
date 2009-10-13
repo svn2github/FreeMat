@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FPRINTF Formated File Output Function (C-Style)
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FPRINTF Formated File Output Function (C-Style)
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+Prints values to a file.  The general syntax for its use is
+<PRE>
+  fprintf(fp,format,a1,a2,...).
+</PRE>
+<P>
+or, 
+<PRE>
+  fprintf(format,a1,a2,...).
+</PRE>
+<P>
+Here <code>format</code> is the format string, which is a string that
+controls the format of the output.  The values of the variables
+<code>ai</code> are substituted into the output as required.  It is
+an error if there are not enough variables to satisfy the format
+string.  Note that this <code>fprintf</code> command is not vectorized!  Each
+variable must be a scalar.  The value <code>fp</code> is the file handle.  If <code>fp</code> is omitted,
+file handle <code>1</code> is assumed, and the behavior of <code>fprintf</code> is effectively equivalent to <code>printf</code>. For
+more details on the format string, see <code>printf</code>.
+<H3>Examples</H3>
+A number of examples are present in the Examples section of the <code>printf</code> command.
+</BODY>
+</HTML>

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>NORM Norm Calculation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>NORM Norm Calculation
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+Calculates the norm of a matrix.  There are two ways to
+use the <code>norm</code> function.  The general syntax is
+<PRE>
+   y = norm(A,p)
+</PRE>
+<P>
+where <code>A</code> is the matrix to analyze, and <code>p</code> is the
+type norm to compute.  The following choices of <code>p</code>
+are supported
+<UL>
+<LI>  <code>p = 1</code> returns the 1-norm, or the max column sum of A
+ </LI>
+<LI>  <code>p = 2</code> returns the 2-norm (largest singular value of A)
+ </LI>
+<LI>  <code>p = inf</code> returns the infinity norm, or the max row sum of A
+ </LI>
+<LI>  <code>p = 'fro'</code> returns the Frobenius-norm (vector Euclidean norm, or RMS value)
+ </LI>
+</UL>
+For a vector, the regular norm calculations are performed:
+<UL>
+<LI>  <code>1 &lt;= p &lt; inf</code> returns <code>sum(abs(A).^p)^(1/p)</code>
+ </LI>
+<LI>  <code>p</code> unspecified returns <code>norm(A,2)</code>
+ </LI>
+<LI>  <code>p = inf</code> returns max(abs(A))
+ </LI>
+<LI>  <code>p = -inf</code> returns min(abs(A))
+ </LI>
+</UL>
+<H3>Examples</H3>
+Here are the various norms calculated for a sample matrix
+<PRE>
+--&gt; A = float(rand(3,4))
+
+A = 
+    0.0063    0.2224    0.7574    0.9848 
+    0.7319    0.1965    0.7191    0.7010 
+    0.8319    0.6392    0.8905    0.9280 
+
+--&gt; norm(A,1)
+
+ans = 
+    2.6138 
+
+--&gt; norm(A,2)
+
+ans = 
+    2.3403 
+
+--&gt; norm(A,inf)
+
+ans = 
+    3.2896 
+
+--&gt; norm(A,'fro')
+
+ans = 
+    2.4353 
+</PRE>
+<P>
+Next, we calculate some vector norms.
+<PRE>
+--&gt; A = float(rand(4,1))
+
+A = 
+    0.5011 
+    0.3269 
+    0.8192 
+    0.7321 
+
+--&gt; norm(A,1)
+
+ans = 
+    2.3792 
+
+--&gt; norm(A,2)
+
+ans = 
+    1.2510 
+
+--&gt; norm(A,7)
+
+ans = 
+    0.8671 
+
+--&gt; norm(A,inf)
+
+ans = 
+    0.8192 
+
+--&gt; norm(A,-inf)
+
+ans = 
+    0.3269 
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,33 @@
+\section{PVALID Validate Property Name}
+
+\subsection{Usage}
+
+This function checks to see if the given string is a valid
+property name for an object of the given type.  The syntax
+for its use is
+\begin{verbatim}
+  b = pvalid(type,propertyname)
+\end{verbatim}
+where \verb|string| is a string that contains the name of a 
+ valid graphics object type, and
+\verb|propertyname| is a string that contains the name of the
+property to test for.
+\subsection{Example}
+
+Here we test for some properties on an \verb|axes| object.
+\begin{verbatim}
+--> pvalid('axes','type')
+
+ans = 
+ 1 
+
+--> pvalid('axes','children')
+
+ans = 
+ 1 
+
+--> pvalid('axes','foobar')
+
+ans = 
+ 0 
+\end{verbatim}

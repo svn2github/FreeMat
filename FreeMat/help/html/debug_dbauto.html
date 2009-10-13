@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>DBAUTO Control Dbauto Functionality
+</TITLE>
+</HEAD>
+<BODY>
+<H2>DBAUTO Control Dbauto Functionality
+</H2>
+<P>
+Section: <A HREF=sec_debug.html> Debugging FreeMat Code </A>
+<H3>Usage</H3>
+The dbauto functionality in FreeMat allows you to debug your
+FreeMat programs.  When <code>dbauto</code> is <code>on</code>, then any error
+that occurs while the program is running causes FreeMat to 
+stop execution at that point and return you to the command line
+(just as if you had placed a <code>keyboard</code> command there).  You can
+then examine variables, modify them, and resume execution using
+<code>return</code>.  Alternately, you can exit out of all running routines
+via a <code>retall</code> statement.  Note that errors that occur inside of
+<code>try</code>/<code>catch</code> blocks do not (by design) cause auto breakpoints.  The
+<code>dbauto</code> function toggles the dbauto state of FreeMat.  The
+syntax for its use is
+<PRE>
+   dbauto(state)
+</PRE>
+<P>
+where <code>state</code> is either
+<PRE>
+   dbauto('on')
+</PRE>
+<P>
+to activate dbauto, or
+<PRE>
+   dbauto('off')
+</PRE>
+<P>
+to deactivate dbauto.  Alternately, you can use FreeMat's string-syntax
+equivalence and enter
+<PRE>
+   dbauto on
+</PRE>
+<P>
+or 
+<PRE>
+   dbauto off
+</PRE>
+<P>
+to turn dbauto on or off (respectively).  Entering <code>dbauto</code> with no arguments
+returns the current state (either 'on' or 'off').
+</BODY>
+</HTML>

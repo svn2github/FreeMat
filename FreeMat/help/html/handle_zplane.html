@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>ZPLANE Zero-pole plot
+</TITLE>
+</HEAD>
+<BODY>
+<H2>ZPLANE Zero-pole plot
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+ This function makes a zero-pole plot of a discrete-time
+ system defined by its zeros and poles. The various syntaxes
+ are
+<PRE>
+    zplane(z,p)
+</PRE>
+<P>
+ where <code>z</code> and <code>p</code> are the zeros and the poles of the system
+ stored as column vectors, or
+<PRE>
+    zplane(b,a)
+</PRE>
+<P>
+ where <code>a</code> and <code>b</code> are the polynomial coefficients of the
+ numerator and denominator stored as line vectors (<code>roots</code> is
+ used to find the zeros and poles). The symbol <code>'o'</code> represents
+ a zero and the symbol <code>'x'</code> represents a pole. The plot includes
+ the unit circle for reference.
+Contributed by Paulo Xavier Candeias under GPL
+</BODY>
+</HTML>

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TRANSPOSE Matrix Transpose 
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TRANSPOSE Matrix Transpose 
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+Performs a (nonconjugate) transpose of a matrix.  The syntax for
+its use is
+<PRE>
+    y = transpose(x)
+</PRE>
+<P>
+and is a synonym for <code>y = x.'</code>.
+<H3>Example</H3>
+Here is an example of the transpose of a complex matrix.  Note that
+the entries are not conjugated.
+<PRE>
+--&gt; A = [1+i,2+i;3-2*i,4+2*i]
+
+A = 
+   1.0000 +  1.0000i   2.0000 +  1.0000i 
+   3.0000 -  2.0000i   4.0000 +  2.0000i 
+
+--&gt; transpose(A)
+
+ans = 
+   1.0000 +  1.0000i   3.0000 -  2.0000i 
+   2.0000 +  1.0000i   4.0000 +  2.0000i 
+</PRE>
+<P>
+</BODY>
+</HTML>

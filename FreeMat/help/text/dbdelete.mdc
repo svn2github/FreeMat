@@ -1,0 +1,10 @@
+DBDELETE DBDELETE Delete a Breakpoint
+
+Usage
+
+The dbdelete function deletes a breakpoint.  The syntax
+for the dbdelete function is
+
+  dbdelete(num)
+
+where num is the number of the breakpoint to delete.

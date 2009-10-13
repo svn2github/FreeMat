@@ -1,0 +1,42 @@
+\section{ISFIELD Test for Existence of a Structure Field}
+
+\subsection{Usage}
+
+Given a structure array, tests to see if that structure
+array contains a field with the given name.  The syntax
+for its use is
+\begin{verbatim}
+  y = isfield(x,field)
+\end{verbatim}
+and returns a logical \verb|1| if \verb|x| has a field with the 
+name \verb|field| and a logical \verb|0| if not.  It also returns
+a logical \verb|0| if the argument \verb|x| is not a structure array.
+\subsection{Example}
+
+Here we define a simple struct, and then test for some 
+fields
+\begin{verbatim}
+--> a.foo = 32
+
+a = 
+    foo: 32
+--> a.goo = 64
+
+a = 
+    foo: 32
+    goo: 64
+--> isfield(a,'goo')
+
+ans = 
+ 1 
+
+--> isfield(a,'got')
+
+ans = 
+ 0 
+
+--> isfield(pi,'round')
+
+ans = 
+ 0 
+\end{verbatim}

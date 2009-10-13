@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>BUILTIN Evaulate Builtin Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>BUILTIN Evaulate Builtin Function
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>builtin</code> function evaluates a built in function
+with the given name, bypassing any overloaded functions.
+The syntax of <code>builtin</code> is
+<PRE>
+  [y1,y2,...,yn] = builtin(fname,x1,x2,...,xm)
+</PRE>
+<P>
+where <code>fname</code> is the name of the function to call.  Apart
+from the fact that <code>fname</code> must be a string, and that <code>builtin</code>
+always calls the non-overloaded method, it operates exactly like
+<code>feval</code>.  Note that unlike MATLAB, <code>builtin</code> does not force
+evaluation to an actual compiled function.  It simply subverts
+the activation of overloaded method calls.
+</BODY>
+</HTML>

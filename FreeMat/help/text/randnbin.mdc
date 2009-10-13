@@ -1,0 +1,11 @@
+RANDNBIN RANDNBIN Generate Negative Binomial Random Variables
+
+Usage
+
+Generates random variables with a negative binomial distribution.
+The general syntax for its use is
+
+   y = randnbin(r,p)
+
+where r is a vector of integers representing the number of
+successes, and p is the probability of success.

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>INT64 Convert to Signed 64-bit Integer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>INT64 Convert to Signed 64-bit Integer
+</H2>
+<P>
+Section: <A HREF=sec_typecast.html> Type Conversion Functions </A>
+<H3>Usage</H3>
+Converts the argument to an signed 64-bit Integer.  The syntax
+for its use is
+<PRE>
+   y = int64(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional numerical array.  Conversion
+follows the saturation rules (e.g., if <code>x</code> is outside the normal
+range for a signed 64-bit integer of <code>[-2^63+1,2^63-1]</code>, it is
+truncated to that range).  Note that both <code>NaN</code> and <code>Inf</code> both map to 0.
+<H3>Example</H3>
+The following piece of code demonstrates several uses of <code>int64</code>.  First, the routine uses
+<PRE>
+--&gt; int64(100)
+
+ans = 
+ 100 
+
+--&gt; int64(-100)
+
+ans = 
+ -100 
+</PRE>
+<P>
+In the next example, an integer outside the range  of the type is passed in.  
+The result is truncated to the range of the data type.
+<PRE>
+--&gt; int64(40e9)
+
+ans = 
+ 40000000000 
+</PRE>
+<P>
+In the next example, a positive double precision argument is passed in.  The 
+result is the signed integer that is closest to the argument.
+<PRE>
+--&gt; int64(pi)
+
+ans = 
+ 3 
+</PRE>
+<P>
+In the next example, a complex argument is passed in.  The result is the 
+complex signed integer that is closest to the argument.
+<PRE>
+--&gt; int64(5+2*i)
+
+ans = 
+   5.0000 +  2.0000i 
+</PRE>
+<P>
+In the next example, a string argument is passed in.  The string argument is 
+converted into an integer array corresponding to the ASCII values of each character.
+<PRE>
+--&gt; int64('helo')
+
+ans = 
+ 104 101 108 111 
+</PRE>
+<P>
+In the last example, a cell-array is passed in.  For cell-arrays and structure 
+arrays, the result is an error.
+<PRE>
+--&gt; int64({4})
+Error: Cannot perform type conversions with this type
+</PRE>
+<P>
+</BODY>
+</HTML>

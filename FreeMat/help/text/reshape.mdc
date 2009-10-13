@@ -1,0 +1,26 @@
+RESHAPE RESHAPE Reshape An Array
+
+Usage
+
+Reshapes an array from one size to another. Two seperate 
+syntaxes are possible.  The first syntax specifies the array 
+dimensions as a sequence of scalar dimensions:
+
+   y = reshape(x,d1,d2,...,dn).
+
+The resulting array has the given dimensions, and is filled with
+the contents of x.  The type of y is the same as x.  
+The second syntax specifies the array dimensions as a vector,
+where each element in the vector specifies a dimension length:
+
+   y = reshape(x,[d1,d2,...,dn]).
+
+This syntax is more convenient for calling reshape using a 
+variable for the argument. The
+reshape function requires that the length of x equal the product
+of the di values.
+Note that arrays are stored in column format, 
+which means that elements in x are transferred to the new array
+y starting with the first column first element, then proceeding to 
+the last element of the first column, then the first element of the
+second column, etc.

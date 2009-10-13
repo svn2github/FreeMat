@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FLOOR Floor Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FLOOR Floor Function
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+Computes the floor of an n-dimensional array elementwise.  The
+floor of a number is defined as the smallest integer that is
+less than or equal to that number. The general syntax for its use
+is
+<PRE>
+   y = floor(x)
+</PRE>
+<P>
+where <code>x</code> is a multidimensional array of numerical type.  The <code>floor</code> 
+function preserves the type of the argument.  So integer arguments 
+are not modified, and <code>float</code> arrays return <code>float</code> arrays as 
+outputs, and similarly for <code>double</code> arrays.  The <code>floor</code> function 
+is not defined for complex types.
+<H3>Example</H3>
+The following demonstrates the <code>floor</code> function applied to various
+(numerical) arguments.  For integer arguments, the floor function has
+no effect:
+<PRE>
+--&gt; floor(3)
+
+ans = 
+ 3 
+
+--&gt; floor(-3)
+
+ans = 
+ -3 
+</PRE>
+<P>
+Next, we take the <code>floor</code> of a floating point value:
+<PRE>
+--&gt; floor(3.023)
+
+ans = 
+ 3 
+
+--&gt; floor(-2.341)
+
+ans = 
+ -3 
+</PRE>
+<P>
+</BODY>
+</HTML>

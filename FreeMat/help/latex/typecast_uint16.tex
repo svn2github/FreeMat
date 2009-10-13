@@ -1,0 +1,67 @@
+\section{UINT16 Convert to Unsigned 16-bit Integer}
+
+\subsection{Usage}
+
+Converts the argument to an unsigned 16-bit Integer.  The syntax
+for its use is
+\begin{verbatim}
+   y = uint16(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional numerical array.  Conversion
+follows saturation rules (e.g., if \verb|x| is outside the normal
+range for an unsigned 16-bit integer of \verb|[0,65535]|, it is truncated
+to that range.  Note that
+both \verb|NaN| and \verb|Inf| both map to 0.
+\subsection{Example}
+
+The following piece of code demonstrates several uses of \verb|uint16|.
+\begin{verbatim}
+--> uint16(200)
+
+ans = 
+ 200 
+\end{verbatim}
+In the next example, an integer outside the range  of the type is passed in.  
+The result is truncated to the maximum value of the data type.
+\begin{verbatim}
+--> uint16(99400)
+
+ans = 
+ 65535 
+\end{verbatim}
+In the next example, a negative integer is passed in.  The result is 
+truncated to zero.
+\begin{verbatim}
+--> uint16(-100)
+
+ans = 
+ 0 
+\end{verbatim}
+In the next example, a positive double precision argument is passed in.  
+The result is the unsigned integer that is closest to the argument.
+\begin{verbatim}
+--> uint16(pi)
+
+ans = 
+ 3 
+\end{verbatim}
+In the next example, a complex argument is passed in.  The result is the 
+complex unsigned integer that is closest to the argument.
+\begin{verbatim}
+--> uint16(5+2*i)
+
+ans = 
+   5.0000 +  2.0000i 
+\end{verbatim}
+In the next example, a string argument is passed in.  The string argument is converted into an integer array corresponding to the ASCII values of each character.
+\begin{verbatim}
+--> uint16('helo')
+
+ans = 
+ 104 101 108 111 
+\end{verbatim}
+In the last example, a cell-array is passed in.  For cell-arrays and structure arrays, the result is an error.
+\begin{verbatim}
+--> uint16({4})
+Error: Cannot perform type conversions with this type
+\end{verbatim}

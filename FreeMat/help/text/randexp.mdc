@@ -1,0 +1,11 @@
+RANDEXP RANDEXP Generate Exponential Random Variable
+
+Usage
+
+Generates a vector of exponential random variables with
+the specified parameter.  The general syntax for its use is
+
+   y = randexp(lambda)
+
+where lambda is a vector containing the parameters for
+the generated random variables.

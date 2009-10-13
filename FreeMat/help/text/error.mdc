@@ -1,0 +1,13 @@
+ERROR ERROR Causes an Error Condition Raised
+
+Usage
+
+The error function causes an error condition (exception
+to be raised).  The general syntax for its use is
+
+   error(s),
+
+where s is the string message describing the error.  The
+error function is usually used in conjunction with try
+and catch to provide error handling.  If the string s,
+then (to conform to the MATLAB API), error does nothing.

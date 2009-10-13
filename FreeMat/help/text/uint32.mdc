@@ -1,0 +1,13 @@
+UINT32 UINT32 Convert to Unsigned 32-bit Integer
+
+Usage
+
+Converts the argument to an unsigned 32-bit Integer.  The syntax
+for its use is
+
+   y = uint32(x)
+
+where x is an n-dimensional numerical array.  Conversion
+follows saturation rules (e.g., if x is outside the normal
+range for an unsigned 32-bit integer of [0,4294967295], it is
+truncated to that range. Note that both NaN and Inf both map to 0.

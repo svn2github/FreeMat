@@ -1,0 +1,35 @@
+\section{CONJ Conjugate Function}
+
+\subsection{Usage}
+
+Returns the complex conjugate of the input array for all elements.  The 
+general syntax for its use is
+\begin{verbatim}
+   y = conj(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional array of numerical type.  The output 
+is the same numerical type as the input.  The \verb|conj| function does
+nothing to real and integer types.
+\subsection{Example}
+
+The following demonstrates the complex conjugate applied to a complex scalar.
+\begin{verbatim}
+--> conj(3+4*i)
+
+ans = 
+   3.0000 -  4.0000i 
+\end{verbatim}
+The \verb|conj| function has no effect on real arguments:
+\begin{verbatim}
+--> conj([2,3,4])
+
+ans = 
+ 2 3 4 
+\end{verbatim}
+For a double-precision complex array,
+\begin{verbatim}
+--> conj([2.0+3.0*i,i])
+
+ans = 
+   2.0000 -  3.0000i   0.0000 -  1.0000i 
+\end{verbatim}

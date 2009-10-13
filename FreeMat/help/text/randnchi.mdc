@@ -1,0 +1,13 @@
+RANDNCHI RANDNCHI Generate Noncentral Chi-Square Random Variable
+
+Usage
+
+Generates a vector of non-central chi-square random variables
+with the given number of degrees of freedom and the given
+non-centrality parameters.  The general syntax for its use is
+
+   y = randnchi(n,mu)
+
+where n is an array containing the degrees of freedom for
+each generated random variable (with each element of n >= 1),
+and mu is the non-centrality shift (must be positive).

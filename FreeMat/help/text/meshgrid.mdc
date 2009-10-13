@@ -1,0 +1,18 @@
+MESHGRID MESHGRID Generate Grid Mesh For Plots
+
+Usage
+
+The meshgrid function generates arrays that can be used for the
+generation of surface plots.  The syntax is one of 
+
+  [X,Y] = meshgrid(x)
+  [X,Y] = meshgrid(x,y)
+  [X,Y,Z] = meshgrid(x,y,z)
+
+where x,y,z are vectors, and X,Y,Z are matrices.  In the first
+case [X,Y] = meshgrid(x), the rows of X and the columns of Y
+contain copies of the vector x.  In the second case 
+[X,Y] = meshgrid(x,y), the rows of X contain copies of x, and
+the columns of Y contain copies of y.  In the third case, each
+input is copied along the row, column or slice direction of the
+corresponding output variable.

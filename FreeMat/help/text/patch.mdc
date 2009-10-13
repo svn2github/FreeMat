@@ -1,0 +1,17 @@
+PATCH PATCH Patch Graphics Function
+
+Usage
+
+This routine is used to create a patch object that can be plotting 2D and 3D surfaces.  A 
+patch is a polygon defined by the xyz coordinates
+of its vertices and optionally by the color at the vertices.
+There are several forms for the patch function:
+
+  h = patch(X,Y,C,properties...)
+  h = patch(X,Y,Z,C,properties...)
+  h = patch(properties...)
+  h = patch(V)
+
+Where X, Y and Z are matrices or vectors of x, y or z coordinates
+and C is a matrix or vector of color values (the colormap
+for the current fig is applied).  

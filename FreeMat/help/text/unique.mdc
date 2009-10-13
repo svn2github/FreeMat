@@ -1,0 +1,25 @@
+UNIQUE UNIQUE Unique
+
+Usage
+
+Returns a vector containing the unique elements of an array.  The first
+form is simply
+
+   y = unique(x)
+
+where x is either a numerical array or a cell-array of strings.  The 
+result is sorted in increasing order.  You can also retrieve two sets
+of index vectors
+
+   [y, m, n] = unique(x)
+
+such that y = x(m) and x = y(n).  If the argument x is a matrix,
+you can also indicate that FreeMat should look for unique rows in the
+matrix via
+
+   y = unique(x,'rows')
+
+and
+
+   [y, m, n] = unique(x,'rows')
+

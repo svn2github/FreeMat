@@ -1,0 +1,9 @@
+DBDown DBDown Move Down One Debug Level
+
+Usage
+
+The dbdown function moves up one level in the debug
+hierarchy.  The syntax for the dbdown function is
+
+ dbdown
+

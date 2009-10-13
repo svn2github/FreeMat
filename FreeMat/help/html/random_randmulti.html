@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RANDMULTI Generate Multinomial-distributed Random Variables
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RANDMULTI Generate Multinomial-distributed Random Variables
+</H2>
+<P>
+Section: <A HREF=sec_random.html> Random Number Generation </A>
+<H3>Usage</H3>
+This function generates samples from a multinomial distribution
+given the probability of each outcome.  The general syntax for
+its use is
+<PRE>
+   y = randmulti(N,pvec)
+</PRE>
+<P>
+where <code>N</code> is the number of experiments to perform, and <code>pvec</code>
+is the vector of probabilities describing the distribution of
+outcomes.
+<H3>Function Internals</H3>
+A multinomial distribution describes the number of times each
+of <code>m</code> possible outcomes occurs out of <code>N</code> trials, where each
+outcome has a probability <code>p_i</code>.  More generally, suppose that
+the probability of a Bernoulli random variable <code>X_i</code> is <code>p_i</code>,
+and that 
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="randmulti_eqn1.png">
+</DIV>
+<P>
+Then the probability that <code>X_i</code> occurs <code>x_i</code> times is
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="randmulti_eqn2.png">
+</DIV>
+<P>
+<H3>Example</H3>
+Suppose an experiment has three possible outcomes, say heads,
+tails and edge, with probabilities <code>0.4999</code>, <code>0.4999</code> and
+<code>0.0002</code>, respectively.  Then if we perform ten thousand coin
+flips we get
+<PRE>
+--&gt; randmulti(10000,[0.4999,0.4999,0.0002])
+
+ans = 
+ 5026 4973    1 
+</PRE>
+<P>
+</BODY>
+</HTML>

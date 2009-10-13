@@ -1,0 +1,45 @@
+THREADSTART THREADSTART Start a New Thread Computation
+
+Usage
+
+The threadstart function starts a new computation on a
+FreeMat thread, and you must provide a function (no scripts 
+are allowed) to run inside the thread, pass any parameters that
+the thread function requires, as well as the number of output
+arguments expected.  The general syntax for the 
+threadstart function is
+
+   threadstart(threadid,function,nargout,arg1,arg2,...)
+
+where threadid is a thread handle (returned by threadnew),
+where function is a valid function name (it can be a built-in
+imported or M-function), nargout is the number of output arguments
+expected from the function, and arg1 is the first argument that
+is passed to the function.  Because the function runs in its 
+own thread, the return values of the function are not available
+imediately.  Instead, execution of that function will continue
+in parallel with the current thread.  To retrieve the output
+of the thread function, you must wait for the thread to complete
+using the threadwait function, and then call threadvalue
+ to retrieve the result.  You can also stop the running thread
+prematurely by using the threadkill function.  It is important
+to call threadfree on the handle you get from threadnew
+when you are finished with the thread to ensure that the resoures
+are properly freed.  
+
+It is also perfectly reasonable to use a single thread multiple
+times, calling threadstart and threadreturn multiple times
+on a single thread.  The context is preserved between threads.
+When calling threadstart on a pre-existing thread, FreeMat
+will attempt to wait on the thread.  If the wait fails, then
+an error will occur.
+
+Some additional important information.  Thread functions operate
+in their own context or workspace, which means that data cannot
+be shared between threads.  The exception is global variables,
+which provide a thread-safe way for multiple threads to share data.
+Accesses to global variables are serialized so that they can 
+be used to share data.  Threads and FreeMat are a new feature, so
+there is room for improvement in the API and behavior.  The best
+way to improve threads is to experiment with them, and send feedback.
+

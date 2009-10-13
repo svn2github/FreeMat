@@ -1,0 +1,12 @@
+HERMITIAN HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator
+
+Usage
+
+Computes the Hermitian of the argument (a 2D matrix).  The syntax for its use is
+
+  y = a';
+
+where a is a M x N numerical matrix.  The output y is a numerical matrix
+of the same type of size N x M.  This operator is the conjugating transpose,
+which is different from the transpose operator .' (which does not 
+conjugate complex values).

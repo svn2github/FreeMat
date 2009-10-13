@@ -1,0 +1,14 @@
+UINT8 UINT8 Convert to Unsigned 8-bit Integer
+
+Usage
+
+Converts the argument to an unsigned 8-bit Integer.  The syntax
+for its use is
+
+   y = uint8(x)
+
+where x is an n-dimensional numerical array.  Conversion
+follows saturation rules (e.g., if x is outside the normal
+range for an unsigned 8-bit integer of [0,255], it is truncated 
+to that range. Note that
+both NaN and Inf both map to 0.

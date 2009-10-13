@@ -1,0 +1,9 @@
+EDITOR EDITOR Open Editor Window
+
+Usage
+
+Brings up the editor window.  The editor function takes no
+arguments:
+
+  editor
+

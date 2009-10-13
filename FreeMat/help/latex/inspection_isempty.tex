@@ -1,0 +1,40 @@
+\section{ISEMPTY Test For Variable Empty}
+
+\subsection{Usage}
+
+The \verb|isempty| function returns a boolean that indicates
+if the argument variable is empty or not.  The general
+syntax for its use is
+\begin{verbatim}
+  y = isempty(x).
+\end{verbatim}
+\subsection{Examples}
+
+Here are some examples of the \verb|isempty| function
+\begin{verbatim}
+--> a = []
+
+a = 
+  []
+--> isempty(a)
+
+ans = 
+ 1 
+
+--> b = 1:3
+
+b = 
+ 1 2 3 
+
+--> isempty(b)
+
+ans = 
+ 0 
+\end{verbatim}
+Note that if the variable is not defined, \verb|isempty| 
+does not return true.
+\begin{verbatim}
+--> clear x
+--> isempty(x)
+Error: Undefined function or variable x
+\end{verbatim}

@@ -1,0 +1,22 @@
+\section{FIELDNAMES Fieldnames of a Structure}
+
+\subsection{Usage}
+
+Returns a cell array containing the names of the fields in
+a structure array.  The syntax for its use is
+\begin{verbatim}
+   x = fieldnames(y)
+\end{verbatim}
+where \verb|y| is a structure array of object array.  The result
+is a cell array, with one entry per field in \verb|y|.
+\subsection{Example}
+
+We define a simple structure array:
+\begin{verbatim}
+--> y.foo = 3; y.goo = 'hello';
+--> x = fieldnames(y)
+
+x = 
+ [foo] 
+ [goo] 
+\end{verbatim}

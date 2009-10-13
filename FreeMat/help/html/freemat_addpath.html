@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>ADDPATH Add 
+</TITLE>
+</HEAD>
+<BODY>
+<H2>ADDPATH Add 
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>addpath</code> routine adds a set of directories to the current path.
+The first form takes a single directory and adds it to the beginning
+or top of the path:
+<PRE>
+  addpath('directory')
+</PRE>
+<P>
+The second form add several directories to the top of the path:
+<PRE>
+  addpath('dir1','dir2',...,'dirn')
+</PRE>
+<P>
+Finally, you can provide a flag to control where the directories get
+added to the path
+<PRE>
+  addpath('dir1','dir2',...,'dirn','-flag')
+</PRE>
+<P>
+where if <code>flag</code> is either <code>'-0'</code> or <code>'-begin'</code>, the directories are
+added to the top of the path, and if the <code>flag</code> is either <code>'-1'</code> or 
+<code>'-end'</code> the directories are added to the bottom (or end) of the path.
+</BODY>
+</HTML>

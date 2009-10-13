@@ -1,0 +1,34 @@
+\section{NARGIN Number of Input Arguments}
+
+\subsection{Usage}
+
+The \verb|nargin| function returns the number of arguments passed
+to a function when it was called.  The general syntax for its
+use is
+\begin{verbatim}
+  y = nargin
+\end{verbatim}
+FreeMat allows for
+fewer arguments to be passed to a function than were declared,
+and \verb|nargin|, along with \verb|isset| can be used to determine
+exactly what subset of the arguments were defined.
+\subsection{Example}
+
+Here is a function that is declared to take five 
+arguments, and that simply prints the value of \verb|nargin|
+each time it is called.
+\begin{verbatim}
+    nargintest.m
+function nargintest(a1,a2,a3,a4,a5)
+  printf('nargin = %d\n',nargin);
+\end{verbatim}
+\begin{verbatim}
+--> nargintest(3);
+nargin = 1
+--> nargintest(3,'h');
+nargin = 2
+--> nargintest(3,'h',1.34);
+nargin = 3
+--> nargintest(3,'h',1.34,pi,e);
+nargin = 5
+\end{verbatim}

@@ -1,0 +1,27 @@
+WHOS WHOS Describe Currently Defined Variables With Memory Usage
+
+Usage
+
+Reports information on either all variables in the current context
+or on a specified set of variables.  For each variable, the who
+function indicates the size and type of the variable as well as 
+if it is a global or persistent.  There are two formats for the 
+function call.  The first is the explicit form, in which a list
+of variables are provided:
+
+  whos a1 a2 ...
+
+In the second form
+
+  whos
+
+the whos function lists all variables defined in the current 
+context (as well as global and persistent variables). Note that
+there are two alternate forms for calling the whos function:
+
+  whos 'a1' 'a2' ...
+
+and
+
+  whos('a1','a2',...)
+

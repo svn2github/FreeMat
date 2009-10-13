@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>PATCH Patch Graphics Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>PATCH Patch Graphics Function
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+This routine is used to create a patch object that can be plotting 2D and 3D surfaces.  A 
+patch is a polygon defined by the xyz coordinates
+of its vertices and optionally by the color at the vertices.
+There are several forms for the <code>patch</code> function:
+<PRE>
+  h = patch(X,Y,C,properties...)
+  h = patch(X,Y,Z,C,properties...)
+  h = patch(properties...)
+  h = patch(V)
+</PRE>
+<P>
+Where <code>X</code>, <code>Y</code> and <code>Z</code> are matrices or vectors of <code>x</code>, <code>y</code> or <code>z</code> coordinates
+and <code>C</code> is a matrix or vector of color values (the colormap
+for the current fig is applied).  
+<H3>Example</H3>
+Here we generate a surface specifying all four components.
+<PRE>
+--&gt; x = [ 0 1 0 1];
+--&gt; y = [ 0 0 1 1];
+--&gt; c = [ 1 1 1 ];
+--&gt; patch(x,y,c)
+--&gt; axis equal
+--&gt; view(3)
+Warning: Newly defined variable xlim shadows a function of the same name.  Use clear xlim to recover access to the function
+Warning: Newly defined variable ylim shadows a function of the same name.  Use clear ylim to recover access to the function
+Warning: Newly defined variable zlim shadows a function of the same name.  Use clear zlim to recover access to the function
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="patch1.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

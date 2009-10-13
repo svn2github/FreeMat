@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GLNODE Create a GL Node
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GLNODE Create a GL Node
+</H2>
+<P>
+Section: <A HREF=sec_glwin.html> OpenGL Models </A>
+<H3>Usage</H3>
+Define a GL Node.  A GL Node is an object that can be displayed
+in a GL Window.  It is defined by a triangular mesh of vertices.
+It must also have a material that defines its appearance (i.e.
+color, shininess, etc.).  The syntax for the <code>glnode</code> command
+is 
+<PRE>
+  glnode(name,material,pointset)  
+</PRE>
+<P>
+where <code>material</code> is the name of a material that has already been
+defined with <code>gldefmaterial</code>, <code>pointset</code> is a <code>3 x N</code> matrix
+of points that define the geometry of the object.  Note that the points
+are assumed to be connected in triangular facts, with the points
+defined counter clock-wise as seen from the outside of the facet.
+<code>FreeMat</code> will compute the normals.  The <code>name</code> argument must
+be unique.  If you want multiple instances of a given <code>glnode</code>
+in your GLWindow, that is fine, as instances of a <code>glnode</code> are
+created through a <code>glassembly</code>.  
+</BODY>
+</HTML>

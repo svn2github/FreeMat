@@ -1,0 +1,55 @@
+\section{CTYPEDEFINE Define C Type}
+
+\subsection{Usage}
+
+The \verb|ctypedefine| function allows you to define C types for use
+with FreeMat.  Three variants of C types can be used.  You can
+use structures, enumerations, and aliases (typedefs).  All three are defined
+through a single function \verb|ctypedefine|.  The general syntax for
+its use is
+\begin{verbatim}
+  ctypedefine(typeclass,typename,...)
+\end{verbatim}
+where \verb|typeclass| is the variant of the type (legal values are
+\verb|'struct'|, \verb|'alias'|, \verb|'enum'|).  The second argument is the
+name of the C type.  The remaining arguments depend on what the
+class of the typedef is.  
+
+To define a C structure, use the \verb|'struct'| type class.  The usage
+in this case is:
+\begin{verbatim}
+  ctypedefine('struct',typename,field1,type1,field2,type2,...)
+\end{verbatim}
+The argument \verb|typename| must be a valid identifier string.  Each of
+of the \verb|field| arguments is also a valid identifier string that 
+describe in order, the elements of the C structure.  The \verb|type| arguments
+are \verb|typespecs|.  They can be of three types:
+\begin{itemize}
+\item  Built in types, e.g. \verb|'uint8'| or \verb|'double'| to name a couple of
+      examples.
+
+\item  C types that have previously been defined with a call to 
+      \verb|ctypedefine|, e.g. \verb|'mytype'| where \verb|'mytype'| has already been
+      defined through a call to \verb|ctypedefine|.
+
+\item  Arrays of either built in types or previously defined C types
+      with the length of the array coded as an integer in square brackets, 
+      for example: \verb|'uint8[10]'| or \verb|'double[1000]'|.
+
+\end{itemize}
+
+To define a C enumeration, use the \verb|'enum'| type class.  The usage
+in this case is:
+  ctypedefine('enum',typename,name1,value1,name2,value2,...)
+@]
+The argument \verb|typename| must be a valid identifier string.  Each of the
+\verb|name| arguments must also be valid identifier strings that describe
+the possible values that the enumeration can take an, and their corresponding
+integer values.  Note that the names should be unique.  The behavior of
+the various \verb|cenum| functions is undefined if the names are not unique.
+
+To define a C alias (or typedef), use the following form of \verb|ctypedefine|:
+\begin{verbatim}
+  ctypedefine('alias',typename,aliased_typename)
+\end{verbatim}
+where \verb|aliased_typename| is the type that is being aliased to.

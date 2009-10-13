@@ -1,0 +1,18 @@
+\section{MKDIR Make Directory}
+
+\subsection{Usage}
+
+Creates a directory.  The general syntax for its use is
+\begin{verbatim}
+  mkdir('dirname')
+\end{verbatim}
+which creates the directory \verb|dirname| if it does not exist.  The argument
+\verb|dirname| can be either a relative path or an absolute path.  For compatibility
+with MATLAB, the following syntax is also allowed
+\begin{verbatim}
+  mkdir('parentdir','dirname')
+\end{verbatim}
+which attempts to create a directory \verb|dirname| in the directory given by \verb|parentdir|.
+However, this simply calls \verb|mkdir([parentdir dirsep dirname])|, and if this is not
+the required behavior, please file an enhancement request to have it changed.  Note that
+\verb|mkdir| returns a logical \verb|1| if the call succeeded, and a logical \verb|0| if not.

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GETPATH Get Current Search Path
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GETPATH Get Current Search Path
+</H2>
+<P>
+Section: <A HREF=sec_os.html> Operating System Functions </A>
+<H3>Usage</H3>
+Returns a <code>string</code> containing the current FreeMat search path.  The general syntax for
+its use is
+<PRE>
+  y = getpath
+</PRE>
+<P>
+The delimiter between the paths depends on the system being used.  For Win32, the
+delimiter is a semicolon.  For all other systems, the delimiter is a colon.
+
+<H3>Example</H3>
+The <code>getpath</code> function is straightforward.
+<PRE>
+--&gt; getpath
+
+ans = 
+  Empty array 1 0
+</PRE>
+<P>
+</BODY>
+</HTML>

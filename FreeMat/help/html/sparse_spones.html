@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SPONES Sparse Ones Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SPONES Sparse Ones Function
+</H2>
+<P>
+Section: <A HREF=sec_sparse.html> Sparse Matrix Support </A>
+<H3>Usage</H3>
+Returns a sparse <code>float</code> matrix with ones where the argument
+matrix has nonzero values.  The general syntax for it is
+<PRE>
+  y = spones(x)
+</PRE>
+<P>
+where <code>x</code> is a matrix (it may be full or sparse).  The output
+matrix <code>y</code> is the same size as <code>x</code>, has type <code>float</code>, and contains
+ones in the nonzero positions of <code>x</code>.
+<H3>Examples</H3>
+Here are some examples of the <code>spones</code> function
+<PRE>
+--&gt; a = [1,0,3,0,5;0,0,2,3,0;1,0,0,0,1]
+
+a = 
+ 1 0 3 0 5 
+ 0 0 2 3 0 
+ 1 0 0 0 1 
+
+--&gt; b = spones(a)
+
+b = 
+ 1 1 1
+ 1 2 1
+ 1 3 1
+ 1 4 1
+ 1 5 1
+--&gt; full(b)
+
+ans = 
+ 1 1 1 1 1 
+ 0 0 0 0 0 
+ 0 0 0 0 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

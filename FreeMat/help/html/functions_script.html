@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SCRIPT Script Files
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SCRIPT Script Files
+</H2>
+<P>
+Section: <A HREF=sec_functions.html> Functions and Scripts </A>
+<H3>Usage</H3>
+A script is a sequence of FreeMat commands contained in a
+<code>.m</code> file.  When the script is called (via the name of the
+file), the effect is the same as if the commands inside the
+script file were issued one at a time from the keyboard.
+Unlike <code>function</code> files (which have the same extension,
+but have a <code>function</code> declaration), script files share
+the same environment as their callers.  Hence, assignments,
+etc, made inside a script are visible to the caller (which
+is not the case for functions.
+<H3>Example</H3>
+Here is an example of a script that makes some simple 
+assignments and <code>printf</code> statements.
+<P>
+<PRE>
+     tscript.m
+a = 13;
+printf('a is %d\n',a);
+b = a + 32
+
+</PRE>
+<P>
+If we execute the script and then look at the defined variables
+<PRE>
+--&gt; tscript
+a is 13
+
+b = 
+ 45 
+
+--&gt; who
+  Variable Name       Type   Flags             Size
+              a    double                    [1 1]
+            ans    double                    [0 0]
+              b    double                    [1 1]
+</PRE>
+<P>
+we see that <code>a</code> and <code>b</code> are defined appropriately.
+</BODY>
+</HTML>

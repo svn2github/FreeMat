@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TEPS Type-based Epsilon Calculation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TEPS Type-based Epsilon Calculation
+</H2>
+<P>
+Section: <A HREF=sec_constants.html> Base Constants </A>
+<H3>Usage</H3>
+Returns <code>eps</code> for double precision arguments and
+<code>feps</code> for single precision arguments.  The syntax for
+<code>teps</code> is
+<PRE>
+   y = teps(x)
+</PRE>
+<P>
+The <code>teps</code> function is most useful if you need to
+compute epsilon based on the type of the array.
+<H3>Example</H3>
+The following example demonstrates the use of the <code>teps</code> function,
+and one of its numerical consequences.
+<PRE>
+--&gt; teps(float(3.4))
+
+ans = 
+ 1.1921e-07 
+
+--&gt; teps(complex(3.4+i*2))
+
+ans = 
+ 2.2204e-16 
+</PRE>
+<P>
+</BODY>
+</HTML>

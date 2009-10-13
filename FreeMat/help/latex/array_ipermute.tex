@@ -1,0 +1,84 @@
+\section{IPERMUTE Array Inverse Permutation Function}
+
+\subsection{Usage}
+
+The \verb|ipermute| function rearranges the contents of an array according
+to the inverse of the specified permutation vector.  The syntx for 
+its use is
+\begin{verbatim}
+   y = ipermute(x,p)
+\end{verbatim}
+where \verb|p| is a permutation vector - i.e., a vector containing the 
+integers \verb|1...ndims(x)| each occuring exactly once.  The resulting
+array \verb|y| contains the same data as the array \verb|x|, but ordered
+according to the inverse of the given permutation.  This function and
+the \verb|permute| function are inverses of each other.
+\subsection{Example}
+
+First we create a large multi-dimensional array, then permute it
+ and then inverse permute it, to retrieve the original array:
+\begin{verbatim}
+--> A = randn(13,5,7,2);
+--> size(A)
+
+ans = 
+ 13  5  7  2 
+
+--> B = permute(A,[3,4,2,1]);
+--> size(B)
+
+ans = 
+  7  2  5 13 
+
+--> C = ipermute(B,[3,4,2,1]);
+--> size(C)
+
+ans = 
+ 13  5  7  2 
+
+--> any(A~=C)
+
+ans = 
+
+(:,:,1,1) = 
+ 0 0 0 0 0 
+
+(:,:,2,1) = 
+ 0 0 0 0 0 
+
+(:,:,3,1) = 
+ 0 0 0 0 0 
+
+(:,:,4,1) = 
+ 0 0 0 0 0 
+
+(:,:,5,1) = 
+ 0 0 0 0 0 
+
+(:,:,6,1) = 
+ 0 0 0 0 0 
+
+(:,:,7,1) = 
+ 0 0 0 0 0 
+
+(:,:,1,2) = 
+ 0 0 0 0 0 
+
+(:,:,2,2) = 
+ 0 0 0 0 0 
+
+(:,:,3,2) = 
+ 0 0 0 0 0 
+
+(:,:,4,2) = 
+ 0 0 0 0 0 
+
+(:,:,5,2) = 
+ 0 0 0 0 0 
+
+(:,:,6,2) = 
+ 0 0 0 0 0 
+
+(:,:,7,2) = 
+ 0 0 0 0 0 
+\end{verbatim}

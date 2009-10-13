@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>WAVREAD Read a WAV Audio File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>WAVREAD Read a WAV Audio File
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+The <code>wavread</code> function (attempts) to read the contents of a linear PCM
+audio WAV file.  This function could definitely use improvements - it is
+based on a very simplistic notion of a WAV file.  The simplest form for
+its use is
+<PRE>
+   y = wavread(filename)
+</PRE>
+<P>
+where <code>filename</code> is the name of the WAV file to read.  If no extension
+is provided, FreeMat will add a '.wav' extension.  This loads the data
+from the WAV file into <code>y</code>, and returns it in <code>double</code> precision,
+normalized format.  If you want additional information on, for example,
+the WAV sampling rate or bit depth, you can request it via
+<PRE>
+  [y, SamplingRate, BitDepth] = wavread(filename)
+</PRE>
+<P>
+where <code>SamplingRate</code> and <code>BitDepth</code> are the sampling rate (in Hz) and
+the bit depth of the original data in the WAV file.  If you only want to
+load part of the WAV file, you can use
+<PRE>
+  [...] = wavread(filename, N)
+</PRE>
+<P>
+where <code>N</code> indicates the number of samples to read from the file.
+Alternately, you can indicate a range of samples to load via
+<PRE>
+  [...] = wavread(filename, [N1 N2])
+</PRE>
+<P>
+which returns only the indicated samples from each channel in the file.
+By default, the output format is <code>double</code> precision.  You can cntrol
+the format of the output by indicating
+<PRE>
+  [...] = wavread(filename, format)
+</PRE>
+<P>
+where <code>format</code> is either <code>'double'</code> for double precision output, or
+<code>'native'</code> for native precision output (meaning whatever bitdepth that
+was present in the original file).  Finally, you can use the <code>'size'</code> flag
+<PRE>
+  y_siz = wavread(filename,'size')
+</PRE>
+<P>
+which returns a vector <code>[samples channels]</code> indicating the size of the
+data present in the WAV file.
+</BODY>
+</HTML>

@@ -1,0 +1,163 @@
+\section{FORMAT Control the Format of Matrix Display}
+
+\subsection{Usage}
+
+FreeMat supports several modes for displaying matrices (either through the
+\verb|disp| function or simply by entering expressions on the command line.  
+There are several options for the format command.  The default mode is equivalent
+to
+\begin{verbatim}
+   format short
+\end{verbatim}
+which generally displays matrices with 4 decimals, and scales matrices if the entries
+have magnitudes larger than roughly \verb|1e2| or smaller than \verb|1e-2|.   For more 
+information you can use 
+\begin{verbatim}
+   format long
+\end{verbatim}
+which displays roughly 7 decimals for \verb|float| and \verb|complex| arrays, and 14 decimals
+for \verb|double| and \verb|dcomplex|.  You can also use
+\begin{verbatim}
+   format short e
+\end{verbatim}
+to get exponential format with 4 decimals.  Matrices are not scaled for exponential 
+formats.  Similarly, you can use
+\begin{verbatim}
+   format long e
+\end{verbatim}
+which displays the same decimals as \verb|format long|, but in exponential format.
+You can also use the \verb|format| command to retrieve the current format:
+\begin{verbatim}
+   s = format
+\end{verbatim}
+where \verb|s| is a string describing the current format.
+\subsection{Example}
+
+We start with the short format, and two matrices, one of double precision, and the
+other of single precision.
+\begin{verbatim}
+--> format short
+--> a = randn(4)
+
+a = 
+    1.9819   -2.4403    0.3082   -0.8708 
+    0.3885    0.6777   -2.1203   -0.6899 
+   -0.8923   -1.0126   -1.1448   -0.3336 
+   -0.5528   -0.2117   -0.6066    0.1530 
+
+--> b = float(randn(4))
+
+b = 
+    1.6282   -0.9987   -0.0002    0.7346 
+   -0.1461   -0.4450    0.3260    0.0591 
+   -0.1927   -0.2583   -0.3209   -1.7827 
+   -0.4694   -0.2961   -0.3487   -0.1476 
+\end{verbatim}
+Note that in the short format, these two matrices are displayed with the same format.
+In \verb|long| format, however, they display differently
+\begin{verbatim}
+--> format long
+--> a
+
+ans = 
+   1.98194242245660  -2.44033999910309   0.30822105452542  -0.87083520854217 
+   0.38848412098646   0.67772654122050  -2.12029702950896  -0.68985792035578 
+  -0.89231827506021  -1.01256221976480  -1.14477420632547  -0.33359041318909 
+  -0.55283586680694  -0.21170713821002  -0.60660544623052   0.15300924745427 
+
+--> b
+
+ans = 
+   1.6282195  -0.9986902  -0.0002282   0.7346091 
+  -0.1460750  -0.4449911   0.3259999   0.0591399 
+  -0.1926918  -0.2583237  -0.3208777  -1.7827009 
+  -0.4693597  -0.2961315  -0.3487136  -0.1476461 
+\end{verbatim}
+Note also that we we scale the contents of the matrices, FreeMat rescales the entries
+with a scale premultiplier.
+\begin{verbatim}
+--> format short
+--> a*1e4
+
+ans = 
+
+   1.0e+04 * 
+    1.9819   -2.4403    0.3082   -0.8708 
+    0.3885    0.6777   -2.1203   -0.6899 
+   -0.8923   -1.0126   -1.1448   -0.3336 
+   -0.5528   -0.2117   -0.6066    0.1530 
+
+--> a*1e-4
+
+ans = 
+
+   1.0e-04 * 
+    1.9819   -2.4403    0.3082   -0.8708 
+    0.3885    0.6777   -2.1203   -0.6899 
+   -0.8923   -1.0126   -1.1448   -0.3336 
+   -0.5528   -0.2117   -0.6066    0.1530 
+
+--> b*1e4
+
+ans = 
+
+   1.0e+04 * 
+    1.6282   -0.9987   -0.0002    0.7346 
+   -0.1461   -0.4450    0.3260    0.0591 
+   -0.1927   -0.2583   -0.3209   -1.7827 
+   -0.4694   -0.2961   -0.3487   -0.1476 
+
+--> b*1e-4
+
+ans = 
+
+   1.0e-04 * 
+    1.6282   -0.9987   -0.0002    0.7346 
+   -0.1461   -0.4450    0.3260    0.0591 
+   -0.1927   -0.2583   -0.3209   -1.7827 
+   -0.4694   -0.2961   -0.3487   -0.1476 
+\end{verbatim}
+Next, we use the exponential formats:
+\begin{verbatim}
+--> format short e
+--> a*1e4
+
+ans = 
+  1.9819e+04 -2.4403e+04  3.0822e+03 -8.7084e+03 
+  3.8848e+03  6.7773e+03 -2.1203e+04 -6.8986e+03 
+ -8.9232e+03 -1.0126e+04 -1.1448e+04 -3.3359e+03 
+ -5.5284e+03 -2.1171e+03 -6.0661e+03  1.5301e+03 
+
+--> a*1e-4
+
+ans = 
+  1.9819e-04 -2.4403e-04  3.0822e-05 -8.7084e-05 
+  3.8848e-05  6.7773e-05 -2.1203e-04 -6.8986e-05 
+ -8.9232e-05 -1.0126e-04 -1.1448e-04 -3.3359e-05 
+ -5.5284e-05 -2.1171e-05 -6.0661e-05  1.5301e-05 
+
+--> b*1e4
+
+ans = 
+  1.6282e+04 -9.9869e+03 -2.2825e+00  7.3461e+03 
+ -1.4608e+03 -4.4499e+03  3.2600e+03  5.9140e+02 
+ -1.9269e+03 -2.5832e+03 -3.2088e+03 -1.7827e+04 
+ -4.6936e+03 -2.9613e+03 -3.4871e+03 -1.4765e+03 
+
+--> b*1e-4
+
+ans = 
+  1.6282e-04 -9.9869e-05 -2.2825e-08  7.3461e-05 
+ -1.4608e-05 -4.4499e-05  3.2600e-05  5.9140e-06 
+ -1.9269e-05 -2.5832e-05 -3.2088e-05 -1.7827e-04 
+ -4.6936e-05 -2.9613e-05 -3.4871e-05 -1.4765e-05 
+\end{verbatim}
+Finally, if we assign the \verb|format| function to a variable, we can retrieve the 
+current format:
+\begin{verbatim}
+--> format short
+--> t = format
+
+t = 
+short
+\end{verbatim}

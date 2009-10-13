@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>LOGSPACE Logarithmically Spaced Vector
+</TITLE>
+</HEAD>
+<BODY>
+<H2>LOGSPACE Logarithmically Spaced Vector
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+Generates a row vector with the specified number number of elements,
+with entries logarithmically spaced between two specified endpoints.
+The syntax for its use is either
+<PRE>
+    y = logspace(a,b,count)
+</PRE>
+<P>
+ or, for a default <code>count = 50</code>,
+<PRE>
+    y = logspace(a,b)
+</PRE>
+<P>
+ A third special use is when
+<PRE>
+    y = logspace(a,pi)
+</PRE>
+<P>
+where it generates points between <code>10^a</code> and <code>pi</code>
+
+Contributed by Paulo Xavier Candeias under GPL.
+<H3>Example</H3>
+Here is an example of the use of <code>logspace</code>
+<PRE>
+--&gt; logspace(1,2,3)
+
+ans = 
+   10.0000   31.6228  100.0000 
+</PRE>
+<P>
+</BODY>
+</HTML>

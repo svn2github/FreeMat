@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>REPMAT Array Replication Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>REPMAT Array Replication Function
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+The <code>repmat</code> function replicates an array the specified
+number of times.  The source and destination arrays may
+be multidimensional.  There are three distinct syntaxes for
+the <code>repmap</code> function.  The first form:
+<PRE>
+  y = repmat(x,n)
+</PRE>
+<P>
+replicates the array <code>x</code> on an <code>n-times-n</code> tiling, to create
+a matrix <code>y</code> that has <code>n</code> times as many rows and columns
+as <code>x</code>.  The output <code>y</code> will match <code>x</code> in all remaining
+dimensions.  The second form is
+<PRE>
+  y = repmat(x,m,n)
+</PRE>
+<P>
+And creates a tiling of <code>x</code> with <code>m</code> copies of <code>x</code> in the
+row direction, and <code>n</code> copies of <code>x</code> in the column direction.
+The final form is the most general
+<PRE>
+  y = repmat(x,[m n p...])
+</PRE>
+<P>
+where the supplied vector indicates the replication factor in 
+each dimension.  
+<H3>Example</H3>
+Here is an example of using the <code>repmat</code> function to replicate
+a row 5 times.  Note that the same effect can be accomplished
+(although somewhat less efficiently) by a multiplication.
+<PRE>
+--&gt; x = [1 2 3 4]
+
+x = 
+ 1 2 3 4 
+
+--&gt; y = repmat(x,[5,1])
+
+y = 
+ 1 2 3 4 
+ 1 2 3 4 
+ 1 2 3 4 
+ 1 2 3 4 
+ 1 2 3 4 
+</PRE>
+<P>
+The <code>repmat</code> function can also be used to create a matrix of scalars
+or to provide replication in arbitrary dimensions.  Here we use it to
+replicate a 2D matrix into a 3D volume.
+<PRE>
+--&gt; x = [1 2;3 4]
+
+x = 
+ 1 2 
+ 3 4 
+
+--&gt; y = repmat(x,[1,1,3])
+
+y = 
+
+(:,:,1) = 
+ 1 2 
+ 3 4 
+
+(:,:,2) = 
+ 1 2 
+ 3 4 
+
+(:,:,3) = 
+ 1 2 
+ 3 4 
+</PRE>
+<P>
+</BODY>
+</HTML>

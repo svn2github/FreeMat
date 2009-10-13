@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>WHOS Describe Currently Defined Variables With Memory Usage
+</TITLE>
+</HEAD>
+<BODY>
+<H2>WHOS Describe Currently Defined Variables With Memory Usage
+</H2>
+<P>
+Section: <A HREF=sec_inspection.html> Inspection Functions </A>
+<H3>Usage</H3>
+Reports information on either all variables in the current context
+or on a specified set of variables.  For each variable, the <code>who</code>
+function indicates the size and type of the variable as well as 
+if it is a global or persistent.  There are two formats for the 
+function call.  The first is the explicit form, in which a list
+of variables are provided:
+<PRE>
+  whos a1 a2 ...
+</PRE>
+<P>
+In the second form
+<PRE>
+  whos
+</PRE>
+<P>
+the <code>whos</code> function lists all variables defined in the current 
+context (as well as global and persistent variables). Note that
+there are two alternate forms for calling the <code>whos</code> function:
+<PRE>
+  whos 'a1' 'a2' ...
+</PRE>
+<P>
+and
+<PRE>
+  whos('a1','a2',...)
+</PRE>
+<P>
+</BODY>
+</HTML>

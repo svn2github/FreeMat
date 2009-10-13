@@ -1,0 +1,14 @@
+GLDEFMATERIAL GLDEFMATERIAL Defines a GL Material
+
+Usage
+
+Define a material.  The syntax for its use is
+
+  gldefmaterial(name,ambient,diffuse,specular,shininess)
+
+where name is the name of the material, and ambient
+is a 4 x 1 vector containing the ambient component of 
+the material property, and diffuse is a 4 x 1 vector
+and specular is a 4 x 1 vector containing the specular
+component of the material properties and shininess is
+the exponent that governs the shinines of the material.

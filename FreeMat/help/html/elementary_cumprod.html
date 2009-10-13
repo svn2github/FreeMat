@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CUMPROD Cumulative Product Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CUMPROD Cumulative Product Function
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+Computes the cumulative product of an n-dimensional array along a given
+dimension.  The general syntax for its use is
+<PRE>
+  y = cumprod(x,d)
+</PRE>
+<P>
+where <code>x</code> is a multidimensional array of numerical type, and <code>d</code>
+is the dimension along which to perform the cumulative product.  The
+output <code>y</code> is the same size of <code>x</code>.  Integer types are promoted
+to <code>int32</code>. If the dimension <code>d</code> is not specified, then the
+cumulative sum is applied along the first non-singular dimension.
+<H3>Function Internals</H3>
+The output is computed via
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="cumprod_eqn1.png">
+</DIV>
+<P>
+<H3>Example</H3>
+The default action is to perform the cumulative product along the
+first non-singular dimension.
+<PRE>
+--&gt; A = [5,1,3;3,2,1;0,3,1]
+
+A = 
+ 5 1 3 
+ 3 2 1 
+ 0 3 1 
+
+--&gt; cumprod(A)
+
+ans = 
+  5  1  3 
+ 15  2  3 
+  0  6  3 
+</PRE>
+<P>
+To compute the cumulative product along the columns:
+<PRE>
+--&gt; cumprod(A,2)
+
+ans = 
+  5  5 15 
+  3  6  6 
+  0  0  0 
+</PRE>
+<P>
+The cumulative product also works along arbitrary dimensions
+<PRE>
+--&gt; B(:,:,1) = [5,2;8,9];
+--&gt; B(:,:,2) = [1,0;3,0]
+
+B = 
+
+(:,:,1) = 
+ 5 2 
+ 8 9 
+
+(:,:,2) = 
+ 1 0 
+ 3 0 
+
+--&gt; cumprod(B,3)
+
+ans = 
+
+(:,:,1) = 
+  5  2 
+  8  9 
+
+(:,:,2) = 
+  5  0 
+ 24  0 
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,14 @@
+PERMUTE PERMUTE Array Permutation Function
+
+Usage
+
+The permute function rearranges the contents of an array according
+to the specified permutation vector.  The syntax for its use is
+
+    y = permute(x,p)
+
+where p is a permutation vector - i.e., a vector containing the 
+integers 1...ndims(x) each occuring exactly once.  The resulting
+array y contains the same data as the array x, but ordered
+according to the permutation.  This function is a generalization of
+the matrix transpose operation.

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SPY Visualize Sparsity Pattern of a Sparse Matrix
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SPY Visualize Sparsity Pattern of a Sparse Matrix
+</H2>
+<P>
+Section: <A HREF=sec_sparse.html> Sparse Matrix Support </A>
+<H3>Usage</H3>
+Plots the sparsity pattern of a sparse matrix.  The syntax for its use is
+<PRE>
+   spy(x)
+</PRE>
+<P>
+which uses a default color and symbol.  Alternately, you can use
+<PRE>
+   spy(x,colspec)
+</PRE>
+<P>
+where <code>colspec</code> is any valid color and symbol spec accepted by <code>plot</code>.
+<H3>Example</H3>
+First, an example of a random sparse matrix.
+<PRE>
+--&gt; y = sprand(1000,1000,.001);
+--&gt; spy(y,'ro')
+</PRE>
+<P>
+which is shown here
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="spy1.png">
+</DIV>
+<P>
+Here is a sparse matrix with a little more structure.  First we build a 
+sparse matrix with block diagonal structure, and then use <code>spy</code> to 
+visualize the structure.
+<PRE>
+--&gt; A = sparse(1000,1000);
+--&gt; for i=1:25; A((1:40) + 40*(i-1),(1:40) + 40*(i-1)) = 1; end;
+--&gt; spy(A,'gx')
+</PRE>
+<P>
+with the result shown here
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="spy2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

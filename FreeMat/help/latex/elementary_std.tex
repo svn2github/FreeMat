@@ -1,0 +1,46 @@
+\section{STD Standard Deviation Function}
+
+\subsection{Usage}
+
+Computes the standard deviation of an array along a given dimension.  
+The general syntax for its use is
+\begin{verbatim}
+  y = std(x,d)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensions array of numerical type.
+The output is of the same numerical type as the input.  The argument
+\verb|d| is optional, and denotes the dimension along which to take
+the variance.  The output \verb|y| is the same size as \verb|x|, except
+that it is singular along the mean direction.  So, for example,
+if \verb|x| is a \verb|3 x 3 x 4| array, and we compute the mean along
+dimension \verb|d=2|, then the output is of size \verb|3 x 1 x 4|.
+\subsection{Example}
+
+The following piece of code demonstrates various uses of the \verb|std|
+function
+\begin{verbatim}
+--> A = [5,1,3;3,2,1;0,3,1]
+
+A = 
+ 5 1 3 
+ 3 2 1 
+ 0 3 1 
+\end{verbatim}
+We start by calling \verb|std| without a dimension argument, in which 
+case it defaults to the first nonsingular dimension (in this case, 
+along the columns or \verb|d = 1|).
+\begin{verbatim}
+--> std(A)
+
+ans = 
+    2.5166    1.0000    1.1547 
+\end{verbatim}
+Next, we take the variance along the rows.
+\begin{verbatim}
+--> std(A,2)
+
+ans = 
+    2.0000 
+    1.0000 
+    1.5275 
+\end{verbatim}

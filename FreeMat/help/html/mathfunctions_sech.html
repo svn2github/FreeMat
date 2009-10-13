@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SECH Hyperbolic Secant Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SECH Hyperbolic Secant Function
+</H2>
+<P>
+Section: <A HREF=sec_mathfunctions.html> Mathematical Functions </A>
+<H3>Usage</H3>
+Computes the hyperbolic secant of the argument.
+The syntax for its use is
+<PRE>
+   y = sech(x)
+</PRE>
+<P>
+<H3>Function Internals</H3>
+The <code>sech</code> function is computed from the formula
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="sech_eqn1.png">
+</DIV>
+<P>
+<H3>Examples</H3>
+Here is a simple plot of the hyperbolic secant function
+<PRE>
+--&gt; x = -2*pi:.01:2*pi;
+--&gt; plot(x,sech(x)); grid('on');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="sechplot.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,11 @@
+FIELDNAMES FIELDNAMES Fieldnames of a Structure
+
+Usage
+
+Returns a cell array containing the names of the fields in
+a structure array.  The syntax for its use is
+
+   x = fieldnames(y)
+
+where y is a structure array of object array.  The result
+is a cell array, with one entry per field in y.

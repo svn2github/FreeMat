@@ -1,0 +1,57 @@
+\section{SPRANDN Sparse Normal Random Matrix}
+
+\subsection{Usage}
+
+Creates a sparse matrix with normally distributed random entries (mean 0, sigma 1).  The
+syntax for its use is
+\begin{verbatim}
+  y = sprandn(x)
+\end{verbatim}
+where \verb|x| is a sparse matrix, where \verb|y| is a sparse matrix that has
+random entries where \verb|x| is nonzero.  The second form specifies the
+size of the matrix and the density
+\begin{verbatim}
+  y = sprandn(m,n,density)
+\end{verbatim}
+where \verb|m| is the number of rows in the output, \verb|n| is the number of 
+columns in the output, and \verb|density| (which is between 0 and 1) is
+the density of nonzeros in the resulting matrix.  Note that for very
+high densities the actual density of the output matrix may differ from
+the density you specify.  This difference is a result of the way the
+random entries into the matrix are generated.  If you need a very dense
+random matrix, it is better to generate a full matrix and zero out the 
+entries you do not need.
+\subsection{Examples}
+
+Here we seed \verb|sprandn| with a full matrix (to demonstrate how the structure
+of the output is determined by the input matrix when using the first form).
+\begin{verbatim}
+--> x = [1,0,0;0,0,1;1,0,0]
+
+x = 
+ 1 0 0 
+ 0 0 1 
+ 1 0 0 
+
+--> y = sprandn(x)
+
+y = 
+ 1 1 0.770419
+ 3 1 0.332694
+ 2 3 -0.589851
+--> full(y)
+
+ans = 
+    0.7704         0         0 
+         0         0   -0.5899 
+    0.3327         0         0 
+\end{verbatim}
+The more generic version with a density of \verb|0.001|.  On many systems the
+following is impossible using full matrices
+\begin{verbatim}
+--> y = sprandn(10000,10000,.001);
+--> nnz(y)/10000^2
+
+ans = 
+ 9.9953e-04 
+\end{verbatim}

@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CLABEL Add Labels To Contour Plot
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CLABEL Add Labels To Contour Plot
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+The <code>clabel</code> function adds labels to a contour plot
+Generate contour labels for a contour plot.  The syntax
+for its use is either:
+<PRE>
+   handles = clabel(contourhandle,property,value,property,value,...)
+</PRE>
+<P>
+which labels all of the contours in the plot, or
+<PRE>
+   handles = clabel(contourhandle,vals,property,value,property,value,...)
+</PRE>
+<P>
+which only labels those contours indicated by the vector <code>vals</code>.
+The <code>contourhandle</code> must be the handle to a contour plot object.
+The remaining property/value pairs are passed to the <code>text</code> function
+to control the parameters of the generated text labels.  See the 
+<code>text properties</code> for the details on what can be used in those labels.
+<H3>Example</H3>
+<PRE>
+--&gt; [x,y] = meshgrid(linspace(-1,1,50));
+--&gt; z = x.*exp(-(x.^2+y.^2));
+--&gt; h = contour(z);
+--&gt; clabel(h,'backgroundcolor',[1,1,.6],'edgecolor',[.7,.7,.7]);
+</PRE>
+<P>
+which results in
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="clabel1.png">
+</DIV>
+<P>
+Alternately, we can just label a subset of the contours
+<PRE>
+--&gt; h = contour(z);
+--&gt; clabel(h,[-.2,0,.3]);
+</PRE>
+<P>
+which results in
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="clabel2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

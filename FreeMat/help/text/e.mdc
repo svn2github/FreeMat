@@ -1,0 +1,9 @@
+E E Euler Constant (Base of Natural Logarithm)
+
+Usage
+
+Returns a double (64-bit floating point number) value that represents Euler's constant, the base of the natural logarithm.  Typical usage 
+
+   y = e
+
+This value is approximately 2.718281828459045.

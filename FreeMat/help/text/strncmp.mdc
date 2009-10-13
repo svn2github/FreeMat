@@ -1,0 +1,24 @@
+STRNCMP STRNCMP String Compare Function To Length N 
+
+Usage
+
+Compares two strings for equality, but only looks at the
+first N characters from each string.  The general syntax 
+for its use is
+
+  p = strncmp(x,y,n)
+
+where x and y are two strings.  Returns true if x
+and y are each at least n characters long, and if the
+first n characters from each string are the same.  Otherwise,
+it returns false.
+In the second form, strncmp can be applied to a cell array of
+strings.  The syntax for this form is
+
+  p = strncmp(cellstra,cellstrb,n)
+
+where cellstra and cellstrb are cell arrays of a strings
+to compare.  Also, you can also supply a character matrix as
+an argument to strcmp, in which case it will be converted
+via cellstr (so that trailing spaces are removed), before being
+compared.

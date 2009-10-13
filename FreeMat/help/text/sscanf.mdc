@@ -1,0 +1,13 @@
+SSCANF SSCANF Formated String Input Function (C-Style)
+
+Usage
+
+Reads values from a string.  The general syntax for its use is
+
+  [a, count, errmsg, nextind] = sscanf(text,format,[size])
+
+Here format is the format string, which is a string that
+controls the format of the input, size specifies the amount of data to be read. Values that are parsed
+from the text are stored in a. Note that sscanf is vectorized - the format string is reused as long as
+there are entries in the text string. See printf
+for a description of the format.

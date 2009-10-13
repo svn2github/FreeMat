@@ -1,0 +1,131 @@
+\section{PINV Moore-Penrose Pseudoinverse}
+
+\subsection{Usage}
+
+Calculates the Moore-Penrose pseudoinverse of a matrix.
+The general syntax for its use is
+\begin{verbatim}
+   y = pinv(A,tol)
+\end{verbatim}
+or for a default specification of the tolerance \verb|tol|,
+\begin{verbatim}
+   y = pinv(A)
+\end{verbatim}
+For any \verb|m x n| matrix \verb|A|, the Moore-Penrose pseudoinverse
+is the unique \verb|n x m| matrix \verb|B| that satisfies the following
+four conditions
+\begin{itemize}
+\item  \verb|A B A = A|
+
+\item  \verb|B A B = B|
+
+\item  \verb|(A B)' = A B|
+
+\item  \verb|(B A)' = B A|
+
+\end{itemize}
+Also, it is true that \verb|B y| is the minimum norm, least squares
+solution to \verb|A x = y|.  The Moore-Penrose pseudoinverse is computed
+from the singular value decomposition of \verb|A|, with singular values
+smaller than \verb|tol| being treated as zeros.  If \verb|tol| is not specified
+then it is chosen as
+\begin{verbatim}
+  tol = max(size(A)) * norm(A) * teps(A).
+\end{verbatim}
+\subsection{Function Internals}
+
+The calculation of the MP pseudo-inverse is almost trivial once the
+svd of the matrix is available.  First, for a real, diagonal matrix
+with positive entries, the pseudo-inverse is simply
+\[
+  \left(\Sigma^{+}\right)_{ii} = \begin{cases}
+             1/\sigma_{ii} & \sigma_{ii} > 0 \\
+             0             & \mathrm{else} \end{cases}
+\]
+One can quickly verify that this choice of matrix satisfies the
+four properties of the pseudoinverse.  Then, the pseudoinverse
+of a general matrix \verb|A = U S V'| is defined as
+\[
+   A^{+} = V S^{+} U'
+\]
+and again, using the facts that \verb|U' U = I| and \verb|V V' = I|, one
+can quickly verify that this choice of pseudoinverse satisfies the
+four defining properties of the MP pseudoinverse.  Note that in
+practice, the diagonal pseudoinverse \verb|S^{+}| is computed with
+a threshold (the \verb|tol| argument to \verb|pinv|) so that singular
+values smaller than \verb|tol| are treated like zeros.
+\subsection{Examples}
+
+Consider a simple \verb|1 x 2| matrix example, and note the various
+Moore-Penrose conditions:
+\begin{verbatim}
+--> A = float(rand(1,2))
+
+A = 
+    0.9526    0.4847 
+
+--> B = pinv(A)
+
+B = 
+    0.8338 
+    0.4243 
+
+--> A*B*A
+
+ans = 
+    0.9526    0.4847 
+
+--> B*A*B
+
+ans = 
+    0.8338 
+    0.4243 
+
+--> A*B
+
+ans = 
+    1.0000 
+
+--> B*A
+
+ans = 
+    0.7943    0.4042 
+    0.4042    0.2057 
+\end{verbatim}
+To demonstrate that \verb|pinv| returns the least squares solution,
+consider the following very simple case
+\begin{verbatim}
+--> A = float([1;1;1;1])
+
+A = 
+ 1 
+ 1 
+ 1 
+ 1 
+\end{verbatim}
+The least squares solution to \verb|A x = b| is just \verb|x = mean(b)|,
+and computing the \verb|pinv| of \verb|A| demonstrates this
+\begin{verbatim}
+--> pinv(A)
+
+ans = 
+    0.2500    0.2500    0.2500    0.2500 
+\end{verbatim}
+Similarly, we can demonstrate the minimum norm solution with
+the following simple case
+\begin{verbatim}
+--> A = float([1,1])
+
+A = 
+ 1 1 
+\end{verbatim}
+The solutions of \verb|A x = 5| are those \verb|x_1| and \verb|x_2| such that
+\verb|x_1 + x_2 = 5|.  The norm of \verb|x| is \verb|x_1^ + x_2^2|, which is
+\verb|x_1^2 + (5-x_1)^2|, which is minimized for \verb|x_1 = x_2 = 2.5|:
+\begin{verbatim}
+--> pinv(A) * 5.0
+
+ans = 
+    2.5000 
+    2.5000 
+\end{verbatim}

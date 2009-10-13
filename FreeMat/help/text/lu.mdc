@@ -1,0 +1,27 @@
+LU LU LU Decomposition for Matrices
+
+Usage
+
+Computes the LU decomposition for a matrix.  The form of the
+command depends on the type of the argument.  For full (non-sparse)
+matrices, the primary form for lu is
+
+   [L,U,P] = lu(A),
+
+where L is lower triangular, U is upper triangular, and
+P is a permutation matrix such that L*U = P*A.  The second form is
+
+   [V,U] = lu(A),
+
+where V is P'*L (a row-permuted lower triangular matrix), 
+and U is upper triangular.  For sparse, square matrices,
+the LU decomposition has the following form:
+
+   [L,U,P,Q,R] = lu(A),
+
+where A is a sparse matrix of either double or dcomplex type.
+The matrices are such that L*U=P*R*A*Q, where L is a lower triangular
+matrix, U is upper triangular, P and Q are permutation vectors
+and R is a diagonal matrix of row scaling factors.  The decomposition
+ is computed using UMFPACK for sparse matrices, and LAPACK for dense
+ matrices.

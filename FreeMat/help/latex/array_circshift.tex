@@ -1,0 +1,159 @@
+\section{CIRCSHIFT Circularly Shift an Array}
+
+\subsection{USAGE}
+
+Applies a circular shift along each dimension of a given array.  The
+syntax for its use is
+\begin{verbatim}
+   y = circshift(x,shiftvec)
+\end{verbatim}
+where \verb|x| is an n-dimensional array, and \verb|shiftvec| is a vector of
+integers, each of which specify how much to shift \verb|x| along the
+corresponding dimension.  
+\subsection{Example}
+
+The following examples show some uses of \verb|circshift| on N-dimensional
+arrays.
+\begin{verbatim}
+--> x = int32(rand(4,5)*10)
+
+x = 
+  5  1  5  5  9 
+  5  7  3  0  5 
+  8  4  9  9 10 
+  2  9  7  2  8 
+
+--> circshift(x,[1,0])
+
+ans = 
+  2  9  7  2  8 
+  5  1  5  5  9 
+  5  7  3  0  5 
+  8  4  9  9 10 
+
+--> circshift(x,[0,-1])
+
+ans = 
+  1  5  5  9  5 
+  7  3  0  5  5 
+  4  9  9 10  8 
+  9  7  2  8  2 
+
+--> circshift(x,[2,2])
+
+ans = 
+  9 10  8  4  9 
+  2  8  2  9  7 
+  5  9  5  1  5 
+  0  5  5  7  3 
+
+--> x = int32(rand(4,5,3)*10)
+
+x = 
+
+(:,:,1) = 
+  4  4  5 10  8 
+  5  1  7  4  6 
+  8  6  3  5  8 
+  1  4  3  3  4 
+
+(:,:,2) = 
+  9  8  8  4  7 
+  7  7  4  5  8 
+  8  5  9  5  6 
+  8  2  5  1  3 
+
+(:,:,3) = 
+  6  9  2  1 10 
+  1  6  7  9  9 
+ 10 10  2  6  1 
+  7  4  0  6  4 
+
+--> circshift(x,[1,0,0])
+
+ans = 
+
+(:,:,1) = 
+  1  4  3  3  4 
+  4  4  5 10  8 
+  5  1  7  4  6 
+  8  6  3  5  8 
+
+(:,:,2) = 
+  8  2  5  1  3 
+  9  8  8  4  7 
+  7  7  4  5  8 
+  8  5  9  5  6 
+
+(:,:,3) = 
+  7  4  0  6  4 
+  6  9  2  1 10 
+  1  6  7  9  9 
+ 10 10  2  6  1 
+
+--> circshift(x,[0,-1,0])
+
+ans = 
+
+(:,:,1) = 
+  4  5 10  8  4 
+  1  7  4  6  5 
+  6  3  5  8  8 
+  4  3  3  4  1 
+
+(:,:,2) = 
+  8  8  4  7  9 
+  7  4  5  8  7 
+  5  9  5  6  8 
+  2  5  1  3  8 
+
+(:,:,3) = 
+  9  2  1 10  6 
+  6  7  9  9  1 
+ 10  2  6  1 10 
+  4  0  6  4  7 
+
+--> circshift(x,[0,0,-1])
+
+ans = 
+
+(:,:,1) = 
+  9  8  8  4  7 
+  7  7  4  5  8 
+  8  5  9  5  6 
+  8  2  5  1  3 
+
+(:,:,2) = 
+  6  9  2  1 10 
+  1  6  7  9  9 
+ 10 10  2  6  1 
+  7  4  0  6  4 
+
+(:,:,3) = 
+  4  4  5 10  8 
+  5  1  7  4  6 
+  8  6  3  5  8 
+  1  4  3  3  4 
+
+--> circshift(x,[2,-3,1])
+
+ans = 
+
+(:,:,1) = 
+  6  1 10 10  2 
+  6  4  7  4  0 
+  1 10  6  9  2 
+  9  9  1  6  7 
+
+(:,:,2) = 
+  5  8  8  6  3 
+  3  4  1  4  3 
+ 10  8  4  4  5 
+  4  6  5  1  7 
+
+(:,:,3) = 
+  5  6  8  5  9 
+  1  3  8  2  5 
+  4  7  9  8  8 
+  5  8  7  7  4 
+\end{verbatim}

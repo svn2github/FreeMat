@@ -1,0 +1,19 @@
+TRY TRY-CATCH Try and Catch Statement
+
+Usage
+
+The try and catch statements are used for error handling
+and control.  A concept present in C++, the try and catch
+statements are used with two statement blocks as follows
+
+   try
+     statements_1
+   catch
+     statements_2
+   end
+
+The meaning of this construction is: try to execute statements_1,
+and if any errors occur during the execution, then execute the
+code in statements_2.  An error can either be a FreeMat generated
+error (such as a syntax error in the use of a built in function), or
+an error raised with the error command.

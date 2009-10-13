@@ -1,0 +1,22 @@
+SHIFTDIM SHIFTDIM Shift Array Dimensions Function
+
+Usage
+
+The shiftdim function is used to shift the dimensions of an array.
+The general syntax for the shiftdim function is
+
+   y = shiftdim(x,n)
+
+where x is a multidimensional array, and n is an integer.  If
+n is a positive integer, then shiftdim circularly shifts the 
+dimensions of x to the left, wrapping the dimensions around as 
+necessary.  If n is a negative integer, then shiftdim shifts
+the dimensions of x to the right, introducing singleton dimensions
+as necessary.  In its second form:
+
+  [y,n] = shiftdim(x)
+
+the shiftdim function will shift away (to the left) the leading
+singleton dimensions of x until the leading dimension is not
+ a singleton dimension (recall that a singleton dimension p is one for
+which size(x,p) == 1).

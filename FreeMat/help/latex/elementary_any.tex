@@ -1,0 +1,56 @@
+\section{ANY Any True Function}
+
+\subsection{Usage}
+
+Reduces a logical array along a given dimension by testing for any
+logical 1s.  The general 
+syntax for its use is
+\begin{verbatim}
+  y = any(x,d)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensions array of \verb|logical| type.
+The output is of \verb|logical| type.  The argument \verb|d| is 
+optional, and denotes the dimension along which to operate.
+The output \verb|y| is the same size as \verb|x|, except that it is 
+singular along the operated direction.  So, for example,
+if \verb|x| is a \verb|3 x 3 x 4| array, and we \verb|any| operation along
+dimension \verb|d=2|, then the output is of size \verb|3 x 1 x 4|.
+\subsection{Function Internals}
+
+The output is computed via
+\[
+y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
+\max_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
+\]
+If \verb|d| is omitted, then the summation is taken along the 
+first non-singleton dimension of \verb|x|. 
+\subsection{Example}
+
+The following piece of code demonstrates various uses of the summation
+function
+\begin{verbatim}
+--> A = [1,0,0;1,0,0;0,0,1]
+
+A = 
+ 1 0 0 
+ 1 0 0 
+ 0 0 1 
+\end{verbatim}
+We start by calling \verb|any| without a dimension argument, in which 
+case it defaults to the first nonsingular dimension (in this case, 
+along the columns or \verb|d = 1|).
+\begin{verbatim}
+--> any(A)
+
+ans = 
+ 1 0 1 
+\end{verbatim}
+Next, we apply the \verb|any| operation along the rows.
+\begin{verbatim}
+--> any(A,2)
+
+ans = 
+ 1 
+ 1 
+ 1 
+\end{verbatim}

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>UINT32 Convert to Unsigned 32-bit Integer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>UINT32 Convert to Unsigned 32-bit Integer
+</H2>
+<P>
+Section: <A HREF=sec_typecast.html> Type Conversion Functions </A>
+<H3>Usage</H3>
+Converts the argument to an unsigned 32-bit Integer.  The syntax
+for its use is
+<PRE>
+   y = uint32(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional numerical array.  Conversion
+follows saturation rules (e.g., if <code>x</code> is outside the normal
+range for an unsigned 32-bit integer of <code>[0,4294967295]</code>, it is
+truncated to that range. Note that both <code>NaN</code> and <code>Inf</code> both map to 0.
+<H3>Example</H3>
+The following piece of code demonstrates several uses of <code>uint32</code>.
+<PRE>
+--&gt; uint32(200)
+
+ans = 
+ 200 
+</PRE>
+<P>
+In the next example, an integer outside the range of the type is passed in.  
+The result is truncated to the maximum value of the data type.
+<PRE>
+--&gt; uint32(40e9)
+
+ans = 
+ 4294967295 
+</PRE>
+<P>
+In the next example, a negative integer is passed in.  The result is 
+truncated to zero.
+<PRE>
+--&gt; uint32(-100)
+
+ans = 
+ 0 
+</PRE>
+<P>
+In the next example, a positive double precision argument is passed in.  
+The result is the unsigned integer that is closest to the argument.
+<PRE>
+--&gt; uint32(pi)
+
+ans = 
+ 3 
+</PRE>
+<P>
+In the next example, a complex argument is passed in.  The result is the 
+complex unsigned integer that is closest to the argument.
+<PRE>
+--&gt; uint32(5+2*i)
+
+ans = 
+   5.0000 +  2.0000i 
+</PRE>
+<P>
+In the next example, a string argument is passed in.  The string argument 
+is converted into an integer array corresponding to the ASCII values of each character.
+<PRE>
+--&gt; uint32('helo')
+
+ans = 
+ 104 101 108 111 
+</PRE>
+<P>
+In the last example, a cell-array is passed in.  For cell-arrays and 
+structure arrays, the result is an error.
+<PRE>
+--&gt; uint32({4})
+Error: Cannot perform type conversions with this type
+</PRE>
+<P>
+</BODY>
+</HTML>

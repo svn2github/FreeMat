@@ -1,0 +1,13 @@
+MRDIVIDE MRDIVIDE Overloaded Matrix Right Divide Operator
+
+Usage
+
+This is a method that is invoked when two variables are divided
+using the matrix divide operator, and is invoked when you call
+
+   c = mrdivide(a,b)
+
+or for
+
+   c = a / b
+

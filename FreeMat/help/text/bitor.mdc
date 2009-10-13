@@ -1,0 +1,13 @@
+BITOR BITOR Bitwise Boolean Or Operation
+
+Usage
+
+Performs a bitwise binary or operation on the two arguments and
+returns the result.  The syntax for its use is
+
+   y = bitor(a,b)
+
+where a and b are multi-dimensional unsigned integer arrays.
+The and operation is performed using 32 bit unsigned intermediates.  Note that if a
+or b is a scalar, then each element of the other array is or'ed with
+that scalar.  Otherwise the two arrays must match in size.

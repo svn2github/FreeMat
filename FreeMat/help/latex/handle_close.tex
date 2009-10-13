@@ -1,0 +1,21 @@
+\section{CLOSE Close Figure Window}
+
+\subsection{Usage}
+
+Closes a figure window, either the currently active window, a 
+window with a specific handle, or all figure windows.  The general
+syntax for its use is
+\begin{verbatim}
+   close(handle)
+\end{verbatim}
+in which case the figure window with the speicified \verb|handle| is
+closed.  Alternately, issuing the command with no argument
+\begin{verbatim}
+   close
+\end{verbatim}
+is equivalent to closing the currently active figure window.  Finally
+the command
+\begin{verbatim}
+   close('all')
+\end{verbatim}
+closes all figure windows currently open.

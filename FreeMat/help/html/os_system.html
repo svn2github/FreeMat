@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SYSTEM Call an External Program
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SYSTEM Call an External Program
+</H2>
+<P>
+Section: <A HREF=sec_os.html> Operating System Functions </A>
+<H3>Usage</H3>
+The <code>system</code> function allows you to call an external
+program from within FreeMat, and capture the output.
+The syntax of the <code>system</code> function is
+<PRE>
+  y = system(cmd)
+</PRE>
+<P>
+where <code>cmd</code> is the command to execute.  The return
+array <code>y</code> is of type <code>cell-array</code>, where each entry
+in the array corresponds to a line from the output.
+<H3>Example</H3>
+Here is an example of calling the <code>ls</code> function (the
+list files function under Un*x-like operating system).
+<PRE>
+--&gt; y = system('ls')
+
+y = 
+
+ Columns 1 to 3
+
+ [chain1.m] [chain2.m] [chain3.m] 
+
+ Columns 4 to 6
+
+ [conv2_eqn1.png] [conv2_eqn.aux] [conv2_eqn.dvi] 
+
+ Columns 7 to 9
+
+ [conv2_eqn.log] [conv2_eqn.tex] [cumprod_eqn1.png] 
+
+ Columns 10 to 12
+
+ [cumprod_eqn.aux] [cumprod_eqn.dvi] [cumprod_eqn.log] 
+
+ Columns 13 to 15
+
+ [cumprod_eqn.tex] [cumsum_eqn1.png] [cumsum_eqn.aux] 
+
+ Columns 16 to 18
+
+ [cumsum_eqn.dvi] [cumsum_eqn.log] [cumsum_eqn.tex] 
+
+ Columns 19 to 21
+
+ [do_jit_test.m] [eig_eqn1.png] [eig_eqn2.png] 
+
+ Columns 22 to 24
+
+ [eig_eqn3.png] [eig_eqn4.png] [eig_eqn5.png] 
+
+ Columns 25 to 27
+
+ [eig_eqn6.png] [eig_eqn.aux] [eig_eqn.dvi] 
+
+ Columns 28 to 30
+
+ [eig_eqn.log] [eig_eqn.tex] [evenoddtest.m] 
+
+ Columns 31 to 33
+
+ [fft1.jpg] [fft1.png] [fft2.jpg] 
+
+ Columns 34 to 36
+
+ [fft2.png] [fft_eqn1.png] [fft_eqn2.png] 
+
+ Columns 37 to 39
+
+ [fft_eqn3.png] [fft_eqn4.png] [fft_eqn.aux] 
+
+ Columns 40 to 42
+
+ [fft_eqn.dvi] [fft_eqn.log] [fft_eqn.tex] 
+
+ Columns 43 to 45
+
+ [find_eqn1.png] [find_eqn.aux] [find_eqn.dvi] 
+
+ Columns 46 to 48
+
+ [find_eqn.log] [find_eqn.tex] [help] 
+
+ Columns 49 to 51
+
+ [jit_test001.m] [jit_test002.m] [jit_test003.m] 
+
+ Columns 52 to 54
+
+ [jit_test004.m] [jit_test005.m] [jit_test006.m] 
+
+ Columns 55 to 57
+
+ [jit_test007.m] [jit_test008.m] [jit_test009.m] 
+
+ Columns 58 to 60
+
+ [jit_test010.m] [jit_test011.m] [jit_test012.m] 
+
+ Columns 61 to 63
+
+ [jit_test013.m] [jit_test014.m] [jit_test015.m] 
+
+ Columns 64 to 66
+
+ [jit_test016.m] [jit_test017.m] [jit_test018.m] 
+
+ Columns 67 to 69
+
+ [jit_test019.m] [jit_test020.m] [jit_test021.m] 
+
+ Columns 70 to 72
+
+ [jit_test022.m] [jit_test023.m] [jit_test024.m] 
+
+ Columns 73 to 75
+
+ [loadsave.dat] [max_eqn1.png] [max_eqn2.png] 
+
+ Columns 76 to 78
+
+ [max_eqn3.png] [max_eqn.aux] [max_eqn.dvi] 
+
+ Columns 79 to 81
+
+ [max_eqn.log] [max_eqn.tex] [mean_eqn1.png] 
+
+ Columns 82 to 84
+
+ [mean_eqn.aux] [mean_eqn.dvi] [mean_eqn.log] 
+
+ Columns 85 to 87
+
+ [mean_eqn.tex] [min_eqn1.png] [min_eqn2.png] 
+
+ Columns 88 to 90
+
+ [min_eqn3.png] [min_eqn.aux] [min_eqn.dvi] 
+
+ Columns 91 to 93
+
+ [min_eqn.log] [min_eqn.tex] [nargintest.m] 
+
+ Columns 94 to 96
+
+ [nargouttest.m] [source_test] [source_test_script.m] 
+
+ Columns 97 to 99
+
+ [test_assignin1.m] [test_assignin2.m] [test_bin2int1.m] 
+
+ Columns 100 to 102
+
+ [test_bitand1.m] [test_bitor1.m] [test_bitxor1.m] 
+
+ Columns 103 to 105
+
+ [test.bmp] [test_builtin1.m] [test_cell1.m] 
+
+ Columns 106 to 108
+
+ [test_clear1.m] [test_clear2.m] [test_conv2_1.m] 
+
+ Columns 109 to 111
+
+ [test_ctype1.m] [test.dat] [test_dcomplex1.m] 
+
+ Columns 112 to 114
+
+ [test_diag1.m] [test_diag2.m] [test_diag3.m] 
+
+ Columns 115 to 117
+
+ [test_diag4.m] [test_diag5.m] [test_dlmread1.m] 
+
+ Columns 118 to 120
+
+ [test_eig1.m] [test_eig2.m] [test_eig3.m] 
+
+ Columns 121 to 123
+
+ [test_eig4.m] [test_eig5.m] [test_eig6.m] 
+
+ Columns 124 to 126
+
+ [test_empty.m] [test_eps1.m] [test_error1.m] 
+
+ Columns 127 to 129
+
+ [test_eval1.m] [test_eval2.m] [test_eval3.m] 
+
+ Columns 130 to 132
+
+ [test_evalin1.m] [test_evalin2.m] [test_exist1.m] 
+
+ Columns 133 to 135
+
+ [test_exist2.m] [test_feval1.m] [test_fieldnames1.m] 
+
+ Columns 136 to 138
+
+ [test_imwrite_imread.m] [test_int2bin1.m] [test_isset1.m] 
+
+ Columns 139 to 141
+
+ [test_jit.m] [test_lasterr1.m] [test_load1.m] 
+
+ Columns 142 to 144
+
+ [test_lu1.m] [test_lu2.m] [test_nargin1.m] 
+
+ Columns 145 to 147
+
+ [test_nargin2.m] [test_permute1.m] [test_permute2.m] 
+
+ Columns 148 to 150
+
+ [test_repmat1.m] [test_repmat2.m] [test_repmat3.m] 
+
+ Columns 151 to 153
+
+ [test_save1.m] [test_source.m] [test_sparse20.m] 
+
+ Columns 154 to 156
+
+ [test_sparse21.m] [test_sparse45.m] [test_sparse58.m] 
+
+ Columns 157 to 159
+
+ [test_sparse68.m] [test_sparse70.m] [test_sparse74.m] 
+
+ Columns 160 to 162
+
+ [test_sparse75.m] [testtext] [test_typeof1.m] 
+
+ Columns 163 to 165
+
+ [test_typeof2.m] [test_typeof3.m] [test_typeof4.m] 
+
+ Columns 166 to 168
+
+ [test_typeof5.m] [test_typeof6.m] [test_uint64_1.m] 
+
+ Columns 169 to 169
+
+ [toolbox] 
+
+--&gt; y{1}
+
+ans = 
+chain1.m
+</PRE>
+<P>
+</BODY>
+</HTML>

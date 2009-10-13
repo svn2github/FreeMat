@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FREAD File Read Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FREAD File Read Function
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+Reads a block of binary data from the given file handle into a variable
+of a given shape and precision.  The general use of the function is
+<PRE>
+  A = fread(handle,size,precision)
+</PRE>
+<P>
+The <code>handle</code> argument must be a valid value returned by the fopen 
+function, and accessable for reading.  The <code>size</code> argument determines
+the number of values read from the file.  The <code>size</code> argument is simply
+a vector indicating the size of the array <code>A</code>.  The <code>size</code> argument
+can also contain a single <code>inf</code> dimension, indicating that FreeMat should
+calculate the size of the array along that dimension so as to read as
+much data as possible from the file (see the examples listed below for
+more details).  The data is stored as columns in the file, not 
+rows.
+    
+Alternately, you can specify two return values to the <code>fread</code> function,
+in which case the second value contains the number of elements read
+<PRE>
+   [A,count] = fread(...)
+</PRE>
+<P>
+where <code>count</code> is the number of elements in <code>A</code>.
+
+The third argument determines the type of the data.  Legal values for this
+argument are listed below:
+<UL>
+<LI>  'uint8','uchar','unsigned char' for an unsigned, 8-bit integer.
+ </LI>
+<LI>  'int8','char','integer*1' for a signed, 8-bit integer.
+ </LI>
+<LI>  'uint16','unsigned short' for an unsigned, 16-bit  integer.
+ </LI>
+<LI>  'int16','short','integer*2' for a signed, 16-bit integer.
+ </LI>
+<LI>  'uint32','unsigned int' for an unsigned, 32-bit integer.
+ </LI>
+<LI>  'int32','int','integer*4' for a signed, 32-bit integer.
+ </LI>
+<LI>  'single','float32','float','real*4' for a 32-bit floating point.
+ </LI>
+<LI>  'double','float64','real*8' for a 64-bit floating point.
+ </LI>
+</UL>
+
+Starting with FreeMat 4, the format for the third argument has changed.
+If you specify only a type, such as <code>'float'</code>, the data is read in as
+single precision, but the output type is always <code>'double'</code>.  This behavior
+is consistent with Matlab.  If you want the output type to match the input
+type (as was previous behavior in FreeMat), you must preface the precision
+string with a <code>'*'</code>.  Thus, the precision string <code>'*float'</code> implies
+that data is read in as single precision, and the output is also single
+precision.
+
+The third option is to specify the input and output types explicitly.
+You can do this by specifiying a precision string of the form 
+<code>'type1 =&gt; type2'</code>, where <code>'type1'</code> is the input type and 
+<code>'type2'</code> is the output type.  For example, if the input type is
+<code>'double'</code> and the output type is to be a <code>'float'</code>, then a type spec
+of <code>'double =&gt; float'</code> should be used.
+
+<H3>Example</H3>
+First, we create an array of <code>512 x 512</code> Gaussian-distributed <code>float</code> random variables, and then writing them to a file called <code>test.dat</code>.
+<PRE>
+--&gt; A = float(randn(512));
+--&gt; fp = fopen('test.dat','w');
+--&gt; fwrite(fp,A);
+--&gt; fclose(fp);
+</PRE>
+<P>
+Read as many floats as possible into a row vector
+<PRE>
+--&gt; fp = fopen('test.dat','r');
+--&gt; x = fread(fp,[1,inf],'float');
+--&gt; fclose(fp);
+--&gt; who x
+  Variable Name       Type   Flags             Size
+              x    double                    [1 262144]
+</PRE>
+<P>
+Note that <code>x</code> is a <code>double</code> array.  This behavior is new to FreeMat 4.
+Read the same floats into a 2-D float array.
+<PRE>
+--&gt; fp = fopen('test.dat','r');
+--&gt; x = fread(fp,[512,inf],'float');
+--&gt; fclose(fp);
+--&gt; who x
+  Variable Name       Type   Flags             Size
+              x    double                    [512 512]
+</PRE>
+<P>
+To read them as a single precision float array, we can use the
+following form:
+<PRE>
+--&gt; fp = fopen('test.dat','r');
+--&gt; x = fread(fp,[512,inf],'*float');
+--&gt; fclose(fp);
+--&gt; who x
+  Variable Name       Type   Flags             Size
+              x    single                    [512 512]
+</PRE>
+<P>
+
+</BODY>
+</HTML>

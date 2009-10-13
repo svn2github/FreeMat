@@ -1,0 +1,12 @@
+CONJ CONJ Conjugate Function
+
+Usage
+
+Returns the complex conjugate of the input array for all elements.  The 
+general syntax for its use is
+
+   y = conj(x)
+
+where x is an n-dimensional array of numerical type.  The output 
+is the same numerical type as the input.  The conj function does
+nothing to real and integer types.

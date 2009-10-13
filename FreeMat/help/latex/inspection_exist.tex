@@ -1,0 +1,97 @@
+\section{EXIST Test for Existence}
+
+\subsection{Usage}
+
+Tests for the existence of a variable, function, directory or
+file.  The general syntax for its use is
+\begin{verbatim}
+  y = exist(item,kind)
+\end{verbatim}
+where \verb|item| is a string containing the name of the item
+to look for, and \verb|kind| is a string indicating the type 
+of the search.  The \verb|kind| must be one of 
+\begin{itemize}
+\item  \verb|'builtin'| checks for built-in functions
+
+\item  \verb|'dir'| checks for directories
+
+\item  \verb|'file'| checks for files
+
+\item  \verb|'var'| checks for variables
+
+\item  \verb|'all'| checks all possibilities (same as leaving out \verb|kind|)
+
+\end{itemize}
+You can also leave the \verb|kind| specification out, in which case
+the calling syntax is
+\begin{verbatim}
+  y = exist(item)
+\end{verbatim}
+The return code is one of the following:
+\begin{itemize}
+\item  0 - if \verb|item| does not exist
+
+\item  1 - if \verb|item| is a variable in the workspace
+
+\item  2 - if \verb|item| is an M file on the search path, a full pathname
+ to a file, or an ordinary file on your search path
+
+\item  5 - if \verb|item| is a built-in FreeMat function
+
+\item  7 - if \verb|item| is a directory
+
+\end{itemize}
+Note: previous to version \verb|1.10|, \verb|exist| used a different notion
+of existence for variables: a variable was said to exist if it 
+was defined and non-empty.  This test is now performed by \verb|isset|.
+\subsection{Example}
+
+Some examples of the \verb|exist| function.  Note that generally \verb|exist|
+is used in functions to test for keywords.  For example,
+\begin{verbatim}
+  function y = testfunc(a, b, c)
+  if (~exist('c'))
+    % c was not defined, so establish a default
+    c = 13;
+  end
+  y = a + b + c;
+\end{verbatim}
+An example of \verb|exist| in action.
+\begin{verbatim}
+--> a = randn(3,5,2)
+
+a = 
+
+(:,:,1) = 
+    0.0744   -0.7000   -1.8022   -0.0255   -0.2933 
+   -0.0152   -0.5401   -0.2030   -0.5437    0.9261 
+   -0.4359   -1.2334    0.5156    0.0821   -0.5065 
+
+(:,:,2) = 
+    0.7408    0.6302   -0.2798    0.7279    1.7674 
+    0.9063   -1.7321   -0.8851   -0.4091   -0.5516 
+    1.4880    0.5030    0.6747   -0.5492    1.1867 
+
+--> b = []
+
+b = 
+  []
+--> who
+  Variable Name       Type   Flags             Size
+              a    double                    [3 5 2]
+              b    double                    [0 0]
+--> exist('a')
+
+ans = 
+ 1 
+
+--> exist('b')
+
+ans = 
+ 1 
+
+--> exist('c')
+
+ans = 
+ 0 
+\end{verbatim}

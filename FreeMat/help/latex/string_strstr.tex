@@ -1,0 +1,32 @@
+\section{STRSTR String Search Function}
+
+\subsection{Usage}
+
+Searches for the first occurance of one string inside another.
+The general syntax for its use is
+\begin{verbatim}
+   p = strstr(x,y)
+\end{verbatim}
+where \verb|x| and \verb|y| are two strings.  The returned integer \verb|p|
+indicates the index into the string \verb|x| where the substring \verb|y|
+occurs.  If no instance of \verb|y| is found, then \verb|p| is set to
+zero.
+\subsection{Example}
+
+Some examples of \verb|strstr| in action
+\begin{verbatim}
+--> strstr('hello','lo')
+
+ans = 
+ 4 
+
+--> strstr('quick brown fox','own')
+
+ans = 
+ 9 
+
+--> strstr('free stuff','lunch')
+
+ans = 
+ 0 
+\end{verbatim}

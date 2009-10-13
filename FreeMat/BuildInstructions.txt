@@ -1,0 +1,114 @@
+Build Instructions
+
+Starting with version 4.0, FreeMat is fairly straightforward to build.  With a few  
+notable exceptions, all of the dependencies needed to build a complete version of FreeMat
+are bundled with the source code.  The exceptions are QT, CMake and FFTW, all of which are
+too complex to embed within the FreeMat build tree.  So the build procedure is essentially:
+   - Install Qt 4.5.2 or newer (earlier versions have a bug that leads to memory leaks)
+   - Install FFTW (optional)
+   - Install CMake
+   - Download the FreeMat source code
+   - Configure the source using CMake (there are tutorials on how to use CMake available on the WWW)
+   - Configure, build and install LLVM from dependencies/llvm-2.5 directory.
+   - Configure and build FreeMat, which will automatically build all of the necessary dependencies.
+   - Install FreeMat
+The procedure is essentially the same on Linux, Mac OS X and Windows, but for completeness, each OS is
+described in a little more detail below.  Note that FreeMat's build setup will look for installed
+libraries whenever possible, so that the bundled dependencies are used only when system-wide libraries
+are not available or not compatible.
+
+
+Linux
+
+- Install Qt 4.5.2 (http://www.qtsoftware.com/downloads)
+- Install fftw and fftwf from http://www.fftw.org
+    - wget http://www.fftw.org/fftw-3.2.2.tar.gz
+    - tar xvfz fftw-3.2.2.tar.gz
+    - cd fftw-3.2.2
+    - mkdir build_fftw
+    - cd build_fftw
+    - ../configure
+    - make && sudo make install
+    - cd ..
+    - mkdir build_fftwf
+    - cd build_fftwf
+    - ../configure --enable-single
+    - make && make install
+- Install CMake (version 2.6.4 or later) for Mac OS X from http://www.cmake.org
+- Download the FreeMat source package
+- Unpack the source package
+- Run ccmake from the build directory
+	(it is strongly suggested that the build directory should be outside the source tree.)
+- configure and generate the makefiles
+- Build FreeMat via "make"
+
+Mac OS X
+
+- Install Developer Tools
+- Install Qt 4.5.2 (the prebuilt version for Cocoa works fine)
+- Install fftw and fftwf into /usr/local - we build these in two seperate directories 
+    - wget http://www.fftw.org/fftw-3.2.2.tar.gz
+    - tar xvfz fftw-3.2.2.tar.gz
+    - cd fftw-3.2.2
+    - mkdir build_fftw
+    - cd build_fftw
+    - ../configure
+    - make && sudo make install
+    - cd ..
+    - mkdir build_fftwf
+    - cd build_fftwf
+    - ../configure --enable-single
+    - make && make install
+- Install CMake (version 2.6.4 or later) for Mac OS X from http://www.cmake.org
+- Download the FreeMat source package
+- Unpack the source package
+- Install LLVM-2.5
+    - cd dependencies/llvm-2.5
+    - ./configure --prefix=/usr/local --enable-optimized
+    - make
+    - sudo make install
+- Run CMake (or CMakeSetup.exe)  Select the build type you want (e.g., makefiles).
+- Enter path to <CMake source> in cmake source directory edit box. Enter path to build directory
+	(it is strongly suggested that the build directory should be outside the source tree.)
+- Click Configure button. 
+- Press "Ok" to generate the makefiles.
+- Build FreeMat via "make"
+
+
+Windows / Visual Studio Express / CMake
+
+- Install Visual C++ 2008 Express
+- Install CMake (version 2.6.4 or later) for Win32 from http://www.cmake.org
+- If optimized BLAS libraries are available (vendor or ATLAS BLAS) install those.
+- Install Qt 4.5.2
+    - Download the source package from http://download.qtsoftware.com/qt/source/qt-win-opensource-src-4.5.2.zip
+    - Unpack the source code into, e.g. c:\qt
+    - Open the Visual Studio Command prompt, and cd to this directory
+    - Configure QT with "configure"
+    - make QT with "nmake"
+    - install QT with "nmake install"
+    - Add the binary directory to your path, e.g. My Computer->properties->Advanced->Environment Variables, edit the "PATH" variable, and append "c:\qt\bin" to the definition of the "PATH".
+- FFTW is bundled (as a binary) with the FreeMat source code, so you do not need to get it seperately.
+- Download the FreeMat source package
+- Unpack the source package into, e.g. C:\FreeMat4
+- Build LLVM using CMake
+    - Run CMake
+    - Choose C:\FreeMat4\dependencies\llvm-2.5 for the "where is the source code"
+    - Choose C:\FreeMat4\build\llvm-2.5 for "where to build the binaries"
+    - click "Configure", and select the build type that corresponds to your version of Visual Studio.
+    - Choose "OK" for creating the build directory
+    - "Configure", then "OK"
+    - Open C:\FreeMat4\build\llvm-2.5\LLVM.sln using Visual Studio
+    - Right click on "ALL_BUILD" and choose "Build"
+    - Get a nice cup of tea while LLVM builds
+    - Right click on "INSTALL" and choose "Build"
+    - LLVM will install into c:/Program Files/LLVM by default.
+- Build FreeMat using CMake
+    - Run CMake (or CMakeSetup.exe)  Select the build type that corresponds to your version of Visual Studio.
+    - Enter path to <CMake source> in cmake source directory edit box. Enter path to build directory
+	(it is strongly suggested that the build directory should be outside the source tree.)
+    - Click Configure button. 
+    - Press "Ok" to generate VS solution files.
+    - Open FreeMat.sln from the build directory
+    - Build FreeMat
+

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CELLSTR Convert character array to cell array of strings
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CELLSTR Convert character array to cell array of strings
+</H2>
+<P>
+Section: <A HREF=sec_string.html> String Functions </A>
+<H3>Usage</H3>
+The <code>cellstr</code> converts a character array matrix into a 
+a cell array of individual strings.  Each string in
+the matrix is placed in a different cell, and extra spaces
+are removed.  The syntax for the command is
+<PRE>
+   y = cellstr(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>N x M</code> array of characters as a string.
+<H3>Example</H3>
+Here is an example of how to use <code>cellstr</code>
+<PRE>
+--&gt; a = ['quick';'brown';'fox  ';'is   ']
+
+a = 
+quick
+brown
+fox  
+is   
+--&gt; cellstr(a)
+
+ans = 
+ [quick] 
+ [brown] 
+ [fox] 
+ [is] 
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,10 @@
+ASECD ASECD Inverse Secant Degrees Function
+
+Usage
+
+Computes the inverse secant of the argument, but returns
+the argument in degrees instead of radians (as is the case
+for asec. The syntax for its use is
+
+   y = asecd(x)
+

@@ -1,0 +1,18 @@
+RETALL RETALL Return From All Keyboard Sessions
+
+Usage
+
+The retall statement is used to return to the base workspace
+from a nested keyboard session.  It is equivalent to forcing
+execution to return to the main prompt, regardless of the level
+of nesting of keyboard sessions, or which functions are 
+running.  The syntax is simple
+
+   retall
+
+The retall is a convenient way to stop debugging.  In the
+process of debugging a complex program or set of functions,
+you may find yourself 5 function calls down into the program
+only to discover the problem.  After fixing it, issueing
+a retall effectively forces FreeMat to exit your program
+and return to the interactive prompt.

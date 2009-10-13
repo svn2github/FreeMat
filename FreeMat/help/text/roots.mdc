@@ -1,0 +1,11 @@
+ROOTS ROOTS Find Roots of Polynomial
+
+Usage
+
+The roots routine will return a column vector containing the
+roots of a polynomial.  The general syntax is
+
+   z = roots(p)
+
+where p is a vector containing the coefficients of the polynomial
+ordered in descending powers.  

@@ -1,0 +1,16 @@
+EPS EPS Double Precision Floating Point Relative Machine Precision Epsilon
+
+Usage
+
+Returns eps, which quantifies the relative machine precision
+of floating point numbers (a machine specific quantity).  The syntax
+for eps is:
+
+   y = eps
+   y = eps('double')
+   y = eps(X)
+
+First form returns eps for double precision values. For most
+typical processors, this value is approximately 2^-52, or 2.2204e-16.
+Second form return eps for class double or single.
+Third form returns distance to the next value greater than X.

@@ -1,0 +1,15 @@
+LOG LOG Natural Logarithm Function
+
+Usage
+
+Computes the log function for its argument.  The general
+syntax for its use is
+
+  y = log(x)
+
+where x is an n-dimensional array of numerical type.
+Integer types are promoted to the double type prior to
+calculation of the log function.  Output y is of the
+same size as the input x. For strictly positive, real inputs, 
+the output type is the same as the input.
+For negative and complex arguments, the output is complex.

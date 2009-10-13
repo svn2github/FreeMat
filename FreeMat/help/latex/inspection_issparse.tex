@@ -1,0 +1,38 @@
+\section{ISSPARSE Test for Sparse Matrix}
+
+\subsection{Usage}
+
+Test a matrix to see if it is sparse or not.  The general
+format for its use is 
+\begin{verbatim}
+   y = issparse(x)
+\end{verbatim}
+This function returns true if \verb|x| is encoded as a sparse
+matrix, and false otherwise.
+\subsection{Example}
+
+Here is an example of using \verb|issparse|:
+\begin{verbatim}
+--> a = [1,0,0,5;0,3,2,0]
+
+a = 
+ 1 0 0 5 
+ 0 3 2 0 
+
+--> issparse(a)
+
+ans = 
+ 0 
+
+--> A = sparse(a)
+
+A = 
+ 1 1 1
+ 2 2 3
+ 2 3 2
+ 1 4 5
+--> issparse(A)
+
+ans = 
+ 1 
+\end{verbatim}

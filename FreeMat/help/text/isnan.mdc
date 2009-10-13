@@ -1,0 +1,14 @@
+ISNAN ISNAN Test for Not-a-Numbers
+
+Usage
+
+Returns true for entries of an array that are NaN's (i.e.,
+Not-a-Numbers).  The usage is
+
+   y = isnan(x)
+
+The result is a logical array of the same size as x,
+which is true if x is not-a-number, and false otherwise.
+Note that for complex data types that
+the result is true if either the real or imaginary parts
+are NaNs.

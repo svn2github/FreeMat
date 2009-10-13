@@ -1,0 +1,44 @@
+\section{POLYDER Polynomial Coefficient Differentiation}
+
+\subsection{Usage}
+
+The \verb|polyder| function returns the polynomial coefficients resulting
+from differentiation of polynomial \verb|p|. The syntax for its use is either
+\begin{verbatim}
+ pder = polyder(p)
+\end{verbatim}
+ for the derivitave of polynomial p, or
+\begin{verbatim}
+ convp1p2der = polyder(p1,p2)
+\end{verbatim}
+ for the derivitave of polynomial conv(p1,p2), or still
+\begin{verbatim}
+ [nder,dder] = polyder(n,d)
+\end{verbatim}
+for the derivative of polynomial \verb|n/d| (\verb|nder| is the numerator
+and \verb|dder| is the denominator). In all cases the polynomial 
+coefficients are assumed to be in decreasing degree.
+Contributed by Paulo Xavier Candeias under GPL
+\subsection{Example}
+
+Here are some examples of the use of \verb|polyder|
+\begin{verbatim}
+--> polyder([2,3,4])
+
+ans = 
+ 4 3 
+\end{verbatim}
+\begin{verbatim}
+--> polyder([2,3,4],7)
+
+ans = 
+ 28 21 
+\end{verbatim}
+\begin{verbatim}
+--> [n,d] = polyder([2,3,4],5)
+n = 
+ -20 -15 
+
+d = 
+ 25 
+\end{verbatim}

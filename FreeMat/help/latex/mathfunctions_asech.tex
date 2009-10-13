@@ -1,0 +1,28 @@
+\section{ASECH Inverse Hyperbolic Secant Function}
+
+\subsection{Usage}
+
+Computes the inverse hyperbolic secant of its argument.  The general
+syntax for its use is
+\begin{verbatim}
+  y = asech(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional array of numerical type.
+\subsection{Function Internals}
+
+The \verb|asech| function is computed from the formula
+\[
+   \mathrm{sech}^{-1}(x) = \cosh^{-1}\left(\frac{1}{x}\right)
+\]
+\subsection{Examples}
+
+Here is a simple plot of the inverse hyperbolic secant function
+\begin{verbatim}
+--> x1 = -20:.01:-1;
+--> x2 = 1:.01:20;
+--> plot(x1,imag(asech(x1)),x2,imag(asech(x2))); grid('on');
+\end{verbatim}
+
+
+\centerline{\includegraphics[width=8cm]{asechplot}}
+

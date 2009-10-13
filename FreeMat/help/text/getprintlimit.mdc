@@ -1,0 +1,15 @@
+GETPRINTLIMIT GETPRINTLIMIT Get Limit For Printing Of Arrays
+
+Usage
+
+Returns the limit on how many elements of an array are printed
+using either the disp function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling setprintlimit.  This function is provided
+primarily so that you can temporarily change the output truncation
+and then restore it to the previous value (see the examples).
+
+   n=getprintlimit
+
+where n is the current limit in use.

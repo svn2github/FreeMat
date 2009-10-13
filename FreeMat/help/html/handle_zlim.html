@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>ZLIM Adjust Z Axis limits of plot
+</TITLE>
+</HEAD>
+<BODY>
+<H2>ZLIM Adjust Z Axis limits of plot
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+There are several ways to use <code>zlim</code> to adjust the Z axis limits of
+a plot.  The various syntaxes are
+<PRE>
+   zlim
+   zlim([lo,hi])   
+   zlim('auto')
+   zlim('manual')
+   zlim('mode')
+   zlim(handle,...)
+</PRE>
+<P>
+The first form (without arguments), returns a 2-vector containing the
+current limits.  The second form sets the limits on the plot to <code>[lo,hi]</code>.
+The third and fourth form set the mode for the limit to <code>auto</code> and <code>manual</code>
+respectively.  In <code>auto</code> mode, FreeMat chooses the range for the axis 
+automatically.  The <code>zlim('mode')</code> form returns the current mode for the axis
+(either <code>'auto'</code> or <code>'manual'</code>).  Finally, you can specify the handle of an
+axis to manipulate instead of using the current one.
+<H3>Example</H3>
+<PRE>
+--&gt; x = linspace(-1,1);
+--&gt; y = sin(2*pi*x);
+--&gt; plot(x,y,'r-');
+--&gt; zlim  % what are the current limits?
+
+ans = 
+   -0.5000    0.5000 
+</PRE>
+<P>
+which results in
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="zlim1.png">
+</DIV>
+<P>
+Next, we zoom in on the plot using the <code>zlim</code> function
+<PRE>
+--&gt; plot(x,y,'r-')
+--&gt; zlim([-0.2,0.2])
+</PRE>
+<P>
+which results in
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="zlim2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

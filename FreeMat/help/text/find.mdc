@@ -1,0 +1,40 @@
+FIND FIND Find Non-zero Elements of An Array
+
+Usage
+
+Returns a vector that contains the indicies of all non-zero elements 
+in an array.  The usage is
+
+   y = find(x)
+
+The indices returned are generalized column indices, meaning that if 
+the array x is of size [d1,d2,...,dn], and the
+element x(i1,i2,...,in) is nonzero, then y
+will contain the integer
+The second syntax for the find command is
+
+   [r,c] = find(x)
+
+which returns the row and column index of the nonzero entries of x.
+The third syntax for the find command also returns the values
+
+   [r,c,v] = find(x).
+
+Note that if the argument is a row vector, then the returned vectors
+are also row vectors. This form is particularly useful for converting 
+sparse matrices into IJV form.
+
+The find command also supports some additional arguments.  Each of the
+above forms can be combined with an integer indicating how many results
+to return:
+
+   y = find(x,k)
+
+where k is the maximum number of results to return.  This form will return
+the first k results.  You can also specify an optional flag indicating 
+whether to take the first or last k values:
+
+   y = find(x,k,'first')
+   y = find(x,k,'last')
+
+in the case of the 'last' argument, the last k values are returned.

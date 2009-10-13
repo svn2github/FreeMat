@@ -1,0 +1,19 @@
+QUIET QUIET Control the Verbosity of the Interpreter
+
+Usage
+
+The quiet function controls how verbose the interpreter
+is when executing code.  The syntax for the function is
+
+   quiet flag
+
+where flag is one of
+  -  'normal' - normal output from the interpreter
+
+  -  'quiet' - only intentional output (e.g. printf calls and
+disp calls) is printed.  The output of expressions that are not
+terminated in semicolons are not printed.
+
+  -  'silent' - nothing is printed to the output.
+
+The quiet command also returns the current quiet flag.

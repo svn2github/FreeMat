@@ -1,0 +1,11 @@
+DOUBLE DOUBLE Convert to 64-bit Floating Point
+
+Usage
+
+Converts the argument to a 64-bit floating point number.  The syntax
+for its use is
+
+   y = double(x)
+
+where x is an n-dimensional numerical array.  Conversion follows the 
+saturation rules.  Note that both NaN and Inf are both preserved under type conversion.

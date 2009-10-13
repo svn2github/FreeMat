@@ -1,0 +1,17 @@
+LOWER LOWER Convert strings to lower case
+
+Usage
+
+The lower function converts a string to lower case with
+the syntax
+
+   y = lower(x)
+
+where x is a string, in which case all of the upper case
+characters in x (defined as the range 'A'-'Z') are
+converted to lower case.  Alternately, you can call lower
+with a cell array of strings
+
+   y = lower(c)
+
+in which case each string in the cell array is converted to lower case.

@@ -1,0 +1,11 @@
+ISSPARSE ISSPARSE Test for Sparse Matrix
+
+Usage
+
+Test a matrix to see if it is sparse or not.  The general
+format for its use is 
+
+   y = issparse(x)
+
+This function returns true if x is encoded as a sparse
+matrix, and false otherwise.

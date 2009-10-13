@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>INT2BIN Convert Integer Arrays to Binary
+</TITLE>
+</HEAD>
+<BODY>
+<H2>INT2BIN Convert Integer Arrays to Binary
+</H2>
+<P>
+Section: <A HREF=sec_typecast.html> Type Conversion Functions </A>
+<H3>Usage</H3>
+Computes the binary decomposition of an integer array to the specified
+number of bits.  The general syntax for its use is
+<PRE>
+   y = int2bin(x,n)
+</PRE>
+<P>
+where <code>x</code> is a multi-dimensional integer array, and <code>n</code> is the number
+of bits to expand it to.  The output array <code>y</code> has one extra dimension
+to it than the input.  The bits are expanded along this extra dimension.
+<H3>Example</H3>
+The following piece of code demonstrates various uses of the int2bin
+function.  First the simplest example:
+<PRE>
+--&gt; A = [2;5;6;2]
+
+A = 
+ 2 
+ 5 
+ 6 
+ 2 
+
+--&gt; int2bin(A,8)
+
+ans = 
+ 0 0 0 0 0 0 1 0 
+ 0 0 0 0 0 1 0 1 
+ 0 0 0 0 0 1 1 0 
+ 0 0 0 0 0 0 1 0 
+
+--&gt; A = [1;2;-5;2]
+
+A = 
+  1 
+  2 
+ -5 
+  2 
+
+--&gt; int2bin(A,8)
+
+ans = 
+ 0 0 0 0 0 0 0 1 
+ 0 0 0 0 0 0 1 0 
+ 1 1 1 1 1 0 1 1 
+ 0 0 0 0 0 0 1 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

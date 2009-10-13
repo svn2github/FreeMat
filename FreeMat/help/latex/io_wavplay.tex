@@ -1,0 +1,23 @@
+\section{WAVPLAY}
+
+\subsection{Usage}
+
+Plays a linear PCM set of samples through the audio system.  This
+function is only available if the \verb|portaudio| library was available
+when FreeMat was built.  The syntax for the command is one of:
+\begin{verbatim}
+   wavplay(y)
+   wavplay(y,sampling_rate)
+   wavplay(...,mode)
+\end{verbatim}
+where \verb|y| is a matrix of audio samples.  If \verb|y| has two columns, then
+the audio playback is in stereo.  The \verb|y| input can be of types 
+\verb|float, double, int32, int16, int8, uint8|.  For \verb|float| and 
+\verb|double| types, the sample values in \verb|y| must be between \verb|-1| and
+\verb|1|.  The \verb|sampling_rate| specifies the rate at which the data is 
+recorded.  If not specified, the \verb|sampling_rate| defaults to \verb|11025Hz|.
+Finally, you can specify a playback mode of \verb|'sync'| which is synchronous
+playback or a playback mode of \verb|'async'| which is asynchronous playback.
+For \verb|'sync'| playback, the wavplay function returns when the playback is
+complete.  For \verb|'async'| playback, the function returns immediately (unless
+a former playback is still issuing).

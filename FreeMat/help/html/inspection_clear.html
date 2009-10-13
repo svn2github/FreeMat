@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CLEAR Clear or Delete a Variable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CLEAR Clear or Delete a Variable
+</H2>
+<P>
+Section: <A HREF=sec_inspection.html> Inspection Functions </A>
+<H3>Usage</H3>
+Clears a set of variables from the current context, or alternately, 
+delete all variables defined in the current context.  There are
+several formats for the function call.  The first is the explicit form
+in which a list of variables are provided:
+<PRE>
+   clear a1 a2 ...
+</PRE>
+<P>
+The variables can be persistent or global, and they will be deleted.
+The second form
+<PRE>
+   clear 'all'
+</PRE>
+<P>
+clears all variables and libraries from the current context.  Alternately, you can
+use the form:
+<PRE>
+   clear 'libs'
+</PRE>
+<P>
+which will unload any libraries or DLLs that have been <code>import</code>ed. 
+Optionally, you can specify that persistent variables should be cleared via:
+<PRE>
+   clear 'persistent'
+</PRE>
+<P>
+and similarly for global variables:
+<PRE>
+   clear 'global'
+</PRE>
+<P>
+You can use
+<PRE>
+   clear 'classes'
+</PRE>
+<P>
+to clear all definitions of user-defined classes.
+With no arguments, <code>clear</code> defaults to clearing <code>'all'</code>.
+<H3>Example</H3>
+Here is a simple example of using <code>clear</code> to delete a variable.  First, we create a variable called <code>a</code>:
+<PRE>
+--&gt; a = 53
+
+a = 
+ 53 
+</PRE>
+<P>
+Next, we clear <code>a</code> using the <code>clear</code> function, and verify that it is deleted.
+<PRE>
+--&gt; clear a
+--&gt; a
+Error: Undefined function or variable a
+</PRE>
+<P>
+</BODY>
+</HTML>

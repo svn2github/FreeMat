@@ -1,0 +1,21 @@
+SVD SVD Singular Value Decomposition of a Matrix
+
+Usage
+
+Computes the singular value decomposition (SVD) of a matrix.  The 
+svd function has three forms.  The first returns only the singular
+values of the matrix:
+
+  s = svd(A)
+
+The second form returns both the singular values in a diagonal
+matrix S, as well as the left and right eigenvectors.
+
+  [U,S,V] = svd(A)
+
+The third form returns a more compact decomposition, with the
+left and right singular vectors corresponding to zero singular
+values being eliminated.  The syntax is
+
+  [U,S,V] = svd(A,0)
+

@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FIGRAISE Raise a Figure Window
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FIGRAISE Raise a Figure Window
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Raises a figure window indicated by the figure number.  The syntax for
+its use is
+<PRE>
+  figraise(fignum)
+</PRE>
+<P>
+where <code>fignum</code> is the number of the figure to raise.  The figure will
+be raised to the top of the GUI stack (meaning that it we be visible).
+Note that this function does not cause <code>fignum</code> to become the current
+figure, you must use the <code>figure</code> command for that.
+</BODY>
+</HTML>

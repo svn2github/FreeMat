@@ -1,0 +1,8 @@
+COPPER COPPER Copper Colormap
+
+Usage
+
+Returns a copper colormap.  The syntax for its use is
+
+   y = copper
+

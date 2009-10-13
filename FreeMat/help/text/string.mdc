@@ -1,0 +1,10 @@
+STRING STRING Convert Array to String
+
+Usage
+
+Converts the argument array into a string.  The syntax for its
+use is
+
+   y = string(x)
+
+where x is an n-dimensional numerical array.

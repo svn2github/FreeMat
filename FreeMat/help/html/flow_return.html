@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RETURN Return From Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RETURN Return From Function
+</H2>
+<P>
+Section: <A HREF=sec_flow.html> Flow Control </A>
+<H3>Usage</H3>
+The <code>return</code> statement is used to immediately return from
+a function, or to return from a <code>keyboard</code> session.  The 
+syntax for its use is
+<PRE>
+  return
+</PRE>
+<P>
+Inside a function, a <code>return</code> statement causes FreeMat
+to exit the function immediately.  When a <code>keyboard</code> session
+is active, the <code>return</code> statement causes execution to
+resume where the <code>keyboard</code> session started.
+<H3>Example</H3>
+In the first example, we define a function that uses a
+<code>return</code> to exit the function if a certain test condition 
+is satisfied.
+<P>
+<PRE>
+     return_func.m
+function ret = return_func(a,b)
+  ret = 'a is greater';
+  if (a &gt; b)
+    return;
+  end
+  ret = 'b is greater';
+  printf('finishing up...\n');
+
+</PRE>
+<P>
+Next we exercise the function with a few simple test
+cases:
+<PRE>
+--&gt; return_func(1,3)
+finishing up...
+
+ans = 
+b is greater
+--&gt; return_func(5,2)
+
+ans = 
+a is greater
+</PRE>
+<P>
+In the second example, we take the function and rewrite
+it to use a <code>keyboard</code> statement inside the <code>if</code> statement.
+<P>
+<PRE>
+     return_func2.m
+function ret = return_func2(a,b)
+  if (a &gt; b)
+     ret = 'a is greater';
+     keyboard;
+  else
+     ret = 'b is greater';
+  end
+  printf('finishing up...\n');
+
+</PRE>
+<P>
+Now, we call the function with a larger first argument, which
+triggers the <code>keyboard</code> session.  After verifying a few
+values inside the <code>keyboard</code> session, we issue a <code>return</code>
+statement to resume execution.
+<PRE>
+--&gt; return_func2(2,4)
+finishing up...
+
+ans = 
+b is greater
+--&gt; return_func2(5,1)
+[return_func2,4]--&gt; ret
+
+ans = 
+a is greater
+[return_func2,4]--&gt; a
+
+ans = 
+ 5 
+
+[return_func2,4]--&gt; b
+
+ans = 
+ 1 
+
+[return_func2,4]--&gt; return
+finishing up...
+
+ans = 
+a is greater
+</PRE>
+<P>
+</BODY>
+</HTML>

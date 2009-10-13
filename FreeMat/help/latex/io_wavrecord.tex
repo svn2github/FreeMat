@@ -1,0 +1,17 @@
+\section{WAVRECORD}
+
+\subsection{Usage}
+
+Records linear PCM sound from the audio system.  This function is
+only available if the \verb|portaudio| library was available when FreeMat
+was built.  The syntax for this command is one of:
+\begin{verbatim}
+  y = wavrecord(samples,rate)
+  y = wavrecord(...,channels)
+  y = wavrecord(...,'datatype')
+\end{verbatim}
+where \verb|samples| is the number of samples to record, and \verb|rate| is the
+sampling rate.  If not specified, the \verb|rate| defaults to \verb|11025Hz|.
+If you want to record in stero, specify \verb|channels = 2|.  Finally, you
+can specify the type of the recorded data (defaults to \verb|FM_DOUBLE|).
+Valid choices are \verb|float, double, int32, int16, int8, uint8|.

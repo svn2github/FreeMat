@@ -1,0 +1,65 @@
+\section{INT32 Convert to Signed 32-bit Integer}
+
+\subsection{Usage}
+
+Converts the argument to an signed 32-bit Integer.  The syntax
+for its use is
+\begin{verbatim}
+   y = int32(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional numerical array.  Conversion
+follows the saturation rules (e.g., if \verb|x| is outside the normal
+range for a signed 32-bit integer of \verb|[-2147483647,2147483647]|, 
+it is truncated to that range).  Note that both \verb|NaN| and \verb|Inf| both map to 0.
+\subsection{Example}
+
+The following piece of code demonstrates several uses of \verb|int32|.  First, the routine uses
+\begin{verbatim}
+--> int32(100)
+
+ans = 
+ 100 
+
+--> int32(-100)
+
+ans = 
+ -100 
+\end{verbatim}
+In the next example, an integer outside the range  of the type is passed in.  The 
+result is truncated to the range of the data type.
+\begin{verbatim}
+--> int32(40e9)
+
+ans = 
+ 2147483647 
+\end{verbatim}
+In the next example, a positive double precision argument is passed in.  The 
+result is the signed integer that is closest to the argument.
+\begin{verbatim}
+--> int32(pi)
+
+ans = 
+ 3 
+\end{verbatim}
+In the next example, a complex argument is passed in.  The result is the signed 
+complex integer that is closest to the argument.
+\begin{verbatim}
+--> int32(5+2*i)
+
+ans = 
+   5.0000 +  2.0000i 
+\end{verbatim}
+In the next example, a string argument is passed in.  The string argument is 
+converted into an integer array corresponding to the ASCII values of each character.
+\begin{verbatim}
+--> int32('helo')
+
+ans = 
+ 104 101 108 111 
+\end{verbatim}
+In the last example, a cell-array is passed in.  For cell-arrays and structure 
+arrays, the result is an error.
+\begin{verbatim}
+--> int32({4})
+Error: Cannot perform type conversions with this type
+\end{verbatim}

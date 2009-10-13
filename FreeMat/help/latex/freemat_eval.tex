@@ -1,0 +1,86 @@
+\section{EVAL Evaluate a String}
+
+\subsection{Usage}
+
+The \verb|eval| function evaluates a string.  The general syntax
+for its use is
+\begin{verbatim}
+   eval(s)
+\end{verbatim}
+where \verb|s| is the string to evaluate.  If \verb|s| is an expression
+(instead of a set of statements), you can assign the output
+of the \verb|eval| call to one or more variables, via
+\begin{verbatim}
+   x = eval(s)
+   [x,y,z] = eval(s)
+\end{verbatim}
+
+Another form of \verb|eval| allows you to specify an expression or
+set of statements to execute if an error occurs.  In this 
+form, the syntax for \verb|eval| is
+\begin{verbatim}
+   eval(try_clause,catch_clause),
+\end{verbatim}
+or with return values,
+\begin{verbatim}
+   x = eval(try_clause,catch_clause)
+   [x,y,z] = eval(try_clause,catch_clause)
+\end{verbatim}
+These later forms are useful for specifying defaults.  Note that
+both the \verb|try_clause| and \verb|catch_clause| must be expressions,
+as the equivalent code is
+\begin{verbatim}
+  try
+    [x,y,z] = try_clause
+  catch
+    [x,y,z] = catch_clause
+  end
+\end{verbatim}
+so that the assignment must make sense in both cases.
+\subsection{Example}
+
+Here are some examples of \verb|eval| being used.
+\begin{verbatim}
+--> eval('a = 32')
+
+a = 
+ 32 
+
+--> b = eval('a')
+
+b = 
+ 32 
+\end{verbatim}
+The primary use of the \verb|eval| statement is to enable construction
+of expressions at run time.
+\begin{verbatim}
+--> s = ['b = a' ' + 2']
+
+s = 
+b = a + 2
+--> eval(s)
+
+b = 
+ 34 
+\end{verbatim}
+Here we demonstrate the use of the catch-clause to provide a 
+default value
+\begin{verbatim}
+--> a = 32
+
+a = 
+ 32 
+
+--> b = eval('a','1')
+
+b = 
+ 32 
+
+--> b = eval('z','a+1')
+
+b = 
+ 33 
+\end{verbatim}
+Note that in the second case, \verb|b| takes the value of 33, indicating
+that the evaluation of the first expression failed (because \verb|z| is
+not defined).

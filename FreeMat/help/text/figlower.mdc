@@ -1,0 +1,15 @@
+FIGLOWER FIGLOWER Lower a Figure Window
+
+Usage
+
+Lowers a figure window indicated by the figure number.  The syntax for
+its use is
+
+  figlower(fignum)
+
+where fignum is the number of the figure to lower.  The figure will
+be lowerd to the bottom of the GUI stack (meaning that it we be behind other
+windows).  Note that this function does not cause fignum to 
+become the current  figure, you must use the figure command for that.
+Similarly, if fignum is the current figure, it will remain the current
+figure (even though the figure is now behind others).

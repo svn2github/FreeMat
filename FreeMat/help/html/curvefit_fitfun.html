@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FITFUN Fit a Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FITFUN Fit a Function
+</H2>
+<P>
+Section: <A HREF=sec_curvefit.html> Optimization and Curve Fitting </A>
+<H3>Usage</H3>
+Fits <code>n</code> (non-linear) functions of <code>m</code> variables using least squares
+and the Levenberg-Marquardt algorithm.  The general syntax for its usage
+is
+<PRE>
+  [xopt,yopt] = fitfun(fcn,xinit,y,weights,tol,params...)
+</PRE>
+<P>
+Where <code>fcn</code> is the name of the function to be fit, <code>xinit</code> is the
+initial guess for the solution (required), <code>y</code> is the right hand side,
+i.e., the vector <code>y</code> such that:
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="fitfun_eqn1.png">
+</DIV>
+<P>
+the output <code>yopt</code> is the function <code>fcn</code> evaluated at <code>xopt</code>.  
+The vector <code>weights</code> must be the same size as <code>y</code>, and contains the
+relative weight to assign to an error in each output value.  Generally,
+the ith weight should reflect your confidence in the ith measurement.
+The parameter <code>tol</code> is the tolerance used for convergence.
+The function <code>fcn</code> must return a vector of the same size as <code>y</code>,
+and <code>params</code> are passed to <code>fcn</code> after the argument <code>x</code>, i.e.,
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="fitfun_eqn2.png">
+</DIV>
+<P>
+Note that both <code>x</code> and <code>y</code> (and the output of the function) must all
+be real variables.  Complex variables are not handled yet.
+</BODY>
+</HTML>

@@ -1,0 +1,13 @@
+RANDI RANDI Uniformly Distributed Integer
+
+Usage
+
+Generates an array of uniformly distributed integers between
+the two supplied limits.  The general syntax for randi is
+
+   y = randi(low,high)
+
+where low and high are arrays of integers.  Scalars
+can be used for one of the arguments.  The output y is
+a uniformly distributed pseudo-random number between low
+and high (inclusive).

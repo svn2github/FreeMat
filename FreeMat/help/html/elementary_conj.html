@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>CONJ Conjugate Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>CONJ Conjugate Function
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+Returns the complex conjugate of the input array for all elements.  The 
+general syntax for its use is
+<PRE>
+   y = conj(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional array of numerical type.  The output 
+is the same numerical type as the input.  The <code>conj</code> function does
+nothing to real and integer types.
+<H3>Example</H3>
+The following demonstrates the complex conjugate applied to a complex scalar.
+<PRE>
+--&gt; conj(3+4*i)
+
+ans = 
+   3.0000 -  4.0000i 
+</PRE>
+<P>
+The <code>conj</code> function has no effect on real arguments:
+<PRE>
+--&gt; conj([2,3,4])
+
+ans = 
+ 2 3 4 
+</PRE>
+<P>
+For a double-precision complex array,
+<PRE>
+--&gt; conj([2.0+3.0*i,i])
+
+ans = 
+   2.0000 -  3.0000i   0.0000 -  1.0000i 
+</PRE>
+<P>
+</BODY>
+</HTML>

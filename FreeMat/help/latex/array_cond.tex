@@ -1,0 +1,65 @@
+\section{COND Condition Number of a Matrix}
+
+\subsection{Usage}
+
+Calculates the condition number of a matrix.  To compute the
+2-norm condition number of a matrix (ratio of largest to smallest
+singular values), use the syntax
+\begin{verbatim}
+   y = cond(A)
+\end{verbatim}
+where A is a matrix.  If you want to compute the condition number
+in a different norm (e.g., the 1-norm), use the second syntax
+\begin{verbatim}
+   y = cond(A,p)
+\end{verbatim}
+where \verb|p| is the norm to use when computing the condition number.
+The following choices of \verb|p| are supported
+\begin{itemize}
+\item  \verb|p = 1| returns the 1-norm, or the max column sum of A
+
+\item  \verb|p = 2| returns the 2-norm (largest singular value of A)
+
+\item  \verb|p = inf| returns the infinity norm, or the max row sum of A
+
+\item  \verb|p = 'fro'| returns the Frobenius-norm (vector Euclidean norm, or RMS value)
+
+\end{itemize}
+\subsection{Function Internals}
+
+The condition number is defined as
+\[
+  \frac{\|A\|_p}{\|A^{-1}\|_p}
+\]
+This equation is precisely how the condition number is computed for
+the case \verb|p ~= 2|.  For the \verb|p=2| case, the condition number can 
+be computed much more efficiently using the ratio of the largest and
+smallest singular values.
+\subsection{Example}
+
+The condition number of this matrix is large
+\begin{verbatim}
+--> A = [1,1;0,1e-15]
+
+A = 
+    1.0000    1.0000 
+         0    0.0000 
+
+--> cond(A)
+
+ans = 
+ 2000000000000000 
+
+--> cond(A,1)
+
+ans = 
+ 2000000000000002 
+\end{verbatim}
+You can also (for the case \verb|p=1| use \verb|rcond| to calculate an estimate
+of the condition number
+\begin{verbatim}
+--> 1/rcond(A)
+
+ans = 
+ 2.0000e+15 
+\end{verbatim}

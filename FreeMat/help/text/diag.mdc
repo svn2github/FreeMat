@@ -1,0 +1,15 @@
+DIAG DIAG Diagonal Matrix Construction/Extraction
+
+Usage
+
+The diag function is used to either construct a 
+diagonal matrix from a vector, or return the diagonal
+elements of a matrix as a vector.  The general syntax
+for its use is
+
+  y = diag(x,n)
+
+If x is a matrix, then y returns the n-th 
+diagonal.  If n is omitted, it is assumed to be
+zero.  Conversely, if x is a vector, then y
+is a matrix with x set to the n-th diagonal.

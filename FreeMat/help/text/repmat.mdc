@@ -1,0 +1,26 @@
+REPMAT REPMAT Array Replication Function
+
+Usage
+
+The repmat function replicates an array the specified
+number of times.  The source and destination arrays may
+be multidimensional.  There are three distinct syntaxes for
+the repmap function.  The first form:
+
+  y = repmat(x,n)
+
+replicates the array x on an n-times-n tiling, to create
+a matrix y that has n times as many rows and columns
+as x.  The output y will match x in all remaining
+dimensions.  The second form is
+
+  y = repmat(x,m,n)
+
+And creates a tiling of x with m copies of x in the
+row direction, and n copies of x in the column direction.
+The final form is the most general
+
+  y = repmat(x,[m n p...])
+
+where the supplied vector indicates the replication factor in 
+each dimension.  

@@ -1,0 +1,17 @@
+STRFIND STRFIND Find Substring in a String
+
+Usage
+
+Searches through a string for a pattern, and returns the starting
+positions of the pattern in an array.  There are two forms for 
+the strfind function.  The first is for single strings
+
+   ndx = strfind(string, pattern)
+
+the resulting array ndx contains the starting indices in string
+for the pattern pattern.  The second form takes a cell array of 
+strings
+
+   ndx = strfind(cells, pattern)
+
+and applies the search operation to each string in the cell array.

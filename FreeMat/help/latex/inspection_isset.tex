@@ -1,0 +1,40 @@
+\section{ISSET Test If Variable Set}
+
+\subsection{Usage}
+
+Tests for the existence and non-emptiness of a variable.
+the general syntax for its use is
+\begin{verbatim}
+   y = isset('name')
+\end{verbatim}
+where \verb|name| is the name of the variable to test.  This
+is functionally equivalent to 
+\begin{verbatim}
+   y = exist('name','var') & ~isempty(name)
+\end{verbatim}
+It returns a \verb|logical| 1 if the variable is defined 
+in the current workspace, and is not empty, and returns
+a 0 otherwise.
+\subsection{Example}
+
+Some simple examples of using \verb|isset|
+\begin{verbatim}
+--> who
+  Variable Name       Type   Flags             Size
+--> isset('a')
+
+ans = 
+ 0 
+
+--> a = [];
+--> isset('a')
+
+ans = 
+ 0 
+
+--> a = 2;
+--> isset('a')
+
+ans = 
+ 1 
+\end{verbatim}

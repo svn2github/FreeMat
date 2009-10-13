@@ -1,0 +1,60 @@
+\section{COUNTOUR Contour Object Properties}
+
+\subsection{Usage}
+
+Below is a summary of the properties for a line series.
+\begin{itemize}
+\item  \verb|contourmatrix| - \verb|array| - the matrix containing contour data
+ for the plot.  This is a \verb|2 x N| matrix containing x and y coordinates
+ for points on the contours.  In addition, each contour line starts with
+ a column containing the number of points and the contour value.
+
+\item  \verb|displayname| - \verb|string| - The name of this line series as it
+    appears in a legend.
+
+\item  \verb|floating| - \verb|{'on','off'}| - set to on to have floating (3D) contours
+
+\item  \verb|levellist| - \verb|vector| - a vector of Z-values for the contours
+
+\item  \verb|levellistmode| - \verb|{'auto','manual'}| - set to auto for 
+    automatic selection  of Z-values of the contours.
+
+\item  \verb|linecolor| - color of the contour lines.
+
+\item  \verb|linestyle| - \verb|{'-','--',':','-.','none'}| - the line style to draw the contour in.
+
+\item  \verb|linewidth| - \verb|scalar| - the width of the lines
+
+\item  \verb|parent| - \verb|handle| - The axis that contains this object
+
+\item  \verb|tag| - \verb|string| - A string that can be used to tag the object.
+
+\item  \verb|type| - \verb|string| - Returns the string \verb|'contour'|.
+
+\item  \verb|userdata| - \verb|array| - Available to store any variable you
+ want in the handle object.
+
+\item  \verb|visible| - \verb|{'on','off'}| - Controls visibility of the the line.
+
+\item  \verb|xdata| - \verb|matrix| - Contains the x coordinates of the 
+ surface on which the zdata is defined.  This can either be a monotonic
+ vector of the same number of columns as \verb|zdata|, or a 2D matrix
+ that is the same size as \verb|zdata|.
+
+\item  \verb|xdatamode| - \verb|{'auto','manual'}| - When set to \verb|'auto'| 
+FreeMat will autogenerate the x coordinates for the contours.  
+These values will be \verb|1,..,N| where \verb|N| is the number of columns
+of \verb|zdata|.
+
+\item  \verb|ydata| - \verb|matrix| - Contains the y coordinates of the
+ surface on which the zdata is defined.  This can either be a monotonic
+ vector of the same number of rows as \verb|zdata| or a 2D matrix that is
+ the same size as \verb|zdata|.
+
+\item  \verb|ydatamode| - \verb|{'auto','manual'}| - When set to \verb|'auto'| 
+FreeMat will autogenerate the y coordinates for the contour data.
+
+\item  \verb|zdata| - \verb|matrix| - The matrix of z values that are to
+ be contoured.
+
+\end{itemize}

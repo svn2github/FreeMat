@@ -1,0 +1,7 @@
+CONTOUR3 CONTOUR3 3D Contour Plot Function
+
+Usage
+
+This command generates contour plots where the lines are plotted in 3D.
+The syntax for its use is identical to the contour function.  Please
+see its help for details.

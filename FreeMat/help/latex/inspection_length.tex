@@ -1,0 +1,23 @@
+\section{LENGTH Length of an Array}
+
+\subsection{Usage}
+
+Returns the length of an array \verb|x|.  The syntax for its use
+is 
+\begin{verbatim}
+   y = length(x)
+\end{verbatim}
+and is defined as the maximum length of \verb|x| along any of its
+dimensions, i.e., \verb|max(size(x))|.  If you want to determine the
+number of elements in \verb|x|, use the \verb|numel| function instead.
+\subsection{Example}
+
+For a \verb|4 x 4 x 3| matrix, the length is \verb|4|, not \verb|48|, as you 
+might expect.
+\begin{verbatim}
+--> x = rand(4,4,3);
+--> length(x)
+
+ans = 
+ 4 
+\end{verbatim}

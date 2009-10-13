@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SUBSINDEX Overloaded Class Indexing
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SUBSINDEX Overloaded Class Indexing
+</H2>
+<P>
+Section: <A HREF=sec_class.html> Object Oriented Programming </A>
+<H3>Usage</H3>
+This method is called for classes in the expressions
+of the form
+<PRE>
+  c = subsindex(a)
+</PRE>
+<P>
+where <code>a</code> is an object, and <code>c</code> is an index vector.
+It is also called for
+<PRE>
+  c = b(a)
+</PRE>
+<P>
+in which case <code>subsindex(a)</code> must return a vector containing
+integers between <code>0</code> and <code>N-1</code> where <code>N</code> is the number
+of elements in the vector <code>b</code>.
+</BODY>
+</HTML>

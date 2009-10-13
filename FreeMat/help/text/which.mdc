@@ -1,0 +1,17 @@
+WHICH WHICH Get Information on Function
+
+Usage
+
+Returns information on a function (if defined).  The usage is
+
+   which(fname)
+
+where fname is a string argument that contains the name of the 
+function.  For functions and scripts defined
+via .m files, the which command returns the location of the source
+file:
+
+   y = which(fname)
+
+will return the filename for the .m file corresponding to the given
+function, and an empty string otherwise.

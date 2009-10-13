@@ -1,0 +1,37 @@
+\section{RANDBIN Generate Binomial Random Variables}
+
+\subsection{Usage}
+
+Generates random variables with a binomial distribution.
+The general syntax for its use is
+\begin{verbatim}
+   y = randbin(N,p)
+\end{verbatim}
+where \verb|N| is a vector representing the number of Bernoulli
+trials, and \verb|p| is the success probability associated with each
+trial.
+\subsection{Function Internals}
+
+A Binomial random variable describes the number of successful
+outcomes from \verb|N| Bernoulli trials, with the probability of
+success in each trial being \verb|p|.  The probability distribution
+is
+\[
+   P(n) = \frac{N!}{n!(N-n)!}p^n(1-p)^{N-n}
+\]
+\subsection{Example}
+
+Here we generate \verb|10| binomial random variables, corresponding
+to \verb|N=100| trials, each with probability \verb|p=0.1|, using
+both \verb|randbin| and then again using \verb|rand| (to simulate the trials):
+\begin{verbatim}
+--> randbin(100,.1*ones(1,10))
+
+ans = 
+ 13  6  8  9 11  9  6  9  7 10 
+
+--> sum(rand(100,10)<0.1)
+
+ans = 
+  8 12 10  7 12  4 11  8  9  6 
+\end{verbatim}

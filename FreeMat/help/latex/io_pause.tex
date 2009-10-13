@@ -1,0 +1,26 @@
+\section{PAUSE Pause Script Execution}
+
+\subsection{Usage}
+
+The \verb|pause| function can be used to pause execution of FreeMat
+scripts.  There are several syntaxes for its use.  The first form
+is
+\begin{verbatim}
+   pause
+\end{verbatim}
+This form of the \verb|pause| function pauses FreeMat until you press
+any key.  The second form of the \verb|pause| function takes an argument
+\begin{verbatim}
+   pause(p)
+\end{verbatim}
+where \verb|p| is the number of seconds to pause FreeMat for.  The pause
+argument should be accurate to a millisecond on all supported platforms.
+Alternately, you can control all \verb|pause| statements using:
+\begin{verbatim}
+   pause on
+\end{verbatim}
+which enables pauses and
+\begin{verbatim}
+   pause off
+\end{verbatim}
+which disables all \verb|pause| statements, both with and without arguments.

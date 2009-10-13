@@ -1,0 +1,49 @@
+\section{HERMITIAN Matrix Hermitian (Conjugate Transpose) Operator}
+
+\subsection{Usage}
+
+Computes the Hermitian of the argument (a 2D matrix).  The syntax for its use is
+\begin{verbatim}
+  y = a';
+\end{verbatim}
+where \verb|a| is a \verb|M x N| numerical matrix.  The output \verb|y| is a numerical matrix
+of the same type of size \verb|N x M|.  This operator is the conjugating transpose,
+which is different from the transpose operator \verb|.'| (which does not 
+conjugate complex values).
+\subsection{Function Internals}
+
+The Hermitian operator is defined simply as
+\[
+  y_{i,j} = \overline{a_{j,i}}
+\]
+where \verb|y_ij| is the element in the \verb|i|th row and \verb|j|th column of the output matrix \verb|y|.
+\subsection{Examples}
+
+A simple transpose example:
+\begin{verbatim}
+--> A = [1,2,0;4,1,-1]
+
+A = 
+  1  2  0 
+  4  1 -1 
+
+--> A'
+
+ans = 
+  1  4 
+  2  1 
+  0 -1 
+\end{verbatim}
+Here, we use a complex matrix to demonstrate how the Hermitian operator conjugates the entries.
+\begin{verbatim}
+--> A = [1+i,2-i]
+
+A = 
+   1.0000 +  1.0000i   2.0000 -  1.0000i 
+
+--> A.'
+
+ans = 
+   1.0000 +  1.0000i 
+   2.0000 -  1.0000i 
+\end{verbatim}

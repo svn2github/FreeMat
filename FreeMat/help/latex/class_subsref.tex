@@ -1,0 +1,33 @@
+\section{SUBSREF Overloaded Class Indexing}
+
+\subsection{Usage}
+
+This method is called for expressions of the form
+\begin{verbatim}
+  c = a(b), c = a{b}, c = a.b
+\end{verbatim}
+and overloading the \verb|subsref| method allows you
+to define the meaning of these expressions for
+objects of class \verb|a|.  These expressions are
+mapped to a call of the form
+\begin{verbatim}
+  b = subsref(a,s)
+\end{verbatim}
+where \verb|s| is a structure array with two fields. The
+first field is
+\begin{itemize}
+\item  \verb|type|  is a string containing either \verb|'()'| or
+ \verb|'{}'| or \verb|'.'| depending on the form of the call.
+
+\item  \verb|subs| is a cell array or string containing the
+ the subscript information.
+
+\end{itemize}
+When multiple indexing experssions are combined together
+such as \verb|b = a(5).foo{:}|, the \verb|s| array contains
+the following entries
+\begin{verbatim}
+  s(1).type = '()'  s(1).subs = {5}
+  s(2).type = '.'   s(2).subs = 'foo'
+  s(3).type = '{}'  s(3).subs = ':'
+\end{verbatim}

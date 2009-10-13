@@ -1,0 +1,11 @@
+\section{FILEPARTS Extract Filename Parts}
+
+\subsection{Usage}
+
+The \verb|fileparts| takes a filename, and returns the path, filename, extension, and
+(for MATLAB-compatibility) an empty version number of the file.  The syntax for its use is
+\begin{verbatim}
+    [path,name,extension,version] = fileparts(filename)
+\end{verbatim}
+where \verb|filename| is a string containing the description of the file, and \verb|path|
+is the \verb|path| to the file, 

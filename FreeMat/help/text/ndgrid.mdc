@@ -1,0 +1,19 @@
+NDGRID NDGRID Generate N-Dimensional Grid
+
+Usage
+
+Generates N-dimensional grids, each of which is constant in all but
+one dimension.  The syntax for its use is either
+
+   [y1, y2, ..., ym] = ndgrid(x1, x2, ..., xn)
+
+where m <= n or 
+
+   [y1, y2, ..., ym] = ndgrid(x1)
+
+which is equivalent to the first form, with x1=x2=...=xn.  Each
+output yi is an n-dimensional array, with values such that
+ndgrid is useful for evaluating multivariate functionals over a
+range of arguments.  It is a generalization of meshgrid, except
+that meshgrid transposes the dimensions corresponding to the 
+first two arguments to better fit graphical applications.

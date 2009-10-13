@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RANDNF Generate Noncentral F-Distribution Random Variable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RANDNF Generate Noncentral F-Distribution Random Variable
+</H2>
+<P>
+Section: <A HREF=sec_random.html> Random Number Generation </A>
+<H3>Usage</H3>
+Generates a vector of non-central F-distributed random variables
+with the specified parameters.  The general syntax for its use is
+<PRE>
+   y = randnf(n,m,c)
+</PRE>
+<P>
+where <code>n</code> is the number of degrees of freedom in the numerator,
+and <code>m</code> is the number of degrees of freedom in the denominator.
+The vector <code>c</code> determines the non-centrality shift of the numerator.
+<H3>Function Internals</H3>
+A non-central F-distributed random variable is the ratio of a
+non-central chi-square random variable and a central chi-square random
+variable, i.e.,
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="randnf_eqn1.png">
+</DIV>
+<P>
+<H3>Example</H3>
+Here we use the <code>randf</code> to generate some non-central F-distributed
+random variables:
+<PRE>
+--&gt; randnf(5*ones(1,9),7,1.34)
+
+ans = 
+
+ Columns 1 to 8
+
+    1.9422    0.5987    0.1890    0.7468    2.3759    8.2553    1.8047    0.2222 
+
+ Columns 9 to 9
+
+    2.2680 
+</PRE>
+<P>
+</BODY>
+</HTML>

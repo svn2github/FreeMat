@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FIGLOWER Lower a Figure Window
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FIGLOWER Lower a Figure Window
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Lowers a figure window indicated by the figure number.  The syntax for
+its use is
+<PRE>
+  figlower(fignum)
+</PRE>
+<P>
+where <code>fignum</code> is the number of the figure to lower.  The figure will
+be lowerd to the bottom of the GUI stack (meaning that it we be behind other
+windows).  Note that this function does not cause <code>fignum</code> to 
+become the current  figure, you must use the <code>figure</code> command for that.
+Similarly, if <code>fignum</code> is the current figure, it will remain the current
+figure (even though the figure is now behind others).
+</BODY>
+</HTML>

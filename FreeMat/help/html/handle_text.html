@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TEXT Add Text Label to Plot
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TEXT Add Text Label to Plot
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Adds a text label to the currently active plot.  The general
+syntax for it is use is either
+<PRE>
+   text(x,y,'label')
+</PRE>
+<P>
+where <code>x</code> and <code>y</code> are both vectors of the same length, in which
+case the text <code>'label'</code> is added to the current plot at each of the
+coordinates <code>x(i),y(i)</code> (using the current axis to map these to screen
+coordinates).  The second form supplies a cell-array of strings
+as the second argument, and allows you to place many labels simultaneously
+<PRE>
+   text(x,y,{'label1','label2',....})
+</PRE>
+<P>
+where the number of elements in the cell array must match the size of
+vectors <code>x</code> and <code>y</code>.  You can also specify properties for the labels
+via
+<PRE>
+   handles = text(x,y,{labels},properties...)
+</PRE>
+<P>
+<H3>Example</H3>
+Here is an example of a few labels being added to a random plot:
+<PRE>
+--&gt; plot(rand(1,4))
+--&gt; text([2,3],[0.5,0.5],{'hello','there'})
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="text1.png">
+</DIV>
+<P>
+Here is the same example, but with larger labels:
+<PRE>
+--&gt; plot(rand(1,4))
+--&gt; text([2,3],[0.5,0.5],{'hello','there'},'fontsize',20)
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="text2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

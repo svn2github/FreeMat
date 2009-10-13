@@ -1,0 +1,9 @@
+COSH COSH Hyperbolic Cosine Function
+
+Usage
+
+Computes the hyperbolic cosine of the argument.
+The syntax for its use is
+
+   y = cosh(x)
+

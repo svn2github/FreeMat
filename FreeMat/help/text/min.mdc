@@ -1,0 +1,35 @@
+MIN MIN Minimum Function
+
+Usage
+
+Computes the minimum of an array along a given dimension, or alternately, 
+computes two arrays (entry-wise) and keeps the smaller value for each array.
+As a result, the min function has a number of syntaxes.  The first
+one computes the minimum of an array along a given dimension.
+The first general syntax for its use is either
+
+   [y,n] = min(x,[],d)
+
+where x is a multidimensional array of numerical type, in which case the
+output y is the minimum of x along dimension d.  
+The second argument n is the index that results in the minimum.
+In the event that multiple minima are present with the same value,
+the index of the first minimum is used. 
+The second general syntax for the use of the min function is
+
+   [y,n] = min(x)
+
+In this case, the minimum is taken along the first non-singleton 
+dimension of x.  For complex data types,
+the minimum is based on the magnitude of the numbers.  NaNs are
+ignored in the calculations.
+The third general syntax for the use of the min function is as 
+a comparison function for pairs of arrays.  Here, the general syntax is
+
+   y = min(x,z)
+
+where x and z are either both numerical arrays of the same dimensions,
+or one of the two is a scalar.  In the first case, the output is the 
+same size as both arrays, and is defined elementwise by the smaller of the
+two arrays.  In the second case, the output is defined elementwise by the 
+smaller of the array entries and the scalar.

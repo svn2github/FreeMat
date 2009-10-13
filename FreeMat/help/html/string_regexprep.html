@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>REGEXPREP Regular Expression Replacement Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>REGEXPREP Regular Expression Replacement Function
+</H2>
+<P>
+Section: <A HREF=sec_string.html> String Functions </A>
+<H3>Usage</H3>
+Replaces regular expressions in the provided string.  The syntax for its
+use is 
+<PRE>
+  outstring = regexprep(instring,pattern,replacement,modes)
+</PRE>
+<P>
+Here <code>instring</code> is the string to be operated on.  And <code>pattern</code> is a regular
+expression of the type accepted by <code>regexp</code>.  For each match, the contents
+of the matched string are replaced with the replacement text.  Tokens in the
+regular expression can be used in the replacement text using <code>$N</code> where <code>N</code>
+is the number of the token to use.  You can also specify the same <code>mode</code> 
+flags that are used by <code>regexp</code>.
+</BODY>
+</HTML>

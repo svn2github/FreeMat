@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>LOG2 Base-2 Logarithm Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>LOG2 Base-2 Logarithm Function
+</H2>
+<P>
+Section: <A HREF=sec_mathfunctions.html> Mathematical Functions </A>
+<H3>Usage</H3>
+Computes the <code>log2</code> function for its argument.  The general
+syntax for its use is
+<PRE>
+  y = log2(x)
+</PRE>
+<P>
+where <code>x</code> is an <code>n</code>-dimensional array of numerical type.
+Integer types are promoted to the <code>double</code> type prior to
+calculation of the <code>log2</code> function.  Output <code>y</code> is of the
+same size as the input <code>x</code>. For strictly positive, real inputs, 
+the output type is the same as the input.
+For negative and complex arguments, the output is complex.
+<H3>Example</H3>
+The following piece of code plots the real-valued <code>log2</code>
+function over the interval <code>[1,100]</code>:
+<PRE>
+--&gt; x = linspace(1,100);
+--&gt; plot(x,log2(x))
+--&gt; xlabel('x');
+--&gt; ylabel('log2(x)');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="log2plot.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,46 @@
+\section{DLMREAD Read ASCII-delimited File}
+
+\subsection{Usage}
+
+Loads a matrix from an ASCII-formatted text file with a delimiter
+between the entries.  This function is similar to the \verb|load -ascii|
+command, except that it can handle complex data, and it allows you
+to specify the delimiter.  Also, you can read only a subset of the
+data from the file.  The general syntax for the \verb|dlmread| function
+is
+\begin{verbatim}
+    y = dlmread(filename)
+\end{verbatim}
+where \verb|filename| is a string containing the name of the file to read.
+In this form, FreeMat will guess at the type of the delimiter in the 
+file.  The guess is made by examining the input for common delimiter
+characters, which are \verb|,;:| or a whitespace (e.g., tab).  The text
+in the file is preprocessed to replace these characters with whitespace
+and the file is then read in using a whitespace for the delimiter.
+
+If you know the delimiter in the file, you can specify it using
+this form of the function:
+\begin{verbatim}
+    y = dlmread(filename, delimiter)
+\end{verbatim}
+where \verb|delimiter| is a string containing the delimiter.  If \verb|delimiter|
+is the empty string, then the delimiter is guessed from the file.
+
+You can also read only a portion of the file by specifying a start row
+and start column:
+\begin{verbatim}
+    y = dlmread(filename, delimiter, startrow, startcol)
+\end{verbatim}
+where \verb|startrow| and \verb|startcol| are zero-based.  You can also specify
+the data to read using a range argument:
+\begin{verbatim}
+    y = dlmread(filename, delimiter, range)
+\end{verbatim}
+where \verb|range| is either a vector \verb|[startrow,startcol,stoprow,stopcol]|
+or is specified in spreadsheet notation as \verb|B4..ZA5|.
+
+Note that complex numbers can be present in the file if they are encoded
+without whitespaces inside the number, and use either \verb|i| or \verb|j| as 
+the indicator.  Note also that when the delimiter is given, each incidence
+of the delimiter counts as a separator.  Multiple separators generate
+zeros in the matrix.

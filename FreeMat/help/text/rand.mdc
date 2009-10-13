@@ -1,0 +1,39 @@
+RAND RAND Uniform Random Number Generator
+
+Usage
+
+Creates an array of pseudo-random numbers of the specified size.
+The numbers are uniformly distributed on [0,1).  
+Two seperate syntaxes are possible.  The first syntax specifies the array 
+dimensions as a sequence of scalar dimensions:
+
+  y = rand(d1,d2,...,dn).
+
+The resulting array has the given dimensions, and is filled with
+random numbers.  The type of y is double, a 64-bit floating
+point array.  To get arrays of other types, use the typecast 
+functions.
+    
+The second syntax specifies the array dimensions as a vector,
+where each element in the vector specifies a dimension length:
+
+  y = rand([d1,d2,...,dn]).
+
+This syntax is more convenient for calling rand using a 
+variable for the argument.
+
+Finally, rand supports two additional forms that allow
+you to manipulate the state of the random number generator.
+The first retrieves the state
+
+  y = rand('state')
+
+which is a 625 length integer vector.  The second form sets
+the state
+
+  rand('state',y)
+
+or alternately, you can reset the random number generator with
+
+  rand('state',0)
+

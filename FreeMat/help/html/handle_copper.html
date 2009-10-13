@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>COPPER Copper Colormap
+</TITLE>
+</HEAD>
+<BODY>
+<H2>COPPER Copper Colormap
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Returns a copper colormap.  The syntax for its use is
+<PRE>
+   y = copper
+</PRE>
+<P>
+<H3>Example</H3>
+Here is an example of an image displayed with the <code>copper</code>
+colormap
+<PRE>
+--&gt; x = linspace(-1,1,512)'*ones(1,512);
+--&gt; y = x';
+--&gt; Z = exp(-(x.^2+y.^2)/0.3);
+--&gt; image(Z);
+--&gt; colormap(copper);
+</PRE>
+<P>
+which results in the following image
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="copper1.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

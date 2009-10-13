@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>UICONTROLPROPERTIES UI Control Properties
+</TITLE>
+</HEAD>
+<BODY>
+<H2>UICONTROLPROPERTIES UI Control Properties
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+Below is a summary of the properties for user interface
+controls.
+<UL>
+<LI>  <code>backgroundcolor</code> - <code>colorspec</code> - The background color
+ for the widget.
+ </LI>
+<LI>  <code>busyaction</code> - Not used.
+ </LI>
+<LI>  <code>buttondownfcn</code> - Not used.
+ </LI>
+<LI>  <code>callback</code> - <code>string</code> - the callback to execute when the 
+GUI control does its action.  Clicking a button or moving a 
+scroller will cause the callback to be executed.  Also, pressing 
+enter in a text box causes the callback to be executed.
+ </LI>
+<LI>  <code>cdata</code> - an <code>M x N x 3</code> array that represents an RGB image
+to use as the truecolor image displayed on push bottons or toggle
+buttons.  The values must be between 0 and 1.
+ </LI>
+<LI>  <code>children</code> - Not used.
+ </LI>
+<LI>  <code>createfcn</code> - Not used.
+ </LI>
+<LI>  <code>deletefcn</code> - Not used;
+ </LI>
+<LI>  <code>enable</code> - <code>{'on','inactive','off'}</code> - For <code>on</code> (the
+default) the uicontrol behaves normally.  For inactive, it is not
+operational, but looks the same as <code>on</code>.  For <code>off</code>, the
+control is grayed out.
+ </LI>
+<LI>  <code>extent</code> - a read only property that contains the extent of
+the text for the control.
+ </LI>
+<LI>  <code>fontangle</code> - <code>{'normal','italic','oblique'}</code> - The angle of the fonts used
+ for text labels (e.g., tick labels).
+ </LI>
+<LI>  <code>fontsize</code> - <code>scalar</code> - The size of fonts used for text labels (tick labels).
+ </LI>
+<LI>  <code>fontunits</code> - Not used.
+ </LI>
+<LI>  <code>fontname</code> - <code>string</code> - The name of the font to use for the widget.
+ </LI>
+<LI>  <code>fontweight</code> - <code>{'normal','bold','light','demi'}</code> - The weight of the font used
+ </LI>
+<LI>  <code>foregroundcolor</code> - <code>colorspec</code> - the foreground color for text.
+ </LI>
+<LI>  <code>handlevisibility</code> - Not used.
+ </LI>
+<LI>  <code>hittest</code> - Not used.
+ </LI>
+<LI>  <code>horizontalalignment</code> - <code>{'left','center','right}</code> - determines
+the justification of text.
+ </LI>
+<LI>  <code>interruptible</code> - Not used.
+ </LI>
+<LI>  <code>keypressfcn</code> - <code>functionspec</code> - a string or function handle
+ that is called when a key is pressed and a uicontrol object has focus.
+ </LI>
+<LI>  <code>listboxtop</code> - a scalar (used only by the listbox style of
+uicontrols) that specifies which string appears at the top of the list
+box.
+ </LI>
+<LI>  <code>max</code> - a scalar that specifies the largest value allowed
+for the <code>value</code> property.  The interpretation varies depending on
+the type of the control
+\begin{itemize}
+ </LI>
+<LI>  <code>check boxes</code> - specifies what <code>value</code> is set to when the
+check box is selected.
+ </LI>
+<LI>  <code>edit box</code> - if <code>max-min&gt;1</code> then the text box allows for
+multiple lines of input.  Otherwise, it is a single line only.
+ </LI>
+<LI>  <code>list box</code> - if <code>max-min&gt;1</code> then multiple item selections
+are allowed.  Otherwise, only single item selections are allowed.
+ </LI>
+<LI>  <code>radio buttons</code> - specifies what <code>value</code> is set to when the
+radio button is selected.
+ </LI>
+<LI>  <code>slider</code> - the maximum value the slider can take.
+ </LI>
+<LI>  <code>toggle button</code> - specifies what <code>value</code> is set to when 
+the toggle button is selected.
+ </LI>
+</UL>
+\item <code>min</code> - a scalar that specifies the smallest value for the
+<code>value</code> property.  The interpretation of it depends on the type
+of the control
+<UL>
+<LI>  <code>check boxes</code> - specifies what <code>value</code> is set to when the
+check box is not selected.
+ </LI>
+<LI>  <code>edit box</code> - if <code>max-min&gt;1</code> then the text box allows for
+multiple lines of input.  Otherwise, it is a single line only.
+ </LI>
+<LI>  <code>list box</code> - if <code>max-min&gt;1</code> then multiple item selections
+are allowed.  Otherwise, only single item selections are allowed.
+ </LI>
+<LI>  <code>radio buttons</code> - specifies what <code>value</code> is set to when the
+radio button is not selected.
+ </LI>
+<LI>  <code>slider</code> - the minimum value the slider can take.
+ </LI>
+<LI>  <code>toggle button</code> - specifies what <code>value</code> is set to when 
+the toggle button is not selected.
+ </LI>
+</UL>
+\item <code>parent</code> - the handle of the parent object.
+\item <code>position</code> - size and location of the uicontrol as a 
+four vector <code>[left, bottom, width, height]</code>.  If <code>width&gt;height</code>
+then sliders are horizontal, otherwise the slider is oriented
+vertically.
+\item <code>selected</code> - <code>{'on','off'}</code> - not used.
+\item <code>selectionhighlight</code> - <code>{'on','off'}</code> - not used.
+\item <code>sliderstep</code> - a two vector <code>[min_step max_step]</code>
+that controls the amount the slider <code>value</code> changes when
+you click the mouse on the control.  If you click the arrow
+for the slider, the value changes by <code>min_step</code>, while if
+you click the trough, the value changes by <code>max_step</code>.  
+Each value must be in the range <code>[0,1]</code>, and is a percentage
+of the range <code>max-min</code>.
+\item <code>string</code> - <code>string</code> - the text for the control.
+\item <code>style</code> - @|{'pushbutton','toggle','radiobutton','checkbox',
+'edit','text','slider','frame','listbox','popupmenu'}|.
+\item <code>tag</code> - <code>string</code> - user specified label.
+\item <code>tooltipstring</code> - <code>string</code> the tooltip for the control.
+\item <code>type</code> - <code>string</code> - the text is set to <code>'uicontrol'</code>.
+\item <code>uicontextmenu</code> - <code>handle</code> the handle of the <code>uicontextmenu</code>
+that shows up when you right-click over the control.
+\item <code>units</code> - not used.
+\item <code>userdata</code> - <code>array</code> - any data you want to associate with the
+control.
+\item <code>value</code> - The meaning of this property depends on the type of the
+control:
+<UL>
+<LI>  check box - set to <code>max</code> when checked, and <code>min</code> when off.
+ </LI>
+<LI>  list box - set to a vector of indices corresponding to selected
+items, with <code>1</code> corresponding to the first item in the list.
+ </LI>
+<LI>  pop up menu - set to the index of the item selected (starting with 1)
+ </LI>
+<LI>  radio buttons - set to <code>max</code> when selected, and set to <code>min</code> when
+not selected.
+ </LI>
+<LI>  sliders - set to the value of the slider
+ </LI>
+<LI>  toggle buttons - set to <code>max</code> when selected, and set to <code>min</code> when
+not selected.
+ </LI>
+<LI>  text controls, push buttons - do not use this property.
+ </LI>
+</UL>
+\item <code>visible</code> - <code>{'on','off'}</code> - controls whether the control is 
+visible or not
+\end{itemize}
+</BODY>
+</HTML>

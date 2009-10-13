@@ -1,0 +1,10 @@
+HELPWIN HELPWIN Online Help Window
+
+Usage
+
+Brings up the online help window with the FreeMat manual.  The
+helpwin function takes no arguments:
+
+  helpwin
+  helpwin FunctionName
+

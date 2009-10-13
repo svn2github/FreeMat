@@ -1,0 +1,56 @@
+\section{RANDGAMMA Generate Gamma-Distributed Random Variable}
+
+\subsection{Usage}
+
+Generates random variables with a gamma distribution.  The general
+syntax for its use is
+\begin{verbatim}
+   y = randgamma(a,r),
+\end{verbatim}
+where \verb|a| and \verb|r| are vectors describing the parameters of the
+gamma distribution.  Roughly speaking, if \verb|a| is the mean time between
+changes of a Poisson random process, and we wait for the \verb|r| change,
+the resulting wait time is Gamma distributed with parameters \verb|a| 
+and \verb|r|.
+\subsection{Function Internals}
+
+The Gamma distribution arises in Poisson random processes.  It represents
+the waiting time to the occurance of the \verb|r|-th event in a process with
+mean time \verb|a| between events.  The probability distribution of a Gamma
+random variable is
+\[
+   P(x) = \frac{a^r x^{r-1} e^{-ax}}{\Gamma(r)}.
+\]
+Note also that for integer values of \verb|r| that a Gamma random variable
+is effectively the sum of \verb|r| exponential random variables with parameter
+\verb|a|.
+\subsection{Example}
+
+Here we use the \verb|randgamma| function to generate Gamma-distributed
+random variables, and then generate them again using the \verb|randexp|
+function.
+\begin{verbatim}
+--> randgamma(1,15*ones(1,9))
+
+ans = 
+
+ Columns 1 to 8
+
+   22.7804   11.5514   16.8537   12.7457   16.2303   10.7442   19.3942   16.3611 
+
+ Columns 9 to 9
+
+   17.4772 
+
+--> sum(randexp(ones(15,9)))
+
+ans = 
+
+ Columns 1 to 8
+
+   14.6404   15.1860   13.3147   11.4380    7.2307   10.8225   14.5271   12.4631 
+
+ Columns 9 to 9
+
+   11.8753 
+\end{verbatim}

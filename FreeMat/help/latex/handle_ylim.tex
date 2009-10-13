@@ -1,0 +1,47 @@
+\section{YLIM Adjust Y Axis limits of plot}
+
+\subsection{Usage}
+
+There are several ways to use \verb|ylim| to adjust the Y axis limits of
+a plot.  The various syntaxes are
+\begin{verbatim}
+   ylim
+   ylim([lo,hi])   
+   ylim('auto')
+   ylim('manual')
+   ylim('mode')
+   ylim(handle,...)
+\end{verbatim}
+The first form (without arguments), returns a 2-vector containing the
+current limits.  The second form sets the limits on the plot to \verb|[lo,hi]|.
+The third and fourth form set the mode for the limit to \verb|auto| and \verb|manual|
+respectively.  In \verb|auto| mode, FreeMat chooses the range for the axis 
+automatically.  The \verb|ylim('mode')| form returns the current mode for the axis
+(either \verb|'auto'| or \verb|'manual'|).  Finally, you can specify the handle of an
+axis to manipulate instead of using the current one.
+\subsection{Example}
+
+\begin{verbatim}
+--> x = linspace(-1,1);
+--> y = sin(2*pi*x);
+--> plot(x,y,'r-');
+--> ylim  % what are the current limits?
+
+ans = 
+   -0.9999    0.9999 
+\end{verbatim}
+which results in
+
+
+\centerline{\includegraphics[width=8cm]{ylim1}}
+
+Next, we zoom in on the plot using the \verb|ylim| function
+\begin{verbatim}
+--> plot(x,y,'r-')
+--> ylim([-0.2,0.2])
+\end{verbatim}
+which results in
+
+
+\centerline{\includegraphics[width=8cm]{ylim2}}
+

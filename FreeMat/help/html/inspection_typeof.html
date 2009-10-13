@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TYPEOF Determine the Type of an Argument
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TYPEOF Determine the Type of an Argument
+</H2>
+<P>
+Section: <A HREF=sec_inspection.html> Inspection Functions </A>
+<H3>Usage</H3>
+Returns a string describing the type of an array.  The syntax for its use is
+<PRE>
+   y = typeof(x),
+</PRE>
+<P>
+The returned string is one of
+<UL>
+<LI>  <code>'cell'</code> for cell-arrays
+ </LI>
+<LI>  <code>'struct'</code> for structure-arrays
+ </LI>
+<LI>  <code>'logical'</code> for logical arrays
+ </LI>
+<LI>  <code>'uint8'</code> for unsigned 8-bit integers
+ </LI>
+<LI>  <code>'int8'</code> for signed 8-bit integers
+ </LI>
+<LI>  <code>'uint16'</code> for unsigned 16-bit integers
+ </LI>
+<LI>  <code>'int16'</code> for signed 16-bit integers
+ </LI>
+<LI>  <code>'uint32'</code> for unsigned 32-bit integers
+ </LI>
+<LI>  <code>'int32'</code> for signed 32-bit integers
+ </LI>
+<LI>  <code>'float'</code> for 32-bit floating point numbers
+ </LI>
+<LI>  <code>'double'</code> for 64-bit floating point numbers
+ </LI>
+<LI>  <code>'string'</code> for string arrays
+ </LI>
+</UL>
+<H3>Example</H3>
+The following piece of code demonstrates the output of the <code>typeof</code> 
+command for each possible type.  The first example is with a simple cell array.
+<PRE>
+--&gt; typeof({1})
+
+ans = 
+cell
+</PRE>
+<P>
+The next example uses the <code>struct</code> constructor to make a simple scalar struct.
+<PRE>
+--&gt; typeof(struct('foo',3))
+
+ans = 
+struct
+</PRE>
+<P>
+The next example uses a comparison between two scalar integers to generate 
+a scalar logical type.
+<PRE>
+--&gt; typeof(3&gt;5)
+
+ans = 
+logical
+</PRE>
+<P>
+For the integers, the typecast operations are used to generate the arguments.
+<PRE>
+--&gt; typeof(uint8(3))
+
+ans = 
+uint8
+--&gt; typeof(int8(8))
+
+ans = 
+int8
+--&gt; typeof(uint16(3))
+
+ans = 
+uint16
+--&gt; typeof(int16(8))
+
+ans = 
+int16
+--&gt; typeof(uint32(3))
+
+ans = 
+uint32
+--&gt; typeof(int32(3))
+
+ans = 
+int32
+--&gt; typeof(uint64(3))
+
+ans = 
+uint64
+--&gt; typeof(int64(3))
+
+ans = 
+int64
+</PRE>
+<P>
+Float, and double can be created using the suffixes.
+<PRE>
+--&gt; typeof(1.0f)
+
+ans = 
+single
+--&gt; typeof(1.0D)
+
+ans = 
+double
+--&gt; typeof(1.0f+i)
+
+ans = 
+single
+--&gt; typeof(1.0D+2.0D*i)
+
+ans = 
+double
+</PRE>
+<P>
+</BODY>
+</HTML>

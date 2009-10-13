@@ -1,0 +1,22 @@
+STRCMP STRCMP String Compare Function
+
+Usage
+
+Compares two strings for equality.  The general
+syntax for its use is
+
+  p = strcmp(x,y)
+
+where x and y are two strings.  Returns true if x
+and y are the same size, and are equal (as strings).  Otherwise,
+it returns false.
+In the second form, strcmp can be applied to a cell array of
+strings.  The syntax for this form is
+
+  p = strcmp(cellstra,cellstrb)
+
+where cellstra and cellstrb are cell arrays of a strings
+to compare.  Also, you can also supply a character matrix as
+an argument to strcmp, in which case it will be converted
+via cellstr (so that trailing spaces are removed), before being
+compared.

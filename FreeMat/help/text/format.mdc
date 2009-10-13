@@ -1,0 +1,33 @@
+FORMAT FORMAT Control the Format of Matrix Display
+
+Usage
+
+FreeMat supports several modes for displaying matrices (either through the
+disp function or simply by entering expressions on the command line.  
+There are several options for the format command.  The default mode is equivalent
+to
+
+   format short
+
+which generally displays matrices with 4 decimals, and scales matrices if the entries
+have magnitudes larger than roughly 1e2 or smaller than 1e-2.   For more 
+information you can use 
+
+   format long
+
+which displays roughly 7 decimals for float and complex arrays, and 14 decimals
+for double and dcomplex.  You can also use
+
+   format short e
+
+to get exponential format with 4 decimals.  Matrices are not scaled for exponential 
+formats.  Similarly, you can use
+
+   format long e
+
+which displays the same decimals as format long, but in exponential format.
+You can also use the format command to retrieve the current format:
+
+   s = format
+
+where s is a string describing the current format.

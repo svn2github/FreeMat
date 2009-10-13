@@ -1,0 +1,21 @@
+\section{QUIET Control the Verbosity of the Interpreter}
+
+\subsection{Usage}
+
+The \verb|quiet| function controls how verbose the interpreter
+is when executing code.  The syntax for the function is
+\begin{verbatim}
+   quiet flag
+\end{verbatim}
+where \verb|flag| is one of
+\begin{itemize}
+\item  \verb|'normal'| - normal output from the interpreter
+
+\item  \verb|'quiet'| - only intentional output (e.g. \verb|printf| calls and
+\verb|disp| calls) is printed.  The output of expressions that are not
+terminated in semicolons are not printed.
+
+\item  \verb|'silent'| - nothing is printed to the output.
+
+\end{itemize}
+The \verb|quiet| command also returns the current quiet flag.

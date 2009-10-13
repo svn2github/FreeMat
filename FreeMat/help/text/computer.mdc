@@ -1,0 +1,17 @@
+COMPUTER COMPUTER Computer System FreeMat is Running On
+
+Usage
+
+Returns a string describing the name of the system FreeMat is running on.
+The exact value of this string is subject to change, although the 'MAC'
+and 'PCWIN' values are probably fixed.
+
+  str = computer
+
+Currently, the following return values are defined
+  -  'PCWIN' - MS Windows
+
+  -  'MAC' - Mac OS X
+
+  -  'UNIX' - All others
+

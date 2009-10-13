@@ -1,0 +1,47 @@
+\section{CONV2 Matrix Convolution}
+
+\subsection{Usage}
+
+The \verb|conv2| function performs a two-dimensional convolution of
+matrix arguments.  The syntax for its use is
+\begin{verbatim}
+    Z = conv2(X,Y)
+\end{verbatim}
+which performs the full 2-D convolution of \verb|X| and \verb|Y|.  If the 
+input matrices are of size \verb|[xm,xn]| and \verb|[ym,yn]| respectively,
+then the output is of size \verb|[xm+ym-1,xn+yn-1]|.  Another form is
+\begin{verbatim}
+    Z = conv2(hcol,hrow,X)
+\end{verbatim}
+where \verb|hcol| and \verb|hrow| are vectors.  In this form, \verb|conv2|
+first convolves \verb|Y| along the columns with \verb|hcol|, and then 
+convolves \verb|Y| along the rows with \verb|hrow|.  This is equivalent
+to \verb|conv2(hcol(:)*hrow(:)',Y)|.
+
+You can also provide an optional \verb|shape| argument to \verb|conv2|
+via either
+\begin{verbatim}
+    Z = conv2(X,Y,'shape')
+    Z = conv2(hcol,hrow,X,'shape')
+\end{verbatim}
+where \verb|shape| is one of the following strings
+\begin{itemize}
+\item  \verb|'full'| - compute the full convolution result - this is the default if no \verb|shape| argument is provided.
+
+\item  \verb|'same'| - returns the central part of the result that is the same size as \verb|X|.
+
+\item  \verb|'valid'| - returns the portion of the convolution that is computed without the zero-padded edges.  In this situation, \verb|Z| has 
+size \verb|[xm-ym+1,xn-yn+1]| when \verb|xm>=ym| and \verb|xn>=yn|.  Otherwise
+\verb|conv2| returns an empty matrix.
+
+\end{itemize}
+\subsection{Function Internals}
+
+The convolution is computed explicitly using the definition:
+\[
+  Z(m,n) = \sum_{k} \sum_{j} X(k,j) Y(m-k,n-j)
+\]
+If the full output is requested, then \verb|m| ranges over \verb|0 <= m < xm+ym-1|
+and \verb|n| ranges over \verb|0 <= n < xn+yn-1|.  For the case where \verb|shape|
+is \verb|'same'|, the output ranges over \verb|(ym-1)/2 <= m < xm + (ym-1)/2|
+and \verb|(yn-1)/2 <= n < xn + (yn-1)/2|.

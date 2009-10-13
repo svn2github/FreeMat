@@ -1,0 +1,10 @@
+SEMILOGX SEMILOGX Semilog X Axis Plot Function
+
+Usage
+
+This command has the exact same syntax as the plot command:
+
+  semilogx(<data 1>,{linespec 1},<data 2>,{linespec 2}...,properties...)
+
+in fact, it is a simple wrapper around plot that sets the
+x axis to have a logarithmic scale.

@@ -1,0 +1,9 @@
+COTH COTH Hyperbolic Cotangent Function
+
+Usage
+
+Computes the hyperbolic cotangent of the argument.
+The syntax for its use is
+
+   y = coth(x)
+

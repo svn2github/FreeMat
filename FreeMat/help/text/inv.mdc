@@ -1,0 +1,11 @@
+INV INV Invert Matrix
+
+Usage
+
+Inverts the argument matrix, provided it is square and invertible.
+The syntax for its use is
+
+   y = inv(x)
+
+Internally, the inv function uses the matrix divide operators.
+For sparse matrices, a sparse matrix solver is used.

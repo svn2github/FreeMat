@@ -1,0 +1,12 @@
+SPONES SPONES Sparse Ones Function
+
+Usage
+
+Returns a sparse float matrix with ones where the argument
+matrix has nonzero values.  The general syntax for it is
+
+  y = spones(x)
+
+where x is a matrix (it may be full or sparse).  The output
+matrix y is the same size as x, has type float, and contains
+ones in the nonzero positions of x.

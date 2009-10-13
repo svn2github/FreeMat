@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>THREADKILL Halt execution of a thread
+</TITLE>
+</HEAD>
+<BODY>
+<H2>THREADKILL Halt execution of a thread
+</H2>
+<P>
+Section: <A HREF=sec_thread.html> FreeMat Threads </A>
+<H3>Usage</H3>
+The <code>threadkill</code> function stops (or attempts to stop) execution
+of the given thread.  It works only for functions defined in M-files
+(i.e., not for built in or imported functions), and it works by 
+setting a flag that causes the thread to stop execution at the next
+available statement.  The syntax for this function is 
+<PRE>
+  threadkill(handle)
+</PRE>
+<P>
+where <code>handle</code> is the value returned by a <code>threadnew</code> call.  
+Note that the <code>threadkill</code> function returns immediately.  It 
+is still your responsibility to call <code>threadfree</code> to free
+the thread you have halted.
+
+You cannot kill the main thread (thread id <code>1</code>).
+<H3>Example</H3>
+Here is an example of stopping a runaway thread using <code>threadkill</code>.
+Note that the thread function in this case is an M-file function.
+We start by setting up a free running counter, where we can access 
+the counter from the global variables.  
+<P>
+<PRE>
+     freecount.m
+function freecount
+  global count
+  if (~exist('count')) count = 0; end  % Initialize the counter
+  while (1)
+    count = count + 1;                 % Update the counter
+  end
+
+</PRE>
+<P>
+We now launch this function in a thread, and use <code>threadkill</code> to
+stop it:
+<PRE>
+--&gt; a = threadnew;
+--&gt; global count                   % register the global variable count
+--&gt; count = 0;
+--&gt; threadstart(a,'freecount',0)   % start the thread
+--&gt; count                          % it is counting
+
+ans = 
+ 7145 
+
+--&gt; sleep(1)                       % Wait a bit
+--&gt; count                          % it is still counting
+
+ans = 
+ 485030 
+
+--&gt; threadkill(a)                  % kill the counter
+--&gt; threadwait(a,1000)             % wait for it to finish
+
+ans = 
+ 1 
+
+--&gt; count                          % The count will no longer increase
+
+ans = 
+ 485031 
+
+--&gt; sleep(1)
+--&gt; count
+
+ans = 
+ 485031 
+
+--&gt; threadfree(a)
+</PRE>
+<P>
+</BODY>
+</HTML>

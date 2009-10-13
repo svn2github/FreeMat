@@ -1,0 +1,41 @@
+\section{CLOCKTOTIME Convert Clock Vector to Epoch Time}
+
+\subsection{Usage}
+
+Given the output of the \verb|clock| command, this function computes
+the epoch time, i.e, the time in seconds since January 1,1970 
+at 00:00:00 UTC.  This function is most useful for calculating elapsed
+times using the clock, and should be accurate to less than a millisecond
+(although the true accuracy depends on accuracy of the argument vector). 
+The usage for \verb|clocktotime| is
+\begin{verbatim}
+   y = clocktotime(x)
+\end{verbatim}
+where \verb|x| must be in the form of the output of \verb|clock|, that is
+\begin{verbatim}
+   x = [year month day hour minute seconds]
+\end{verbatim}
+\subsection{Example}
+
+Here is an example of using \verb|clocktotime| to time a delay of 1 second
+\begin{verbatim}
+--> x = clock
+
+x = 
+
+   1.0e+03 * 
+    2.0090    0.0100    0.0040    0.0220    0.0260    0.0322 
+
+--> sleep(1)
+--> y = clock
+
+y = 
+
+   1.0e+03 * 
+    2.0090    0.0100    0.0040    0.0220    0.0260    0.0332 
+
+--> clocktotime(y) - clocktotime(x)
+
+ans = 
+    1.0010 
+\end{verbatim}

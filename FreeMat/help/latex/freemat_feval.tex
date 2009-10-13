@@ -1,0 +1,61 @@
+\section{FEVAL Evaluate a Function}
+
+\subsection{Usage}
+
+The \verb|feval| function executes a function using its name.
+The syntax of \verb|feval| is
+\begin{verbatim}
+  [y1,y2,...,yn] = feval(f,x1,x2,...,xm)
+\end{verbatim}
+where \verb|f| is the name of the function to evaluate, and
+\verb|xi| are the arguments to the function, and \verb|yi| are the
+return values.
+
+Alternately, \verb|f| can be a function handle to a function
+(see the section on \verb|function handles| for more information).
+
+Finally, FreeMat also supports \verb|f| being a user defined class
+in which case it will atttempt to invoke the \verb|subsref| method
+of the class.
+\subsection{Example}
+
+Here is an example of using \verb|feval| to call the \verb|cos| 
+function indirectly.
+\begin{verbatim}
+--> feval('cos',pi/4)
+
+ans = 
+    0.7071 
+\end{verbatim}
+Now, we call it through a function handle
+\begin{verbatim}
+--> c = @cos
+
+c = 
+ @cos
+--> feval(c,pi/4)
+
+ans = 
+    0.7071 
+\end{verbatim}
+Here we construct an inline object (which is a user-defined class)
+and use \verb|feval| to call it
+\begin{verbatim}
+--> afunc = inline('cos(t)+sin(t)','t')
+
+afunc = 
+  inline function object
+  f(t) = cos(t)+sin(t)
+--> feval(afunc,pi)
+
+ans = 
+   -1.0000 
+
+--> afunc(pi)
+
+ans = 
+   -1.0000 
+\end{verbatim}
+In both cases, (the \verb|feval| call and the direct invokation), FreeMat
+calls the \verb|subsref| method of the class, which computes the requested 
+function.

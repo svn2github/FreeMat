@@ -1,0 +1,32 @@
+\section{POLYINT Polynomial Coefficient Integration}
+
+\subsection{Usage}
+
+ The polyint function returns the polynomial coefficients resulting
+ from integration of polynomial p. The syntax for its use is either
+\begin{verbatim}
+ pint = polyint(p,k)
+\end{verbatim}
+ or, for a default \verb|k = 0|,
+\begin{verbatim}
+ pint = polyint(p);
+\end{verbatim}
+ where \verb|p| is a vector of polynomial coefficients assumed to be in
+ decreasing degree and \verb|k| is the integration constant.
+ Contributed by Paulo Xavier Candeias under GPL
+\subsection{Example}
+
+Here is are some examples of the use of \verb|polyint|.
+\begin{verbatim}
+--> polyint([2,3,4])
+
+ans = 
+    0.6667    1.5000    4.0000         0 
+\end{verbatim}
+And
+\begin{verbatim}
+--> polyint([2,3,4],5)
+
+ans = 
+    0.6667    1.5000    4.0000    5.0000 
+\end{verbatim}

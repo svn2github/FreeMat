@@ -1,0 +1,39 @@
+\section{REAL Real Function}
+
+\subsection{Usage}
+
+Returns the real part of the input array for all elements.  The 
+general syntax for its use is
+\begin{verbatim}
+   y = real(x)
+\end{verbatim}
+where \verb|x| is an \verb|n|-dimensional array of numerical type.  The output 
+is the same numerical type as the input, unless the input is \verb|complex|
+or \verb|dcomplex|.  For \verb|complex| inputs, the real part is a floating
+point array, so that the return type is \verb|float|.  For \verb|dcomplex|
+inputs, the real part is a double precision floating point array, so that
+the return type is \verb|double|.  The \verb|real| function does
+nothing to real and integer types.
+\subsection{Example}
+
+The following demonstrates the \verb|real| applied to a complex scalar.
+\begin{verbatim}
+--> real(3+4*i)
+
+ans = 
+ 3 
+\end{verbatim}
+The \verb|real| function has no effect on real arguments:
+\begin{verbatim}
+--> real([2,3,4])
+
+ans = 
+ 2 3 4 
+\end{verbatim}
+For a double-precision complex array,
+\begin{verbatim}
+--> real([2.0+3.0*i,i])
+
+ans = 
+ 2 0 
+\end{verbatim}

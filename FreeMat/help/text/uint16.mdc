@@ -1,0 +1,14 @@
+UINT16 UINT16 Convert to Unsigned 16-bit Integer
+
+Usage
+
+Converts the argument to an unsigned 16-bit Integer.  The syntax
+for its use is
+
+   y = uint16(x)
+
+where x is an n-dimensional numerical array.  Conversion
+follows saturation rules (e.g., if x is outside the normal
+range for an unsigned 16-bit integer of [0,65535], it is truncated
+to that range.  Note that
+both NaN and Inf both map to 0.

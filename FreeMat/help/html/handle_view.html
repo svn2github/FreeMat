@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>VIEW Set Graphical View
+</TITLE>
+</HEAD>
+<BODY>
+<H2>VIEW Set Graphical View
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+The <code>view</code> function sets the view into the current plot.
+The simplest form is
+<PRE>
+  view(n)
+</PRE>
+<P>
+where <code>n=2</code> sets a standard view (azimuth 0 and elevation 90),
+and <code>n=3</code> sets a standard 3D view (azimuth 37.5 and elevation 30).
+With two arguments,
+<PRE>
+  view(az,el)
+</PRE>
+<P>
+you set the viewpoint to azimuth <code>az</code> and elevation <code>el</code>.
+<H3>Example</H3>
+Here is a 3D surface plot shown with a number of viewpoints.
+First, the default view for a 3D plot.
+<PRE>
+--&gt; x = repmat(linspace(-1,1),[100,1]);
+--&gt; y = x';
+--&gt; r = x.^2+y.^2;
+--&gt; z = exp(-r*3).*cos(5*pi*r);
+--&gt; surf(x,y,z);
+--&gt; axis equal
+--&gt; view(3)
+Warning: Newly defined variable xlim shadows a function of the same name.  Use clear xlim to recover access to the function
+Warning: Newly defined variable ylim shadows a function of the same name.  Use clear ylim to recover access to the function
+Warning: Newly defined variable zlim shadows a function of the same name.  Use clear zlim to recover access to the function
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="view1.png">
+</DIV>
+<P>
+Next, we look at it as a 2D plot
+<PRE>
+--&gt; surf(x,y,z);
+--&gt; axis equal
+--&gt; view(2)
+Warning: Newly defined variable xlim shadows a function of the same name.  Use clear xlim to recover access to the function
+Warning: Newly defined variable ylim shadows a function of the same name.  Use clear ylim to recover access to the function
+Warning: Newly defined variable zlim shadows a function of the same name.  Use clear zlim to recover access to the function
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="view2.png">
+</DIV>
+<P>
+Finally, we generate a different view of the same surface.
+<PRE>
+--&gt; surf(x,y,z);
+--&gt; axis equal
+--&gt; view(25,50);
+Warning: Newly defined variable xlim shadows a function of the same name.  Use clear xlim to recover access to the function
+Warning: Newly defined variable ylim shadows a function of the same name.  Use clear ylim to recover access to the function
+Warning: Newly defined variable zlim shadows a function of the same name.  Use clear zlim to recover access to the function
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="view3.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>DIARY Create a Log File of Console
+</TITLE>
+</HEAD>
+<BODY>
+<H2>DIARY Create a Log File of Console
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>diary</code> function controls the creation of a log file that duplicates
+the text that would normally appear on the console.
+The simplest syntax for the command is simply:
+<PRE>
+   diary
+</PRE>
+<P>
+which toggles the current state of the diary command.  You can also explicitly
+set the state of the diary command via the syntax
+<PRE>
+   diary off
+</PRE>
+<P>
+or
+<PRE>
+   diary on
+</PRE>
+<P>
+To specify a filename for the log (other than the default of <code>diary</code>), you 
+can use the form:
+<PRE>
+   diary filename
+</PRE>
+<P>
+or
+<PRE>
+   diary('filename')
+</PRE>
+<P>
+which activates the diary with an output filename of <code>filename</code>.  Note that the
+<code>diary</code> command is thread specific, but that the output is appended to a given
+file.  That means that if you call <code>diary</code> with the same filename on multiple 
+threads, their outputs will be intermingled in the log file (just as on the console).
+Because the <code>diary</code> state is tied to individual threads, you cannot retrieve the
+current diary state using the <code>get(0,'Diary')</code> syntax from MATLAB.  Instead, you
+must call the <code>diary</code> function with no inputs and one output:
+<PRE>
+   state = diary
+</PRE>
+<P>
+which returns a logical <code>1</code> if the output of the current thread is currently going to
+a diary, and a logical <code>0</code> if not.
+</BODY>
+</HTML>

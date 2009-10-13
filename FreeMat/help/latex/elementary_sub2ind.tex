@@ -1,0 +1,48 @@
+\section{SUB2IND Convert Multiple Indexing To Linear Indexing}
+
+\subsection{Usage}
+
+The \verb|sub2ind| function converts a multi-dimensional indexing expression
+into a linear (or vector) indexing expression.  The syntax for its use
+is
+\begin{verbatim}
+   y = sub2ind(sizevec,d1,d2,...,dn)
+\end{verbatim}
+where \verb|sizevec| is the size of the array being indexed into, and each
+\verb|di| is a vector of the same length, containing index values.  The basic
+idea behind \verb|sub2ind| is that it makes
+\begin{verbatim}
+  [z(d1(1),d2(1),...,dn(1)),...,z(d1(n),d2(n),...,dn(n))]
+\end{verbatim}
+equivalent to
+\begin{verbatim}
+  z(sub2ind(size(z),d1,d2,...,dn))
+\end{verbatim}
+where the later form is using vector indexing, and the former one is using
+native, multi-dimensional indexing.
+\subsection{Example}
+
+Suppose we have a simple \verb|3 x 4| matrix \verb|A| containing some random integer
+elements
+\begin{verbatim}
+--> A = randi(ones(3,4),10*ones(3,4))
+
+A = 
+  2  1  4  2 
+  8 10  4  7 
+ 10  7  4 10 
+\end{verbatim}
+We can extract the elements \verb|(1,3),(2,3),(3,4)| of \verb|A| via \verb|sub2ind|.
+To calculate which elements of \verb|A| this corresponds to, we can use
+\verb|sub2ind| as
+\begin{verbatim}
+--> n = sub2ind(size(A),1:3,2:4)
+
+n = 
+  4  8 12 
+
+--> A(n)
+
+ans = 
+  1  4 10 
+\end{verbatim}

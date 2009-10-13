@@ -1,0 +1,60 @@
+\section{CAST Typecast Variable to Specified Type}
+
+\subsection{Usage}
+
+The \verb|cast| function allows you to typecast a variable from one
+type to another.  The syntax for its use is 
+\begin{verbatim}
+    y = cast(x,toclass)
+\end{verbatim}
+where \verb|toclass| is the name of the class to cast \verb|x| to.  Note
+that the typecast must make sense, and that \verb|toclass| must be
+one of the builtin types.  The current list of supported types is
+\begin{itemize}
+\item  \verb|'cell'| for cell-arrays
+
+\item  \verb|'struct'| for structure-arrays
+
+\item  \verb|'logical'| for logical arrays
+
+\item  \verb|'uint8'| for unsigned 8-bit integers
+
+\item  \verb|'int8'| for signed 8-bit integers
+
+\item  \verb|'uint16'| for unsigned 16-bit integers
+
+\item  \verb|'int16'| for signed 16-bit integers
+
+\item  \verb|'uint32'| for unsigned 32-bit integers
+
+\item  \verb|'int32'| for signed 32-bit integers
+
+\item  \verb|'uint64'| for unsigned 64-bit integers
+
+\item  \verb|'int64'| for signed 64-bit integers
+
+\item  \verb|'float'| for 32-bit floating point numbers
+
+\item  \verb|'single'| is a synonym for \verb|'float'|
+
+\item  \verb|'double'| for 64-bit floating point numbers
+
+\item  \verb|'char'| for string arrays
+
+\end{itemize}
+\subsection{Example}
+
+Here is an example of a typecast from a float to an 8-bit integer
+\begin{verbatim}
+--> cast(pi,'uint8')
+
+ans = 
+ 3 
+\end{verbatim}
+and here we cast an array of arbitrary integers to a logical array
+\begin{verbatim}
+--> cast([1 0 3 0],'logical')
+
+ans = 
+ 1 0 1 0 
+\end{verbatim}

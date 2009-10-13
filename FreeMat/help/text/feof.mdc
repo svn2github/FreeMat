@@ -1,0 +1,14 @@
+FEOF FEOF End Of File Function
+
+Usage
+
+Check to see if we are at the end of the file.  The usage is
+
+  b = feof(handle)
+
+The handle argument must be a valid and active file handle.  The
+return is true (logical 1) if the current position is at the end of
+the file, and false (logical 0) otherwise.  Note that simply reading
+to the end of a file will not cause feof to return true.  
+You must read past the end of the file (which will cause an error 
+anyway).  See the example for more details.

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>THREADWAIT Wait on a thread to complete execution
+</TITLE>
+</HEAD>
+<BODY>
+<H2>THREADWAIT Wait on a thread to complete execution
+</H2>
+<P>
+Section: <A HREF=sec_thread.html> FreeMat Threads </A>
+<H3>Usage</H3>
+The <code>threadwait</code> function waits for the given thread to complete
+execution, and stops execution of the current thread (the one calling
+<code>threadwait</code>) until the given thread completes.  The syntax for its
+use is 
+<PRE>
+   success = threadwait(handle)
+</PRE>
+<P>
+where <code>handle</code> is the value returned by <code>threadnew</code> and <code>success</code>
+is a <code>logical</code> vaariable that will be <code>1</code> if the wait was successful
+or <code>0</code> if the wait times out.  By default, the wait is indefinite.  It
+is better to use the following form of the function
+<PRE>
+   success = threadwait(handle,timeout)
+</PRE>
+<P>
+where <code>timeout</code> is the amount of time (in milliseconds) for 
+the <code>threadwait</code> function to wait before a timeout occurs.  
+If the <code>threadwait</code> function succeeds, then the return 
+value is a logical <code>1</code>, and if it fails, the return value 
+is a logical <code>0</code>.  Note that you can call <code>threadwait</code> multiple
+times on a thread, and if the thread is completed, each one
+will succeed.
+<H3>Example</H3>
+Here we lauch the <code>sleep</code> function in a thread with a time delay of 
+10 seconds.  This means that the thread function will not complete
+until 10 seconds have elapsed.  When we call <code>threadwait</code> on this
+thread with a short timeout, it fails, but not when the timeout
+is long enough to capture the end of the function call.
+<PRE>
+--&gt; a = threadnew;
+--&gt; threadstart(a,'sleep',0,10);  % start a thread that will sleep for 10
+--&gt; threadwait(a,2000)            % 2 second wait is not long enough
+
+ans = 
+ 0 
+
+--&gt; threadwait(a,10000)           % 10 second wait is long enough
+
+ans = 
+ 1 
+
+--&gt; threadfree(a)
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>FEVAL Evaluate a Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>FEVAL Evaluate a Function
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>feval</code> function executes a function using its name.
+The syntax of <code>feval</code> is
+<PRE>
+  [y1,y2,...,yn] = feval(f,x1,x2,...,xm)
+</PRE>
+<P>
+where <code>f</code> is the name of the function to evaluate, and
+<code>xi</code> are the arguments to the function, and <code>yi</code> are the
+return values.
+
+Alternately, <code>f</code> can be a function handle to a function
+(see the section on <code>function handles</code> for more information).
+
+Finally, FreeMat also supports <code>f</code> being a user defined class
+in which case it will atttempt to invoke the <code>subsref</code> method
+of the class.
+<H3>Example</H3>
+Here is an example of using <code>feval</code> to call the <code>cos</code> 
+function indirectly.
+<PRE>
+--&gt; feval('cos',pi/4)
+
+ans = 
+    0.7071 
+</PRE>
+<P>
+Now, we call it through a function handle
+<PRE>
+--&gt; c = @cos
+
+c = 
+ @cos
+--&gt; feval(c,pi/4)
+
+ans = 
+    0.7071 
+</PRE>
+<P>
+Here we construct an inline object (which is a user-defined class)
+and use <code>feval</code> to call it
+<PRE>
+--&gt; afunc = inline('cos(t)+sin(t)','t')
+
+afunc = 
+  inline function object
+  f(t) = cos(t)+sin(t)
+--&gt; feval(afunc,pi)
+
+ans = 
+   -1.0000 
+
+--&gt; afunc(pi)
+
+ans = 
+   -1.0000 
+</PRE>
+<P>
+In both cases, (the <code>feval</code> call and the direct invokation), FreeMat
+calls the <code>subsref</code> method of the class, which computes the requested 
+function.
+</BODY>
+</HTML>

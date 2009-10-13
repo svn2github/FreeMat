@@ -1,0 +1,10 @@
+ACOSH ACOSH Inverse Hyperbolic Cosine Function
+
+Usage
+
+Computes the inverse hyperbolic cosine of its argument.  The general
+syntax for its use is
+
+  y = acosh(x)
+
+where x is an n-dimensional array of numerical type.

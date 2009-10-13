@@ -1,0 +1,25 @@
+\section{BIN2DEC Convert Binary String to Decimal}
+
+\subsection{USAGE}
+
+Converts a binary string to an integer.  The syntax for its
+use is
+\begin{verbatim}
+   y = bin2dec(x)
+\end{verbatim}
+where \verb|x| is a binary string. If \verb|x| is a matrix, then the resulting 
+\verb|y| is a column vector.
+\subsection{Example}
+
+Here we convert some numbers to bits
+\begin{verbatim}
+--> bin2dec('101110')
+
+ans = 
+ 46 
+
+--> bin2dec('010')
+
+ans = 
+ 2 
+\end{verbatim}

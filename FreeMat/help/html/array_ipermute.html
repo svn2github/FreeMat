@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>IPERMUTE Array Inverse Permutation Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>IPERMUTE Array Inverse Permutation Function
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+The <code>ipermute</code> function rearranges the contents of an array according
+to the inverse of the specified permutation vector.  The syntx for 
+its use is
+<PRE>
+   y = ipermute(x,p)
+</PRE>
+<P>
+where <code>p</code> is a permutation vector - i.e., a vector containing the 
+integers <code>1...ndims(x)</code> each occuring exactly once.  The resulting
+array <code>y</code> contains the same data as the array <code>x</code>, but ordered
+according to the inverse of the given permutation.  This function and
+the <code>permute</code> function are inverses of each other.
+<H3>Example</H3>
+First we create a large multi-dimensional array, then permute it
+ and then inverse permute it, to retrieve the original array:
+<PRE>
+--&gt; A = randn(13,5,7,2);
+--&gt; size(A)
+
+ans = 
+ 13  5  7  2 
+
+--&gt; B = permute(A,[3,4,2,1]);
+--&gt; size(B)
+
+ans = 
+  7  2  5 13 
+
+--&gt; C = ipermute(B,[3,4,2,1]);
+--&gt; size(C)
+
+ans = 
+ 13  5  7  2 
+
+--&gt; any(A~=C)
+
+ans = 
+
+(:,:,1,1) = 
+ 0 0 0 0 0 
+
+(:,:,2,1) = 
+ 0 0 0 0 0 
+
+(:,:,3,1) = 
+ 0 0 0 0 0 
+
+(:,:,4,1) = 
+ 0 0 0 0 0 
+
+(:,:,5,1) = 
+ 0 0 0 0 0 
+
+(:,:,6,1) = 
+ 0 0 0 0 0 
+
+(:,:,7,1) = 
+ 0 0 0 0 0 
+
+(:,:,1,2) = 
+ 0 0 0 0 0 
+
+(:,:,2,2) = 
+ 0 0 0 0 0 
+
+(:,:,3,2) = 
+ 0 0 0 0 0 
+
+(:,:,4,2) = 
+ 0 0 0 0 0 
+
+(:,:,5,2) = 
+ 0 0 0 0 0 
+
+(:,:,6,2) = 
+ 0 0 0 0 0 
+
+(:,:,7,2) = 
+ 0 0 0 0 0 
+</PRE>
+<P>
+</BODY>
+</HTML>

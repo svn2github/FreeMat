@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TRANSPOSE Matrix Transpose Operator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TRANSPOSE Matrix Transpose Operator
+</H2>
+<P>
+Section: <A HREF=sec_operators.html> Mathematical Operators </A>
+<H3>Usage</H3>
+Performs a transpose of the argument (a 2D matrix).  The syntax for its use is
+<PRE>
+  y = a.';
+</PRE>
+<P>
+where <code>a</code> is a <code>M x N</code> numerical matrix.  The output <code>y</code> is a numerical matrix
+of the same type of size <code>N x M</code>.  This operator is the non-conjugating transpose,
+which is different from the Hermitian operator <code>'</code> (which conjugates complex values).
+<H3>Function Internals</H3>
+The transpose operator is defined simply as
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="transpose_eqn1.png">
+</DIV>
+<P>
+where <code>y_ij</code> is the element in the <code>i</code>th row and <code>j</code>th column of the output matrix <code>y</code>.
+<H3>Examples</H3>
+A simple transpose example:
+<PRE>
+--&gt; A = [1,2,0;4,1,-1]
+
+A = 
+  1  2  0 
+  4  1 -1 
+
+--&gt; A.'
+
+ans = 
+  1  4 
+  2  1 
+  0 -1 
+</PRE>
+<P>
+Here, we use a complex matrix to demonstrate how the transpose does \emph{not} conjugate the entries.
+<PRE>
+--&gt; A = [1+i,2-i]
+
+A = 
+   1.0000 +  1.0000i   2.0000 -  1.0000i 
+
+--&gt; A.'
+
+ans = 
+   1.0000 +  1.0000i 
+   2.0000 -  1.0000i 
+</PRE>
+<P>
+</BODY>
+</HTML>

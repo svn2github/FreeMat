@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>RANDNCHI Generate Noncentral Chi-Square Random Variable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>RANDNCHI Generate Noncentral Chi-Square Random Variable
+</H2>
+<P>
+Section: <A HREF=sec_random.html> Random Number Generation </A>
+<H3>Usage</H3>
+Generates a vector of non-central chi-square random variables
+with the given number of degrees of freedom and the given
+non-centrality parameters.  The general syntax for its use is
+<PRE>
+   y = randnchi(n,mu)
+</PRE>
+<P>
+where <code>n</code> is an array containing the degrees of freedom for
+each generated random variable (with each element of <code>n</code> &gt;= 1),
+and <code>mu</code> is the non-centrality shift (must be positive).
+<H3>Function Internals</H3>
+A non-central chi-square random variable is the sum of a chisquare
+deviate with <code>n-1</code> degrees of freedom plus the square of a normal
+deviate with mean <code>mu</code> and standard deviation 1.
+<H3>Examples</H3>
+Here is an example of a non-central chi-square random variable:
+<PRE>
+--&gt; randnchi(5*ones(1,9),0.3)
+
+ans = 
+
+ Columns 1 to 8
+
+    1.7097    6.6003   14.1463    2.0817    4.4984    5.3132    3.1775    3.5291 
+
+ Columns 9 to 9
+
+    5.5185 
+</PRE>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>EIGS Sparse Matrix Eigendecomposition
+</TITLE>
+</HEAD>
+<BODY>
+<H2>EIGS Sparse Matrix Eigendecomposition
+</H2>
+<P>
+Section: <A HREF=sec_sparse.html> Sparse Matrix Support </A>
+<H3>Usage</H3>
+Computes the eigendecomsition of a sparse square matrix.  The
+<code>eigs</code> function has several forms.  The most general form is
+<PRE>
+  [V,D] = eigs(A,k,sigma)
+</PRE>
+<P>
+where <code>A</code> is the matrix to analyze, <code>k</code> is the number of
+eigenvalues to compute and <code>sigma</code> determines which eigenvallues
+to solve for.  Valid values for <code>sigma</code> are
+   'lm' - largest magnitude 
+   'sm' - smallest magnitude
+   'la' - largest algebraic (for real symmetric problems)
+   'sa' - smallest algebraic (for real symmetric problems)
+   'be' - both ends (for real symmetric problems)
+   'lr' - largest real part 
+   'sr' - smallest real part
+   'li' - largest imaginary part
+   'si' - smallest imaginary part
+ scalar - find the eigenvalues closest to <code>sigma</code>.
+The returned matrix <code>V</code> contains the eigenvectors, and <code>D</code>
+stores the eigenvalues.  The related form
+<PRE>
+   d = eigs(A,k,sigma)
+</PRE>
+<P>
+computes only the eigenvalues and not the eigenvectors.  If <code>sigma</code>
+is omitted, as in the forms
+<PRE>
+  [V,D] = eigs(A,k)
+</PRE>
+<P>
+and
+<PRE>
+  d = eigs(A,k)
+</PRE>
+<P>
+then <code>eigs</code> returns the largest magnitude eigenvalues (and optionally
+the associated eigenvectors).  As an even simpler form, the forms
+<PRE>
+  [V,D] = eigs(A)
+</PRE>
+<P>
+and
+<PRE>
+  d = eigs(A)
+</PRE>
+<P>
+then <code>eigs</code> returns the six largest magnitude eigenvalues of <code>A</code> and
+optionally the eigenvectors.  The <code>eigs</code> function uses ARPACK to
+compute the eigenvectors and/or eigenvalues.  Note that due to a 
+limitation in the interface into ARPACK from FreeMat, the number of
+eigenvalues that are to be computed must be strictly smaller than the
+number of columns (or rows) in the matrix.
+<H3>Example</H3>
+Here is an example of using <code>eigs</code> to calculate eigenvalues
+of a matrix, and a comparison of the results with <code>eig</code>
+<PRE>
+--&gt; a = sparse(rand(9));
+--&gt; eigs(a)
+
+ans = 
+   4.2673 +  0.0000i 
+  -0.8372 +  0.0000i 
+  -0.7445 +  0.3406i 
+  -0.7445 -  0.3406i 
+   0.6653 +  0.2082i 
+   0.6653 -  0.2082i 
+
+--&gt; eig(full(a))
+
+ans = 
+   4.2673 +  0.0000i 
+  -0.8372 +  0.0000i 
+  -0.7445 +  0.3406i 
+  -0.7445 -  0.3406i 
+   0.1634 +  0.4595i 
+   0.1634 -  0.4595i 
+   0.6653 +  0.2082i 
+   0.6653 -  0.2082i 
+   0.0479 +  0.0000i 
+</PRE>
+<P>
+Next, we exercise some of the variants of <code>eigs</code>:
+<PRE>
+--&gt; eigs(a,4,'sm')
+
+ans = 
+   0.0479 +  0.0000i 
+   0.1634 -  0.4595i 
+   0.1634 +  0.4595i 
+   0.6653 -  0.2082i 
+
+--&gt; eigs(a,4,'lr')
+
+ans = 
+   4.2673 +  0.0000i 
+   0.6653 -  0.2082i 
+   0.6653 +  0.2082i 
+   0.1634 -  0.4595i 
+
+--&gt; eigs(a,4,'sr')
+
+ans = 
+  -0.8372 +  0.0000i 
+  -0.7445 -  0.3406i 
+  -0.7445 +  0.3406i 
+   0.0479 +  0.0000i 
+</PRE>
+<P>
+</BODY>
+</HTML>

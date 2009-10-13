@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GETFIELD Get Field Contents
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GETFIELD Get Field Contents
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+Given a structure or structure array, returns the contents of the
+specified field.  The first version is for scalar structures, and
+has the following syntax
+<PRE>
+   y = getfield(x,'fieldname')
+</PRE>
+<P>
+and is equivalent to <code>y = x.fieldname</code> where <code>x</code> is a scalar (1 x 1)
+structure.  If <code>x</code> is not a scalar structure, then <code>y</code> is the 
+first value, i.e., it is equivalent to <code>y = x(1).fieldname</code>.  
+The second form allows you to specify a subindex into a
+structure array, and has the following syntax
+<PRE>
+    y = getfield(x, {m,n}, 'fieldname')
+</PRE>
+<P>
+and is equivalent to <code>y = x(m,n).fieldname</code>.  You can chain multiple
+references together using this syntax.
+</BODY>
+</HTML>

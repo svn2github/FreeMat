@@ -1,0 +1,25 @@
+THREADWAIT THREADWAIT Wait on a thread to complete execution
+
+Usage
+
+The threadwait function waits for the given thread to complete
+execution, and stops execution of the current thread (the one calling
+threadwait) until the given thread completes.  The syntax for its
+use is 
+
+   success = threadwait(handle)
+
+where handle is the value returned by threadnew and success
+is a logical vaariable that will be 1 if the wait was successful
+or 0 if the wait times out.  By default, the wait is indefinite.  It
+is better to use the following form of the function
+
+   success = threadwait(handle,timeout)
+
+where timeout is the amount of time (in milliseconds) for 
+the threadwait function to wait before a timeout occurs.  
+If the threadwait function succeeds, then the return 
+value is a logical 1, and if it fails, the return value 
+is a logical 0.  Note that you can call threadwait multiple
+times on a thread, and if the thread is completed, each one
+will succeed.

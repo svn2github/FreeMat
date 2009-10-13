@@ -1,0 +1,13 @@
+SYSTEM SYSTEM Call an External Program
+
+Usage
+
+The system function allows you to call an external
+program from within FreeMat, and capture the output.
+The syntax of the system function is
+
+  y = system(cmd)
+
+where cmd is the command to execute.  The return
+array y is of type cell-array, where each entry
+in the array corresponds to a line from the output.

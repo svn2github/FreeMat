@@ -1,0 +1,25 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>URLWRITE Retrieve a URL into a File
+</TITLE>
+</HEAD>
+<BODY>
+<H2>URLWRITE Retrieve a URL into a File
+</H2>
+<P>
+Section: <A HREF=sec_io.html> Input/Ouput Functions </A>
+<H3>Usage</H3>
+Given a URL and a timeout, attempts to retrieve the URL and write the
+contents to a file.  The syntax is
+<PRE>
+   f = urlwrite(url,filename,timeout)
+</PRE>
+<P>
+The <code>timeout</code> is in milliseconds.  Note that the URL must be a complete
+spec (i.e., including the name of the resource you wish to retrieve).  So
+for example, you cannot use <code>http://www.google.com</code> as a URL, but must 
+instead use <code>http://www.google.com/index.html</code>.
+</BODY>
+</HTML>

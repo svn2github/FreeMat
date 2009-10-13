@@ -1,0 +1,15 @@
+CONTINUE CONTINUE Continue Execution In Loop
+
+Usage
+
+The continue statement is used to change the order of
+execution within a loop.  The continue statement can
+be used inside a for loop or a while loop.  The
+syntax for its use is 
+
+   continue
+
+inside the body of the loop.  The continue statement
+forces execution to start at the top of the loop with
+the next iteration.  The examples section shows how
+the continue statement works.

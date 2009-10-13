@@ -1,0 +1,16 @@
+VIEW VIEW Set Graphical View
+
+Usage
+
+The view function sets the view into the current plot.
+The simplest form is
+
+  view(n)
+
+where n=2 sets a standard view (azimuth 0 and elevation 90),
+and n=3 sets a standard 3D view (azimuth 37.5 and elevation 30).
+With two arguments,
+
+  view(az,el)
+
+you set the viewpoint to azimuth az and elevation el.

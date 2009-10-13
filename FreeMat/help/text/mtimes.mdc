@@ -1,0 +1,13 @@
+MTIMES MTIMES Overloaded Matrix Multiplication Operator
+
+Usage
+
+This is a method that is invoked when two variables are multiplied
+using the matrix operator and is invoked when you call
+
+   c = mtimes(a,b)
+
+or for
+
+   c = a * b
+

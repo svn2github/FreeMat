@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>SEMILOGX Semilog X Axis Plot Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>SEMILOGX Semilog X Axis Plot Function
+</H2>
+<P>
+Section: <A HREF=sec_handle.html> Handle-Based Graphics </A>
+<H3>Usage</H3>
+This command has the exact same syntax as the <code>plot</code> command:
+<PRE>
+  semilogx(&lt;data 1&gt;,{linespec 1},&lt;data 2&gt;,{linespec 2}...,properties...)
+</PRE>
+<P>
+in fact, it is a simple wrapper around <code>plot</code> that sets the
+x axis to have a logarithmic scale.
+<H3>Example</H3>
+Here is an example of an exponential signal plotted first on a linear
+plot:
+<PRE>
+--&gt; y = linspace(0,2);
+--&gt; x = (10).^y;
+--&gt; plot(x,y,'r-');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="semilogx1.png">
+</DIV>
+<P>
+and now with a logarithmic x axis
+<PRE>
+--&gt; semilogx(x,y,'r-');
+</PRE>
+<P>
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="semilogx2.png">
+</DIV>
+<P>
+</BODY>
+</HTML>

@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TYPERULES Type Rules for Operators
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TYPERULES Type Rules for Operators
+</H2>
+<P>
+Section: <A HREF=sec_operators.html> Mathematical Operators </A>
+<H3>Usage</H3>
+Starting with FreeMat 4.0, the type of <code>y</code> is determined according to the
+same rules as Matlab.  These are the rules:
+<OL>
+<LI>  Integer types of the same class can be combined.  The answer is
+the same type as the inputs, and the operation is performed using 
+saturating arithmetic.  Integer types can also be combined with double
+precision values (again, the result is of the integer type).
+ </LI>
+<LI>  Single precision floating point values can be combined with double
+precision, logical and character array classes.  The result is of 
+class single.
+ </LI>
+<LI>  Double precision floating point values can be combined with all
+other types.  Except as noted above, the output is of double precision.
+ </LI>
+</OL>
+These rules look strange, and they are.   In general, computations are
+done in double precision in almost all cases.  When single precision
+values are involved, the computations take place in single precision.
+</BODY>
+</HTML>

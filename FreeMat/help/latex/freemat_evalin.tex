@@ -1,0 +1,21 @@
+\section{EVALIN Evaluate a String in Workspace}
+
+\subsection{Usage}
+
+The \verb|evalin| function is similar to the \verb|eval| function, with an additional
+argument up front that indicates the workspace that the expressions are to 
+be evaluated in.  The various syntaxes for \verb|evalin| are:
+\begin{verbatim}
+   evalin(workspace,expression)
+   x = evalin(workspace,expression)
+   [x,y,z] = evalin(workspace,expression)
+   evalin(workspace,try_clause,catch_clause)
+   x = evalin(workspace,try_clause,catch_clause)
+   [x,y,z] = evalin(workspace,try_clause,catch_clause)
+\end{verbatim}
+The argument \verb|workspace| must be either 'caller' or 'base'.  If it is
+'caller', then the expression is evaluated in the caller's work space.
+That does not mean the caller of \verb|evalin|, but the caller of the current
+function or script.  On the other hand if the argument is 'base', then
+the expression is evaluated in the base work space.   See \verb|eval| for
+details on the use of each variation.

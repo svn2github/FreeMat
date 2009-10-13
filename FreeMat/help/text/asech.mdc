@@ -1,0 +1,10 @@
+ASECH ASECH Inverse Hyperbolic Secant Function
+
+Usage
+
+Computes the inverse hyperbolic secant of its argument.  The general
+syntax for its use is
+
+  y = asech(x)
+
+where x is an n-dimensional array of numerical type.

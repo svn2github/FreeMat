@@ -1,0 +1,35 @@
+\section{BITCMP Bitwise Boolean Complement Operation}
+
+\subsection{Usage}
+
+ Usage
+ 
+ Performs a bitwise binary complement operation on the argument and
+ returns the result.  The syntax for its use is
+\begin{verbatim}
+    y = bitcmp(a)
+\end{verbatim}
+ where a is an unsigned integer arrays.  This version of the command
+ uses as many bits as required by the type of a.  For example, if 
+ a is an uint8 type, then the complement is formed using 8 bits.
+ The second form of bitcmp allows you to specify the number of bits
+ to use, 
+\begin{verbatim}
+    y = bitcmp(a,n)
+\end{verbatim}
+ in which case the complement is taken with respect to n bits, where n must be 
+ less than the length of the integer type.
+
+\subsection{Example}
+
+\begin{verbatim}
+--> bitcmp(uint16(2^14-2))
+
+ans = 
+ 49153 
+
+--> bitcmp(uint16(2^14-2),14)
+
+ans = 
+ 1 
+\end{verbatim}

@@ -1,0 +1,70 @@
+\section{TEXTPROPERTIES Text Object Properties}
+
+\subsection{Usage}
+
+Below is a summary of the properties for a text object.
+\begin{itemize}
+\item  \verb|boundingbox| - \verb|four vector| - The size of the bounding
+ box containing the text (in pixels).  May contain negative values
+ if the text is slanted.
+
+\item  \verb|children| - Not used.
+
+\item  \verb|string| - \verb|string| - The text contained in the label.
+
+\item  \verb|extent| - Not used.
+
+\item  \verb|horizontalalignment| - \verb|{'left','center','right'}| - Controls the 
+ alignment of the text relative to the specified position point.
+
+\item  \verb|position| - \verb|three vector| - The position of the label in axis
+ coordinates.
+
+\item  \verb|rotation| - \verb|scalar| - The rotation angle (in degrees) of the label.
+
+\item  \verb|units| - Not used.
+
+\item  \verb|verticalalignment| - \verb|{'top','bottom','middle'}| - Controls the
+ alignment fo the text relative to the specified position point in the
+ vertical position.
+
+\item  \verb|backgroundcolor| - \verb|colorspec| - The color used to fill in the background
+ rectangle for the label.  Normally this is \verb|none|.
+
+\item  \verb|edgecolor| - \verb|colorspec| - The color used to draw the bounding rectangle
+ for the label.  Normally this is \verb|none|.
+
+\item  \verb|linewidth| - \verb|scalar| - The width of the line used to draw the border.
+
+\item  \verb|linestyle| - \verb|{'-','--',':','-.','none'}| - The style of the line used
+ to draw the border.
+
+\item  \verb|margin| - \verb|scalar| - The amount of spacing to place around the text as
+ padding when drawing the rectangle.
+
+\item  \verb|fontangle| - \verb|{'normal','italic','oblique'}| - The angle of the fonts used
+ for the labels.
+
+\item  \verb|fontsize| - \verb|scalar| - The size of fonts used for the text.
+
+\item  \verb|fontunits| - Not used.
+
+\item  \verb|fontweight| - \verb|{'normal','bold','light','demi'}| - The weight of the font used
+ for the label
+
+\item  \verb|visible| - \verb|{'on','off'}| - Controls visibility of the the line.
+
+\item  \verb|color| - \verb|colorspec| - The color of the text of the label.
+
+\item  \verb|children| - Not used.
+
+\item  \verb|parent| - The handle of the axis that owns this label.
+
+\item  \verb|tag| - \verb|string| - A string that can be used to tag the object.
+
+\item  \verb|type| - \verb|string| - Returns the string \verb|'text'|.
+
+\item  \verb|userdata| - \verb|array| - Available to store any variable you
+ want in the handle object.
+
+\end{itemize}

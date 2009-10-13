@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>PATH Get or Set FreeMat Path
+</TITLE>
+</HEAD>
+<BODY>
+<H2>PATH Get or Set FreeMat Path
+</H2>
+<P>
+Section: <A HREF=sec_freemat.html> FreeMat Functions </A>
+<H3>Usage</H3>
+The <code>path</code> routine has one of the following syntaxes.  In the first form
+<PRE>
+  x = path
+</PRE>
+<P>
+<code>path</code> simply returns the current path.  In the second, the current path
+is replaced by the argument string <code>'thepath'</code>
+<PRE>
+  path('thepath')
+</PRE>
+<P>
+In the third form, a new path is appended to the current search path
+<PRE>
+  path(path,'newpath')
+</PRE>
+<P>
+In the fourth form, a new path is prepended to the current search path
+<PRE>
+  path('newpath',path)
+</PRE>
+<P>
+In the final form, the path command prints out the current path
+<PRE>
+  path
+</PRE>
+<P>
+</BODY>
+</HTML>

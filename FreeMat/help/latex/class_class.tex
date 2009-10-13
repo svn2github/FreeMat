@@ -1,0 +1,27 @@
+\section{CLASS Class Support Function}
+
+\subsection{Usage}
+
+There are several uses for the \verb|class| function.  The first
+version takes a single argument, and returns the class of
+that variable.  The syntax for this form is
+\begin{verbatim}
+  classname = class(variable)
+\end{verbatim}
+and it returns a string containing the name of the class for
+\verb|variable|.  The second form of the class function is used
+to construct an object of a specific type based on a structure
+which contains data elements for the class.  The syntax for
+this version is
+\begin{verbatim}
+  classvar = class(template, classname, parent1, parent2,...)
+\end{verbatim}
+This should be called inside the constructor for the class.
+The resulting class will be of the type \verb|classname|, and will
+be derived from \verb|parent1|, \verb|parent2|, etc.  The \verb|template|
+argument should be a structure array that contains the members
+of the class.  See the \verb|constructors| help for some details
+on how to use the \verb|class| function.  Note that if the
+\verb|template| argument is an empty structure matrix, then the
+resulting variable has no fields beyond those inherited from
+the parent classes.

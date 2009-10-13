@@ -1,0 +1,30 @@
+\section{SETPRINTLIMIT Set Limit For Printing Of Arrays}
+
+\subsection{Usage}
+
+Changes the limit on how many elements of an array are printed
+using either the \verb|disp| function or using expressions on the
+command line without a semi-colon.  The default is set to 
+one thousand elements.  You can increase or decrease this
+limit by calling
+\begin{verbatim}
+  setprintlimit(n)
+\end{verbatim}
+where \verb|n| is the new limit to use.
+\subsection{Example}
+
+Setting a smaller print limit avoids pages of output when you forget the semicolon on an expression.
+\begin{verbatim}
+--> A = randn(512);
+--> setprintlimit(10)
+--> A
+
+ans = 
+
+ Columns 1 to 8
+
+   -0.2911   -2.2394    0.7388    0.4197    0.4382   -0.1399    0.9364   -1.8721 
+    0.6263    0.5764
+Print limit has been reached.  Use setprintlimit function to enable longer printouts
+--> setprintlimit(1000)
+\end{verbatim}

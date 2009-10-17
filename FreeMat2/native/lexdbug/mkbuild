@@ -1,2 +1,0 @@
-flex Lexer.lxx
-g++ -o lexdbug lex.yy.c Reserved.cpp

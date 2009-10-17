@@ -1,9 +1,0 @@
-testgc: testgc.o GTKGC.o ../../libs/libXP/Color.o ../../libs/libXP/GraphicsContext.o ../../libs/libXP/Point2D.o ../../libs/libXP/Rect2D.o
-	g++ -o testgc testgc.o GTKGC.o ../../libs/libXP/Color.o ../../libs/libXP/GraphicsContext.o ../../libs/libXP/Point2D.o ../../libs/libXP/Rect2D.o `pkg-config gtk+-2.0 --libs --cflags` -g
-
-base: base.cpp ../win32/TermWidget.cpp
-	g++ -o base base.cpp GTKGC.cpp -I../../libs/libXP `pkg-config gtk+-2.0 --libs --cflags` -g
-
-%.o: %.cpp
-	$(CXX) -c $(CXXFLAGS) -I../../libs/libXP `pkg-config gtk+-2.0 --cflags` -g -o $@ $<
-

@@ -1,5 +1,0 @@
-#!/bin/sh
-aclocal
-touch manifest.am
-automake --add-missing --copy
-autoconf

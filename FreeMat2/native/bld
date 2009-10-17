@@ -1,5 +1,0 @@
-gcc -g -o build_font_tables build_font_tables.c -I/Users/basu/freetype-2.1.5/include /Users/basu/freetype-2.1.5/objs/.libs/libfreetype.a -lz
-g++ -g -o renderft renderft.cpp
-./build_font_tables helv.pfb 12 helv12_pack.dat helv.afm
-./renderft
-ppm2tiff dump.pgm dump.tif

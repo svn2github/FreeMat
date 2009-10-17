@@ -1,3 +1,0 @@
-g++ -o term term.cxx -g -I.. -L../lib `../fltk-config --ldflags`
-#g++ -o twin twin.cpp -g -I/home/basu/fltk-1.1.5rc2 /home/basu/fltk-1.1.5rc2/lib/libfltk.a -L/usr/X11R6/lib -lX11
-#g++ -o xpgui XPGUITerminal.cpp -g -I/home/basu/fltk-1.1.5rc2 /home/basu/fltk-1.1.5rc2/lib/libfltk.a -L/usr/X11R6/lib -lX11

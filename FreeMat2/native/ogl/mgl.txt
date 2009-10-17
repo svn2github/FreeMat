@@ -1,7 +1,0 @@
-The FreeMat interface to OpenGL might look something like this:
-
-1.  setup a 3D imaging sphere - of radius n (where n is specified) - this value will 
-control the nRange value in ChangeSize.
-2.  Somehow, it must be possible to separate construction of the scene from the rendering...
-It is possible with call lists... but this is inefficient.  A cleaner approach is to 
-use vertex lists if supported.  Or to build some type of intermediate GL.  

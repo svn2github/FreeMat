@@ -1,14 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>FreeMat - News</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content=" " />
-<link rel="stylesheet" href="assets/style.css" type="text/css" />
+    <title>FreeMat - News</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content=" " />
+    <link rel="stylesheet" href="assets/style.css" type="text/css" />
 </head>
-
 <body>
-
 <div id="wrap">
 <div id="sidebar">
 <img src="assets/FreeMat_Logo2.png" alt="Logo" />
@@ -43,188 +41,147 @@
 
 <div class="content2">
     
-<h1 id='news'>News</h1>
+<h1>News</h1>
 
-<h2 id='latest_news__20080317__freemat_36_released'>Latest News - 2008-03-17 - FreeMat 3.6 Released</h2>
+<h2>Latest News - 2009-10-09 - FreeMat 4.0 Released</h2>
 
-<p>We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features, mostly to the UI. Here is the list of changes:</p>
+<p>We are pleased to announce the release of FreeMat 4.0 . This version brings major feature improvements and changes to the internals of FreeMat. Here is a  list of changes:</p>
+
+<ul>
+<li>Improved Editor with integrated debugger</li>
+<li>Improved Main Application UI with dockable workspace browser and command history</li>
+<li>Just In Time compiler (enabled by default)</li>
+<li>Greatly improved compatibility with Matlab (over 366 compatibility tests pass)</li>
+<li>Dynamic linking with BLAS (users can use custom optimized BLAS libraries)</li>
+<li>Vectorized fprintf, sprintf, fscanf, sscanf functions</li>
+<li>Added patch handle graphics object</li>
+<li>Much faster figure drawing</li>
+<li>Ability to handle huge arrays (more than 2GB) when compiled under 64 bit OS</li>
+<li>Code profiler</li>
+</ul>
+
+<p>Internal changes:</p>
+
+<ul>
+<li>New array class implementation</li>
+<li>Compatible type handling</li>
+<li>JIT compiler</li>
+<li>CMake build system <br /></li>
+</ul>
+
+<h2>Latest News - 2008-03-17 - FreeMat 3.6 Released</h2>
+
+<p>We are pleased to announce the release of FreeMat 3.6. This is primarily a bugfix release that adds a few new features,
+mostly to the UI. Here is the list of changes:</p>
 
 <ul>
 <li>Added ODE45 solver from Sebastien Loisel</li>
-
 <li>Added SVG support for exporting figures.</li>
-
-<li>Added &#8220;recent files&#8221; to editor.</li>
-
+<li>Added "recent files" to editor.</li>
 <li>Added keyboard shortcuts to editor and main application menus.</li>
-
 <li>Added increase/decrease indent by tab/shift-tab in editor</li>
-
 <li>Added execute button to debug toolbar</li>
-
 <li>Added quiver plots</li>
-
 <li>Added execute-selected-text button</li>
-
 <li>Added directory-change tool to main toolbar, and rearranged windows on the main page.</li>
-
-<li>Second pass at the JIT compiler. Completion of the JIT and it&#8217;s general activation will wait for FreeMat4.</li>
-
+<li>Second pass at the JIT compiler.  Completion of the JIT and it's general activation will wait for FreeMat4.</li>
 <li>Display of complex numbers</li>
-
 <li>Helpwin now accepts an argument.</li>
-
 <li>Replaced the toolbox with a tabbed widget.</li>
-
 <li>Code clean up for -Wall.</li>
-
 <li>Improved the behavior of editor when opening and saving (new)files.</li>
-
 <li>Corrected norms of double args on 64 bit machines</li>
-
 <li>Interplin1 now works with more argument types.</li>
-
 <li>Any, all, min and max handle empties more gracefully.</li>
-
 <li>Corrected color display of RGB images</li>
-
 <li>Modified bitcmp function for compatibility with matlab</li>
-
-<li>Modified fprintf to follow matlab&#8217;s behavior when no handle is specified.</li>
-
+<li>Modified fprintf to follow matlab's behavior when no handle is specified.</li>
 <li>Set default view for 3D plots to view(3).</li>
-
 <li>Fixes for anonymous functions and code block leaks.</li>
-
-<li>Fixed the &#8220;comment&#8221; and &#8220;uncomment&#8221; bugs when applying to the whole</li>
-
+<li>Fixed the "comment" and "uncomment" bugs when applying to the whole</li>
 <li>Fixed failed feval for local functions</li>
-
 <li>Fixed program crash after clear history.</li>
-
 <li>Fixed bug in complex matrix assignment operators.</li>
 </ul>
 
-<h2 id='20070923__freemat_35_released'>2007-09-23 - FreeMat 3.5 Released</h2>
+<h2>2007-09-23 - FreeMat 3.5 Released</h2>
 
 <p>We are pleased to announce the release of FreeMat 3.5. This is primarily a bugfix release that adds a few new features. Here is the list of changes:</p>
 
 <ul>
 <li>Fixed path detection problem on win32 (forward vs backward slashes)</li>
-
-<li>Added ability to change the scrollback length via edit-&gt;preferences menu</li>
-
+<li>Added ability to change the scrollback length via edit->preferences menu</li>
 <li>Fixed diary command so that commands are echoed as well as their outputs</li>
-
 <li>Fixed diary so that the commands are echoed as well as the outputs.</li>
-
 <li>Added fflush command.</li>
-
 <li>Added ctrl-w to clear the current line</li>
-
 <li>Changed sort algorithm to a stable one.</li>
-
 <li>Fixed bug in linspace</li>
-
 <li>Added the new ctype interface - thanks to Scott McOlash for suggesting it, and GE Global Research for letting us release it under the GPL.</li>
-
 <li>Converted FFTW to estimate mode from measure mode - should fix problems with long FFT times for large FFTs</li>
-
 <li>Added stack trace on errors, even when not in dbauto on mode.</li>
-
 <li>Improved the autoconfig script for mac builds.</li>
-
 <li>Moved loadlib and import to external documentation section</li>
-
 <li>Added external section to the documentation</li>
-
-<li>Changed the default mode for &#8220;image&#8221; command&#8221; to &#8220;scaled&#8221; instead of &#8220;direct&#8221;. This is less compatible with MATLAB, but I don&#8217;t think it&#8217;s unreasonably so.</li>
-
-<li>Added &#8220;edit&#8221; command.</li>
-
+<li>Changed the default mode for "image" command" to "scaled" instead of "direct". This is less compatible with MATLAB, but I don't think it's unreasonably so.</li>
+<li>Added "edit" command.</li>
 <li>Changed default type for zero function to double precision.</li>
-
 <li>Added imagesc command. Modified image command to show un-scaled images.</li>
 </ul>
 
-<h2 id='20070805__freemat_33_released'>2007-08-05 - FreeMat 3.3 Released</h2>
+<h2>2007-08-05 - FreeMat 3.3 Released</h2>
 
-<p>We are pleased to announce the release of FreeMat 3.3. Available for download from <a href='http://freemat.sf.net' title='Download from SourceForge'>SourceForge</a>. Here is a brief summary of the new features in this version:</p>
+<p>We are pleased to announce the release of FreeMat 3.3. Available for download from <a href="http://freemat.sf.net" title="Download from SourceForge">SourceForge</a>. Here is a brief summary of the new features in this version:</p>
 
 <ol>
 <li>The output format for FreeMat is now closer to MATLABs, and can be adjusted using the format command.</li>
-
 <li>The console window has been rewritten, and should be more robust and faster.</li>
-
 <li>Contour plots in 2D and 3D are now supported, along with labels.</li>
-
 <li>Anonymous functions are now supported.</li>
-
 <li>Nested functions are now supported</li>
-
 <li>Audio record/playback functionality has been added via the wavplay/wavrecord/etc. functions.</li>
-
 <li>Memory usage has been improved. FreeMat should use less memory than previous versions.</li>
-
 <li>Performance improvements.</li>
-
 <li>Many new functions added. See the detailed change list for the complete list.</li>
-
 <li>Bug fixes. See the detailed change list for the complete list.</li>
 </ol>
 
-<h2 id='20070414_freemat_31_released'>2007-04-14 FreeMat 3.1 Released</h2>
+<h2>2007-04-14  FreeMat 3.1 Released</h2>
 
 <p>The latest version of FreeMat (3.1) has just been released. Beyond the usual bug fixes, this version of FreeMat includes:</p>
 
 <ul>
 <li>A new Threading API, which allows you to take advantage of multi-core and multi-processor machines from within your FreeMat programs.</li>
-
 <li>You can also perform powerful Perl-style regular expression manipulations in 3.1 using the regexp command, and its variants.</li>
-
 <li>A new, unified multi-platform regression test suite is now shipped with FreeMat (as the run_tests command), which allows you to verify the functionality of your installation.</li>
-
 <li>Plotting functions have been improved through the use of an explicit double-buffering technique which eliminates flicker during plot updates. Note that to increase compatibility with MATLAB, you must now include explicit drawnow commands to get updates within scripts.</li>
-
 <li>FreeMat also has new functions for reading URLs, and parsing HTML and XML files.</li>
-
 <li>The help window has a search tool now to help you quickly locate functions and help topics.</li>
-
 <li>The memory usage of FreeMat has been significantly improved - so that FreeMat operates with less memory and should run faster than previous versions.</li>
-
 <li>Also, you can now specify a script startup.m that is automatically executed at startup time.</li>
 </ul>
 
-<h2 id='20070114__freemat_30_released'>2007-01-14 - FreeMat 3.0 Released</h2>
+<h2>2007-01-14  - FreeMat 3.0 Released</h2>
 
 <p>The current release of FreeMat is 3.0. It represents a significant improvement over the prior release (2.0). Here is a partial list of the changes:</p>
 
 <ul>
 <li>MATLAB-style GUIs and Widgets</li>
-
 <li>Speed improvements (loops and indexing operations are 10 to 100 times faster)</li>
-
 <li>A new parser that recognizes more of the MATLAB syntax</li>
-
 <li>A debugger that is integrated with the editor</li>
-
 <li>Support for 64-bit integers</li>
-
 <li>Improved MAT-file support</li>
-
 <li>Universal binary support for Mac OS X</li>
-
 <li>New graph/plot tools to rotate, zoom and pan plots.</li>
-
 <li>Builds are now based on ATLAS for improved matrix performance</li>
-
 <li>Various bug fixes.</li>
 </ul>
 
 
+
     <!--
     -->
-
     <!-- end page content -->
 </div>
 

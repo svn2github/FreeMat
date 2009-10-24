@@ -1,14 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>FreeMat - Download</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content=" " />
-<link rel="stylesheet" href="assets/style.css" type="text/css" />
+    <title>FreeMat - Download</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content=" " />
+    <link rel="stylesheet" href="assets/style.css" type="text/css" />
 </head>
-
 <body>
-
 <div id="wrap">
 <div id="sidebar">
 <img src="assets/FreeMat_Logo2.png" alt="Logo" />
@@ -43,46 +41,54 @@
 
 <div class="content2">
     
-<h1 id='download'>Download</h1>
+<h1>Download</h1>
 
-<p>The following links point to the latest version of FreeMat. For older versions (or a complete list), go to the SourceForge download page <a href='http://sourceforge.net/project/showfiles.php?group_id=91526'>here</a>.</p>
-
-<ul>
-<li><a href='http://downloads.sourceforge.net/freemat/FreeMat-3.6_Setup.exe'>Click to download FreeMat for Windows</a> <img src='assets/ico-win.png' alt='ico-win' /></li>
-
-<li><a href='http://downloads.sourceforge.net/freemat/FreeMat-3.6-1.dmg'>Click to download FreeMat for Mac OS X 10.4 (Universal)</a> <img src='assets/ico-osx-uni.png' alt='ico-osx-uni' /></li>
-
-<li><a href='http://downloads.sourceforge.net/freemat/FreeMat-3.6.i386.fc7.rpm'>Click to download FreeMat for Fedora Core 7 Linux (RPM)</a> <img src='assets/ico-tux.png' alt='ico-tux' /></li>
-
-<li><a href='http://freemat.sourceforge.net/FreeMat-3.6.pdf'>Click to download FreeMat Manual in PDF</a> <img src='assets/ico-pdf.gif' alt='ico-pdf' /></li>
-</ul>
-
-<p>Note that you will need the ffcall and arpack libraries which are not available in Fedora Core 8. They are available at Dries RPM Repository: <a href='http://dries.studentenweb.org/rpm/packages/ffcall/info.html'>ffcall</a> and ATrpms: <a href='http://www.atrpms.net/dist/fc6/arpack'>arpack</a>.</p>
+<p>The following links point to the latest version of FreeMat. For older versions (or a complete list), go to the <a href="http://sourceforge.net/project/showfiles.php?group_id=91526">SourceForge download page</a>.</p>
 
 <ul>
-<li><a href='http://downloads.sourceforge.net/freemat/FreeMat-3.6.fc8.x86_64.rpm'>Click to download FreeMat for Fedora Core 8 Linux on x86_64 architecture (RPM)</a> currently 3.6 <img src='assets/ico-tux.png' alt='ico-tux' /></li>
-
-<li><a href='http://downloads.sourceforge.net/freemat/FreeMat-3.6.tar.gz'>Click to download FreeMat Source Code (All platforms)</a></li>
+<li><a href="http://downloads.sourceforge.net/freemat/FreeMat-4.0_win32.exe">Click to download FreeMat 4.0 for <strong>Windows</strong></a> <img src="assets/ico-win.png" alt=""ico-win"" /></li>
+<li><a href="http://downloads.sourceforge.net/freemat/FreeMat-4.0-osx.dmg">Click to download FreeMat 4.0 for <strong>Mac OS X 10.4</strong> (Universal)</a> <img src="assets/ico-osx-uni.png" alt=""ico-osx-uni"" /></li>
+<li><a href="http://downloads.sourceforge.net/freemat/FreeMat-4.0.i386.rpm">Click to download FreeMat 4.0 for <strong>Fedora Core 7 Linux</strong> (RPM)</a> <img src="assets/ico-tux.png" alt=""ico-tux"" /></li>
+<li><a href="http://freemat.sourceforge.net/FreeMat-4.0.pdf">Click to download FreeMat 4.0 <strong>Manual in PDF</strong></a> <img src="assets/ico-pdf.gif" alt=""ico-pdf"" /></li>
 </ul>
 
-<p>For Gentoo users, Andrey Grozin has indicated that FreeMat is in the mainline. So, you should be able to do:</p>
+<p>Note that you will need the ffcall and arpack libraries which are not available in Fedora Core 8. They are available at Dries RPM Repository: <a href="http://dries.studentenweb.org/rpm/packages/ffcall/info.html">ffcall</a> and ATrpms: <a href="http://www.atrpms.net/dist/fc6/arpack">arpack</a>.</p>
+
+<ul>
+<li><a href="http://downloads.sourceforge.net/freemat/FreeMat-3.6.fc8.x86_64.rpm">Click to download FreeMat 3.6 for Fedora Core 8 Linux on x86_64 architecture (RPM)</a> currently 3.6 <img src="assets/ico-tux.png" alt=""ico-tux"" /></li>
+<li><a href="http://downloads.sourceforge.net/freemat/FreeMat-4.0-Source.tar.gz">Click to download FreeMat 4.0 <strong>Source Code</strong> (All platforms)</a></li>
+</ul>
+
+<p>For OpenBSD users, FreeMat is included in the distribution:</p>
+
+<ul>
+<li><a href="ftp://ftp.openbsd.org/pub/OpenBSD/snapshots/packages/i386/freemat-3.6.tgz">Click to download FreeMat 3.6 for <strong>OpenBSD</strong>-current</a> <img src="assets/ico-openbsd.gif" alt=""ico-openbsd"" /></li>
+</ul>
+
+<p>To install on OpenBSD, run:</p>
 
 <blockquote>
-<p>root@linux:~$ emerge freemat</p>
+  <p>root@openbsd:~$ pkg_add freemat  </p>
 </blockquote>
 
-<p>Note that if you want to build FreeMat on your Linux system, but do not have the required dependencies (or root access), you can try to use this Perl script <a href='http://downloads.sourceforge.net/freemat/buildtool'>buildtool</a>. Then just run it as:</p>
+<p>For <strong>Gentoo</strong> users, Andrey Grozin has indicated that FreeMat is in the mainline. So, you should be able to do:</p>
 
 <blockquote>
-<p>root@linux:~$ buildtool /your/home/dir native-freemat</p>
+  <p>root@linux:~$ emerge freemat</p>
 </blockquote>
 
-<p>This will download sources for all missing dependencies, configure and build them (including FreeMat). It is still experimental, so please report problems (see the help menu on the side).</p>
+<p>Note that if you want to build FreeMat on your Linux system, but do not have the required dependencies (or root access), you can try to use this Perl script <a href="http://downloads.sourceforge.net/freemat/buildtool">buildtool</a>. Then just run it as:</p>
+
+<blockquote>
+  <p>root@linux:~$ buildtool /your/home/dir native-freemat</p>
+</blockquote>
+
+<p>This will download sources for all missing dependencies, configure and build them (including FreeMat). It is still experimental, so please report problems (see the help menu on the side). </p>
+
 
 
     <!--
     -->
-
     <!-- end page content -->
 </div>
 

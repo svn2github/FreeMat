@@ -25,8 +25,8 @@
 <div id="navcontainer">
     <#list sitemap.sections as section>
             <ul id="navlist">
-                <#list section.pages as otherPage>
-                    <li><a href="${otherPage.href}">${otherPage.title}</a></li>
+                <#list section.entries as entry>
+                    <li><a href="${entry.href}">${entry.title}</a></li>
                 </#list>
             </ul>
     </#list>

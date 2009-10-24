@@ -1,14 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>FreeMat - FAQ</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="description" content=" " />
-<link rel="stylesheet" href="assets/style.css" type="text/css" />
+    <title>FreeMat - FAQ</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content=" " />
+    <link rel="stylesheet" href="assets/style.css" type="text/css" />
 </head>
-
 <body>
-
 <div id="wrap">
 <div id="sidebar">
 <img src="assets/FreeMat_Logo2.png" alt="Logo" />
@@ -43,89 +41,68 @@
 
 <div class="content2">
     
-<h1 id='faq'>FAQ</h1>
+<h1>FAQ</h1>
 
-<h2 id='contents'>Contents</h2>
+<h2>Contents:</h2>
 
-<ul>
-<li>1 Q. What is FreeMat?</li>
+<ol>
+<li><a href="faq.html#1">What is FreeMat?</a></li>
+<li><a href="faq.html#2">Why GPL?</a></li>
+<li><a href="faq.html#3">Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?</a></li>
+<li><a href="faq.html#4">FreeMat 100% compatible with MATLAB? What about IDL?</a></li>
+<li><a href="faq.html#5">What platforms are supported?</a></li>
+<li><a href="faq.html#6">How do I get it?</a></li>
+<li><a href="faq.html#7">I found a bug! What now?</a></li>
+<li><a href="faq.html#8">Where is function xyz?</a></li>
+<li><a href="faq.html#9">Who wrote FreeMat and why?</a></li>
+<li><a href="faq.html#10">Are there any development related pages?</a></li>
+</ol>
 
-<li>2 Q. Why GPL?</li>
+<p><span id="1"/></p>
 
-<li>3 Q. Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?</li>
-
-<li>4 Q. Is FreeMat 100% compatible with MATLAB? What about IDL?</li>
-
-<li>5 Q. What platforms are supported?</li>
-
-<li>6 Q. How do I get it?</li>
-
-<li>7 Q. I found a bug! What now?</li>
-
-<li>8 Q. Where is function xyz?</li>
-
-<li>9 Q. Who wrote FreeMat and why?</li>
-
-<li>10 Q. Are there any development related pages?</li>
-</ul>
-
-<h2 id='q_what_is_freemat'>Q. What is FreeMat?</h2>
+<h2>1. What is FreeMat?</h2>
 
 <p>FreeMat is an environment for rapid engineering and scientific processing. It is similar to commercial systems such as MATLAB from Mathworks and IDL from Research Systems, but is Open Source. It is free as in speech and free as in beer.</p>
 
-<h2 id='q_why_gpl'>Q. Why GPL?</h2>
+<p><span id="2"/></p>
+
+<h2>2. Why GPL?</h2>
 
 <p>Previous versions of FreeMat were released under MIT licenses. The current version is released under GPL. There are a number of great tools that are available to GPL-ed code (e.g., Qt, FFTW, FFCALL), and FreeMat is now one of them.</p>
 
-<h2 id='q_why_another_matlab_clone_have_you_heard_of_octave_scilab_etc'>Q. Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?</h2>
+<p><span id="3"/></p>
+
+<h2>3. Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?</h2>
 
 <p>Yes! FreeMat is chartered to go beyond MATLAB to include features such as a codeless interface to external C/C++/FORTRAN code, parallel/distributed algorithm development (via MPI), and advanced volume and 3D visualization capabilities. As for the open source alternatives, try them out and decide for yourself. Who said choice was a bad thing?</p>
 
-<h2 id='q_is_freemat_100_compatible_with_matlab_what_about_idl'>Q. Is FreeMat 100% compatible with MATLAB? What about IDL?</h2>
+<p><span id="4"/></p>
+
+<h2>4. Is FreeMat 100% compatible with MATLAB? What about IDL?</h2>
 
 <p>No. FreeMat supports roughly 95% (a made up statistic) of the features in MATLAB. The following table summarizes how FreeMat stacks up against MATLAB and IDL. Because we like to lead with the positive, here are the features in that are supported:</p>
 
 <ul>
 <li>N-dimensional array manipulation (by default, N is limited to 6)</li>
-
 <li>Support for 8,16, 32, and 64 bit integer types (signed and unsigned), 32 and 64 bit floating point types, and 64 and 128 bit complex types.</li>
-
 <li>Built in arithmetic for manipulation of all supported data types.</li>
-
 <li>Support for solving linear systems of equations via the divide operators.</li>
-
 <li>Eigenvalue and singular value decompositions</li>
-
 <li>Full control structure support (including, for, while, break, continue, etc.)</li>
-
 <li>2D plotting and image display</li>
-
-<li>Heterogeneous array types (called &#8220;cell arrays&#8221; in MATLAB-speak) fully supported</li>
-
+<li>Heterogeneous array types (called "cell arrays" in MATLAB-speak) fully supported</li>
 <li>Full support for dynamic structure arrays</li>
-
 <li>Arbitrary-size FFT support</li>
-
 <li>Pass-by-reference support (an IDL feature)</li>
-
 <li>Keyword support (an IDL feature)</li>
-
 <li>Codeless interface to external C/C++/FORTRAN code</li>
-
 <li>Native Windows support</li>
-
 <li>Native sparse matrix support</li>
-
 <li>Native support for Mac OS X (no X11 server required).</li>
-
 <li>Function pointers (eval and feval are fully supported)</li>
-
 <li>Classes, operator overloading</li>
-
 <li>3D Plotting and visualization via OpenGL</li>
-
 <li>Parallel processing with MPI (in the FreeMat development versions)</li>
-
 <li>Handle-based graphics</li>
 </ul>
 
@@ -139,42 +116,52 @@
 
 <ul>
 <li>Widgets/GUI building</li>
-
 <li>3D volume rendering capability (in the FreeMat development versions)</li>
-
 <li>FreeMat-to-MEX interface for porting MATLAB MEX files.</li>
 </ul>
 
 <p>If you feel very strongly that one or more MATLAB features are missing that would be useful to have in FreeMat, you can either add it yourself or try and convince someone else (e.g., me) to add it for you. As for IDL, FreeMat is not compatible at all with IDL (the syntax is MATLAB-based), but a few critical concepts from IDL are implemented, including pass by reference and keywords.</p>
 
-<h2 id='q_what_platforms_are_supported'>Q. What platforms are supported?</h2>
+<p><span id="5"/></p>
 
-<p>Currently, Windows 2000/XP, Linux and Mac OS X are supported platforms. Other UNIX environments (such as IRIX/SOLARIS) may work. FreeMat essentially requires GNU gcc/g++ and gfortran to build. The Win32 build requires MINGW32. I don&#8217;t know if FreeMat will work with Windows 98/95/ME or NT4 as I don&#8217;t have access to any of these platforms. A native port to Mac OS X is now available.</p>
+<h2>5. What platforms are supported?</h2>
 
-<h2 id='q_how_do_i_get_it'>Q. How do I get it?</h2>
+<p>Currently, Windows 2000/XP, Linux and Mac OS X are supported platforms. Other UNIX environments (such as IRIX/SOLARIS) may work. FreeMat essentially requires GNU gcc/g++ and gfortran to build. The Win32 build requires MINGW32. I don't know if FreeMat will work with Windows 98/95/ME or NT4 as I don't have access to any of these platforms. A native port to Mac OS X is now available.</p>
 
-<p>Click on the <a href='download.html'>Downloads</a> link (or on the navigation bar on the left). Installers are available for Windows and Mac OS X, and source and binary packages are available for Linux.</p>
+<p><span id="6"/></p>
 
-<h2 id='q_i_found_a_bug_what_now'>Q. I found a bug! What now?</h2>
+<h2>6. How do I get it?</h2>
 
-<p>Congratulations! Please <a href='http://sourceforge.net/tracker/?group_id=91526&amp;atid=597446'>file a bug report</a> . FreeMat is a fairly complicated program. Simply saying &#8220;it crashed&#8221; is not particularly helpful. If possible, please provide a short function or script that reproduces the problem. That will go a long way towards helping us figure out the problem. Also, the bug tracking feature of SourceForge will allow you to put in bugs anonymously, but please don&#8217;t! Anonymous bug reports are difficult to follow up on.</p>
+<p>Click on the <a href="download.html">Downloads</a> link (or on the navigation bar on the left). Installers are available for Windows and Mac OS X, and source and binary packages are available for Linux.</p>
 
-<h2 id='q_where_is_function_xyz'>Q. Where is function xyz?</h2>
+<p><span id="7"/></p>
 
-<p>There are a number of basic functions that are missing from FreeMat&#8217;s repertoire. They will be added as time goes on. If there is a particular function you would like to see, either write it yourself or put in an RFE (Request For Enhancement) here.</p>
+<h2>7. I found a bug! What now?</h2>
 
-<h2 id='q_who_wrote_freemat_and_why'>Q. Who wrote FreeMat and why?</h2>
+<p>Congratulations! Please <a href="http://sourceforge.net/tracker/?group_id=91526&amp;atid=597446">file a bug report</a> . FreeMat is a fairly complicated program. Simply saying "it crashed" is not particularly helpful. If possible, please provide a short function or script that reproduces the problem. That will go a long way towards helping us figure out the problem. Also, the bug tracking feature of SourceForge will allow you to put in bugs anonymously, but please don't! Anonymous bug reports are difficult to follow up on.</p>
+
+<p><span id="8"/></p>
+
+<h2>8. Where is function xyz?</h2>
+
+<p>There are a number of basic functions that are missing from FreeMat's repertoire. They will be added as time goes on. If there is a particular function you would like to see, either write it yourself or put in an RFE (Request For Enhancement) here.</p>
+
+<p><span id="9"/></p>
+
+<h2>9. Who wrote FreeMat and why?</h2>
 
 <p>FreeMat has been in development by myself (Samit Basu) over a period of four years with help from a number of contributers distributed throughout the globe. Why not? Seriously, my main reason is to provide a free implementation of a reasonable part of the Matlab API, and add some extensions along the way.</p>
 
-<h2 id='q_are_there_any_development_related_pages'>Q. Are there any development related pages?</h2>
+<p><span id="10"/></p>
 
-<p>Yes. Please see our <a href='http://code.google.com/p/freemat/wiki/Development'>WIKI based Development Pages</a></p>
+<h2>10. Are there any development related pages?</h2>
+
+<p>Yes. Please see our <a href="http://code.google.com/p/freemat/wiki/Development">WIKI based Development Pages</a></p>
+
 
 
     <!--
     -->
-
     <!-- end page content -->
 </div>
 

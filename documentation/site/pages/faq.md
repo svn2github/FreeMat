@@ -1,33 +1,36 @@
-FAQ
-===
+#FAQ#
 
-Contents
+Contents:
 --------
 
- * 1 Q. What is FreeMat?
- * 2 Q. Why GPL?
- * 3 Q. Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?
- * 4 Q. Is FreeMat 100% compatible with MATLAB? What about IDL?
- * 5 Q. What platforms are supported?
- * 6 Q. How do I get it?
- * 7 Q. I found a bug! What now?
- * 8 Q. Where is function xyz?
- * 9 Q. Who wrote FreeMat and why?
- * 10 Q. Are there any development related pages?
+ 1. [What is FreeMat?](faq.html#1)
+ 2. [Why GPL?](faq.html#2)
+ 3. [Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?](faq.html#3)
+ 4. [FreeMat 100% compatible with MATLAB? What about IDL?](faq.html#4)
+ 5. [What platforms are supported?](faq.html#5)
+ 6. [How do I get it?](faq.html#6)
+ 7. [I found a bug! What now?](faq.html#7)
+ 8. [Where is function xyz?](faq.html#8)
+ 9. [Who wrote FreeMat and why?](faq.html#9)
+ 10. [Are there any development related pages?](faq.html#10)
 
-Q. What is FreeMat?
+<span id="1"/>
+1. What is FreeMat?
 -------------------
 FreeMat is an environment for rapid engineering and scientific processing. It is similar to commercial systems such as MATLAB from Mathworks and IDL from Research Systems, but is Open Source. It is free as in speech and free as in beer.
 
-Q. Why GPL?
+<span id="2"/>
+2. Why GPL?
 -----------
 Previous versions of FreeMat were released under MIT licenses. The current version is released under GPL. There are a number of great tools that are available to GPL-ed code (e.g., Qt, FFTW, FFCALL), and FreeMat is now one of them.
 
-Q. Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?
+<span id="3"/>
+3. Why another MATLAB clone? Have you heard of Octave, Scilab, etc.?
 --------------------------------------------------------------------
 Yes! FreeMat is chartered to go beyond MATLAB to include features such as a codeless interface to external C/C++/FORTRAN code, parallel/distributed algorithm development (via MPI), and advanced volume and 3D visualization capabilities. As for the open source alternatives, try them out and decide for yourself. Who said choice was a bad thing?
 
-Q. Is FreeMat 100% compatible with MATLAB? What about IDL?
+<span id="4"/>
+4. Is FreeMat 100% compatible with MATLAB? What about IDL?
 ----------------------------------------------------------
 No. FreeMat supports roughly 95% (a made up statistic) of the features in MATLAB. The following table summarizes how FreeMat stacks up against MATLAB and IDL. Because we like to lead with the positive, here are the features in that are supported:
 
@@ -66,28 +69,33 @@ Finally the list of features that are in progress (meaning they are in the devel
 
 If you feel very strongly that one or more MATLAB features are missing that would be useful to have in FreeMat, you can either add it yourself or try and convince someone else (e.g., me) to add it for you. As for IDL, FreeMat is not compatible at all with IDL (the syntax is MATLAB-based), but a few critical concepts from IDL are implemented, including pass by reference and keywords.
 
-Q. What platforms are supported?
+<span id="5"/>
+5. What platforms are supported?
 --------------------------------
 Currently, Windows 2000/XP, Linux and Mac OS X are supported platforms. Other UNIX environments (such as IRIX/SOLARIS) may work. FreeMat essentially requires GNU gcc/g++ and gfortran to build. The Win32 build requires MINGW32. I don't know if FreeMat will work with Windows 98/95/ME or NT4 as I don't have access to any of these platforms. A native port to Mac OS X is now available.
 
-Q. How do I get it?
+<span id="6"/>
+6. How do I get it?
 -------------------
 Click on the [Downloads](download.html) link (or on the navigation bar on the left). Installers are available for Windows and Mac OS X, and source and binary packages are available for Linux.
 
-Q. I found a bug! What now?
+<span id="7"/>
+7. I found a bug! What now?
 ---------------------------
 Congratulations! Please [file a bug report](http://sourceforge.net/tracker/?group_id=91526&atid=597446) . FreeMat is a fairly complicated program. Simply saying "it crashed" is not particularly helpful. If possible, please provide a short function or script that reproduces the problem. That will go a long way towards helping us figure out the problem. Also, the bug tracking feature of SourceForge will allow you to put in bugs anonymously, but please don't! Anonymous bug reports are difficult to follow up on.
 
-Q. Where is function xyz?
+<span id="8"/>
+8. Where is function xyz?
 -------------------------
 There are a number of basic functions that are missing from FreeMat's repertoire. They will be added as time goes on. If there is a particular function you would like to see, either write it yourself or put in an RFE (Request For Enhancement) here.
 
-
-Q. Who wrote FreeMat and why?
+<span id="9"/>
+9. Who wrote FreeMat and why?
 -----------------------------
 FreeMat has been in development by myself (Samit Basu) over a period of four years with help from a number of contributers distributed throughout the globe. Why not? Seriously, my main reason is to provide a free implementation of a reasonable part of the Matlab API, and add some extensions along the way.
 
-Q. Are there any development related pages?
+<span id="10"/>
+10. Are there any development related pages?
 -------------------------------------------
 Yes. Please see our [WIKI based Development Pages](http://code.google.com/p/freemat/wiki/Development)
 

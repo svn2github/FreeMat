@@ -3,9 +3,7 @@ Home
 
 FreeMat is a free environment for rapid engineering and scientific prototyping and data processing. It is similar to commercial systems such as MATLAB from Mathworks, and IDL from Research Systems, but is Open Source. FreeMat is available under the GPL license.
 
-
-[!["Screen"](assets/screencap_composite_small.png "Screen")](screenshots.html) [!["Download"](assets/download.png "Download")](download.html)
-
+<p><a href="screenshots.html"><img src="assets/screencap_composite_small.png" alt="Screen" /></a> <a href="download.html"><img src="assets/download.png" alt="Download" /></a></p>
 
 Latest News - 2009-10-09 - FreeMat 4.0 Released
 ----------------------------------------------

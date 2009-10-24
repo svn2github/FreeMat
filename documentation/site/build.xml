@@ -1,0 +1,157 @@
+<project basedir="." name="freemat site" default="help">
+    <!--  Project Properties -->
+    <property file="build.properties"/>
+
+    <!-- Output - where the final site will be found-->
+    <property name="site.output" value="out"/>
+
+    <!-- Directory for the theme to use -->
+    <property name="site.theme" value="themes/corporate_slave"/>
+
+    <!-- Output - where the online help will be found-->
+    <property name="help.output" value="help_output"/>
+    
+    <!-- jars required for xSite, bulk decorator an the rest-->
+    <path id="all.class.path">
+        <fileset dir="build/xsite/lib">
+            <include name="**/*.jar" />
+            <exclude name="**/ant-1.6.5.jar"/>
+        </fileset>
+ <!--       <fileset dir="build/bulk">
+            <include name="**/*.jar"/>
+        </fileset>        
+ -->   </path>
+
+    <path id="markdownj.class.path">
+            <fileset dir="build/markdownj">
+                <include name="**/*.jar"/>
+            </fileset>
+     </path>
+
+    <!-- jars required for SVN ANT-->
+<!--
+    <path id="svnant.class.path">
+        <fileset dir="build/svnant-1.0.0/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+-->
+
+    <!--  Task Definitions  -->
+    <taskdef name="xsite" classname="org.codehaus.xsite.ant.XSiteTask" classpathref="all.class.path"/>
+    <!--<taskdef name="bulk" classname="net.sf.bdecorator.BDecoratorTask" classpathref="all.class.path"/>-->
+    <!--<taskdef name="svn" classpathref="svnant.class.path"/>-->
+
+    <!--  Target Definitions  -->
+
+    <!-- Generate content from markdown -->
+	<target name="markdownj">
+        <!-- clean previously generated pages -->
+        <delete dir="pages" includes="**/*.html"/>
+		<copy todir="pages">
+			<fileset dir="pages" includes="**/*.md"/>
+			<mapper type="glob" from="*.md" to="*.html"/>
+			<filterchain>
+				<filterreader classname="com.petebevin.markdown.MarkdownFilter">
+					<classpath refid="markdownj.class.path"/>
+                    <param name="titleFetch" value="true"/>
+                    <param name="fullHtml" value="true"/>                    
+				</filterreader>
+			</filterchain>
+		</copy>
+	</target>
+
+    <target name="clean">
+        <delete  dir="${site.output}" failonerror="false"/>
+        <mkdir dir="${site.output}"/>
+        <delete dir="${basedir}/site" failonerror="false"/>
+        <mkdir dir="${basedir}/site/content"/>
+        <mkdir dir="${basedir}/site/resources"/>
+        <mkdir dir="${basedir}/site/templates"/>
+        <!-- clean previously generated pages -->
+        <delete dir="pages" includes="**/*.html" failonerror="false"/>        
+    </target>
+
+    <target name="build-site" description="generate the site" depends="clean, markdownj">
+        <!-- copy required files to work directories (as required by XSite) -->
+        <copy todir="site/content">
+            <fileset dir="pages" includes="**/*.html,**/*.xml,**/*.htm"/>
+        </copy>
+        <copy todir="site/resources">
+            <fileset dir="pages" includes="**/*.gif,**/*.jpg,**/*.png,**/*.css,**/*.js"/>
+        </copy>
+        <copy file="${site.theme}/skin.html" todir="site/templates"/>
+        <copy todir="site/resources">
+            <fileset dir="${site.theme}" includes="**/*.gif,**/*.jpg,**/*.png,**/*.css,**/*.js"/>
+        </copy>
+
+        <!-- Call the generation routine -->
+        <xsite sourcedirectorypath="${basedir}/site" sitemapPath="content/sitemap.xml"
+            skinPath="templates/skin.html" resourcePaths="resources"
+            outputDirectoryPath="${site.output}"/>
+
+    </target>
+
+<!--
+    <target name="build-help" description="generate the online help">
+        -->
+<!-- 1. clean the work directories -->
+<!--
+        <delete dir="${help.output}" quiet="true"/>
+        <mkdir dir="${help.output}"/>
+
+        -->
+<!-- 2. copy required resources to output directory -->
+<!--
+        <copy todir="${help.output}">
+            <fileset dir="${help.input}" includes="**/*.gif,**/*.jpg,**/*.png,**/*.css,**/*.js"/>
+        </copy>
+        <copy todir="${help.output}">
+            <fileset dir="${site.theme}" includes="**/*.gif,**/*.jpg,**/*.png,**/*.css,**/*.js"/>
+        </copy>
+
+        -->
+<!-- Call the generation routine -->
+<!--
+            <bulk skinPath="themes/help_one/skin.html"
+                  inputDirectoryPath="${help.input}"
+                  outputDirectoryPath="${help.output}"/>
+    </target>
+-->
+
+    <target name="backup" description="backup the newly generated site">
+        <!-- 1. copy to backup directory -->
+        
+        <!-- 2. check-in the bakcup directory -->
+        
+    </target>
+    
+    <target name="deploy-site" description="copy the generated site to the webserver destination">
+        <!-- 1. delete/clean the target website -->
+        <!-- 2. upload the newly generated site (site, help and PDF manual too) -->
+        <fail description="Not implemented yet!"/>
+    </target>
+
+    <target name="help" description="display the Help message">
+      <echo>FreeMat site ${version} generation
+===================================
+
+Main targets:
+
+	build-site            generate the site
+	build-help            generate the online help
+	deploy-site           copy the generated site to the app server
+	get-deps              download JAR dependencies
+	help                  display the Help message
+
+Environment:
+
+	java.home = ${java.home}
+	ant.home  = ${ant.home}
+
+Please ensure you have configured build.properties for your own needs</echo>
+   </target>
+    <target name="get-deps" description="download JAR dependencies">
+        <fail description="Not implemented yet!"/>
+    </target>
+</project>

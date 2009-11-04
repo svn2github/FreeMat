@@ -250,6 +250,7 @@ double QFileReadInteger(QFile *fp, int base, int nMaxDigits) {
 			  // Unwind the prefix and abort
 			  fp->ungetChar(pf2);
 			  fp->ungetChar(pf1);
+			  throw Exception("Scanf can't interpret numerical value");
 			  return 0;
 		      }
 		      break;
@@ -275,6 +276,7 @@ double QFileReadInteger(QFile *fp, int base, int nMaxDigits) {
 		      if (ndigits == 0) {
 			  // Unwind the prefix and abort
 			  fp->ungetChar(pf);
+			  throw Exception("Scanf can't interpret numerical value");
 			  return 0;
 		      }
 		      break;
@@ -288,6 +290,7 @@ double QFileReadInteger(QFile *fp, int base, int nMaxDigits) {
 		      if (sign != '-' && sign != '+') {
 			  if (!isdigit(sign)) {
 			      fp->ungetChar(sign);
+			      throw Exception("Scanf can't interpret numerical value");
 			      return 0;
 			  }
 			  val += digitvalue(sign);
@@ -305,8 +308,10 @@ double QFileReadInteger(QFile *fp, int base, int nMaxDigits) {
 			  }
 			  ndigits++;
 		      }
-		      if (ndigits == 0)
+		      if (ndigits == 0){
+			  throw Exception("Scanf can't interpret numerical value");
 			  return 0;
+		      }
 		      if (sign == '-') 
 			  val = -val;
 		      break;
@@ -335,6 +340,7 @@ double QFileReadInteger(QFile *fp, int base, int nMaxDigits) {
 			  ndigits++;
 		      }
 		      if (ndigits == 0) {
+			  throw Exception("Scanf can't interpret numerical value");
 			  return 0;
 		      }
 		      break;

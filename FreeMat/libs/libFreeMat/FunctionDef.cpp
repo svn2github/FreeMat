@@ -38,6 +38,8 @@
 
 QMutex functiondefmutex;
 
+//#define NEW_LLVM_FFI
+
 StringVector IdentifierList(const Tree & t) {
   StringVector retval;
   for (int index=0;index<t.numChildren();index++) {
@@ -566,7 +568,7 @@ bool ImportedFunctionDef::isPassedAsPointer(int arg) {
 }
 
 static int importCounter = 0;
-
+#ifdef NEW_LLVM_FFI
 ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
 					 StringVector types_arg,
 					 StringVector arguments_arg,
@@ -601,7 +603,109 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
    * arguments that the function itself takes, and one extra for
    * the address of the function.
    */
-  QString jit_arg_code = QString(types.size()+1,QChar('V'));
+  
+  QString jit_arg_code = QString("V");
+
+  fcnStub = jit->DefineFunction(jit->FunctionType(jit_ret_code,jit_arg_code),QString("genstub%1").arg(importCounter++));
+  jit->SetCurrentFunction(fcnStub);
+  JITBlock main = jit->NewBlock("main_body");
+  /*						
+   * Build the signature for the actual function -- 
+   * the stub uses this to decide which parameters to 
+   * pass by value
+   */
+  QString jit_fcn_sig;
+  for (int i=0;i<types.size();i++) {
+    if (isPassedAsPointer(i))
+      jit_fcn_sig += "V";
+    else
+      jit_fcn_sig += MapImportTypeToJITCode(types[i]);
+  }
+  jit->SetCurrentBlock(main);
+  /*
+   * Loop over the arguments to the function
+   */
+  llvm::Function::arg_iterator args = fcnStub->arg_begin();
+  
+  JITScalar arg_list = jit->ToType(args, jit->PointerType( jit->PointerType(llvm::IntegerType::get(8)) ) ); 
+  //On the stack we put 
+  // 1. Called function address
+  // 2. Pointer to returned value
+  // 3. Pointers to arguments.
+
+  JITScalar func_addr = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, 0 ) ) ) );
+
+  std::vector<JITScalar> func_args;
+
+  for (int i=0;i<types.size();i++) {
+	//ei 
+	  JITScalar var = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, i+2 ) ) ) );
+	  if (isPassedAsPointer(i)){
+		  func_args.push_back(var);
+		//ei 
+	  }
+	  else{
+		  func_args.push_back(jit->Load(jit->ToType(var,jit->PointerType(jit->MapTypeCode(MapImportTypeToJITCode(types[i]))))));
+		//ei
+	  }
+    //args++;
+  }
+
+  if (retType != "void"){
+    JITScalar ret_val = (jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args));
+	JITScalar ret_val_cast = jit->ToType( ret_val, jit->MapTypeCode( MapImportTypeToJITCode(retType) ) );
+	
+	jit->Store( ret_val_cast, ( jit->Load( jit->ToType( jit->GetElement(arg_list, llvm::ConstantInt::get( llvm::APInt( 32, 1 ) ) ), jit->PointerType( jit->PointerType( jit->MapTypeCode( MapImportTypeToJITCode(retType) ) ) ) ) ) ) );
+	jit->Return();
+  }
+  else {
+    jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args);
+    jit->Return();
+  }
+  
+  jit->Dump("D:\\freemat\\call_stub.txt", fcnStub);
+
+#endif
+}
+#else
+ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
+					 StringVector types_arg,
+					 StringVector arguments_arg,
+					 TreeList sizeChecks,
+					 QString retType_arg,
+					 QString name) {
+  address = address_arg;
+  types = types_arg;
+  arguments = arguments_arg;
+  sizeCheckExpressions = sizeChecks;
+  retType = retType_arg;
+  argCount = types_arg.size();
+  if (retType == "void") 
+    retCount = 0;
+  else
+    retCount = 1;
+#if HAVE_LLVM
+  /*
+   * Build the JIT function that is a stub to the called function.
+   * The stub should be:
+   *  ret_type _genstub_fcn(ptr_to_fun,addr1,addr2,...,addrn)
+   * where addr1 through addrn are the address of the arguments.
+   * The stub function shall internally convert those arguments
+   * that are to be passed by value to value arguments, and then
+   * invoke the function at the given address.  The arguments are
+   * untyped pointers.
+   */
+  JIT* jit = JIT::Instance();  
+  QString jit_ret_code = QString(MapImportTypeToJITCode(retType));
+  /*
+   * Our stub takes N+1 void* arguments, where N is the number of
+   * arguments that the function itself takes, and one extra for
+   * the address of the function.
+   */
+  
+  //ei QString jit_arg_code = QString(types.size()+1,QChar('V'));
+  QString jit_arg_code = QString(2,QChar('V'));
+
   fcnStub = jit->DefineFunction(jit->FunctionType(jit_ret_code,jit_arg_code),QString("genstub%1").arg(importCounter++));
   jit->SetCurrentFunction(fcnStub);
   JITBlock main = jit->NewBlock("main_body");
@@ -624,13 +728,18 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
   llvm::Function::arg_iterator args = fcnStub->arg_begin();
   JITScalar func_addr = args; args++;
   std::vector<JITScalar> func_args;
+
+  std::vector<JITGeneric> arglist( types.size() );
   for (int i=0;i<types.size();i++) {
-    if (isPassedAsPointer(i))
-      func_args.push_back(args);
-    else
-      func_args.push_back(jit->Load(jit->ToType(args,jit->PointerType(jit->MapTypeCode(MapImportTypeToJITCode(types[i]))))));
+	  if (isPassedAsPointer(i)){
+		func_args.push_back(args);
+	  }
+	  else{
+		func_args.push_back(jit->Load(jit->ToType(args,jit->PointerType(jit->MapTypeCode(MapImportTypeToJITCode(types[i]))))));
+	  }
     args++;
   }
+
   if (retType != "void")
     jit->Return(jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args));
   else {
@@ -639,6 +748,7 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
   }
 #endif
 }
+#endif
 
 ImportedFunctionDef::~ImportedFunctionDef() {
 }
@@ -673,6 +783,9 @@ static QString TrimAmpersand(QString name) {
  * when passing down, and only bother converting them back if they
  * were passed by reference.
  */
+
+
+#ifdef NEW_LLVM_FFI
 ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
 					      ArrayVector& inputs,
 					      int nargout,
@@ -731,7 +844,114 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
     context->popScope();
   }
   JIT *jit = JIT::Instance();
-  std::vector<JITGeneric> alist;
+
+  void** alist = new void*[types.size()+2]; //WARNING: stub generation relies on alist type
+  alist[0]=(void*)address;
+  alist[1]=new JITGeneric();
+
+  for (i=0;i<types.size();i++) {
+	  if (types[i] != "string"){
+		alist[i+2]=inputs[i].getVoidPointer();
+	  }
+	  else{
+		alist[i+2]=(void*)(string_store[i]);
+	  }
+  }
+  jit->Invoke(fcnStub,alist);
+  JITGeneric retval = *(JITGeneric*)alist[1]; 
+
+  Array retArray;
+  if (retType == "uint8") {
+    retArray = Array(uint8(retval.IntVal.getZExtValue()));
+  } else if (retType == "int8") {
+    retArray = Array(int8(retval.IntVal.getZExtValue()));
+  } else if (retType == "uint16") {
+    retArray = Array(uint16(retval.IntVal.getZExtValue()));
+  } else if (retType == "int16") {
+    retArray = Array(int16(retval.IntVal.getZExtValue()));
+  } else if (retType== "uint32") {
+    retArray = Array(uint32(retval.IntVal.getZExtValue()));
+  } else if (retType == "int32") {
+    retArray = Array(int32(retval.IntVal.getZExtValue()));
+  } else if (retType == "float") {
+    retArray = Array(float(retval.FloatVal));
+  } else if (retType == "double") {
+    retArray = Array(double(retval.DoubleVal));
+  } else
+    retArray = EmptyConstructor();
+  // Strings that were passed by reference have to be
+  // special-cased
+  for (i=0;i<inputs.size();i++) {
+    if (arguments[i].startsWith("&") && (types[i] == "string"))
+      inputs[i] = Array(QString(string_store[i]));
+  }
+  for (i=0;i<inputs.size();i++)
+    if (string_store[i]) free(string_store[i]);
+  return ArrayVector(retArray);
+#else
+  throw Exception("Support for the import command requires that the LLVM library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install LLVM and recompile FreeMat.");
+#endif
+}
+#else
+ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
+					      ArrayVector& inputs,
+					      int nargout,
+					      VariableTable*) {
+#ifdef HAVE_LLVM
+  /**
+   * To actually evaluate the function, we have to process each of
+   * the arguments and get them into the right form.
+   */
+  int i;
+  for (i=0;i<inputs.size();i++)
+    inputs[i] = inputs[i].asDenseArray().toClass(mapTypeNameToClass(types[i]));
+  /**
+   * Strings are converted to C strings and stored here
+   */
+  std::vector<char*> string_store;
+  for (i=0;i<inputs.size();i++)
+    if (types[i] == "string")
+      string_store.push_back(strdup(qPrintable(inputs[i].asString())));
+    else
+      string_store.push_back(NULL);
+  /**
+   * Next, we check to see if any bounds-checking expressions are
+   * active.
+   */
+  bool boundsCheckActive = false;
+  int m=0;
+  while (m < inputs.size() && !boundsCheckActive)
+    boundsCheckActive = (sizeCheckExpressions[m++].valid());
+  if (boundsCheckActive) {
+    /**
+     * If the bounds-checking is active, we have to create a 
+     * new context, and insert the defined arguments into the
+     * context (much as for an M-function call).
+     */
+    Context* context = walker->getContext();
+    context->pushScope("bounds_check",name);
+    for (i=0;i<inputs.size();i++) {
+      context->insertVariableLocally(TrimAmpersand(arguments[i]),inputs[i]);
+    }
+    /*
+     * Next, evaluate each size check expression
+     */
+    for (i=0;i<inputs.size();i++) {
+      if (sizeCheckExpressions[i].valid()) {
+	Array ret(walker->expression(sizeCheckExpressions[i]));
+	ret = ret.toClass(Int32);
+	int len = ret.asInteger();
+	if (len != (int)(inputs[i].length())) {
+	  throw Exception("array input " + TrimAmpersand(arguments[i]) + 
+			  " length different from computed bounds" + 
+			  " check length");
+	}
+      }
+    }
+    context->popScope();
+  }
+  JIT *jit = JIT::Instance();
+  std::vector<JITGeneric> alist; //WARNING: stub generation relies on alist being std::vector!!!!!
   alist.push_back(JITGeneric((void*)address));
   for (i=0;i<types.size();i++) {
     if (types[i] != "string")
@@ -772,6 +992,7 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
   throw Exception("Support for the import command requires that the LLVM library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install LLVM and recompile FreeMat.");
 #endif
 }
+#endif
 
 MexFunctionDef::MexFunctionDef(QString fullpathname) {
   fullname = fullpathname;

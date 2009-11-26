@@ -175,6 +175,7 @@ public:
   void Dump( const QString& fname, JITFunction f );
   JITGeneric Invoke(JITFunction f, JITGeneric arg);
   JITGeneric Invoke(JITFunction f, std::vector<JITGeneric> arg);
+  void Invoke(JITFunction f, void** arg);
 };
 
 #else

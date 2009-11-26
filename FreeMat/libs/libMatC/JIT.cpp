@@ -480,6 +480,21 @@ JITGeneric JIT::Invoke(JITFunction f, JITGeneric arg) {
   return ee->runFunction(f,args);
 }
 
+void JIT::Invoke(JITFunction f, void** arg) {
+	void *FPtr = ee->getPointerToFunction(f);
+
+    assert(FPtr && "Invoke getPointerToFunction");
+    void (*PF)(void** arg) =
+      (void (*)(void**))FPtr;
+
+    // Call the function.
+    PF( arg );
+    return;
+
+	//return ee->runFunction(f,args);
+}
+
+
 JITGeneric JIT::Invoke(JITFunction f, std::vector<JITGeneric> arg) {
   return ee->runFunction(f,arg);
 }

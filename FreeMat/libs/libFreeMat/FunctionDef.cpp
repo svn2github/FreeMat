@@ -38,7 +38,7 @@
 
 QMutex functiondefmutex;
 
-//#define NEW_LLVM_FFI
+#define NEW_LLVM_FFI
 
 StringVector IdentifierList(const Tree & t) {
   StringVector retval;
@@ -604,7 +604,7 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
    * the address of the function.
    */
   
-  QString jit_arg_code = QString("V");
+  QString jit_arg_code = QString("Z");
 
   fcnStub = jit->DefineFunction(jit->FunctionType(jit_ret_code,jit_arg_code),QString("genstub%1").arg(importCounter++));
   jit->SetCurrentFunction(fcnStub);
@@ -617,7 +617,7 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
   QString jit_fcn_sig;
   for (int i=0;i<types.size();i++) {
     if (isPassedAsPointer(i))
-      jit_fcn_sig += "V";
+      jit_fcn_sig += "VV";
     else
       jit_fcn_sig += MapImportTypeToJITCode(types[i]);
   }
@@ -628,10 +628,6 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
   llvm::Function::arg_iterator args = fcnStub->arg_begin();
   
   JITScalar arg_list = jit->ToType(args, jit->PointerType( jit->PointerType(llvm::IntegerType::get(8)) ) ); 
-  //On the stack we put 
-  // 1. Called function address
-  // 2. Pointer to returned value
-  // 3. Pointers to arguments.
 
   JITScalar func_addr = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, 0 ) ) ) );
 
@@ -652,18 +648,20 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
   }
 
   if (retType != "void"){
-    JITScalar ret_val = (jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args));
-	JITScalar ret_val_cast = jit->ToType( ret_val, jit->MapTypeCode( MapImportTypeToJITCode(retType) ) );
-	
-	jit->Store( ret_val_cast, ( jit->Load( jit->ToType( jit->GetElement(arg_list, llvm::ConstantInt::get( llvm::APInt( 32, 1 ) ) ), jit->PointerType( jit->PointerType( jit->MapTypeCode( MapImportTypeToJITCode(retType) ) ) ) ) ) ) );
-	jit->Return();
+    JITScalar ret_val;
+    ret_val = (jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args));
+    
+    JITScalar ret_val_cast = jit->ToType( ret_val, jit->MapTypeCode( MapImportTypeToJITCode(retType) ) );
+    jit->Store( ret_val_cast, jit->Load( jit->ToType( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, 1 ) ) ), jit->PointerType( jit->PointerType( jit->MapTypeCode( MapImportTypeToJITCode(retType) ) ) ) ) ) );
+    jit->Return();
+
   }
   else {
     jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args);
     jit->Return();
   }
   
-  jit->Dump("D:\\freemat\\call_stub.txt", fcnStub);
+  jit->Dump("c:\\freemat_src\\call_stub.txt", fcnStub);
 
 #endif
 }
@@ -847,7 +845,26 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
 
   void** alist = new void*[types.size()+2]; //WARNING: stub generation relies on alist type
   alist[0]=(void*)address;
-  alist[1]=new JITGeneric();
+
+  if (retType == "uint8") {
+    alist[1]=new uint8(0);
+  } else if (retType == "int8") {
+    alist[1]=new int8(0);
+  } else if (retType == "uint16") {
+    alist[1]=new uint16(0);
+  } else if (retType == "int16") {
+    alist[1]=new int16(0);
+  } else if (retType== "uint32") {
+    alist[1]=new uint32(0);
+  } else if (retType == "int32") {
+    alist[1]=new int32(0);
+  } else if (retType == "float") {
+    alist[1]=new float(0);
+  } else if (retType == "double") {
+    alist[1]=new double(0);
+  } else
+    alist[1]=0;
+
 
   for (i=0;i<types.size();i++) {
 	  if (types[i] != "string"){
@@ -858,25 +875,32 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
 	  }
   }
   jit->Invoke(fcnStub,alist);
-  JITGeneric retval = *(JITGeneric*)alist[1]; 
 
   Array retArray;
   if (retType == "uint8") {
-    retArray = Array(uint8(retval.IntVal.getZExtValue()));
+    retArray = Array(*(uint8*)alist[1]);
+    delete alist[1];
   } else if (retType == "int8") {
-    retArray = Array(int8(retval.IntVal.getZExtValue()));
+    retArray = Array(*(int8*)alist[1]);
+    delete alist[1];
   } else if (retType == "uint16") {
-    retArray = Array(uint16(retval.IntVal.getZExtValue()));
+    retArray = Array(*(uint16*)alist[1]);
+    delete alist[1];
   } else if (retType == "int16") {
-    retArray = Array(int16(retval.IntVal.getZExtValue()));
+    retArray = Array(*(int16*)alist[1]);
+    delete alist[1];
   } else if (retType== "uint32") {
-    retArray = Array(uint32(retval.IntVal.getZExtValue()));
+    retArray = Array(*(uint32*)alist[1]);
+    delete alist[1];
   } else if (retType == "int32") {
-    retArray = Array(int32(retval.IntVal.getZExtValue()));
+    retArray = Array(*(int32*)alist[1]);
+    delete alist[1];
   } else if (retType == "float") {
-    retArray = Array(float(retval.FloatVal));
+    retArray = Array(*(float*)alist[1]);
+    delete alist[1];
   } else if (retType == "double") {
-    retArray = Array(double(retval.DoubleVal));
+    retArray = Array(*(double*)alist[1]);
+    delete alist[1];
   } else
     retArray = EmptyConstructor();
   // Strings that were passed by reference have to be
@@ -887,6 +911,9 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
   }
   for (i=0;i<inputs.size();i++)
     if (string_store[i]) free(string_store[i]);
+
+  if( alist )
+      delete[] alist;
   return ArrayVector(retArray);
 #else
   throw Exception("Support for the import command requires that the LLVM library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install LLVM and recompile FreeMat.");

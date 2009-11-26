@@ -234,6 +234,8 @@ JITType JIT::MapTypeCode(QChar c) {
     return PointerType(DoubleType());
   case 'V':
     return PointerType(IntegerType::get(8));
+  case 'Z':
+      return PointerType( PointerType( IntegerType::get(32) ) );
   default:
     throw Exception(QString("Invalid type map code '") + c + QString("'") );
   }

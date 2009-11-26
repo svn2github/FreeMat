@@ -492,8 +492,6 @@ void JIT::Invoke(JITFunction f, void** arg) {
     // Call the function.
     PF( arg );
     return;
-
-	//return ee->runFunction(f,args);
 }
 
 

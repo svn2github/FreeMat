@@ -112,6 +112,7 @@ Array DiagonalArray(const Array &f, int diagonal = 0);
 bool IsSymmetric(const Array &a);
 bool IsPositive(const Array &a);
 bool IsPositiveOrNaN(const Array &a);
+bool IsNonNegativeOrNaN(const Array &a);
 
 Array RangeConstructor(double start, double step, double stop, bool vertical);
 Array Transpose(const Array &A);

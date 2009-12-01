@@ -599,7 +599,7 @@ template <typename T>
 static inline bool Tispositiveornan(const Array *ptr) {
   if (ptr->isScalar()) {
     if (ptr->allReal())
-      return (IsNaN(ptr->constRealScalar<T>()) || (ptr->constRealScalar<T>() >= 0));
+      return (IsNaN(ptr->constRealScalar<T>()) || (ptr->constRealScalar<T>() > 0));
     else
       return false;
   } else if (ptr->isSparse())
@@ -617,6 +617,31 @@ bool IsPositiveOrNaN(const Array &A) {
     MacroExpandCasesSigned(MacroIsPositiveOrNaN);
   }
 }
+
+
+template <typename T>
+static inline bool Tisnonnegativeornan(const Array *ptr) {
+  if (ptr->isScalar()) {
+    if (ptr->allReal())
+      return (IsNaN(ptr->constRealScalar<T>()) || (ptr->constRealScalar<T>() >= 0));
+    else
+      return false;
+  } else if (ptr->isSparse())
+    return IsNonNegativeOrNaN(ptr->constRealSparse<T>());
+  else
+    return IsNonNegativeOrNaN(ptr->constReal<T>());
+}
+
+#define MacroIsNonNegativeOrNaN(ctype,cls)		\
+  case cls: return Tisnonnegativeornan<ctype>(&A);
+
+bool IsNonNegativeOrNaN(const Array &A) {
+  switch (A.dataClass()) {
+  default: return true;
+    MacroExpandCasesSigned(MacroIsNonNegativeOrNaN);
+  }
+}
+
 
 #undef MacroIsPositive
 

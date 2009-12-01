@@ -133,7 +133,7 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("Log function takes exactly one argument");
   Array input(arg[0]);
-  if (!IsPositiveOrNaN(input)) {
+  if (!IsNonNegativeOrNaN(input)) {
     if (input.dataClass() != Float) 
       input = input.toClass(Double);
     input.forceComplex();
@@ -183,7 +183,7 @@ ArrayVector SqrtFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("Sqrt function takes exactly one argument");
   Array input(arg[0]);
-  if (!IsPositiveOrNaN(input)) {
+  if (!IsNonNegativeOrNaN(input)) {
     if (input.dataClass() != Float) 
       input = input.toClass(Double);
     input.forceComplex();

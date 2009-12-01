@@ -415,6 +415,13 @@ bool IsNonNegative(const BasicArray<T> &arg) {
 }
 
 template <typename T>
+bool IsNonNegativeOrNaN(const BasicArray<T> &arg) {
+  for (index_t i=1;i<=arg.length();i++)
+    if (!IsNaN(i) && (arg.getNoBoundsCheck(i) < 0)) return false;
+  return true;
+}
+
+template <typename T>
 bool IsInteger(const BasicArray<T> &arg) {
   for (index_t i=1;i<=arg.length();++i)
     if (!IsInteger(arg.getNoBoundsCheck(i))) return false;

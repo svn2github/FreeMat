@@ -40,6 +40,7 @@ const int pan_mode = 4;
 const int click_mode = 5;
 const int rotate_mode = 6;
 const int cam_rotate_mode = 7;
+const int point_sample_mode = 8;
 
 class HandleWindow : public QMainWindow {
   Q_OBJECT
@@ -52,7 +53,7 @@ protected:
   HandleFigure *hfig;
   //QStackedWidget *layout;
   QToolBar *toolBar;
-  QAction *zoomAct, *panAct, *rotateAct, *camRotateAct;
+  QAction *zoomAct, *panAct, *rotateAct, *camRotateAct, *pointSampleAct;
   QAction *saveAct, *copyAct, *closeAct;
   QActionGroup *toolGroup;
   QMenu *fileMenu, *editMenu;
@@ -92,6 +93,7 @@ public slots:
   void pan(bool);
   void rotate(bool);
   void camRotate(bool);
+  void pointSample(bool);
   void save();
   void copy();
 };

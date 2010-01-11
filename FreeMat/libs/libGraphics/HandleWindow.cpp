@@ -26,6 +26,7 @@
 #include <QtGui>
 #include <math.h>
 #include "IEEEFP.hpp"
+#include "DebugStream.hpp"
 
 class BaseFigureQt : public QWidget {
   HandleFigure *hfig;
@@ -199,6 +200,7 @@ void HandleWindow::zoom(bool active) {
   panAct->setChecked(false);
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
+  pointSampleAct->setChecked(false);
   if (active)
     mode = zoom_mode;
   else
@@ -209,6 +211,7 @@ void HandleWindow::pan(bool active) {
   zoomAct->setChecked(false);
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
+  pointSampleAct->setChecked(false);
   if (active)
     mode = pan_mode;
   else
@@ -219,6 +222,7 @@ void HandleWindow::rotate(bool active) {
   zoomAct->setChecked(false);
   panAct->setChecked(false);
   camRotateAct->setChecked(false);
+  pointSampleAct->setChecked(false);
   if (active)
     mode = rotate_mode;
   else
@@ -229,10 +233,26 @@ void HandleWindow::camRotate(bool active) {
   zoomAct->setChecked(false);
   panAct->setChecked(false);
   rotateAct->setChecked(false);
+  pointSampleAct->setChecked(false);
   if (active)
     mode = cam_rotate_mode;
   else
     mode = normal_mode;
+}
+
+void HandleWindow::pointSample(bool active) {
+  zoomAct->setChecked(false);
+  panAct->setChecked(false);
+  rotateAct->setChecked(false);
+  camRotateAct->setChecked(false);
+  if (active){
+    //QApplication::setOverrideCursor(Qt::CrossCursor);
+    mode = point_sample_mode;
+  }
+  else{
+    //QApplication::restoreOverrideCursor();
+    mode = normal_mode;
+  }
 }
 
 void HandleWindow::save() {
@@ -285,6 +305,11 @@ void HandleWindow::createActions() {
   camRotateAct = new QAction(QIcon(":/images/cam_rotate.png"),"&Camera Rotate",this);
   connect(camRotateAct,SIGNAL(triggered(bool)),this,SLOT(camRotate(bool)));
   camRotateAct->setCheckable(true);
+
+  pointSampleAct = new QAction( QIcon(":/images/cursor-cross.png"),"Sam&ple", this);
+  connect(pointSampleAct,SIGNAL(triggered(bool)),this,SLOT(pointSample(bool)));
+  pointSampleAct->setCheckable(true);
+
   saveAct = new QAction(QIcon(":/images/save.png"),"&Save",this);
   connect(saveAct,SIGNAL(triggered()),this,SLOT(save()));
   copyAct = new QAction(QIcon(":/images/copy.png"),"&Copy",this);
@@ -303,6 +328,7 @@ void HandleWindow::createMenus() {
   editMenu->addAction(panAct);
   editMenu->addAction(rotateAct);
   editMenu->addAction(camRotateAct);
+  editMenu->addAction(pointSampleAct);
 }
 
 void HandleWindow::createToolBars() {
@@ -315,6 +341,7 @@ void HandleWindow::createToolBars() {
   toolBar->addAction(panAct);
   toolBar->addAction(rotateAct);
   toolBar->addAction(camRotateAct);
+  toolBar->addAction(pointSampleAct);
 }
 
 unsigned HandleWindow::Handle() {
@@ -414,6 +441,16 @@ void HandleWindow::mousePressEvent(QMouseEvent* e) {
 	rotate_right[2] = (rotate_forward[0] * rotate_up[1]) - (rotate_forward[1] * rotate_up[0]);
       }
     }
+    if ((mode == zoom_mode) && (e->button() == Qt::RightButton))  {
+	origin = e->pos();
+	QRect plot_region(child->geometry());
+	HandleAxis *h = GetContainingAxis(hfig,remapX(e->x()),remapY(e->y()));
+	if( h ){
+	    dbout << remapX(e->x()) << ":" << remapY(e->y()) << "\n";
+	}
+
+    }
+
   } catch (Exception &e) {
   }
 }
@@ -522,6 +559,19 @@ int HandleWindow::remapY(int y) {
 
 void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
   try {
+    if (mode == point_sample_mode ) {
+	  int click_x, click_y;
+	  click_x = e->x();
+	  click_y = e->y();
+	  HandleAxis *h = GetContainingAxis(hfig,remapX(click_x),remapY(click_y));
+	  if( h ){
+	      int remap_x = remapX(click_x);
+	      int remap_y = remapY( click_y);
+	      dbout << "raw: ( " << click_x << ", " << click_y << " )\n";
+	      dbout << "remap: ( " << remap_x << ", " << remap_y << " )\n";
+	      h->DrawChildren
+	  }
+    }
     if (mode == pan_mode)
       pan_active = false;
     if (mode == zoom_mode) {

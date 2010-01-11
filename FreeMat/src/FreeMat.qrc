@@ -36,5 +36,6 @@
 	<file>../images/dbgrun.png</file>
 	<file>../images/addtab.png</file>
 	<file>../images/closetab.png</file>
+	<file>../images/cursor-cross.png</file>
     </qresource>
 </RCC>

@@ -271,22 +271,22 @@ ArrayVector GLAssemblyFunction(int, const ArrayVector&);
 ArrayVector GLNodeFunction(int, const ArrayVector&);
 ArrayVector GLShowFunction(int, const ArrayVector&);
 ArrayVector DrawNowFunction(int, const ArrayVector&);
-ArrayVector HFigureFunction(int, const ArrayVector&);
-ArrayVector HAxesFunction(int, const ArrayVector&);
-ArrayVector SizeFigFunction(int, const ArrayVector&);
-ArrayVector HSetFunction(int, const ArrayVector&);
-ArrayVector HGetFunction(int, const ArrayVector&);
-ArrayVector HLineFunction(int, const ArrayVector&);
-ArrayVector HContourFunction(int, const ArrayVector&);
+ArrayVector HFigureFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HAxesFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector SizeFigFunction(int, const ArrayVector&, Interpreter *eval);
+ArrayVector HSetFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HGetFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HLineFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HContourFunction(int, const ArrayVector&, Interpreter *);
 ArrayVector HUIControlFunction(int, const ArrayVector&, Interpreter*);
-ArrayVector HImageFunction(int, const ArrayVector&);
-ArrayVector HTextFunction(int, const ArrayVector&);
-ArrayVector HSurfaceFunction(int, const ArrayVector&);
-ArrayVector HPatchFunction(int, const ArrayVector&);
-ArrayVector FigRaiseFunction(int, const ArrayVector&);
-ArrayVector FigLowerFunction(int, const ArrayVector&);
-ArrayVector HGCFFunction(int, const ArrayVector&);
-ArrayVector HGCAFunction(int, const ArrayVector&);
+ArrayVector HImageFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HTextFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HSurfaceFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HPatchFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector FigRaiseFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector FigLowerFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HGCFFunction(int, const ArrayVector&, Interpreter *);
+ArrayVector HGCAFunction(int, const ArrayVector&, Interpreter *);
 ArrayVector HPropertyValidateFunction(int, const ArrayVector&);
 ArrayVector HCloseFunction(int, const ArrayVector&);
 ArrayVector HCopyFunction(int, const ArrayVector&);
@@ -585,37 +585,37 @@ void LoadBuiltinFunctions(Context *context, bool guiflag) {
    if (guiflag)
      context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
    if (guiflag)
-     context->addGfxFunction("figure",HFigureFunction,1,1,"number",NULL);
+     context->addGfxSpecialFunction("figure",HFigureFunction,1,1,"number",NULL);
    if (guiflag)
-     context->addGfxFunction("axes",HAxesFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("axes",HAxesFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("sizefig",SizeFigFunction,2,0,"width","height",NULL);
+     context->addGfxSpecialFunction("sizefig",SizeFigFunction,2,0,"width","height",NULL);
    if (guiflag)
-     context->addGfxFunction("set",HSetFunction,-1,0,NULL);
+     context->addGfxSpecialFunction("set",HSetFunction,-1,0,NULL);
    if (guiflag)
-     context->addGfxFunction("get",HGetFunction,2,1,"handle","property",NULL);
+     context->addGfxSpecialFunction("get",HGetFunction,2,1,"handle","property",NULL);
    if (guiflag)
-     context->addGfxFunction("hline",HLineFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("hline",HLineFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("hcontour",HContourFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("hcontour",HContourFunction,-1,1,NULL);
    if (guiflag)
      context->addGfxSpecialFunction("uicontrol",HUIControlFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("himage",HImageFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("himage",HImageFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("htext",HTextFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("htext",HTextFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("surface",HSurfaceFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("surface",HSurfaceFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("hpatch",HPatchFunction,-1,1,NULL);
+     context->addGfxSpecialFunction("hpatch",HPatchFunction,-1,1,NULL);
    if (guiflag)
-     context->addGfxFunction("figraise",FigRaiseFunction,1,0,"handle",NULL);
+     context->addGfxSpecialFunction("figraise",FigRaiseFunction,1,0,"handle",NULL);
    if (guiflag)
-     context->addGfxFunction("figlower",FigLowerFunction,1,0,"handle",NULL);
+     context->addGfxSpecialFunction("figlower",FigLowerFunction,1,0,"handle",NULL);
    if (guiflag)
-     context->addGfxFunction("gcf",HGCFFunction,0,1,NULL);
+     context->addGfxSpecialFunction("gcf",HGCFFunction,0,1,NULL);
    if (guiflag)
-     context->addGfxFunction("gca",HGCAFunction,0,1,NULL);
+     context->addGfxSpecialFunction("gca",HGCAFunction,0,1,NULL);
    if (guiflag)
      context->addGfxFunction("pvalid",HPropertyValidateFunction,2,1,"type","property",NULL);
    if (guiflag)

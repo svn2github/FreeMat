@@ -31,12 +31,13 @@ void RestoreFocus();
 void LoadHandleGraphicsFunctions(Context* context);
 
 HandleObject* LookupHandleObject(unsigned handle);
-HandleFigure* LookupHandleFigure(unsigned handle);
+HandleFigure* LookupHandleFigure(unsigned handle, Interpreter *eval);
+HandleFigure* LookupHandleFigureNoCreate(unsigned handle);
 unsigned AssignHandleObject(HandleObject*);
 unsigned AssignHandleFigure(HandleFigure*);
 void FreeHandleObject(unsigned handle);
 void FreeHandleFigure(unsigned handle);
-void ValidateHandle(unsigned handle);
+void ValidateHandle(unsigned handle, Interpreter *eval);
 void NotifyFigureClosed(unsigned handle);
 void NotifyFigureActive(unsigned handle);
   

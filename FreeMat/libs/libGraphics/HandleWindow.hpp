@@ -32,6 +32,7 @@
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QRubberBand>
+#include "interpreter.hpp"
 
 const int normal_mode = 1;
 const int point_mode = 2;
@@ -44,6 +45,10 @@ const int point_sample_mode = 8;
 
 class HandleWindow : public QMainWindow {
   Q_OBJECT
+
+private:
+  Interpreter *m_eval;
+
 protected:
   bool initialized;
   unsigned handle;
@@ -75,7 +80,7 @@ protected:
   int remapY(int y);
 public:
   QWidget *GetQtWidget() {return child;}
-  HandleWindow(unsigned ahandle);
+  HandleWindow(unsigned ahandle, Interpreter *eval);
   ~HandleWindow() {delete hfig;}
   unsigned Handle();
   HandleFigure *HFig();
@@ -88,6 +93,8 @@ public:
   void createActions();
   void createMenus();
   void createToolBars();
+  
+
 public slots:
   void zoom(bool);
   void pan(bool);

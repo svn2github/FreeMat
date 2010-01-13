@@ -143,7 +143,7 @@ HandleFigure* HandleObject::GetParentFigure() {
   HPHandles *parent = (HPHandles*) hp->LookupProperty("parent");
   if (parent->Data().empty()) return NULL;
   unsigned parent_handle = parent->Data()[0];
-  return LookupHandleFigure(parent_handle);
+  return LookupHandleFigureNoCreate(parent_handle);
 }
 
 QString HandleObject::StringPropertyLookup(QString name) {

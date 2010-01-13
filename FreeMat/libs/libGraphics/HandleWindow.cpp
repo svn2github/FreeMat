@@ -164,7 +164,7 @@ bool HandleWindow::event(QEvent* e) {
   return QWidget::event(e);
 }
 
-HandleWindow::HandleWindow(unsigned ahandle) : QMainWindow() {
+HandleWindow::HandleWindow(unsigned ahandle, Interpreter *eval) : QMainWindow(),m_eval(eval) {
   initialized = false;
   setWindowIcon(QPixmap(":/images/freemat_figure_small_mod_64.png"));
   handle = ahandle;
@@ -246,11 +246,13 @@ void HandleWindow::pointSample(bool active) {
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
   if (active){
-    //QApplication::setOverrideCursor(Qt::CrossCursor);
+    QApplication::setOverrideCursor(Qt::CrossCursor);
     mode = point_sample_mode;
+
+	m_eval->ExecuteLine(QString("datacursormode('on')") + "\n");
   }
   else{
-    //QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
     mode = normal_mode;
   }
 }
@@ -559,19 +561,19 @@ int HandleWindow::remapY(int y) {
 
 void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
   try {
-    if (mode == point_sample_mode ) {
-	  int click_x, click_y;
-	  click_x = e->x();
-	  click_y = e->y();
-	  HandleAxis *h = GetContainingAxis(hfig,remapX(click_x),remapY(click_y));
-	  if( h ){
-	      int remap_x = remapX(click_x);
-	      int remap_y = remapY( click_y);
-	      dbout << "raw: ( " << click_x << ", " << click_y << " )\n";
-	      dbout << "remap: ( " << remap_x << ", " << remap_y << " )\n";
-	      h->DrawChildren
-	  }
-    }
+   // if (mode == point_sample_mode ) {
+	  //int click_x, click_y;
+	  //click_x = e->x();
+	  //click_y = e->y();
+	  //HandleAxis *h = GetContainingAxis(hfig,remapX(click_x),remapY(click_y));
+	  //if( h ){
+	  //    int remap_x = remapX(click_x);
+	  //    int remap_y = remapY( click_y);
+	  //    dbout << "raw: ( " << click_x << ", " << click_y << " )\n";
+	  //    dbout << "remap: ( " << remap_x << ", " << remap_y << " )\n";
+	  //    
+	  //}
+   // }
     if (mode == pan_mode)
       pan_active = false;
     if (mode == zoom_mode) {

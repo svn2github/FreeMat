@@ -102,7 +102,7 @@ void NotifyFigureActive(unsigned figNum) {
   HcurrentFig = figNum;
 }
 
-static void NewFig() {
+static void NewFig(Interpreter *eval) {
   // First search for an unused fig number
   int figNum = 0;
   bool figFree = false;
@@ -113,31 +113,43 @@ static void NewFig() {
   if (!figFree) {
     throw Exception("No more fig handles available!  Close some figs...");
   }
-  Hfigs[figNum] = new HandleWindow(figNum);
+  Hfigs[figNum] = new HandleWindow(figNum, eval);
   SaveFocus();
   Hfigs[figNum]->show();
   RestoreFocus();
   HcurrentFig = figNum;
 }
 
-static HandleWindow* CurrentWindow() {
+static HandleWindow* CurrentWindow(Interpreter *eval) {
   if (HcurrentFig == -1)
-    NewFig();
+    NewFig( eval );
   return (Hfigs[HcurrentFig]);
 }
 
-static HandleFigure* CurrentFig() {
+static HandleFigure* CurrentFig(Interpreter *eval) {
   if (HcurrentFig == -1)
-    NewFig();
+    NewFig(eval);
   return (Hfigs[HcurrentFig]->HFig());
 }
 
+static void SelectFigNoCreate(int fignum) {
+  if (fignum < 0)
+    throw Exception("Illegal argument to SelectFigNoCreate");
+  if (Hfigs[fignum] == NULL)
+    throw Exception("Non-existent figure in SelectFigNoCreate");
+  SaveFocus();
+  Hfigs[fignum]->show();
+  Hfigs[fignum]->raise();
+  RestoreFocus();
+  HcurrentFig = fignum;
+}
 
-static void SelectFig(int fignum) {
+
+static void SelectFig(int fignum, Interpreter *eval) {
   if (fignum < 0)
     throw Exception("Illegal argument to SelectFig");
   if (Hfigs[fignum] == NULL)
-    Hfigs[fignum] = new HandleWindow(fignum);
+    Hfigs[fignum] = new HandleWindow(fignum, eval);
   SaveFocus();
   Hfigs[fignum]->show();
   Hfigs[fignum]->raise();
@@ -203,21 +215,31 @@ HandleObject* LookupHandleObject(unsigned handle) {
   return (objectset.lookupHandle(handle-HANDLE_OFFSET_OBJECT));
 }
 
-HandleFigure* LookupHandleFigure(unsigned handle) {
+
+HandleFigure* LookupHandleFigureNoCreate(unsigned handle) {
   if (Hfigs[handle-HANDLE_OFFSET_FIGURE] != NULL)
     return Hfigs[handle-HANDLE_OFFSET_FIGURE]->HFig();
   else {
-    SelectFig(handle-HANDLE_OFFSET_FIGURE);
+    SelectFigNoCreate(handle-HANDLE_OFFSET_FIGURE);
     return Hfigs[handle-HANDLE_OFFSET_FIGURE]->HFig();
   }
 }
 
-void ValidateHandle(unsigned handle) {
+HandleFigure* LookupHandleFigure(unsigned handle, Interpreter *eval) {
+  if (Hfigs[handle-HANDLE_OFFSET_FIGURE] != NULL)
+    return Hfigs[handle-HANDLE_OFFSET_FIGURE]->HFig();
+  else {
+    SelectFig(handle-HANDLE_OFFSET_FIGURE, eval);
+    return Hfigs[handle-HANDLE_OFFSET_FIGURE]->HFig();
+  }
+}
+
+void ValidateHandle(unsigned handle, Interpreter *eval ) {
   if (handle == 0) return;
   if (handle >= HANDLE_OFFSET_OBJECT)
     LookupHandleObject(handle);
   else
-    LookupHandleFigure(handle);
+    LookupHandleFigure(handle, eval);
 }
 
 unsigned AssignHandleObject(HandleObject* hp) {
@@ -253,26 +275,26 @@ void FreeHandleObject(unsigned handle) {
 //example, you can use @|get(3,'colormap')| to retrieve the colormap
 //for the current figure.
 //@@Signature
-//gfunction figure HFigureFunction
+//sgfunction figure HFigureFunction
 //input number
 //output handle
 //!
-ArrayVector HFigureFunction(int nargout,const ArrayVector& arg) {
+ArrayVector HFigureFunction(int nargout,const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) {
-    NewFig();
+    NewFig(eval);
     return ArrayVector(Array(double(HcurrentFig+1)));
   } else {
     Array t(arg[0]);
     int fignum = t.asInteger();
     if ((fignum<=0) || (fignum>MAX_FIGS))
       throw Exception("figure number is out of range - it must be between 1 and 50");
-    SelectFig(fignum-1);
+    SelectFig(fignum-1, eval);
     return ArrayVector();
   }
 }
 
-void AddToCurrentFigChildren(unsigned handle) {
-  HandleFigure *fig = CurrentFig();
+void AddToCurrentFigChildren(unsigned handle, Interpreter *eval) {
+  HandleFigure *fig = CurrentFig(eval);
   HPHandles *cp = (HPHandles*) fig->LookupProperty("children");
   QVector<unsigned> children(cp->Data());
   // Check to make sure that children does not contain our handle already
@@ -314,11 +336,11 @@ void AddToCurrentFigChildren(unsigned handle) {
 //and makes @|handle| the current axes, placing it at the head of
 //the list of children for the current figure.
 //@@Signature
-//gfunction axes HAxesFunction
+//sgfunction axes HAxesFunction
 //input varargin
 //output handle
 //!
-ArrayVector HAxesFunction(int nargout, const ArrayVector& arg) {
+ArrayVector HAxesFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() != 1) {
     HandleObject *fp = new HandleAxis;
     unsigned int handle = AssignHandleObject(fp);
@@ -330,11 +352,11 @@ ArrayVector HAxesFunction(int nargout, const ArrayVector& arg) {
       t.pop_front();
     }
     // Get the current figure
-    HandleFigure *fig = CurrentFig();
+    HandleFigure *fig = CurrentFig(eval);
     fp->SetPropertyHandle("parent",HcurrentFig+1);
     fig->SetPropertyHandle("currentaxes",handle);
     // Add us to the children...
-    AddToCurrentFigChildren(handle);
+    AddToCurrentFigChildren(handle, eval);
     fp->UpdateState();
     return ArrayVector(Array(double(handle)));
   } else {
@@ -342,20 +364,20 @@ ArrayVector HAxesFunction(int nargout, const ArrayVector& arg) {
     HandleObject* hp = LookupHandleObject(handle);
     if (!hp->IsType("axes"))
       throw Exception("single argument to axes function must be handle for an axes"); 
-    AddToCurrentFigChildren(handle);
+    AddToCurrentFigChildren(handle, eval);
     // Get the current figure
-    CurrentFig()->SetPropertyHandle("currentaxes",handle);     
-    CurrentFig()->UpdateState();
+    CurrentFig(eval)->SetPropertyHandle("currentaxes",handle);     
+    CurrentFig(eval)->UpdateState();
     return ArrayVector();
   }
 }
 
-void HSetChildrenFunction(HandleObject *fp, Array children) {
+void HSetChildrenFunction(HandleObject *fp, Array children, Interpreter *eval) {
   children = children.toClass(UInt32);
   const BasicArray<uint32> &dp(children.constReal<uint32>());
   // make sure they are all valid handles
   for (index_t i=1;i<=dp.length();i++) 
-    ValidateHandle(dp[i]);
+    ValidateHandle(dp[i], eval);
   // Retrieve the current list of children
   HandleObject *gp;
   HPHandles *hp = (HPHandles*) fp->LookupProperty("children");
@@ -390,7 +412,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
     }
   }
   // Call the generic set function now
-  hp->Set(children);
+  hp->Set(children,eval);
 }
 
 
@@ -406,20 +428,21 @@ void HSetChildrenFunction(HandleObject *fp, Array children) {
 //where @|width| and @|height| are the dimensions of the fig
 //window.
 //@@Signature
-//gfunction sizefig SizeFigFunction
+//sgfunction sizefig SizeFigFunction
 //input width height
 //output none
 //!
-ArrayVector SizeFigFunction(int nargout, const ArrayVector& arg) {
+ArrayVector SizeFigFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() < 2)
     throw Exception("sizefig requires width and height");
   int width = arg[0].asInteger();
   int height = arg[1].asInteger();
-  QSize main_window_size = CurrentWindow()->size();
-  QSize central_window_size = CurrentWindow()->centralWidget()->size();
-  CurrentWindow()->resize(width + main_window_size.width() - central_window_size.width(),
+  HandleWindow* currentWindow = CurrentWindow(eval);
+  QSize main_window_size = currentWindow->size();
+  QSize central_window_size = currentWindow->centralWidget()->size();
+  currentWindow->resize(width + main_window_size.width() - central_window_size.width(),
 			  height + main_window_size.height() - central_window_size.height());
-  CurrentWindow()->HFig()->markDirty();
+  currentWindow->HFig()->markDirty();
   return ArrayVector();
 }
 
@@ -438,37 +461,37 @@ ArrayVector SizeFigFunction(int nargout, const ArrayVector& arg) {
 //set.  See the help for the properties to see what values
 //you can set.
 //@@Signature
-//gfunction set HSetFunction
+//sgfunction set HSetFunction
 //input varargin
 //output none
 //!
 
-static HandleObject* LookupObject(int handle) {
+static HandleObject* LookupObject(int handle, Interpreter * eval) {
   if (handle <= 0)
     throw Exception("Illegal handle used for handle graphics operation");
   if (handle >= HANDLE_OFFSET_OBJECT)
     return LookupHandleObject(handle);
   else
-    return ((HandleObject*) LookupHandleFigure(handle));
+    return ((HandleObject*) LookupHandleFigure(handle, eval));
 }
 
-static void RecursiveUpdateState(int handle) {
-  HandleObject *fp = LookupObject(handle);
+static void RecursiveUpdateState(int handle, Interpreter * eval) {
+  HandleObject *fp = LookupObject(handle, eval);
   fp->UpdateState();
   HPHandles *children = (HPHandles*) fp->LookupProperty("children");
   QVector<unsigned> handles(children->Data());
   for (int i=0;i<handles.size();i++) {
-    HandleObject *fp = LookupObject(handles[i]);
+    HandleObject *fp = LookupObject(handles[i], eval);
     fp->UpdateState();
   }  
 }
 
-ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
+ArrayVector HSetFunction(int nargout, const ArrayVector& arg, Interpreter * eval) {
   if (arg.size() < 3)
     throw Exception("set doesn't handle all cases yet!");
   int handle = arg[0].asInteger();
   // Lookup the handle
-  HandleObject *fp = LookupObject(handle);
+  HandleObject *fp = LookupObject(handle, eval);
   int ptr = 1;
   while (arg.size() >= (ptr+2)) {
     // Use the address and property name to lookup the Get/Set handler
@@ -476,7 +499,7 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     // Special case 'set' for 'children' - this can change reference counts
     // Special case 'set' for 'figsize' - this requires help from the OS
     if (propname == "children")
-      HSetChildrenFunction(fp,arg[ptr+1]);
+      HSetChildrenFunction(fp,arg[ptr+1], eval);
     else if ((handle < HANDLE_OFFSET_OBJECT) && (propname == "figsize")) {
       fp->LookupProperty(propname)->Set(arg[ptr+1]);
     } else {
@@ -489,7 +512,7 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     }
     ptr+=2;
   }
-  RecursiveUpdateState(handle);
+  RecursiveUpdateState(handle, eval);
   //  fp->UpdateState();
   if (!fp->IsType("figure") && !fp->IsType("uicontrol")) {
     //FIXME
@@ -497,7 +520,7 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
     fig->UpdateState();
     //     fig->Repaint();
   }
-  CurrentWindow()->HFig()->markDirty();
+  CurrentWindow(eval)->HFig()->markDirty();
   return ArrayVector();
 }
 
@@ -516,23 +539,23 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg) {
 //set.  See the help for the properties to see what values
 //you can set.
 //@@Signature
-//gfunction get HGetFunction
+//sgfunction get HGetFunction
 //input handle property
 //output value
 //!
 
-ArrayVector HGetFunction(int nargout, const ArrayVector& arg) {
+ArrayVector HGetFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() != 2)
     throw Exception("get doesn't handle all cases yet!");
   int handle = arg[0].asInteger();
   QString propname = arg[1].asString();
   // Lookup the handle
-  HandleObject *fp = LookupObject(handle);
+  HandleObject *fp = LookupObject(handle, eval);
   // Use the address and property name to lookup the Get/Set handler
   return ArrayVector(fp->LookupProperty(propname)->Get());
 }
 
-static unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
+static unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg, Interpreter* eval,
 				   bool autoParentGiven = true) {
   unsigned int handle = AssignHandleObject(fp);
   ArrayVector t(arg);
@@ -553,11 +576,11 @@ static unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
     t.pop_front();
   }
   if (autoParentGiven) {
-    HandleFigure *fig = CurrentFig();
+    HandleFigure *fig = CurrentFig(eval);
     unsigned current = fig->HandlePropertyLookup("currentaxes");
     if (current == 0) {
       ArrayVector arg2;
-      HAxesFunction(0,arg2);
+      HAxesFunction(0,arg2, eval);
       current = fig->HandlePropertyLookup("currentaxes");
     }
     HandleAxis *axis = (HandleAxis*) LookupHandleObject(current);
@@ -590,12 +613,12 @@ static unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg,
 //resulting object is returned.  It is automatically added to
 //the children of the current axis.
 //@@Signature
-//gfunction hline HLineFunction
+//sgfunction hline HLineFunction
 //input varargin
 //output handle
 //!
-ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(double(GenericConstructor(new HandleLineSeries,arg))));
+ArrayVector HLineFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  return ArrayVector(Array(double(GenericConstructor(new HandleLineSeries,arg,eval))));
 }
 
 //!
@@ -611,12 +634,12 @@ ArrayVector HLineFunction(int nargout, const ArrayVector& arg) {
 //resulting object is returned.  It is automatically added to
 //the children of the current axis.
 //@@Signature
-//gfunction hcontour HContourFunction
+//sgfunction hcontour HContourFunction
 //input varargin
 //output handle
 //!
-ArrayVector HContourFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(double(GenericConstructor(new HandleContour,arg))));
+ArrayVector HContourFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  return ArrayVector(Array(double(GenericConstructor(new HandleContour,arg, eval))));
 }
 
 //!
@@ -639,10 +662,10 @@ ArrayVector HContourFunction(int nargout, const ArrayVector& arg) {
 ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   HandleUIControl *o = new HandleUIControl;
   o->SetEvalEngine(eval);
-  o->ConstructWidget(CurrentWindow());
-  unsigned handleID = GenericConstructor(o,arg,false);
+  o->ConstructWidget(CurrentWindow(eval));
+  unsigned handleID = GenericConstructor(o,arg,eval,false);
   // Parent the control to the current figure
-  AddToCurrentFigChildren(handleID);
+  AddToCurrentFigChildren(handleID, eval);
   HPHandles* cp = (HPHandles*) o->LookupProperty("parent");
   QVector<unsigned> parent;
   parent.push_back(HcurrentFig+1);
@@ -663,12 +686,12 @@ ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter 
 //resulting object is returned.  It is automatically added to
 //the children of the current axis.
 //@@Signature
-//gfunction himage HImageFunction
+//sgfunction himage HImageFunction
 //input varargin
 //output handle
 //!
-ArrayVector HImageFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(double(GenericConstructor(new HandleImage,arg))));
+ArrayVector HImageFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  return ArrayVector(Array(double(GenericConstructor(new HandleImage,arg, eval))));
 }
 
 //!
@@ -684,12 +707,12 @@ ArrayVector HImageFunction(int nargout, const ArrayVector& arg) {
 //resulting object is returned.  It is automatically added to
 //the children of the current axis.
 //@@Signature
-//gfunction htext HTextFunction
+//sgfunction htext HTextFunction
 //input varargin
 //output handle
 //!
-ArrayVector HTextFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(double(GenericConstructor(new HandleText,arg))));
+ArrayVector HTextFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  return ArrayVector(Array(double(GenericConstructor(new HandleText,arg, eval))));
 }
 
 //!
@@ -705,12 +728,12 @@ ArrayVector HTextFunction(int nargout, const ArrayVector& arg) {
 //resulting object is returned.  It is automatically added to
 //the children of the current axis.
 //@@Signature
-//gfunction surface HSurfaceFunction
+//sgfunction surface HSurfaceFunction
 //input varargin
 //output handle
 //!
-ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(double(GenericConstructor(new HandleSurface,arg))));
+ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  return ArrayVector(Array(double(GenericConstructor(new HandleSurface,arg, eval))));
 }
 
 //!
@@ -726,12 +749,12 @@ ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg) {
 //resulting object is returned.  It is automatically added to
 //the children of the current axis.
 //@@Signature
-//gfunction hpatch HPatchFunction
+//sgfunction hpatch HPatchFunction
 //input varargin
 //output handle
 //!
-ArrayVector HPatchFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(double(GenericConstructor(new HandlePatch,arg))));
+ArrayVector HPatchFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  return ArrayVector(Array(double(GenericConstructor(new HandlePatch,arg,eval))));
 }
 
 
@@ -749,20 +772,20 @@ ArrayVector HPatchFunction(int nargout, const ArrayVector& arg) {
 //Note that this function does not cause @|fignum| to become the current
 //figure, you must use the @|figure| command for that.
 //@@Signature
-//gfunction figraise FigRaiseFunction
+//sgfunction figraise FigRaiseFunction
 //input handle
 //output none
 //!
-ArrayVector FigRaiseFunction(int nargout, const ArrayVector& args) {
+ArrayVector FigRaiseFunction(int nargout, const ArrayVector& args, Interpreter * eval) {
   if (args.size() == 0)
-    CurrentWindow()->raise();
+    CurrentWindow(eval)->raise();
   else {
     int fignum = args[0].asInteger();
     if ((fignum >= 1) && (fignum < MAX_FIGS+1)) {
       if (Hfigs[fignum-1])
 	Hfigs[fignum-1]->raise();
       else {
-	Hfigs[fignum-1] = new HandleWindow(fignum-1);
+	Hfigs[fignum-1] = new HandleWindow(fignum-1, eval);
 	Hfigs[fignum-1]->show();
 	Hfigs[fignum-1]->raise();
       }
@@ -787,20 +810,20 @@ ArrayVector FigRaiseFunction(int nargout, const ArrayVector& args) {
 //Similarly, if @|fignum| is the current figure, it will remain the current
 //figure (even though the figure is now behind others).
 //@@Signature
-//gfunction figlower FigLowerFunction
+//sgfunction figlower FigLowerFunction
 //input handle
 //output none
 //!
-ArrayVector FigLowerFunction(int nargout, const ArrayVector& args) {
+ArrayVector FigLowerFunction(int nargout, const ArrayVector& args, Interpreter *eval) {
   if (args.size() == 0)
-    CurrentWindow()->lower();
+    CurrentWindow(eval)->lower();
   else {
     int fignum = args[0].asInteger();
     if ((fignum >= 1) && (fignum < MAX_FIGS+1)) {
       if (Hfigs[fignum-1])
 	Hfigs[fignum-1]->lower();
       else {
-	Hfigs[fignum-1] = new HandleWindow(fignum-1);
+	Hfigs[fignum-1] = new HandleWindow(fignum-1, eval);
 	Hfigs[fignum-1]->show();
 	Hfigs[fignum-1]->lower();
       }
@@ -830,13 +853,13 @@ ArrayVector FigLowerFunction(int nargout, const ArrayVector& args) {
 //use @|get(gcf,'colormap')|, or to obtain the colormap for figure 3, 
 //use @|get(3,'colormap')|.
 //@@Signature
-//gfunction gcf HGCFFunction
+//sgfunction gcf HGCFFunction
 //input none
 //output handle
 //!
-ArrayVector HGCFFunction(int nargout, const ArrayVector& arg) {
+ArrayVector HGCFFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (HcurrentFig == -1)
-    NewFig();      
+    NewFig(eval);      
   return ArrayVector(Array(double(HcurrentFig+1)));
 }
 
@@ -852,19 +875,19 @@ ArrayVector HGCFFunction(int nargout, const ArrayVector& arg) {
 //where @|handle| is the handle of the active axis.  All object
 //creation functions will be children of this axis.
 //@@Signature
-//gfunction gca HGCAFunction
+//sgfunction gca HGCAFunction
 //input none
 //output handle
 //!
-ArrayVector HGCAFunction(int nargout, const ArrayVector& arg) {
+ArrayVector HGCAFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   // Get the current figure...
   if (HcurrentFig == -1)
-    NewFig();
-  HandleFigure* fig = CurrentFig();
+    NewFig(eval);
+  HandleFigure* fig = CurrentFig(eval);
   unsigned current = fig->HandlePropertyLookup("currentaxes");
   if (current == 0) {
     ArrayVector arg2;
-    HAxesFunction(0,arg2);
+    HAxesFunction(0,arg2, eval);
     current = fig->HandlePropertyLookup("currentaxes");
   }
   return ArrayVector(Array(double(current)));

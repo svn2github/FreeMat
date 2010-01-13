@@ -54,7 +54,7 @@ public:
   HPHandles();
   virtual ~HPHandles() {}
   virtual Array Get();
-  virtual void Set(Array);
+  virtual void Set(Array, Interpreter *eval);
   QVector<unsigned> Data() {return data;}
   void Data(QVector<unsigned> m) {data = m;}
 };

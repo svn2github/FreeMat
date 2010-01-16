@@ -37,7 +37,7 @@ unsigned AssignHandleObject(HandleObject*);
 unsigned AssignHandleFigure(HandleFigure*);
 void FreeHandleObject(unsigned handle);
 void FreeHandleFigure(unsigned handle);
-void ValidateHandle(unsigned handle, Interpreter *eval);
+void ValidateHandle(unsigned handle);
 void NotifyFigureClosed(unsigned handle);
 void NotifyFigureActive(unsigned handle);
   

@@ -234,12 +234,13 @@ HandleFigure* LookupHandleFigure(unsigned handle, Interpreter *eval) {
   }
 }
 
-void ValidateHandle(unsigned handle, Interpreter *eval ) {
+
+void ValidateHandle(unsigned handle) {
   if (handle == 0) return;
   if (handle >= HANDLE_OFFSET_OBJECT)
     LookupHandleObject(handle);
   else
-    LookupHandleFigure(handle, eval);
+    LookupHandleFigureNoCreate(handle);
 }
 
 unsigned AssignHandleObject(HandleObject* hp) {
@@ -377,7 +378,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children, Interpreter *eval) {
   const BasicArray<uint32> &dp(children.constReal<uint32>());
   // make sure they are all valid handles
   for (index_t i=1;i<=dp.length();i++) 
-    ValidateHandle(dp[i], eval);
+    ValidateHandle(dp[i]);
   // Retrieve the current list of children
   HandleObject *gp;
   HPHandles *hp = (HPHandles*) fp->LookupProperty("children");
@@ -412,7 +413,7 @@ void HSetChildrenFunction(HandleObject *fp, Array children, Interpreter *eval) {
     }
   }
   // Call the generic set function now
-  hp->Set(children,eval);
+  hp->Set(children);
 }
 
 

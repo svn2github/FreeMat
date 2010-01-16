@@ -63,7 +63,7 @@ public:
 
   void deleteHandle(unsigned int handle) {
     QMutexLocker locker(&mutex);
-    if ((handle-1) == max_handle) 
+    if (handle == max_handle) 
       max_handle--;
     handles.erase(handle-1);
   }

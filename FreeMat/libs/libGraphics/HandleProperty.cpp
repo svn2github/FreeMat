@@ -100,7 +100,7 @@ Array HPHandles::Get() {
   return ret;
 }
 
-void HPHandles::Set(Array arg, Interpreter *eval) {
+void HPHandles::Set(Array arg) {
   if (arg.isEmpty()) {
     data.clear();
     HandleProperty::Set(arg);
@@ -110,7 +110,7 @@ void HPHandles::Set(Array arg, Interpreter *eval) {
   const uint32 *dp = arg.constReal<uint32>().constData();
   // make sure they are all valid handles
   for (int i=0;i<int(arg.length());i++) 
-    ValidateHandle(dp[i],eval);
+    ValidateHandle(dp[i]);
   data.clear();
   for (int i=0;i<int(arg.length());i++) 
     data.push_back(dp[i]);

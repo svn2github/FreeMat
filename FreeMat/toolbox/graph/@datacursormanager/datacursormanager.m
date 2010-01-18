@@ -9,10 +9,16 @@ function c = datacursormanager( a )
     c = class(c,'datacursormanager');
   end
 
-  p = hpoint;
+  p = hpoint
   % Convert p to a fractional coordinate
-  s = get(gcf,'figsize'); s = s(:);
-  p = p(:)./s(:);
+  s = get(gcf,'figsize'); s = s(1:2);
+  ar = get(gca,'PlotBoxAspectRatio');
+  ar = ar(1:2)./max(ar(1:2));
+  d = min(s.*ar);
+  ds = (s - d)/2;
+  p1 = p(:) ./ s(:); 
+  p = (p(:)-ds(:))./d;
+  
   %p(2) = 1-p(2);
   % Get the list ofchildren
   children = get(gcf,'children');
@@ -20,19 +26,19 @@ function c = datacursormanager( a )
   hit=0;
   for i=1:numel(children)
       position = get(children(i),'position')
-      if (hitTest(position,p))
+      if (hitTest(position,p1))
           xlims = get(children(i),'xlim');
           ylims = get(children(i),'ylim');
 		  xdir = get(children(i),'xdir');
 		  ydir = get(children(i),'ydir');
 		  if strcmp(xdir,'reverse')
-			p(1)=position(3)-p(1);
+			p(1)=position(3)/2.-p(1);
 		  end
 		  if ~strcmp(ydir,'reverse')
-			p(2)=position(4)-p(2);
+			p(2)=position(4)/2.-p(2);
 		  end
           tpos(1) = xlims(1) + (p(1)-position(1))/position(3)*(xlims(2)-xlims(1));
-          tpos(2) = ylims(1) + (p(2)-position(2))/position(4)*(ylims(2)-ylims(1));
+          tpos(2) = ylims(1) + (p(2)-position(1))/position(4)*(ylims(2)-ylims(1));
           %tpos(1) = xlims(1) + (p(1)-position(1))*(xlims(2)-xlims(1));
           %tpos(2) = ylims(1) + (p(2)-position(2))*(ylims(2)-ylims(1));
 		  
@@ -49,8 +55,8 @@ function c = datacursormanager( a )
 	%[xlims(1)+p(1)*(xlims(2)-xlims(1)) ylims(1)+p(2)*(ylims(2)-ylims(1))]
           ht=htext('string','blah','position',[tpos(1) tpos(2)], ...
           'edgecolor',[0 0 0],'backgroundcolor',[1 1 1]);
-          p
-		  t = tpos
+          %p
+		  %t = tpos
           hit=1;
       end
   end

@@ -9,7 +9,7 @@ function c = datacursormanager( a )
         c = class(c,'datacursormanager');
     end
     
-    p = hpoint
+    p = hpoint;
     % Convert p to a fractional coordinate
     s = get(gcf,'figsize'); s = s(1:2);
     
@@ -18,11 +18,11 @@ function c = datacursormanager( a )
         ar = ar(1:2)./max(ar(1:2));
         d = min(s.*ar);
         ds = (s - d)/2;
-        p1 = p(:) ./ s(:); 
+        p1 = p(:) ./ s(:);
         p = (p(:)-ds(:))./d;
         
     else
-        p1 = p(:) ./ s(:); 
+        p1 = p(:) ./ s(:);
         p = p1;
     end
     
@@ -31,20 +31,20 @@ function c = datacursormanager( a )
     % Check us agains each child
     hit=0;
     for i=1:numel(children)
-        position = get(children(i),'position');
+        position = get(children(i),'position')
         if (hitTest(position,p1))
             xlims = get(children(i),'xlim');
             ylims = get(children(i),'ylim');
             xdir = get(children(i),'xdir');
             ydir = get(children(i),'ydir');
             if strcmp(xdir,'reverse')
-                p(1)=position(3)/2.-p(1);
+                p(1)=1-p(1);
             end
             if ~strcmp(ydir,'reverse')
-                p(2)=position(4)/2.-p(2);
+                p(2)=1-p(2);
             end
-            tpos(1) = xlims(1) + (p(1)-position(1))/position(3)*(xlims(2)-xlims(1))
-            tpos(2) = ylims(1) + (p(2)-position(1))/position(4)*(ylims(2)-ylims(1))
+            tpos(1) = xlims(1) + (p(1)-position(1))/position(3)*(xlims(2)-xlims(1));
+            tpos(2) = ylims(1) + (p(2)-position(2))/position(4)*(ylims(2)-ylims(1));
             %tpos(1) = xlims(1) + (p(1)-position(1))*(xlims(2)-xlims(1));
             %tpos(2) = ylims(1) + (p(2)-position(2))*(ylims(2)-ylims(1));
             
@@ -56,8 +56,10 @@ function c = datacursormanager( a )
                     v = c(round(tpos(1)),round(tpos(2)));
                 end
                 if strcmp(get(hg(i),'type'),'line')
+                    v = 0;
                 end
                 if strcmp(get(hg(i),'type'),'surface')
+                    v = 0;
                 end
             end
             %[xlims(1)+p(1)*(xlims(2)-xlims(1)) ylims(1)+p(2)*(ylims(2)-ylims(1))]

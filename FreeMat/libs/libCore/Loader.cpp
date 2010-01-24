@@ -388,7 +388,7 @@ void LoadBuiltinFunctions(Context *context, bool guiflag) {
   context->addSpecialFunction("warning",WarningFunction,1,0,"msg",NULL);
   context->addFunction("error",ErrorFunction,1,0,"string",NULL);
   context->addSpecialFunction("eval",EvalFunction,2,-1,"try_clause","catch_clause",NULL);
-  context->addSpecialFunction("evalin",EvalInFunction,2,3,"workspace","expression",NULL);
+  context->addSpecialFunction("evalin",EvalInFunction,-1,3,NULL);
   context->addSpecialFunction("assignin",AssignInFunction,3,0,"workspace","variablename","value",NULL);
   context->addSpecialFunction("feval",FevalFunction,-1,-1,NULL);
   context->addSpecialFunction("exist",ExistFunction,2,1,"item","kind",NULL);

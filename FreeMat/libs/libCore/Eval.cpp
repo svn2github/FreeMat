@@ -235,6 +235,7 @@ ArrayVector EvalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
 //
 //function do_test_evalin1_subfunc
 //   evalin('caller','test_val = true');
+//   evalin('caller','test_val = true','test_val=false');
 //end
 //@}
 //@{ test_evalin2.m
@@ -248,7 +249,7 @@ ArrayVector EvalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
 //@}
 //@@Signature
 //sfunction evalin EvalInFunction
-//inputs workspace expression
+//inputs varargin
 //outputs x y z
 //!
 ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {

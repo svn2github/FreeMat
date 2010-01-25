@@ -97,9 +97,9 @@ while t(k)<tspan(2) & terminate==0
     if err>reltol
        h=h/2;
     else
-       k=k+1
-       y(:,k)=yn
-       t(k)=t(k-1)+h
+       k=k+1;
+       y(:,k)=yn;
+       t(k)=t(k-1)+h;
        if size(fs,2)==6 fs(:,7)=feval(f,t(k),yn,varargin{:}); end;
        f0=fs(:,7);
        f3d(k,:,:)=fs;

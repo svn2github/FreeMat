@@ -22,7 +22,13 @@
 % Copyright (c) 2008 Samit Basu
 % Licensed under the GPL
 
-function ret = triu2(x,n)
+function ret = triu(x,n)
+   
+   [m n] = size(x);
+   
+   if m ~= n
+        error('Matrix must be square!\n');
+   end
    
    if nargin == 1
       t1 = zeros(size(x));

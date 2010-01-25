@@ -24,7 +24,7 @@
 % Copyright (c) 2008 Timothy Cyders
 % Licensed under the GPL
 
-function ret = trapz2(x,y)
+function ret = trapz(x,y)
    
    ret=0;
    

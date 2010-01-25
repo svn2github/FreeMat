@@ -22,8 +22,14 @@
 % Copyright (c) 2008 Samit Basu
 % Licensed under the GPL
 
-function ret = tril2(x,n)
+function ret = tril(x,n)
    
+   [m n] = size(x);
+   
+   if m ~= n
+        error('Matrix must be square!\n');
+   end
+	
    if nargin == 1
       for i = 1:size(x,1)
          for j = i+1:size(x,2)

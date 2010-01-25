@@ -25,10 +25,10 @@
 % Copyright (c) 2008 Timothy Cyders
 % Licensed under the GPL
 
-function ret = cumtrapz2(x,y)
+function ret = cumtrapz(x,y)
    
    ret=0;
-   
+	
    if nargin == 1
       
       if isvector(x) %%x is vector, unit integration

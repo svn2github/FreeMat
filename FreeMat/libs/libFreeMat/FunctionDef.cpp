@@ -790,28 +790,28 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
   Array retArray;
   if (retType == "uint8") {
     retArray = Array(*(uint8*)alist[1]);
-    delete alist[1];
+    delete (uint8*) alist[1];
   } else if (retType == "int8") {
     retArray = Array(*(int8*)alist[1]);
-    delete alist[1];
+    delete (int8*)alist[1];
   } else if (retType == "uint16") {
     retArray = Array(*(uint16*)alist[1]);
-    delete alist[1];
+    delete (uint16*)alist[1];
   } else if (retType == "int16") {
     retArray = Array(*(int16*)alist[1]);
-    delete alist[1];
+    delete (int16*)alist[1];
   } else if (retType== "uint32") {
     retArray = Array(*(uint32*)alist[1]);
-    delete alist[1];
+    delete (uint32*)alist[1];
   } else if (retType == "int32") {
     retArray = Array(*(int32*)alist[1]);
-    delete alist[1];
+    delete (int32*)alist[1];
   } else if (retType == "float") {
     retArray = Array(*(float*)alist[1]);
-    delete alist[1];
+    delete (float*)alist[1];
   } else if (retType == "double") {
     retArray = Array(*(double*)alist[1]);
-    delete alist[1];
+    delete (double*)alist[1];
   } else
     retArray = EmptyConstructor();
   // Strings that were passed by reference have to be

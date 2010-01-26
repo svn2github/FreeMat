@@ -32,7 +32,7 @@
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QRubberBand>
-#include "interpreter.hpp"
+#include "Interpreter.hpp"
 
 const int normal_mode = 1;
 const int point_mode = 2;

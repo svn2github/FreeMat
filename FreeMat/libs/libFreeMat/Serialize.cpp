@@ -306,7 +306,7 @@ double Serialize::getDouble() {
 
 DataClass Serialize::getDataClass(bool& sparseflag, StringVector& className, bool& complexflag) {
   checkSignature('a',1);
-  char a = getByte();
+  unsigned char a = getByte();
   sparseflag = (a & 16) > 0;
   complexflag = false;
   // For compatibility reasons, the sparse flag is stuck at

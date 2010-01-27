@@ -11,15 +11,16 @@ function c = datacursormanager( a )
     
     p = hpoint;
     % Convert p to a fractional coordinate
-    s = get(gcf,'figsize'); s = s(1:2);
+    s = get(gcf,'figsize'); s = s(1:2)
     
     if strcmp( get(gca,'PlotBoxAspectRatioMode'), 'manual') || strcmp(get(gca,'DataAspectRatioMode'),'manual')
-        ar = get(gca,'PlotBoxAspectRatio');
-        ar = ar(1:2)./max(ar(1:2));
-        d = min(s.*ar);
-        ds = (s - d)/2;
-        p1 = p(:) ./ s(:);
-        p = (p(:)-ds(:))./d;
+        p=p
+        ar = get(gca,'PlotBoxAspectRatio')
+        ar = ar(1:2)./max(ar(1:2))
+        d = s.*ar
+        ds = (s - d)/2
+        p1 = p(:) ./ s(:)
+        p = (p(:)-ds(:))./(d(:))
         
     else
         p1 = p(:) ./ s(:);
@@ -44,7 +45,7 @@ function c = datacursormanager( a )
                 p(2)=1-p(2);
             end
             tpos(1) = xlims(1) + (p(1)-position(1))/position(3)*(xlims(2)-xlims(1));
-            tpos(2) = ylims(1) + (p(2)-position(2))/position(4)*(ylims(2)-ylims(1));
+            tpos(2) = ylims(1) + (p(2)-position(2))/position(4)*(ylims(2)-ylims(1))
             %tpos(1) = xlims(1) + (p(1)-position(1))*(xlims(2)-xlims(1));
             %tpos(2) = ylims(1) + (p(2)-position(2))*(ylims(2)-ylims(1));
             
@@ -63,7 +64,12 @@ function c = datacursormanager( a )
                 end
             end
             %[xlims(1)+p(1)*(xlims(2)-xlims(1)) ylims(1)+p(2)*(ylims(2)-ylims(1))]
-            ht=htext('string',sprintf('x: %.2g, y: %g\n val: %g',tpos(1),tpos(2),v),'position',[tpos(1) tpos(2)], ...
+            ht=htext('string','','position',[tpos(1) tpos(2)],'boundingbox',[20 20 20 20] ...
+            'edgecolor',[0 0 0],'backgroundcolor',[0 0 0]);
+            dx = 0.03*(xlims(2)-xlims(1));
+            dy = 0.03*(ylims(2)-ylims(1));
+            
+            ht=htext('string',sprintf('x: %.2g, y: %g\n val: %g',tpos(1),tpos(2),v),'position',[tpos(1)+dx tpos(2)-dy], ...
             'edgecolor',[0 0 0],'backgroundcolor',[1 1 1]);
             %p
             %t = tpos

@@ -12,28 +12,24 @@ function c = datacursormanager( a )
     p = hpoint;
     % Convert p to a fractional coordinate
     s = get(gcf,'figsize'); s = s(1:2)
-    
-    if strcmp( get(gca,'PlotBoxAspectRatioMode'), 'manual') || strcmp(get(gca,'DataAspectRatioMode'),'manual')
-        p=p
-        ar = get(gca,'PlotBoxAspectRatio')
-        ar = ar(1:2)./max(ar(1:2))
-        d = s.*ar
-        ds = (s - d)/2
-        p1 = p(:) ./ s(:)
-        p = (p(:)-ds(:))./(d(:))
-        
-    else
-        p1 = p(:) ./ s(:);
-        p = p1;
-    end
-    
-    % Get the list ofchildren
+    p = p(:) ./ s(:);
+
+    % Get the list of children
     children = get(gcf,'children');
     % Check us agains each child
     hit=0;
     for i=1:numel(children)
         position = get(children(i),'position')
-        if (hitTest(position,p1))
+        if (hitTest(position,p))
+            
+            if strcmp( get(gca,'PlotBoxAspectRatioMode'), 'manual') || strcmp(get(gca,'DataAspectRatioMode'),'manual')
+                ar = get(gca,'PlotBoxAspectRatio')
+                ar = ar(1:2)./max(ar(1:2));
+                position(1:2) = position(1:2)+position(3:4).*(1-ar)/2;
+                position(3:4) = position(3:4).*ar(1:2);
+            end
+            
+            
             xlims = get(children(i),'xlim');
             ylims = get(children(i),'ylim');
             xdir = get(children(i),'xdir');
@@ -54,7 +50,7 @@ function c = datacursormanager( a )
             for i=1:length(hg)
                 if strcmp(get(hg(i),'type'),'image')
                     c = get( hg,'cdata');
-                    v = c(round(tpos(1)),round(tpos(2)));
+                    v = c(round(tpos(2)),round(tpos(1)));
                 end
                 if strcmp(get(hg(i),'type'),'line')
                     v = 0;

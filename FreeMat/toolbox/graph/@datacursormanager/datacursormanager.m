@@ -12,7 +12,7 @@ function c = datacursormanager( a )
     p = hpoint;
     % Convert p to a fractional coordinate
     s = get(gcf,'figsize'); s = s(1:2)
-    p = p(:) ./ s(:);
+    p1 = p(:) ./ s(:);
 
     % Get the list of children
     children = get(gcf,'children');
@@ -20,13 +20,26 @@ function c = datacursormanager( a )
     hit=0;
     for i=1:numel(children)
         position = get(children(i),'position')
-        if (hitTest(position,p))
+        if (hitTest(position,p1))
             
             if strcmp( get(gca,'PlotBoxAspectRatioMode'), 'manual') || strcmp(get(gca,'DataAspectRatioMode'),'manual')
-                ar = get(gca,'PlotBoxAspectRatio')
-                ar = ar(1:2)./max(ar(1:2));
-                position(1:2) = position(1:2)+position(3:4).*(1-ar)/2;
-                position(3:4) = position(3:4).*ar(1:2);
+                ar = get(children(i),'PlotBoxAspectRatio')
+                axis_pos = s.*position(1:2);
+                axis_size = s.*position(3:4);
+                axis_ar = axis_size(2)/axis_size(1);
+                plot_ar = ar(2)/ar(1);            
+
+                if plot_ar >= axis_ar
+                    plot_pos(2) = axis_pos(2);
+                    plot_size(2) = axis_size(2);
+                    plot_size(1) = plot_size(2) / plot_ar;
+                    plot_pos(1) = axis_pos(1)+(axis_size(1)-plot_size(1))/2.;
+                else
+                    plot_pos(1) = axis_pos(1);
+                    plot_size(1) = axis_size(1);
+                    plot_size(2) = plot_size(1) * plot_ar;
+                    plot_pos(2) = axis_pos(2)+(axis_size(2)-plot_size(2))/2.;
+                end
             end
             
             
@@ -35,16 +48,16 @@ function c = datacursormanager( a )
             xdir = get(children(i),'xdir');
             ydir = get(children(i),'ydir');
             if strcmp(xdir,'reverse')
-                p(1)=1-p(1);
+                tpos(1) = xlims(2) + (p(1) - plot_pos(1))/plot_size(1)*(xlims(1)-xlims(2));
+            else
+                tpos(1) = xlims(1) + (p(1) - plot_pos(1))/plot_size(1)*(xlims(2)-xlims(1));
             end
             if ~strcmp(ydir,'reverse')
-                p(2)=1-p(2);
+                tpos(2) = ylims(2) + (p(2) - plot_pos(2))/plot_size(2)*(ylims(1)-ylims(2));
+            else
+                tpos(2) = ylims(1) + (p(2) - plot_pos(2))/plot_size(2)*(ylims(2)-ylims(1));               
             end
-            tpos(1) = xlims(1) + (p(1)-position(1))/position(3)*(xlims(2)-xlims(1));
-            tpos(2) = ylims(1) + (p(2)-position(2))/position(4)*(ylims(2)-ylims(1))
-            %tpos(1) = xlims(1) + (p(1)-position(1))*(xlims(2)-xlims(1));
-            %tpos(2) = ylims(1) + (p(2)-position(2))*(ylims(2)-ylims(1));
-            
+            tpos = tpos
             
             hg = get( children(i),'children' );
             for i=1:length(hg)

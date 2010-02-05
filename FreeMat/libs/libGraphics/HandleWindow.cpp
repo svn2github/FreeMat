@@ -246,15 +246,15 @@ void HandleWindow::pointSample(bool active) {
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
   if (active){
-    QApplication::setOverrideCursor(Qt::CrossCursor);
-    mode = point_sample_mode;
-
-	m_eval->ExecuteLine(QString("datacursormode('on')") + "\n");
+    //QApplication::setOverrideCursor(Qt::CrossCursor);
+    //mode = point_sample_mode;
+	m_eval->ExecuteLine(QString("datacursormode('on');") + "\n");
   }
   else{
-    QApplication::restoreOverrideCursor();
-    mode = normal_mode;
+    //QApplication::restoreOverrideCursor();
+    //mode = normal_mode;
   }
+  pointSampleAct->setChecked(false);
 }
 
 void HandleWindow::save() {

@@ -40,6 +40,13 @@ function c = datacursormanager( a )
                     plot_size(2) = plot_size(1) * plot_ar;
                     plot_pos(2) = axis_pos(2)+(axis_size(2)-plot_size(2))/2.;
                 end
+            else
+                axis_pos = s.*position(1:2);
+                axis_size = s.*position(3:4);
+                plot_pos(1) = axis_pos(1);
+                plot_pos(2) = axis_pos(2);
+                plot_size(1) = axis_size(1);
+                plot_size(2) = axis_size(2);
             end
             
             
@@ -63,10 +70,17 @@ function c = datacursormanager( a )
             for i=1:length(hg)
                 if strcmp(get(hg(i),'type'),'image')
                     c = get( hg,'cdata');
-                    v = c(round(tpos(2)),round(tpos(1)));
+                    v = c(round(tpos(2)-.5),round(tpos(1)-.5));
                 end
                 if strcmp(get(hg(i),'type'),'line')
                     v = 0;
+                    xdata = get( hg(i), 'xdata' );
+                    ydata = get( hg(i), 'ydata' );
+                    dx = abs(xdata-tpos(1));
+                    ind = find( dx == min( dx ), 1 );
+                    tpos( 1 ) = xdata( ind );
+                    tpos( 2 ) = ydata( ind );
+                    v = ydata( ind );
                 end
                 if strcmp(get(hg(i),'type'),'surface')
                     v = 0;

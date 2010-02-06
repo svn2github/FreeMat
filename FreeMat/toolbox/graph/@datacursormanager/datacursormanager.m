@@ -11,7 +11,7 @@ function c = datacursormanager( a )
     
     p = hpoint;
     % Convert p to a fractional coordinate
-    s = get(gcf,'figsize'); s = s(1:2)
+    s = get(gcf,'figsize'); s = s(1:2);
     p1 = p(:) ./ s(:);
 
     % Get the list of children
@@ -19,7 +19,7 @@ function c = datacursormanager( a )
     % Check us agains each child
     hit=0;
     for i=1:numel(children)
-        position = get(children(i),'position')
+        position = get(children(i),'position');
         if (hitTest(position,p1))
             
             if strcmp( get(gca,'PlotBoxAspectRatioMode'), 'manual') || strcmp(get(gca,'DataAspectRatioMode'),'manual')
@@ -55,44 +55,68 @@ function c = datacursormanager( a )
             xdir = get(children(i),'xdir');
             ydir = get(children(i),'ydir');
             if strcmp(xdir,'reverse')
-                tpos(1) = xlims(2) + (p(1) - plot_pos(1))/plot_size(1)*(xlims(1)-xlims(2));
+                if strcmp( get( children(i),'xscale'), 'linear')
+                    tpos(1) = xlims(2) + (p(1) - plot_pos(1))/plot_size(1)*(xlims(1)-xlims(2));
+                else
+                    tpos(1) = exp( log(xlims(2)) + (p(1) - plot_pos(1))/plot_size(1)*(log(xlims(1))-log(xlims(2))));
+                end
             else
-                tpos(1) = xlims(1) + (p(1) - plot_pos(1))/plot_size(1)*(xlims(2)-xlims(1));
+                if strcmp( get( children(i),'xscale'), 'linear')
+                    tpos(1) = xlims(1) + (p(1) - plot_pos(1))/plot_size(1)*(xlims(2)-xlims(1));
+                else
+                    tpos(1) = exp( log(xlims(1)) + (p(1) - plot_pos(1))/plot_size(1)*(log(xlims(2))-log(xlims(1))));
+                end
             end
             if ~strcmp(ydir,'reverse')
-                tpos(2) = ylims(2) + (p(2) - plot_pos(2))/plot_size(2)*(ylims(1)-ylims(2));
+                if strcmp( get( children(i),'yscale'), 'linear')
+                    tpos(2) = ylims(2) + (p(2) - plot_pos(2))/plot_size(2)*(ylims(1)-ylims(2));
+                else
+                    tpos(2) = exp( log(ylims(2)) + (p(2) - plot_pos(2))/plot_size(2)*(log(ylims(1))-log(ylims(2))));
+                end
             else
-                tpos(2) = ylims(1) + (p(2) - plot_pos(2))/plot_size(2)*(ylims(2)-ylims(1));               
+                if strcmp( get( children(i),'yscale'), 'linear')
+                    tpos(2) = ylims(1) + (p(2) - plot_pos(2))/plot_size(2)*(ylims(2)-ylims(1));               
+                else
+                    tpos(2) = exp(log(ylims(1)) + (p(2) - plot_pos(2))/plot_size(2)*(log(ylims(2))-log(ylims(1))));               
+                end
             end
-            tpos = tpos
             
             hg = get( children(i),'children' );
-            for i=1:length(hg)
-                if strcmp(get(hg(i),'type'),'image')
+            for k=1:length(hg)
+                if strcmp(get(hg(k),'type'),'image')
                     c = get( hg,'cdata');
                     v = c(round(tpos(2)-.5),round(tpos(1)-.5));
                 end
-                if strcmp(get(hg(i),'type'),'line')
+                if strcmp(get(hg(k),'type'),'line')
                     v = 0;
-                    xdata = get( hg(i), 'xdata' );
-                    ydata = get( hg(i), 'ydata' );
+                    xdata = get( hg(k), 'xdata' );
+                    ydata = get( hg(k), 'ydata' );
                     dx = abs(xdata-tpos(1));
                     ind = find( dx == min( dx ), 1 );
                     tpos( 1 ) = xdata( ind );
                     tpos( 2 ) = ydata( ind );
                     v = ydata( ind );
                 end
-                if strcmp(get(hg(i),'type'),'surface')
+                if strcmp(get(hg(k),'type'),'surface')
                     v = 0;
                 end
             end
             %[xlims(1)+p(1)*(xlims(2)-xlims(1)) ylims(1)+p(2)*(ylims(2)-ylims(1))]
             ht=htext('string','','position',[tpos(1) tpos(2)],'boundingbox',[20 20 20 20] ...
             'edgecolor',[0 0 0],'backgroundcolor',[0 0 0]);
-            dx = 0.03*(xlims(2)-xlims(1));
-            dy = 0.03*(ylims(2)-ylims(1));
+
+            if strcmp( get( children(i),'xscale'), 'linear')            
+                tposd(1) = tpos(1) + 0.03*(xlims(2)-xlims(1));
+            else
+                tposd(1) = exp(log(tpos(1))+0.03*(log(xlims(2))-log(xlims(1))));
+            end
+            if strcmp( get( children(i),'yscale'), 'linear')            
+                tposd(2) = tpos(2)+0.03*(ylims(2)-ylims(1));
+            else
+                tposd(2) = exp(log(tpos(2))+0.03*(log(ylims(2))-log(ylims(1))));
+            end
             
-            ht=htext('string',sprintf('x: %.2g, y: %g\n val: %g',tpos(1),tpos(2),v),'position',[tpos(1)+dx tpos(2)-dy], ...
+            ht=htext('string',sprintf('x: %.2g, y: %g\n val: %g',tpos(1),tpos(2),v),'position',[tposd(1) tposd(2)], ...
             'edgecolor',[0 0 0],'backgroundcolor',[1 1 1]);
             %p
             %t = tpos

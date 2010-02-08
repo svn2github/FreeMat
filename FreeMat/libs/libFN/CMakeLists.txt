@@ -17,6 +17,7 @@ ENDIF( MSVC )
 ADD_LIBRARY( FN
 FNFun.cpp 
 Interp1D.cpp 
+Interp2D.cpp 
 LoadFN.cpp 
 OptFun.cpp 
 ${LIBM_FILES}

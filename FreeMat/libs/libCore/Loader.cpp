@@ -251,6 +251,7 @@ ArrayVector ErfFunction(int, const ArrayVector&);
 ArrayVector GammaFunction(int, const ArrayVector&);
 ArrayVector GammaLnFunction(int, const ArrayVector&);
 ArrayVector Interplin1Function(int, const ArrayVector&);
+ArrayVector Interp2Function(int, const ArrayVector&);
 ArrayVector FitFunFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector AnonFuncDispFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector AnonFuncSubsrefFunction(int, const ArrayVector&, Interpreter*);
@@ -557,6 +558,7 @@ void LoadBuiltinFunctions(Context *context, bool guiflag) {
   context->addFunction("gamma",GammaFunction,1,1,"x",NULL);
   context->addFunction("gammaln",GammaLnFunction,1,1,"x",NULL);
   context->addFunction("interplin1",Interplin1Function,4,1,"x1","y1","xi","extrapflag",NULL);
+  context->addFunction("interp2",Interp2Function,5,1,"z","xi","yi","method","extrapval",NULL);
   context->addSpecialFunction("fitfun",FitFunFunction,-1,2,NULL);
   context->addSpecialFunction("@anonfunction:display",AnonFuncDispFunction,1,0,"x",NULL);
   context->addSpecialFunction("@anonfunction:subsref",AnonFuncSubsrefFunction,2,-1,"x","s",NULL);

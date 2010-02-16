@@ -130,6 +130,9 @@ int main(int argc, char *argv[]) {
     nogui = true;
   }
   
+  QLocale::setDefault( QLocale::C );
+
+
   if (pathMode) {
     QSettings settings("FreeMat", Interpreter::getVersionString());
     settings.setValue("interpreter/path",QString::fromStdString(argv[pathMode+1]).split(":"));

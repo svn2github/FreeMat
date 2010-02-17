@@ -18,5 +18,5 @@ function y = linspace(a,b,len)
   if (nargin < 3)
     len = 100;
   end
-  y = a + (b-a)*((0:(len-1))/(len-1));
+  y = a + ((0:(len-2))*(b-a)/(floor(len)-1));
 

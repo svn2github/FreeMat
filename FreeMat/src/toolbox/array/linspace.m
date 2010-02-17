@@ -20,6 +20,7 @@
 %@@Tests
 %@$exact#z=linspace(0,60000,60001);y1=z(end)
 %@$exact#y1=linspace(0,1)
+%@$exact#y1=linspace(1,91,91)
 %!
 % Copyright (c) 2002, 2003 Samit Basu
 % Licensed under the GPL
@@ -27,5 +28,5 @@ function y = linspace(a,b,len)
   if (nargin < 3)
     len = 100;
   end
-  y = a + (b-a)*((0:(len-1))/(len-1));
+  y = a + ((0:(len-1))*(b-a)/(len-1));
 

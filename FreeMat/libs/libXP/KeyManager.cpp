@@ -28,6 +28,7 @@
 #include "Context.hpp"
 #include <qapplication.h>
 #include <QtCore>
+#include <QThread>
 #include <iostream>
 
 #define TAB_WIDTH 8
@@ -966,10 +967,19 @@ void KeyManager::CompleteWord() {
   }
 }
 
+class Sleeper: QThread{
+public:
+	static void msleep( unsigned long t ){ 
+		QThread::msleep( t );
+	};
+};
+
 void KeyManager::getKeyPress() {
   keypresswait = true;
-  while (keypresswait) 
+  while (keypresswait){ 
     qApp->processEvents();
+	Sleeper::msleep( 100 );
+  }
 }
 
 void KeyManager::OnChar( int c ) {

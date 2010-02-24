@@ -361,6 +361,13 @@ char* parseBoundsCheck(const char* &cp) {
 //loaded by FreeMat, which happens with the first @|import| statement that references
 //it.
 //
+//Repeating @|import| calls to import the same function name will be ignored, except
+//the first call. In order to refresh the function without restarting FreeMat,
+//you have to first clear all imported libraries via:
+//@[
+//   clear 'libs'
+//@]
+//
 //@@Example
 //Here is a complete example.  We have a @|C| function that adds
 //two float vectors of the same length, and stores the result in a third array 
@@ -455,6 +462,8 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 #endif
   symbolname = arg[1].asString();
   funcname = arg[2].asString();
+  if (DynamicFunctions.contains(funcname))
+      return ArrayVector(); //don't import the same function again
   rettype = arg[3].asString();
   arglist = arg[4].asString();
   void *func;

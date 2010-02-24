@@ -42,7 +42,11 @@ if ((nargout == 0) && (nargin == 0))
         printf('%s\n',a(n:(b(i)-1)));
         n = b(i)+1;
     end
-    printf('%s\n',a((b(end)+1):end));
+        if ((~isempty( a )) && (~isempty(b)))
+            printf('%s\n',a((b(end)+1):end));
+        else
+            printf('\n');
+        end
     return;
 end
 if (nargout == 1)

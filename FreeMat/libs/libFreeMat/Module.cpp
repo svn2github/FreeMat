@@ -37,6 +37,9 @@ void ClearLibs(Interpreter* eval) {
     libPointers.deleteSymbol(libnames[i]);
     delete *ptr;
   }
+
+  //Warning: DynamicFunctions may not contain the same name list
+  //of dynamic functions in current Context in case of using thread.
   for (int i=0;i<DynamicFunctions.size();i++) {
     eval->getContext()->deleteFunction(DynamicFunctions[i]);
   }
@@ -462,7 +465,8 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 #endif
   symbolname = arg[1].asString();
   funcname = arg[2].asString();
-  if (DynamicFunctions.contains(funcname))
+  FuncPtr val;
+  if (eval->getContext()->lookupFunction(funcname, val))
       return ArrayVector(); //don't import the same function again
   rettype = arg[3].asString();
   arglist = arg[4].asString();
@@ -519,7 +523,8 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 						      funcname);
   fptr->name = funcname;
   eval->getContext()->insertFunction(fptr,false);
-  DynamicFunctions.push_back(fptr->name);
+  if (!DynamicFunctions.contains(fptr->name))
+      DynamicFunctions.push_back(fptr->name);
   return ArrayVector();
 #else
   throw Exception("Support for the import command requires that the LLVM library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable.  To enable imported commands, please install llvm and recompile FreeMat.");

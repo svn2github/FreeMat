@@ -120,7 +120,7 @@ function [nn, xx] = hist (y, varargin)
     [s, idx] = sort ([y; cutoff]);
     len = size (y,1);
     chist = cumsum (idx <= len);
-    t1 = zeros (1, columns (y));
+    t1 = zeros (1, size(y,2));
     t2 = reshape (chist(idx > len), size (cutoff));
     t3 = chist(end,:) - sum (isnan (y));
     chist = [t1; t2; t3];

@@ -131,7 +131,7 @@ function [nn, xx] = hist (y, varargin)
   if (nargin > 2 && ~ischar(varargin{iarg}))
     %% Normalise the histogram.
     norm = varargin{iarg++};
-    freq = freq / rows (y) * norm;
+    freq = freq / size(y,1) * norm;
   end
 
   if (nargout > 0)

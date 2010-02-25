@@ -59,14 +59,18 @@ if (nargout > 0)
 end
 
 function [vertices, faces, facevertexcdata]=parse_input( xdata, ydata, zdata, cdata )
-	if( size(xdata) ~= size(ydata) | size(xdata) ~= size(zdata) | length(size(xdata))>2 )
-		error('Data size mismatch');
-	end
-	[nx ny]=size(xdata);
-	sz = size(cdata);
-	if( ~( (sz(1)==1) | (sz(1)==1 & sz(2)==nx) | (sz(1)==ny & sz(2)==nx) ) )
-		error('CData size mismatch');
-	end
-	vertices=[xdata(:) ydata(:) zdata(:)];
-	faces = reshape( 1:nx*ny, size(xdata) )';
-	facevertexcdata = cdata; %cdata(:);
+    if( size(xdata) ~= size(ydata) | size(xdata) ~= size(zdata) | length(size(xdata))>2 )
+        error('Data size mismatch');
+    end
+    [nx ny]=size(xdata);
+    sz = size(cdata);
+    if( ~( (sz(1)==1) | (sz(1)==1 & sz(2)==nx) | (sz(1)==ny & sz(2)==nx) ) )
+        error('CData size mismatch');
+    end
+    vertices=[xdata(:) ydata(:) zdata(:)];
+    if nx == 1 
+        faces = reshape( 1:nx*ny, [ny nx] )';
+    else
+        faces = reshape( 1:nx*ny, size(xdata) )';
+    end
+    facevertexcdata = cdata; %cdata(:);

@@ -18,8 +18,8 @@
 %@@Example
 %Here we generate a surface specifying all four components.
 %@<
-%x = [ 0 1 0 1];
-%y = [ 0 0 1 1];
+%x = [ 0 1 0 1]';
+%y = [ 0 0 1 1]';
 %c = [ 1 1 1 ];
 %patch(x,y,c)
 %axis equal
@@ -81,5 +81,9 @@ function [vertices, faces, facevertexcdata]=parse_input( xdata, ydata, zdata, cd
 		error('CData size mismatch');
 	end
 	vertices=[xdata(:) ydata(:) zdata(:)];
-	faces = reshape( 1:nx*ny, size(xdata) )';
+    if nx == 1 
+        faces = reshape( 1:nx*ny, [ny nx] )';
+    else
+        faces = reshape( 1:nx*ny, size(xdata) )';
+    end
 	facevertexcdata = cdata; %cdata(:);

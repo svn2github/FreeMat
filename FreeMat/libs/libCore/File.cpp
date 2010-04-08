@@ -454,7 +454,7 @@ Array Tread(QFile* fp, NTuple dim, bool swapflag) {
   size_t bufsize = sizeof(T)*size_t(dim.count());
   if ((fp->size() - fp->pos()) < bufsize) {
     bufsize = fp->size() - fp->pos();
-    dim = NTuple(floor((double)bufsize/sizeof(T)),1);
+    dim = NTuple(ceil((double)bufsize/sizeof(T)),1);
   }
   if (!swapflag) {
     BasicArray<T> rp(dim);

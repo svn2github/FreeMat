@@ -30,6 +30,13 @@
 
 #include <stdint.h>
 
+#ifndef INT64_C
+#define INT64_C(x) __INT64_C(x)
+#endif
+#ifndef UINT64_C
+#define UINT64_C(x) __UINT64_C(x)
+#endif
+
 #include "Types.hpp"
 
 #include "llvm/Module.h"

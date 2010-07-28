@@ -28,6 +28,7 @@
 #include "llvm/LinkAllPasses.h"
 #include "llvm/Target/TargetData.h"
 #include "llvm/Support/Debug.h"
+#include <llvm/LLVMContext.h>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -41,7 +42,7 @@ using namespace llvm;
 
 JIT::JIT() {
   //  llvm::DebugFlag = true;
-  m = new Module("test");
+  m = new Module("test", llvm::getGlobalContext());
 #if 0
   #if defined(_MSC_VER)  
     m->setDataLayout("e-p:32:32-f64:32:64-i64:32:64");
@@ -50,13 +51,13 @@ JIT::JIT() {
   m->setTargetTriple("i686-apple-darwin9.7.0");
 #endif
 
-  mp = new ExistingModuleProvider(m);
+  //mp = new ExistingModuleProvider(m);
   std::string errorstring;
-  ee = ExecutionEngine::create(mp,false,&errorstring);
+  ee = ExecutionEngine::create(m,false,&errorstring);
   dbout << "Execution engine: " << QString::fromStdString(errorstring) << "\n";
   initialized = false;
   // Create the optimizer thingy
-  opt = new FunctionPassManager(mp);
+  opt = new FunctionPassManager(m);
   opt->add(new TargetData(*ee->getTargetData()));
   //  opt->add(new TargetData(m));
   opt->add((Pass*)createVerifierPass());                  // Verify that input is correct
@@ -69,7 +70,7 @@ JIT::JIT() {
   opt->add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
   opt->add((Pass*)createScalarReplAggregatesPass()); // Break up aggregate allocas
   opt->add((Pass*)createInstructionCombiningPass()); // Combine silly seq's
-  opt->add((Pass*)createCondPropagationPass());      // Propagate conditionals
+//  opt->add((Pass*)createCondPropagationPass());      // Propagate conditionals
   opt->add((Pass*)createTailCallEliminationPass());  // Eliminate tail calls
   opt->add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
   opt->add((Pass*)createReassociatePass());          // Reassociate expressions
@@ -85,7 +86,7 @@ JIT::JIT() {
   opt->add((Pass*)createMemCpyOptPass());                 // Remove memcpy / form memset
   opt->add((Pass*)createSCCPPass());                 // Constant prop with SCCP
   opt->add((Pass*)createInstructionCombiningPass());
-  opt->add((Pass*)createCondPropagationPass());      // Propagate conditionals
+  //opt->add((Pass*)createCondPropagationPass());      // Propagate conditionals
   opt->add((Pass*)createDeadStoreEliminationPass()); // Delete dead stores
   opt->add((Pass*)createAggressiveDCEPass());        // SSA based 'Aggressive DCE'
   opt->add((Pass*)createCFGSimplificationPass());    // Merge & remove BBs
@@ -93,7 +94,6 @@ JIT::JIT() {
 
 JIT::~JIT() {
   delete m;
-  delete mp;
   delete ee;
 }
 
@@ -114,15 +114,15 @@ JITFunctionType JIT::FunctionType(QString rettype, QString args) {
 }
 
 JITType JIT::DoubleType() {
-  return Type::getPrimitiveType(Type::DoubleTyID);
+  return Type::getPrimitiveType(llvm::getGlobalContext(), Type::DoubleTyID);
 }
 
 JITType JIT::FloatType() {
-  return Type::getPrimitiveType(Type::FloatTyID);
+  return Type::getPrimitiveType(llvm::getGlobalContext(), Type::FloatTyID);
 }
 
 JITType JIT::BoolType() {
-  return IntegerType::get(1);
+  return IntegerType::get(llvm::getGlobalContext(), 1);
 }
 
 JITType JIT::PointerType(JITType t) {
@@ -130,7 +130,7 @@ JITType JIT::PointerType(JITType t) {
 }
 
 JITType JIT::VoidType() {
-  return Type::VoidTy;
+  return Type::getVoidTy(llvm::getGlobalContext());
 }
 
 JITType JIT::TypeOf(JITScalar x) {
@@ -138,18 +138,18 @@ JITType JIT::TypeOf(JITScalar x) {
 }
 
 JITScalar JIT::DoubleValue(double x) {
-  return ConstantFP::get(Type::DoubleTy,x);
+  return ConstantFP::get(Type::getDoubleTy( llvm::getGlobalContext() ),x);
 }
 
 JITScalar JIT::FloatValue(float x) {
-  return ConstantFP::get(Type::FloatTy,x);
+  return ConstantFP::get(Type::getFloatTy( llvm::getGlobalContext() ),x);
 }
 
 JITScalar JIT::BoolValue(bool x) {
   if (x)
-    return ConstantInt::get(Type::Int1Ty,1);
+    return ConstantInt::get(Type::getInt1Ty( llvm::getGlobalContext() ),1);
   else
-    return ConstantInt::get(Type::Int1Ty,0);
+    return ConstantInt::get(Type::getInt1Ty( llvm::getGlobalContext() ),0);
 }
 
 JITScalar JIT::ToBool(JITScalar x) {
@@ -454,27 +454,27 @@ void JIT::Return() {
   ReturnInst::Create(NULL,ip);
 }
 
-void JIT::Dump(JITFunction f) {
-  std::stringstream str;
-  str << (*f);
-  dbout << str.str();
-}
+// void JIT::Dump(JITFunction f) {
+//   std::stringstream str;
+//   str << (*f);
+//   dbout << str.str();
+// }
 
 void JIT::Dump() {
   std::stringstream str;
-  str << (*m);
+  str << (*(llvm::Module*)m);
   dbout << str.str();
 }
 
 void JIT::Dump( const QString& fname ) {
   std::ofstream fout( fname.toAscii() );
-  fout << (*m);
+  fout << (*(llvm::Module*)m);
 }
 
-void JIT::Dump( const QString& fname, JITFunction f ) {
-  std::ofstream fout( fname.toAscii() );
-  fout << (*f);
-}
+// void JIT::Dump( const QString& fname, JITFunction f ) {
+//   std::ofstream fout( fname.toAscii() );
+//   fout << (*f);
+// }
 
 JITGeneric JIT::Invoke(JITFunction f, JITGeneric arg) {
   std::vector<JITGeneric> args;

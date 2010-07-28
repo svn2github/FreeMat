@@ -112,7 +112,11 @@ public:
   }
   // Defined in ArrayPrivate
   template <typename T> inline explicit Array(T real); 
+  template <typename T> static inline Array create(T real) { return Array( real ); } 
+
   template <typename T> inline explicit Array(T real, T imag); 
+  template <typename T> static inline Array create(T real, T imag) { return Array( real, imag ); }
+  
   template <typename T> 
   inline Array(const BasicArray<T> &r) {
     m_type.Class = GetDataClass<T>(T(0));
@@ -121,6 +125,9 @@ public:
     m_type.Scalar = 0;
     m_real.p = new SharedObject(m_type, new BasicArray<T>(r));
   }
+
+  template <typename T> static inline Array create(const BasicArray<T> &r) { return Array( r ); }
+  
   template <typename T> 
   inline Array(const BasicArray<T> &r, const BasicArray<T> &i) {
     m_type.Class = GetDataClass<T>(T(0));
@@ -130,6 +137,8 @@ public:
     m_real.p = new SharedObject(m_type, new BasicArray<T>(r));
     m_imag.p = new SharedObject(m_type, new BasicArray<T>(i));
   }
+  template <typename T> static inline Array create(const BasicArray<T> &r, const BasicArray<T> &i) { return Array( r, i ); }
+
   template <typename T>
   inline Array(BasicArray<T> *r) {
     m_type.Class = GetDataClass<T>(T(0));
@@ -138,6 +147,9 @@ public:
     m_type.Scalar = 0;
     m_real.p = new SharedObject(m_type,r);
   }
+  template <typename T>  static inline Array create(BasicArray<T> *r) { return Array( r ); }
+  
+  
   template <typename T>
   inline Array(BasicArray<T> *r, BasicArray<T> *i) {
     m_type.Class = GetDataClass<T>(T(0));
@@ -147,7 +159,12 @@ public:
     m_real.p = new SharedObject(m_type,r);
     m_imag.p = new SharedObject(m_type,i);
   }
+  template <typename T> static inline Array create(BasicArray<T> *r, BasicArray<T> *i) { return Array( r, i ); }
+  
+  
   Array(DataClass t, const NTuple &dims = NTuple(0,0));
+  static inline Array create( DataClass t, const NTuple &dims = NTuple(0,0)) { return Array( t, dims ); }
+  
   explicit Array(const QChar &t);
   explicit Array(const QChar &, const QChar &);
   explicit Array(const QString &text);

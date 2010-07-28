@@ -33,6 +33,7 @@
 #include "MemPtr.hpp"
 #include "Algorithms.hpp"
 #include "FuncPtr.hpp"
+#include <llvm/LLVMContext.h>
 
 #define MSGBUFLEN 2048
 
@@ -624,15 +625,15 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
    */
   llvm::Function::arg_iterator args = fcnStub->arg_begin();
   
-  JITScalar arg_list = jit->ToType(args, jit->PointerType( jit->PointerType(llvm::IntegerType::get(8)) ) ); 
+  JITScalar arg_list = jit->ToType(args, jit->PointerType( jit->PointerType(llvm::IntegerType::get(llvm::getGlobalContext(),8)) ) ); 
 
-  JITScalar func_addr = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, 0 ) ) ) );
+  JITScalar func_addr = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( 32, 0 ) ) ) );
 
   std::vector<JITScalar> func_args;
 
   for (int i=0;i<types.size();i++) {
 	//ei 
-	  JITScalar var = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, i+2 ) ) ) );
+	  JITScalar var = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( 32, i+2 ) ) ) );
 	  if (isPassedAsPointer(i)){
 		  func_args.push_back(var);
 	  }
@@ -646,7 +647,7 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
     ret_val = (jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args));
     
     JITScalar ret_val_cast = jit->ToType( ret_val, jit->MapTypeCode( MapImportTypeToJITCode(retType) ) );
-    jit->Store( ret_val_cast, jit->Load( jit->ToType( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::APInt( 32, 1 ) ) ), jit->PointerType( jit->PointerType( jit->MapTypeCode( MapImportTypeToJITCode(retType) ) ) ) ) ) );
+    jit->Store( ret_val_cast, jit->Load( jit->ToType( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( 32, 1 ) ) ), jit->PointerType( jit->PointerType( jit->MapTypeCode( MapImportTypeToJITCode(retType) ) ) ) ) ) );
     jit->Return();
 
   }

@@ -27,6 +27,9 @@
 #ifndef __STDC_CONSTANT_MACROS
 #define __STDC_CONSTANT_MACROS
 #endif
+
+#include <stdint.h>
+
 #include "Types.hpp"
 
 #include "llvm/Module.h"
@@ -34,7 +37,7 @@
 #include "llvm/DerivedTypes.h"
 #include "llvm/Instructions.h"
 #include "llvm/Instruction.h"
-#include "llvm/ModuleProvider.h"
+#include "llvm/Module.h"
 #include "llvm/CallingConv.h"
 #include "llvm/Value.h"
 #include "llvm/Function.h"
@@ -51,7 +54,6 @@ typedef llvm::Function* JITFunction;
 typedef llvm::BasicBlock* JITBlock;
 typedef llvm::ExecutionEngine* JITEngine;
 typedef llvm::Module* JITModule;
-typedef llvm::ModuleProvider* JITModuleProvider;
 typedef llvm::GenericValue JITGeneric;
 typedef llvm::FunctionPassManager* JITOptimizer;
 
@@ -69,7 +71,6 @@ private:
   JITFunction func;
   JITEngine ee;
   JITModule m;
-  JITModuleProvider mp;
   JITOptimizer opt;
   bool initialized;
   JITScalar JITBinOp(llvm::Instruction::BinaryOps op, JITScalar A, JITScalar B);

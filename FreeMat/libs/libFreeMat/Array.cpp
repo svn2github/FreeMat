@@ -465,7 +465,7 @@ void Array::resize(index_t size) {
 
 void Array::set(const QString& field, ArrayVector& data) {
   if (isEmpty() && m_type.Class != Struct)
-    *this = Array::Array(Struct);
+    *this = Array::create(Struct);
   if (m_type.Class != Struct) throw Exception("Unsupported type for A.field=B");
   StructArray &rp(structPtr());
   if (isEmpty()) 

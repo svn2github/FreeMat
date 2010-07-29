@@ -29,6 +29,9 @@
 #include "llvm/Target/TargetData.h"
 #include "llvm/Support/Debug.h"
 #include <llvm/LLVMContext.h>
+#include <llvm/Module.h>
+#include <llvm/Support/raw_ostream.h>
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -154,7 +157,7 @@ JITScalar JIT::BoolValue(bool x) {
 
 JITScalar JIT::ToBool(JITScalar x) {
   if (IsBool(x)) return x;
-  return new FCmpInst(FCmpInst::FCMP_ONE,x,DoubleValue(0),"",ip);
+  return new FCmpInst(*ip, FCmpInst::FCMP_ONE,x,DoubleValue(0),"");
 }
 
 JITScalar JIT::ToDouble(JITScalar x) {
@@ -189,7 +192,7 @@ bool JIT::IsFloat(JITScalar x) {
 }
 
 bool JIT::IsBool(JITType x) {
-  return (x->isInteger());
+  return (x->isIntegerTy());
 }
 
 bool JIT::IsDouble(JITType x) {
@@ -207,13 +210,13 @@ JITType JIT::MapTypeCode(QChar c) {
   case 'b':
     return BoolType();
   case 'c':
-    return IntegerType::get(8);
+    return IntegerType::get(llvm::getGlobalContext(),8);
   case 's':
-    return IntegerType::get(16);
+    return IntegerType::get(llvm::getGlobalContext(),16);
   case 'i':
-    return IntegerType::get(32);
+    return IntegerType::get(llvm::getGlobalContext(),32);
   case 'l':
-    return IntegerType::get(64);
+    return IntegerType::get(llvm::getGlobalContext(),64);
   case 'f':
     return FloatType();
   case 'd':
@@ -221,28 +224,28 @@ JITType JIT::MapTypeCode(QChar c) {
   case 'B':
     return PointerType(BoolType());
   case 'C':
-    return PointerType(IntegerType::get(8));
+    return PointerType(IntegerType::get(llvm::getGlobalContext(),8));
   case 'S':
-    return PointerType(IntegerType::get(16));
+    return PointerType(IntegerType::get(llvm::getGlobalContext(),16));
   case 'I':
-    return PointerType(IntegerType::get(32));
+    return PointerType(IntegerType::get(llvm::getGlobalContext(),32));
   case 'L':
-    return PointerType(IntegerType::get(64));
+    return PointerType(IntegerType::get(llvm::getGlobalContext(),64));
   case 'F':
     return PointerType(FloatType());
   case 'D':
     return PointerType(DoubleType());
   case 'V':
-    return PointerType(IntegerType::get(8));
+    return PointerType(IntegerType::get(llvm::getGlobalContext(),8));
   case 'Z':
-      return PointerType( PointerType( IntegerType::get(32) ) );
+      return PointerType( PointerType( IntegerType::get(llvm::getGlobalContext(),32) ) );
   default:
     throw Exception(QString("Invalid type map code '") + c + QString("'") );
   }
 }
 
 JITBlock JIT::NewBlock(QString name) {
-  return BasicBlock::Create(name.toStdString(),func,0);
+  return BasicBlock::Create(llvm::getGlobalContext(),name.toStdString(),func,0);
 }
 
 JITScalar JIT::JITBinOp(Instruction::BinaryOps op, JITScalar A, JITScalar B) {
@@ -283,27 +286,27 @@ JITScalar JIT::Xor(JITScalar A, JITScalar B) {
 }
 
 JITScalar JIT::LessThan(JITScalar A, JITScalar B) {
-  return new FCmpInst(FCmpInst::FCMP_OLT,ToDouble(A),ToDouble(B),"",ip);
+  return new FCmpInst(*ip,FCmpInst::FCMP_OLT,ToDouble(A),ToDouble(B),"");
 }
 
 JITScalar JIT::LessEquals(JITScalar A, JITScalar B) {
-  return new FCmpInst(FCmpInst::FCMP_OLE,ToDouble(A),ToDouble(B),"",ip);
+  return new FCmpInst(*ip,FCmpInst::FCMP_OLE,ToDouble(A),ToDouble(B),"");
 }
 
 JITScalar JIT::Equals(JITScalar A, JITScalar B) {
-  return new FCmpInst(FCmpInst::FCMP_OEQ,ToDouble(A),ToDouble(B),"",ip);
+  return new FCmpInst(*ip,FCmpInst::FCMP_OEQ,ToDouble(A),ToDouble(B),"");
 }
 
 JITScalar JIT::NotEqual(JITScalar A, JITScalar B) {
-  return new FCmpInst(FCmpInst::FCMP_ONE,ToDouble(A),ToDouble(B),"",ip);
+  return new FCmpInst(*ip,FCmpInst::FCMP_ONE,ToDouble(A),ToDouble(B),"");
 }
 
 JITScalar JIT::GreaterThan(JITScalar A, JITScalar B) {
-  return new FCmpInst(FCmpInst::FCMP_OGT,ToDouble(A),ToDouble(B),"",ip);
+  return new FCmpInst(*ip,FCmpInst::FCMP_OGT,ToDouble(A),ToDouble(B),"");
 }
 
 JITScalar JIT::GreaterEquals(JITScalar A, JITScalar B) {
-  return new FCmpInst(FCmpInst::FCMP_OGE,ToDouble(A),ToDouble(B),"",ip);
+  return new FCmpInst(*ip,FCmpInst::FCMP_OGE,ToDouble(A),ToDouble(B),"");
 }
 
 JITScalar JIT::Negate(JITScalar A) {
@@ -323,12 +326,12 @@ JITScalar JIT::Alloc(JITType T, QString name) {
 }
 
 JITScalar JIT::String(QString text) {
-  ArrayType* ty = ArrayType::get(IntegerType::get(8),text.size()+1);
+  ArrayType* ty = ArrayType::get(IntegerType::get(llvm::getGlobalContext(),8),text.size()+1);
   GlobalVariable* gv = new GlobalVariable(ty,true,
 					  GlobalValue::InternalLinkage,0,".str",m);
-  Constant* t_str = ConstantArray::get(text.toStdString(),true);
+  Constant* t_str = ConstantArray::get(llvm::getGlobalContext(),text.toStdString(),true);
   std::vector<Constant*> const_ptr_8_indices;
-  Constant* const_int32_9 = Constant::getNullValue(IntegerType::get(32));
+  Constant* const_int32_9 = Constant::getNullValue(IntegerType::get(llvm::getGlobalContext(),32));
   const_ptr_8_indices.push_back(const_int32_9);
   const_ptr_8_indices.push_back(const_int32_9);
   Constant* const_ptr_8 = ConstantExpr::getGetElementPtr(gv, &const_ptr_8_indices[0], const_ptr_8_indices.size() );
@@ -447,11 +450,11 @@ void JIT::CloseFunction() {
 }
 
 void JIT::Return(JITScalar t) {
-  ReturnInst::Create(t,ip);
+  ReturnInst::Create(llvm::getGlobalContext(),t,ip);
 }
 
 void JIT::Return() {
-  ReturnInst::Create(NULL,ip);
+  ReturnInst::Create(llvm::getGlobalContext(),NULL,ip);
 }
 
 // void JIT::Dump(JITFunction f) {
@@ -461,14 +464,18 @@ void JIT::Return() {
 // }
 
 void JIT::Dump() {
-  std::stringstream str;
-  str << (*(llvm::Module*)m);
-  dbout << str.str();
+  std::string str;
+  llvm::raw_string_ostream strm(str);
+  m->print( strm, 0 );
+  dbout << str;
 }
 
 void JIT::Dump( const QString& fname ) {
+  std::string str;
+  llvm::raw_string_ostream strm(str);
+  m->print( strm, 0 );
   std::ofstream fout( fname.toAscii() );
-  fout << (*(llvm::Module*)m);
+  fout << str;
 }
 
 // void JIT::Dump( const QString& fname, JITFunction f ) {

@@ -263,27 +263,32 @@ IF( USE_LLVM )
     if (LLVM_INCLUDE_DIR)
         FIND_LLVM_MSVC_LIB( LLVMInstrumentation LIB_LLVMInstrumentation )
     	FIND_LLVM_MSVC_LIB( LLVMipo LIB_LLVMipo )
-	FIND_LLVM_MSVC_LIB( LLVMX86CodeGen LIB_LLVMX86CodeGen )
+		FIND_LLVM_MSVC_LIB( LLVMX86CodeGen LIB_LLVMX86CodeGen )
+		FIND_LLVM_MSVC_LIB( LLVMX86Info LIB_LLVMX86Info )
     	FIND_LLVM_MSVC_LIB( LLVMSelectionDAG LIB_LLVMSelectionDAG )
     	FIND_LLVM_MSVC_LIB( LLVMAsmPrinter LIB_LLVMAsmPrinter )
     	FIND_LLVM_MSVC_LIB( LLVMExecutionEngine LIB_LLVMExecutionEngine )
     	FIND_LLVM_MSVC_LIB( LLVMJIT LIB_LLVMJIT )
     	FIND_LLVM_MSVC_LIB( LLVMCodeGen LIB_LLVMCodeGen )
     	FIND_LLVM_MSVC_LIB( LLVMScalarOpts LIB_LLVMScalarOpts )
+    	FIND_LLVM_MSVC_LIB( LLVMInstCombine LIB_LLVMInstCombine )
     	FIND_LLVM_MSVC_LIB( LLVMTransformUtils LIB_LLVMTransformUtils )
     	FIND_LLVM_MSVC_LIB( LLVMipa LIB_LLVMipa )
     	FIND_LLVM_MSVC_LIB( LLVMAnalysis LIB_LLVMAnalysis )
     	FIND_LLVM_MSVC_LIB( LLVMTarget LIB_LLVMTarget )
+    	FIND_LLVM_MSVC_LIB( LLVMMC LIB_LLVMMC )
+    	FIND_LLVM_MSVC_LIB( LLVMMCParser LIB_LLVMMCParser )
     	FIND_LLVM_MSVC_LIB( LLVMCore LIB_LLVMCore )
     	FIND_LLVM_MSVC_LIB( LLVMSupport LIB_LLVMSupport )
     	FIND_LLVM_MSVC_LIB( LLVMSystem LIB_LLVMSystem )
-    	set(LLVM_LIBS ${LIB_LLVMInstrumentation} ${LIB_LLVMipo} ${LIB_LLVMX86CodeGen}	
+    	set(LLVM_LIBS ${LIB_LLVMInstrumentation} ${LIB_LLVMipo} ${LIB_LLVMX86CodeGen} ${LIB_LLVMX86Info}
 		  ${LIB_LLVMSelectionDAG} 
     		  ${LIB_LLVMAsmPrinter} ${LIB_LLVMExecutionEngine} ${LIB_LLVMJIT} ${LIB_LLVMCodeGen} 
-		  ${LIB_LLVMScalarOpts} ${LIB_LLVMTransformUtils} ${LIB_LLVMipa} ${LIB_LLVMAnalysis} 
-		  ${LIB_LLVMTarget} ${LIB_LLVMCore} ${LIB_LLVMSupport} ${LIB_LLVMSystem} 
+		  ${LIB_LLVMTransformUtils} ${LIB_LLVMipa} ${LIB_LLVMAnalysis} 
+		  ${LIB_LLVMTarget} ${LIB_LLVMCore} ${LIB_LLVMSupport} ${LIB_LLVMMC} ${LIB_LLVMMCParser} ${LIB_LLVMSystem} 
+		  ${LIB_LLVMScalarOpts} ${LIB_LLVMInstCombine} 
 		  CACHE STRING "LLVM Link Libraries" )
-	set(LLVM_VERSION "2.5" CACHE STRING "LLVM Version found")
+	set(LLVM_VERSION "2.7" CACHE STRING "LLVM Version found")
     endif (LLVM_INCLUDE_DIR)
   else (MSVC)
     find_program(LLVM_CONFIG llvm-config)

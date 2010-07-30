@@ -28,8 +28,6 @@
 #define __STDC_CONSTANT_MACROS
 #endif
 
-#include <stdint.h>
-
 #ifndef INT64_C
 #define INT64_C(x) __INT64_C(x)
 #endif

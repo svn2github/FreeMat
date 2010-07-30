@@ -27,6 +27,7 @@
 #include "llvm/PassManager.h"
 #include "llvm/LinkAllPasses.h"
 #include "llvm/Target/TargetData.h"
+#include <llvm/Target/TargetSelect.h>
 #include "llvm/Support/Debug.h"
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
@@ -46,6 +47,9 @@ using namespace llvm;
 JIT::JIT() {
   //  llvm::DebugFlag = true;
   m = new Module("test", llvm::getGlobalContext());
+
+  InitializeNativeTarget();
+
 #if 0
   #if defined(_MSC_VER)  
     m->setDataLayout("e-p:32:32-f64:32:64-i64:32:64");
@@ -56,7 +60,8 @@ JIT::JIT() {
 
   //mp = new ExistingModuleProvider(m);
   std::string errorstring;
-  ee = ExecutionEngine::create(m,false,&errorstring);
+  ee = ExecutionEngine::createJIT(m,&errorstring);
+
   dbout << "Execution engine: " << QString::fromStdString(errorstring) << "\n";
   initialized = false;
   // Create the optimizer thingy

@@ -323,7 +323,7 @@ ArrayVector RandExpFunction(int nargout, const ArrayVector& arg) {
 struct OpRandPoisson {
   template <typename T>
   static inline T func(const T& v1) {
-    return CastConvert<T,int32>(ignpoi(int32(v1)));
+    return CastConvert<T,int32>(ignpoi(float(v1)));
   }
   template <typename T>
   static inline void func(const T&, const T&, T&, T&) {

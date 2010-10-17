@@ -21,6 +21,7 @@
 
 #ifdef HAVE_LLVM
 
+
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS
 #endif
@@ -34,6 +35,8 @@
 #ifndef UINT64_C
 #define UINT64_C(x) __UINT64_C(x)
 #endif
+
+#include <stdint.h>
 
 #include "Types.hpp"
 

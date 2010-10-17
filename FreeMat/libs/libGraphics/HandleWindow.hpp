@@ -19,6 +19,7 @@
 #ifndef __HandleWindow_hpp__
 #define __HandleWindow_hpp__
 
+#include "Interpreter.hpp"
 #include <QWidget>
 #include "HandleFigure.hpp"
 #include <QStackedWidget>
@@ -32,7 +33,6 @@
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QRubberBand>
-#include "Interpreter.hpp"
 
 const int normal_mode = 1;
 const int point_mode = 2;

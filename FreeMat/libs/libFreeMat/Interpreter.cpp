@@ -1852,7 +1852,7 @@ void Interpreter::ifStatement(const Tree & t) {
 //@<
 //accum = 0;
 //k=1;
-//while (k<100), accum = accum + k; k = k + 1; end
+//while (k<=100), accum = accum + k; k = k + 1; end
 //accum
 //@>
 //@@Tests

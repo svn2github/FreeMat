@@ -26,118 +26,101 @@
 #endif
 
 #if HAVE_FFTWF
-static fftwf_complex *inf, *outf;
-static fftwf_plan pf_forward;
-static fftwf_plan pf_backward;
-#endif
-
-#if HAVE_FFTW
-static int cN = 0;
-static fftw_complex *in, *out;
-static fftw_plan p_forward;
-static fftw_plan p_backward;
-static int zN = 0;
-#endif
-
-static void complex_fft_init(int Narg) {
-#if HAVE_FFTWF
-  if (cN == Narg) return;
-  if (cN != 0) {
+class WrapFFTWF
+{
+  fftwf_complex *inf, *outf;
+  fftwf_plan pf_forward, pf_backward;
+  int N;
+public:
+  WrapFFTWF(int Narg)
+  {
+    inf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
+    outf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
+    pf_forward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_ESTIMATE);
+    pf_backward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_ESTIMATE);
+    N = Narg;
+  }
+  ~WrapFFTWF()
+  {
     fftwf_destroy_plan(pf_forward);
     fftwf_destroy_plan(pf_backward);
     fftwf_free(inf);
     fftwf_free(outf);
   }
-  inf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
-  outf = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex)*Narg);
-  pf_forward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_ESTIMATE);
-  pf_backward = fftwf_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_ESTIMATE);
-  cN = Narg;
-#else
-  throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
-#endif
-}
-
-static void complex_fft_forward(int Narg, float *dp) {
-#if HAVE_FFTWF
-  if (cN != Narg) complex_fft_init(Narg);
-  memcpy(inf,dp,sizeof(float)*Narg*2);
-  fftwf_execute(pf_forward);
-  memcpy(dp,outf,sizeof(float)*Narg*2);
-#else
-  throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
-#endif
-}
-
-static void complex_fft_backward(int Narg, float *dp) {
-#if HAVE_FFTWF
-  if (cN != Narg) complex_fft_init(Narg);
-  memcpy(inf,dp,sizeof(float)*Narg*2);
-  fftwf_execute(pf_backward);
-  memcpy(dp,outf,sizeof(float)*Narg*2);
-  for (int i=0;i<(2*cN);i++)
-    dp[i] /= ((float) Narg);
-#else
-  throw Exception("Single precision FFT support not available.  Please build the single precision version of FFTW and rebuild FreeMat to enable this functionality.");
-#endif
-}
-
-static void complex_fft_init_double(int Narg) {
-#if HAVE_FFTW
-  if (zN == Narg) return;
-  if (zN != 0) {
-    fftw_destroy_plan(p_forward);
-    fftw_destroy_plan(p_backward);
-    fftw_free(in);
-    fftw_free(out);
+  void Forward(float *dp)
+  {
+    memcpy(inf,dp,sizeof(float)*N*2);
+    fftwf_execute(pf_forward);
+    memcpy(dp,outf,sizeof(float)*N*2);
   }
-  in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
-  out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
-  p_forward = fftw_plan_dft_1d(Narg,in,out,FFTW_FORWARD,FFTW_ESTIMATE);
-  p_backward = fftw_plan_dft_1d(Narg,in,out,FFTW_BACKWARD,FFTW_ESTIMATE);
-  zN = Narg;
-#else
-  throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");
+  void Backward(float *dp)
+  {
+    memcpy(inf,dp,sizeof(float)*N*2);
+    fftwf_execute(pf_backward);
+    memcpy(dp,outf,sizeof(float)*N*2);
+    for (int i=0;i<(2*N);i++)
+      dp[i] /= ((float) N);
+  }
+};
 #endif
-}
 
-static void complex_fft_forward(int Narg, double *dp) { 
 #if HAVE_FFTW
-  if (zN != Narg) complex_fft_init_double(Narg);
-  memcpy(in,dp,sizeof(double)*Narg*2);
-  fftw_execute(p_forward);
-  memcpy(dp,out,sizeof(double)*Narg*2);
-#else
-  throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");
+class WrapFFTW
+{
+  fftw_complex *inf, *outf;
+  fftw_plan pf_forward, pf_backward;
+  int N;
+public:
+  WrapFFTW(int Narg)
+  {
+    inf = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
+    outf = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Narg);
+    pf_forward = fftw_plan_dft_1d(Narg,inf,outf,FFTW_FORWARD,FFTW_ESTIMATE);
+    pf_backward = fftw_plan_dft_1d(Narg,inf,outf,FFTW_BACKWARD,FFTW_ESTIMATE);
+    N = Narg;
+  }
+  ~WrapFFTW()
+  {
+    fftw_destroy_plan(pf_forward);
+    fftw_destroy_plan(pf_backward);
+    fftw_free(inf);
+    fftw_free(outf);
+  }
+  void Forward(double *dp)
+  {
+    memcpy(inf,dp,sizeof(double)*N*2);
+    fftw_execute(pf_forward);
+    memcpy(dp,outf,sizeof(double)*N*2);
+  }
+  void Backward(double *dp)
+  {
+    memcpy(inf,dp,sizeof(double)*N*2);
+    fftw_execute(pf_backward);
+    memcpy(dp,outf,sizeof(double)*N*2);
+    for (int i=0;i<(2*N);i++)
+      dp[i] /= ((double) N);
+  }
+};
 #endif
-}
 
-static void complex_fft_backward(int Narg, double *dp) {
-#if HAVE_FFTW
-  if (zN != Narg) complex_fft_init_double(Narg);
-  memcpy(in,dp,sizeof(double)*Narg*2);
-  fftw_execute(p_backward);
-  memcpy(dp,out,sizeof(double)*Narg*2);
-  for (int i=0;i<(2*zN);i++)
-    dp[i] /= ((double) Narg);
-#else
-  throw Exception("Double precision FFT support not available.  Please build the double precision version of FFTW and rebuild FreeMat to enable this functionality.");
-#endif
-}
 
-struct OpVecFFT {
+class OpVecFFT {
+  WrapFFTWF fft_float;
+  WrapFFTW  fft_double;
+public:
+  OpVecFFT(int N) : fft_float(N), fft_double(N) {}
   template <typename T>
-  static inline void func(const ConstSparseIterator<T> & src, SparseSlice<T>& dest) {
+  inline void func(const ConstSparseIterator<T> & src, SparseSlice<T>& dest) {
     throw Exception("fft not supported for sparse matrices");
   }
   template <typename T>
-  static inline void func(const ConstComplexSparseIterator<T> & src, 
-			  SparseSlice<T>& dest_real,
-			  SparseSlice<T>& dest_imag) {
+  inline void func(const ConstComplexSparseIterator<T> & src, 
+		   SparseSlice<T>& dest_real,
+		   SparseSlice<T>& dest_imag) {
     throw Exception("fft not supported for sparse matrices");
   }
   template <typename T>
-  static inline void func(const BasicArray<T> & src, BasicArray<T>& dest) {
+  inline void func(const BasicArray<T> & src, BasicArray<T>& dest) {
     throw Exception("fft not defined for real arrays");
   }
   // We want to take a length N FFT.  N is the length of the output
@@ -147,21 +130,39 @@ struct OpVecFFT {
   //     buffer of size N
   //  if P<N, we take all P values from the input into a buffer of size
   //     N
-  template <typename T>
-  static inline void func(const BasicArray<T> & src_real,
-			  const BasicArray<T> & src_imag,
-			  BasicArray<T>& dest_real,
-			  BasicArray<T>& dest_imag) {
+  inline void func(const BasicArray<float> & src_real,
+		   const BasicArray<float> & src_imag,
+		   BasicArray<float>& dest_real,
+		   BasicArray<float>& dest_imag) {
     if (src_real.length() == 0) return;
     int N = dest_real.length();
     int P = src_real.length();
-    QVector<T> tbuf(N*2);
+    QVector<float> tbuf(N*2);
     int L = qMin(P,N);
     for (index_t i=1;i<=L;i++) {
       tbuf[int(2*i-1)-1] = src_real[i];
       tbuf[int(2*i)-1] = src_imag[i];
     }
-    complex_fft_forward(tbuf.size()/2,tbuf.data());
+    fft_float.Forward(tbuf.data());
+    for (index_t i=1;i<=dest_real.length();i++) {
+      dest_real[i] = tbuf[int(2*i-1)-1];
+      dest_imag[i] = tbuf[int(2*i)-1];
+    }
+  }  
+  inline void func(const BasicArray<double> & src_real,
+		   const BasicArray<double> & src_imag,
+		   BasicArray<double>& dest_real,
+		   BasicArray<double>& dest_imag) {
+    if (src_real.length() == 0) return;
+    int N = dest_real.length();
+    int P = src_real.length();
+    QVector<double> tbuf(N*2);
+    int L = qMin(P,N);
+    for (index_t i=1;i<=L;i++) {
+      tbuf[int(2*i-1)-1] = src_real[i];
+      tbuf[int(2*i)-1] = src_imag[i];
+    }
+    fft_double.Forward(tbuf.data());
     for (index_t i=1;i<=dest_real.length();i++) {
       dest_real[i] = tbuf[int(2*i-1)-1];
       dest_imag[i] = tbuf[int(2*i)-1];
@@ -169,36 +170,58 @@ struct OpVecFFT {
   }  
 };
 
-struct OpVecIFFT {
+class OpVecIFFT {
+  WrapFFTWF fft_float;
+  WrapFFTW fft_double;
+public:
+  OpVecIFFT(int N) : fft_float(N), fft_double(N) {}
   template <typename T>
-  static inline void func(const ConstSparseIterator<T> & src, SparseSlice<T>& dest) {
+  inline void func(const ConstSparseIterator<T> & src, SparseSlice<T>& dest) {
     throw Exception("ifft not supported for sparse matrices");
   }
   template <typename T>
-  static inline void func(const ConstComplexSparseIterator<T> & src, 
+  inline void func(const ConstComplexSparseIterator<T> & src, 
 			  SparseSlice<T>& dest_real,
 			  SparseSlice<T>& dest_imag) {
     throw Exception("ifft not supported for sparse matrices");
   }
   template <typename T>
-  static inline void func(const BasicArray<T> & src, BasicArray<T>& dest) {
+  inline void func(const BasicArray<T> & src, BasicArray<T>& dest) {
     throw Exception("ifft not defined for real arrays");
   }
-  template <typename T>
-  static inline void func(const BasicArray<T> & src_real,
-			  const BasicArray<T> & src_imag,
-			  BasicArray<T>& dest_real,
-			  BasicArray<T>& dest_imag) {
+  inline void func(const BasicArray<float> & src_real,
+			  const BasicArray<float> & src_imag,
+			  BasicArray<float>& dest_real,
+			  BasicArray<float>& dest_imag) {
     if (src_real.length() == 0) return;
     int N = dest_real.length();
     int P = src_real.length();
-    QVector<T> tbuf(N*2);
+    QVector<float> tbuf(N*2);
     int L = qMin(P,N);
     for (index_t i=1;i<=L;i++) {
       tbuf[int(2*i-1)-1] = src_real[i];
       tbuf[int(2*i)-1] = src_imag[i];
     }
-    complex_fft_backward(tbuf.size()/2,tbuf.data());
+    fft_float.Backward(tbuf.data());
+    for (index_t i=1;i<=dest_real.length();i++) {
+      dest_real[i] = tbuf[int(2*i-1)-1];
+      dest_imag[i] = tbuf[int(2*i)-1];
+    }
+  }
+  inline void func(const BasicArray<double> & src_real,
+			  const BasicArray<double> & src_imag,
+			  BasicArray<double>& dest_real,
+			  BasicArray<double>& dest_imag) {
+    if (src_real.length() == 0) return;
+    int N = dest_real.length();
+    int P = src_real.length();
+    QVector<double> tbuf(N*2);
+    int L = qMin(P,N);
+    for (index_t i=1;i<=L;i++) {
+      tbuf[int(2*i-1)-1] = src_real[i];
+      tbuf[int(2*i)-1] = src_imag[i];
+    }
+    fft_double.Backward(tbuf.data());
     for (index_t i=1;i<=dest_real.length();i++) {
       dest_real[i] = tbuf[int(2*i-1)-1];
       dest_imag[i] = tbuf[int(2*i)-1];
@@ -297,6 +320,21 @@ struct OpVecIFFT {
 //The resulting plot is:
 //@figure fft2
 //@@Tests
+//@{ test_parallel_fft1.m
+//% Test FFT running in parallel threads
+//function test_val = test_parallel_fft1
+//a = rand(1000,1000);
+//b = rand(500,1000);
+//id1 = threadnew;
+//id2 = threadnew;
+//threadstart(id1,'fft',1,a);
+//threadstart(id2,'fft',1,b);
+//A = threadvalue(id1);
+//B = threadvalue(id2);
+//threadfree(id1);
+//threadfree(id2);
+//test_val = issame(A,fft(a)) && issame(B,fft(b));
+//@}
 //@$near#y1=fft(x1)
 //@$near#y1=fft(x1,2)
 //@$near#y1=fft(x1,3)
@@ -343,7 +381,8 @@ ArrayVector FFTFunction(int nargout, const ArrayVector& arg) {
   if (arg0.dimensions() == NTuple(0,0))
     return arg0;
   arg0.forceComplex();
-  return ArrayVector(VectorOp<OpVecFFT>(arg0,FFTLength,FFTDim));
+  OpVecFFT op(FFTLength);
+  return ArrayVector(VectorOpDynamic<OpVecFFT>(arg0,FFTLength,FFTDim,op));
 }
 
 ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
@@ -355,14 +394,14 @@ ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
   if ((arg.size() > 1) && (!arg[1].isEmpty())) {
     FFTLength = arg[1].asInteger();
     if (FFTLength <= 0)
-      throw Exception("Length argument to FFT should be positive");
+      throw Exception("Length argument to IFFT should be positive");
   }
   // Get the dimension to FFT along.
   int FFTDim;
   if (arg.size() > 2) {
     FFTDim = arg[2].asInteger() - 1;
     if (FFTDim < 0)
-      throw Exception("Dimension argument to FFT should be positive");
+      throw Exception("Dimension argument to IFFT should be positive");
   } else {
     if (arg[0].isScalar())
       FFTDim = 1;
@@ -377,5 +416,6 @@ ArrayVector IFFTFunction(int nargout, const ArrayVector& arg) {
   if (arg0.dimensions() == NTuple(0,0))
     return arg0;
   arg0.forceComplex();
-  return ArrayVector(VectorOp<OpVecIFFT>(arg0,FFTLength,FFTDim));
+  OpVecIFFT op(FFTLength);
+  return ArrayVector(VectorOpDynamic<OpVecIFFT>(arg0,FFTLength,FFTDim,op));
 }

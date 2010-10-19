@@ -693,6 +693,138 @@ template <class Op>
     return VectorOp<double,Op>(Ain,out,dim,Double);
 }
 
+
+template <typename T, class Op>
+static inline Array VectorOpDynamic(const BasicArray<T> &real,
+				    const BasicArray<T> &imag, 
+				    index_t out, int dim, Op &op) {
+  NTuple outdims(real.dimensions()); outdims[dim] = out;
+  BasicArray<T> F_real(outdims); 
+  BasicArray<T> F_imag(outdims);
+  ConstBasicIterator<T> source_real(&real,dim);
+  ConstBasicIterator<T> source_imag(&imag,dim);
+  BasicIterator<T> dest_real(&F_real,dim);
+  BasicIterator<T> dest_imag(&F_imag,dim);
+  BasicArray<T> in_buffer_real(NTuple(real.dimensions()[dim],1));
+  BasicArray<T> in_buffer_imag(NTuple(imag.dimensions()[dim],1));
+  BasicArray<T> out_buffer_real(NTuple(out,1));
+  BasicArray<T> out_buffer_imag(NTuple(out,1));
+  while (source_real.isValid() && dest_real.isValid()) {
+    for (index_t i=1;i<=source_real.size();i++) {
+      in_buffer_real[i] = source_real.get();
+      in_buffer_imag[i] = source_imag.get();
+      source_real.next(); source_imag.next();
+    }
+    op.func(in_buffer_real,in_buffer_imag,
+	    out_buffer_real,out_buffer_imag);
+    for (index_t i=1;i<=out;i++) {
+      dest_real.set(out_buffer_real[i]);
+      dest_imag.set(out_buffer_imag[i]);
+      dest_real.next(); dest_imag.next();
+    }
+    source_real.nextSlice(); source_imag.nextSlice();
+    dest_real.nextSlice(); dest_imag.nextSlice();
+  }
+  return Array(F_real,F_imag);
+}
+
+template <typename T, class Op>
+static inline Array VectorOpDynamic(const SparseMatrix<T>& real, index_t out, 
+				    int dim, Op &op) {
+  if (dim == 0) {
+    ConstSparseIterator<T> spin_real(&real);
+    NTuple outdims(real.dimensions()); outdims[dim] = out;
+    SparseMatrix<T> retval(outdims);
+    while (spin_real.isValid()) {
+      SparseSlice<T> this_col;
+      index_t col_number = spin_real.col();
+      op.func(spin_real,this_col);
+      retval.data()[col_number] = this_col;
+    }
+    return Array(retval);
+  } else
+    return Transpose(VectorOpDynamic<T,Op>(Transpose(real),out,0,op));
+}
+
+template <typename T, class Op>
+static inline Array VectorOpDynamic(const SparseMatrix<T> &real,
+				    const SparseMatrix<T> &imag, 
+				    index_t out, int dim,
+				    Op &op) {
+  if (dim == 0) {
+    ConstComplexSparseIterator<T> spin_complex(&real,&imag);
+    NTuple outdims(real.dimensions()); outdims[dim] = out;
+    SparseMatrix<T> retval_real(outdims);
+    SparseMatrix<T> retval_imag(outdims);
+    while (spin_complex.isValid()) {
+      SparseSlice<T> this_real_col;
+      SparseSlice<T> this_imag_col;
+      index_t col_number = spin_complex.col();
+      op.func(spin_complex,this_real_col,this_imag_col);
+      retval_real.data()[col_number] = this_real_col;
+      retval_imag.data()[col_number] = this_imag_col;
+    }
+    return Array(retval_real,retval_imag);
+  } else
+    return Transpose(VectorOpDynamic<T,Op>(Transpose(real),
+					   Transpose(imag),out,0,op));
+}
+
+template <typename T, class Op>
+static inline Array VectorOpDynamic(const BasicArray<T> &real, 
+				    index_t out, int dim,
+				    Op &op) {
+  NTuple outdims(real.dimensions()); outdims[dim] = out;
+  BasicArray<T> F(outdims); 
+  ConstBasicIterator<T> source(&real,dim);
+  BasicIterator<T> dest(&F,dim);
+  BasicArray<T> in_buffer(NTuple(real.dimensions()[dim],1));
+  BasicArray<T> out_buffer(NTuple(out,1));
+  while (source.isValid() && dest.isValid()) {
+    for (index_t i=1;i<=source.size();i++) {
+      in_buffer[i] = source.get();
+      source.next();
+    }
+    op.func(in_buffer,out_buffer);
+    for (index_t i=1;i<=out;i++) {
+      dest.set(out_buffer[i]);
+      dest.next();
+    }
+    source.nextSlice(); dest.nextSlice();
+  }
+  return Array(F);
+}
+
+template <typename T, class Op>
+static inline Array VectorOpDynamic(const Array &Ain, index_t out, int dim, 
+				    DataClass Tclass, Op &op) {
+  Array Acast(Ain.toClass(Tclass));
+  if (Acast.isSparse()) {
+    if (Acast.allReal())
+      return VectorOpDynamic<T,Op>(Acast.constRealSparse<T>(),out,dim,op);
+    else
+      return VectorOpDynamic<T,Op>(Acast.constRealSparse<T>(),
+				   Acast.constImagSparse<T>(),out,dim,op);
+  } else {
+    if (Acast.isScalar()) Acast = Acast.asDenseArray();
+    if (Acast.allReal()) {
+      return VectorOpDynamic<T,Op>(Acast.constReal<T>(),out,dim,op);
+    } else {
+      return VectorOpDynamic<T,Op>(Acast.constReal<T>(),Acast.constImag<T>(),out,dim,op);
+    }
+  }
+}
+
+template <class Op>
+static inline Array VectorOpDynamic(const Array &Ain, int out, int dim,
+				    Op &op) {
+  out = qMax(0,out);
+  if (Ain.dataClass() == Float)
+    return VectorOpDynamic<float,Op>(Ain,out,dim,Float,op);
+  else
+    return VectorOpDynamic<double,Op>(Ain,out,dim,Double,op);
+}
+
 template <typename T, class Op>
 static inline Array BiVectorOp(const BasicArray<T> &real,
 			       const BasicArray<T> &imag, 

@@ -310,7 +310,7 @@ ArrayVector ThreadFreeFunction(int, const ArrayVector&);
 ArrayVector ClcFunction(int, const ArrayVector&);
 ArrayVector ProfilerFunction(int, const ArrayVector&, Interpreter* );
 ArrayVector RootPathFunction(int, const ArrayVector&, Interpreter*);
-
+ArrayVector VolRenderFunction(int, const ArrayVector&, Interpreter*);
 
 void LoadBuiltinFunctions(Context *context, bool guiflag) {
   context->addFunction("abs",AbsFunction,1,1,"x",NULL);
@@ -643,6 +643,8 @@ void LoadBuiltinFunctions(Context *context, bool guiflag) {
      context->addGfxSpecialFunction("pause",PauseFunction,1,0,"flag",NULL);
    if (guiflag)
      context->addGfxSpecialFunction("sleep",SleepFunction,1,0,"n",NULL);
+   if (guiflag)
+     context->addGfxSpecialFunction("volrender",VolRenderFunction,4,0,"volume","opacity","colortransfer","material",NULL);
   context->addSpecialFunction("threadnew",ThreadNewFunction,0,1,NULL);
   context->addSpecialFunction("threadstart",ThreadStartFunction,-1,0,NULL);
   context->addFunction("threadvalue",ThreadValueFunction,2,-1,"handle","timeout",NULL);

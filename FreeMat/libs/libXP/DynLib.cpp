@@ -22,7 +22,7 @@
 
 DynLib::DynLib(QString filename) : lib(filename) {
   if (!lib.load())
-    throw Exception("Unable to open module: " + filename);
+    throw Exception("Unable to open module: " + filename + " reason: " + lib.errorString());
 }
 
 

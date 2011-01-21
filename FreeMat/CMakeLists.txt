@@ -232,6 +232,19 @@ IF (APPLE)
 ENDIF (APPLE)
 
 ######################################################################
+# VTK Support
+######################################################################
+OPTION(USE_VTK "Build with VTK support?" OFF)
+IF (USE_VTK)
+FIND_PACKAGE(VTK)
+IF (VTK_FOUND)
+  ADD_DEFINITIONS( -DHAVE_VTK )
+  INCLUDE(${VTK_USE_FILE})
+  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} QVTK vtkRendering vtkVolumeRendering vtkGraphics vtkIO vtkCommon)
+ENDIF (VTK_FOUND)
+ENDIF (USE_VTK)
+
+######################################################################
 # VOLPACK Support
 ######################################################################
 OPTION(USE_VOLPACK "Build with VOLPACK support?" OFF)

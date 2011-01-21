@@ -5,6 +5,7 @@ QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/HandleUIControl.hpp ${CMAKE_CURREN
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/HandleMultiEdit.hpp ${CMAKE_CURRENT_SOURCE_DIR}/HandleMultiEdit.moc.cpp )
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/HandleWindow.hpp ${CMAKE_CURRENT_SOURCE_DIR}/HandleWindow.moc.cpp )
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/GLWindow.hpp ${CMAKE_CURRENT_SOURCE_DIR}/GLWindow.moc.cpp )
+QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/VTKWindow.hpp ${CMAKE_CURRENT_SOURCE_DIR}/VTKWindow.moc.cpp )
 
 ADD_LIBRARY( Graphics 
 GLRenderEngine.cpp 
@@ -26,6 +27,8 @@ HandleUIControl.cpp
 HandleMultiEdit.cpp 
 GLWindow.cpp
 trackball.cpp
+VTKWindow.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/VTKWindow.moc.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/HandleUIControl.moc.cpp 
 ${CMAKE_CURRENT_SOURCE_DIR}/HandleMultiEdit.moc.cpp 
 ${CMAKE_CURRENT_SOURCE_DIR}/HandleWindow.moc.cpp

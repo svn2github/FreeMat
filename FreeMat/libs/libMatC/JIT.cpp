@@ -193,7 +193,7 @@ bool JIT::IsDouble(JITScalar x) {
 }
 
 bool JIT::IsFloat(JITScalar x) {
-  return (IsFloat(TypeOf(x)));
+  return (IsFloat(TypeOf(x)) || IsDouble(TypeOf(x)));
 }
 
 bool JIT::IsBool(JITType x) {

@@ -30,14 +30,21 @@ char* typeNames[17] = { "unknown", "float", "void", "char", "int", "short", "lon
 
 static void emitTempScalarFromArgs(FILE *fp, int i, int j, const char *typecode)
 {
-  fprintf(fp,"    if ( !args[%i].isScalar() ) error_flag = 1;\n", j);
-  fprintf(fp,"    else temp%i = (%s) args[%i].asDouble();\n",i, typecode, j);
+  fprintf(fp,"  if ( !arg[%i].isScalar() )\n",j);
+  fprintf(fp,"    throw Exception(\"Expecting a scalar argument\");\n");
+  fprintf(fp,"  temp%i = (%s) arg[%i].asDouble();\n",i, typecode, j);
 }
 
 static void emitTempArrayFromArgs(FILE *fp, int i, int k, int j, const char *typecode)
 {
-  fprintf(fp,"    if ( !args[%i].isScalar() ) error_flag = 1;\n", j);
-  fprintf(fp,"    else temp%i[%i] = (%s) args[%i].asDouble();\n",i, k, typecode, j);
+  fprintf(fp,"  if ( !arg[%i].isScalar() )\n",j);
+  fprintf(fp,"    throw Exception(\"Expecting a scalar argument\");");
+  fprintf(fp,"  temp%i[%i] = (%s) arg[%i].asDouble();\n",i, k, typecode, j);
+}
+
+int isVoidType(int aType)
+{
+  return (((aType % 10) == 2)&&(!((aType%1000)/100)));
 }
 
 void outputFunctionHelp( FILE *fp, FileInfo *data )
@@ -107,11 +114,11 @@ void output_temp(FILE *fp, int i, int aType, char *Id, int count)
   /* for const * return types prototype with const */
   if ((i == MAX_ARGS) && (aType%2000 >= 1000))
     {
-      fprintf(fp,"    const ");
+      fprintf(fp,"  const ");
     }
   else
     {
-      fprintf(fp,"    ");
+      fprintf(fp,"  ");
     }
 
   if ((aType%100)/10 == 1)
@@ -167,12 +174,12 @@ void use_hints(FILE *fp)
     case 304: case 305: case 306: 
     case 313: case 314: case 315: case 316:
       /* float array */
-      fprintf(fp,"      BasicArray<double> tempResult(NTuple(%i,1));\n",currentFunction->HintSize);
+      fprintf(fp,"  BasicArray<double> tempResult(NTuple(%i,1));\n",currentFunction->HintSize);
       for (i = 0; i < currentFunction->HintSize; i++)
         {
-	  fprintf(fp,"      tempResult[%i] = (double)temp%i[%i];\n",i+1,MAX_ARGS,i);
+	  fprintf(fp,"  tempResult[%i] = (double)temp%i[%i];\n",i+1,MAX_ARGS,i);
         }
-      fprintf(fp,"      retval = Array(tempResult);\n");
+      fprintf(fp,"  retval = Array(tempResult);\n");
       break;
     }
 }
@@ -188,22 +195,16 @@ void return_result(FILE *fp)
     case 4: case 5: case 6: case 14:
     case 15: case 16: case 13:
     case 3:
-      fprintf(fp,"      retval = Array(double(temp%i));\n",MAX_ARGS); 
+      fprintf(fp,"  retval = Array(double(temp%i));\n",MAX_ARGS); 
       break;
     case 303:
       /* string. i.e. char* */ 
-      fprintf(fp,"      retval = Array(QString(temp%i));\n",MAX_ARGS);
+      fprintf(fp,"  retval = Array(QString(temp%i));\n",MAX_ARGS);
       break;
     case 109:
     case 309:  
-#warning -- FIXTHIS
-      /* FIXME
-	 fprintf(fp,"      309vtkTclGetObjectFromPointer(interp,(void *)temp%i,%sCommand);\n",MAX_ARGS,currentFunction->ReturnClass);
-      */
-      fprintf(fp,"      vtkObjectBase *tmp_ptr = (vtkObjectBase*)(temp%i);\n",MAX_ARGS);
-      fprintf(fp,"      retval = octave_value( new vtk_object(tmp_ptr) );\n");
+      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i));\n",MAX_ARGS);
       break;
-
       /* handle functions returning vectors */
       /* this is done by looking them up in a hint file */
     case 301: case 307:
@@ -212,7 +213,7 @@ void return_result(FILE *fp)
       use_hints(fp);
       break;
     default:
-      fprintf(fp,"    retval = Array(QString(\"unable to return result.\"));\n");
+      fprintf(fp,"  retval = Array(QString(\"unable to return result.\"));\n");
       break;
     }
 }
@@ -233,7 +234,7 @@ void handle_return_prototype(FILE *fp)
 void get_args(FILE *fp, int i)
 {
   int j;
-  int start_arg = 2;
+  int start_arg = 1;
   
   /* what arg do we start with */
   for (j = 0; j < i; j++)
@@ -289,47 +290,41 @@ void get_args(FILE *fp, int i)
       break;
     case 303:
       /* char* */
-      fprintf(fp,"    char tmp_string%i[1024];\n",i);
-      fprintf(fp,"    strcpy(tmp_string%i,qPrintable(args[%1].asString())); \n",i,start_arg);
-      fprintf(fp,"    temp%i = tmp_string%i;\n",i,i);
+      fprintf(fp,"  char tmp_string%i[1024];\n",i);
+      fprintf(fp,"  strcpy(tmp_string%i,qPrintable(arg[%i].asString())); \n",i,start_arg);
+      fprintf(fp,"  temp%i = tmp_string%i;\n",i,i);
       break;
       /* FLOAT, int, short, long, double FIX */
     case 301: case 304: case 305: case 306: case 307: case 314: case 313: case 315: case 316:
       /* Check if the args(start_arg) is a vector */
       if ( currentFunction->ArgCounts[i] <= 1 )
 	{
-	  fprintf(fp,"    if ( !args[%i].isVector() ) error_flag = 1;\n",start_arg,start_arg);
+	  fprintf(fp,"    if ( !arg[%i].isVector() )\n",start_arg,start_arg);
+	  fprintf(fp,"       throw Exception(\"expecting a vector\");\n");
 	  /* now allocate the array and copy vector */
 	  fprintf(fp,"    else \n      {\n");
-	  fprintf(fp,"      Array vect = args[%i].asDenseArray().toClass(Double);\n",start_arg);
+	  fprintf(fp,"      Array vect = arg[%i].asDenseArray().toClass(Double);\n",start_arg);
 	  fprintf(fp,"      BasicArray<double> data = vect.real<double>();\n");
 	  fprintf(fp,"      int length = data.length();\n");
 	  fprintf(fp,"      temp%i = new %s[length];\n", i, typeNames[currentFunction->ArgTypes[i]%100]);
 	  fprintf(fp,"      for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n      }\n",i,typeNames[currentFunction->ArgTypes[i]%100]);
 	} else
 	{
-	  fprintf(fp,"    if ( !(args[%i].isVector() && args[%i].length() == %i) ) error_flag = 1;\n",start_arg,start_arg,currentFunction->ArgCounts[i]);
+	  fprintf(fp,"  if ( !(arg[%i].isVector() && arg[%i].length() == %i) )\n",
+		  start_arg,start_arg,currentFunction->ArgCounts[i]);
+	  fprintf(fp,"    throw Exception(\"Mismatch in vector lengths\");\n");
 	  /* now allocate the array and copy octave vector */
-	  fprintf(fp,"    else \n      {\n");
-	  fprintf(fp,"      Array vect = args[%i].asDenseArray().toClass(Double);\n",start_arg);
-	  fprintf(fp,"      BasicArray<double> data = vect.real<double>();\n");
-	  fprintf(fp,"      int length = data.length();\n");
-	  fprintf(fp,"      for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n      }\n",i,typeNames[currentFunction->ArgTypes[i]%100]);
+	  fprintf(fp,"  Array vect = arg[%i].asDenseArray().toClass(Double);\n",start_arg);
+	  fprintf(fp,"  BasicArray<double> data = vect.real<double>();\n");
+	  fprintf(fp,"  int length = data.length();\n");
+	  fprintf(fp,"  for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n",
+		  i,typeNames[currentFunction->ArgTypes[i]%100]);
 	}
       break;
     case 109:
     case 309:
-      fprintf(fp,"    if ( args(%i).type_id() != vtk_object::static_type_id() ) error_flag = 1;\n",start_arg);
-# if __WORDSIZE == 64
-      fprintf(fp,"    else temp%i = reinterpret_cast<%s*>( args(%i).uint64_scalar_value().value() );\n",i,currentFunction->ArgClasses[i],start_arg);
-# else
-      fprintf(fp,"    else temp%i = reinterpret_cast<%s*>( args(%i).uint32_scalar_value().value() );\n",i,currentFunction->ArgClasses[i],start_arg);
-# endif
-      /* FIXME
-	 fprintf(fp,"      retval = octave_value( new vtk_object(temp%i) );\n",MAX_ARGS);
-	 fprintf(fp,"    309temp%i = (%s *)(vtkTclGetPointerFromObject(argv[%i],(char *) \"%s\",interp,error_flag));\n",i,currentFunction->ArgClasses[i],start_arg,
-	 currentFunction->ArgClasses[i]);
-      */
+      fprintf(fp,"  temp%i = GetVTKPointer<%s>(arg[%i]);\n",
+	      i,currentFunction->ArgClasses[i],start_arg);
       break;
     case 2:    
     case 9:
@@ -377,11 +372,158 @@ void get_args(FILE *fp, int i)
     }
 }
 
+#if 0
+void outputSubsasgnFunction(FILE *fp, FileInfo *data)
+{
+  int i;
+  fprintf(fp,"//@@Signature\n");
+  fprintf(fp,"//sgfunction @%s:subsasgn %SubsasgnFunction\n",data->ClassName,
+	  data->ClassName);
+  fprintf(fp,"//input varargin\n");
+  fprintf(fp,"//output varargin\n");
+  fprintf(fp,"ArrayVector %sSubsasgnFunction(int nargout, const ArrayVector& arg) {\n",
+	  data->ClassName);
+  fprintf(fp,"  if (arg.size() != 3) return ArrayVector();\n");
+  fprintf(fp,"  %s* vtk_pointer = GetVTKPointer<%s>(arg[0]);\n",data->ClassName,data->ClassName);
+  fprintf(fp,"  const StructArray& sa = arg[1].constStructPtr();\n");
+  fprintf(fp,"  const BasicArray<Array>& typea = sa[\"type\"];\n");
+  fprintf(fp,"  const BasicArray<Array>& subsa = sa[\"subs\"];\n");
+  fprintf(fp,"  if ((typea.length() == 1) && (typea[1].asString() == \".\"))\n");
+  fprintf(fp,"  {\n");
+  for (i=0;i<data->NumberOfFunctions;i++)
+    if (data->Functions[i].Name &&
+	strncmp(data->Functions[i].Name,"Set",3) == 0)
+      {
+	fprintf(fp,"    if (subsa[1].asString() == \"%s\")\n",
+		data->Functions[i].Name+3);
+	fprintf(fp,"    {\n");
+	fprintf(fp,"      ArrayVector tmp(arg[0]);\n");
+	fprintf(fp,"      tmp.push_back(arg[2]);\n");
+	fprintf(fp,"      return %s%sFunction(nargout,tmp);\n",
+		data->ClassName,data->Functions[i].Name);
+	fprintf(fp,"    }\n");
+      }
+  fprintf(fp,"  }\n");
+  fprintf(fp,"  return ArrayVector();\n");
+  fprintf(fp,"}\n");
+}
+#endif
+
+void outputSubsrefFunction(FILE *fp, FileInfo *data)
+{						
+  int i;
+  fprintf(fp,"//@@Signature\n");
+  fprintf(fp,"//gfunction @%s:subsref %sSubsrefFunction\n",data->ClassName,
+	  data->ClassName);
+  fprintf(fp,"//input varargin\n");
+  fprintf(fp,"//output varargout\n");
+  fprintf(fp,"ArrayVector %sSubsrefFunction(int nargout, const ArrayVector& arg) {\n",
+	  data->ClassName);
+  fprintf(fp,"  if (arg.size() != 2) return ArrayVector();\n");
+  fprintf(fp,"  %s* vtk_pointer = GetVTKPointer<%s>(arg[0]);\n",data->ClassName,data->ClassName);
+  fprintf(fp,"  const StructArray& sa = arg[1].constStructPtr();\n");
+  fprintf(fp,"  const BasicArray<Array>& typea = sa[\"type\"];\n");
+  fprintf(fp,"  const BasicArray<Array>& subsa = sa[\"subs\"];\n");
+  fprintf(fp,"  if ((typea.length() == 1) && (typea[1].asString() == \".\"))\n");
+  fprintf(fp,"  {\n");
+  for (i=0;i<data->NumberOfFunctions;i++)
+    if (data->Functions[i].Name &&
+	(strncmp(data->Functions[i].Name,"Get",3) == 0) &&
+	(data->Functions[i].NumberOfArguments == 0))
+      {
+	fprintf(fp,"    if (subsa[1].asString() == \"%s\")\n",
+		data->Functions[i].Name+3);
+	fprintf(fp,"      return %s%sFunction(nargout,arg);\n",
+		data->ClassName,data->Functions[i].Name);
+      }
+  fprintf(fp,"  }\n");
+  fprintf(fp,"  if ((typea.length() == 2) && (typea[1].asString() == \".\")\n");
+  fprintf(fp,"      && (typea[2].asString() == \"()\"))\n");
+  fprintf(fp,"  {\n");
+  for (i=0;i<data->NumberOfFunctions;i++)
+    if (data->Functions[i].Name &&
+	(strncmp(data->Functions[i].Name,"Get",3) == 0) &&
+	(data->Functions[i].NumberOfArguments > 0))
+      {
+	fprintf(fp,"    if (subsa[1].asString() == \"%s\")\n",
+		data->Functions[i].Name+3);
+	fprintf(fp,"    {\n");
+	fprintf(fp,"      ArrayVector tmp(arg[0]);\n");
+	fprintf(fp,"      tmp += ArrayVectorFromCellArray(subsa[2]);\n");
+	fprintf(fp,"      return %s%sFunction(nargout,tmp);\n",
+		data->ClassName,data->Functions[i].Name);
+	fprintf(fp,"    }\n");
+      }
+  fprintf(fp,"  }\n");
+  fprintf(fp,"}\n\n");
+}
+
+void outputDisplayFunction(FILE *fp, FileInfo *data)
+{
+  int i;
+  fprintf(fp,"//@@Signature\n");
+  fprintf(fp,"//sgfunction @%s:display %sDisplayFunction\n",
+	  data->ClassName,data->ClassName);
+  fprintf(fp,"//input varargin\n");
+  fprintf(fp,"//output varargout\n");
+  fprintf(fp,"ArrayVector %sDisplayFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {\n",
+	  data->ClassName);
+  fprintf(fp,"  if (arg.size() == 0) return ArrayVector();\n");
+  fprintf(fp,"  if (arg[0].length() > 1) {\n");
+  fprintf(fp,"     PrintArrayClassic(arg[0],100,eval);\n");
+  fprintf(fp,"     return ArrayVector();\n");
+  fprintf(fp,"  }\n");
+  fprintf(fp,"  eval->outputMessage(\"  \" + arg[0].className() + \"\\n\");\n");
+  for (i=0;i<data->NumberOfFunctions;i++)
+    if (data->Functions[i].Name &&
+	(strncmp(data->Functions[i].Name,"Get",3) == 0) &&
+	(data->Functions[i].NumberOfArguments == 0))
+      {
+	fprintf(fp,"  eval->outputMessage(\"  %s : \");\n",data->Functions[i].Name+3);
+	fprintf(fp,"  {\n");
+	fprintf(fp,"    ArrayVector tmp = %s%sFunction(1,arg[0]);\n",data->ClassName,data->Functions[i].Name);
+	fprintf(fp,"    if (tmp.size() > 0)\n");
+	fprintf(fp,"      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));\n");
+	fprintf(fp,"    else\n");
+	fprintf(fp,"      eval->outputMessage(\"[]\");\n");
+	fprintf(fp,"  }\n");
+	fprintf(fp,"  eval->outputMessage(\"\\n\");\n");
+      }
+  fprintf(fp,"  return ArrayVector();\n");
+  fprintf(fp,"}\n");
+}
+
+void outputOverloadedFunction(FILE *fp, FileInfo *data)
+{
+  int i;
+  fprintf(fp,"//@@Signature\n");
+  fprintf(fp,"//gfunction @%s:%s %s%sFunction\n",
+	  data->ClassName,currentFunction->Name,
+	  data->ClassName,currentFunction->Name);
+  fprintf(fp,"//input varargin\n");
+  fprintf(fp,"//output varargout\n");
+  fprintf(fp,"ArrayVector %s%sFunction(int nargout, const ArrayVector& arg) {\n",
+	  data->ClassName,currentFunction->Name);
+  for (i=0;i<data->NumberOfFunctions;i++)
+    if (data->Functions[i].Name &&
+	strcmp(data->Functions[i].Name,currentFunction->Name) == 0
+	&& data->Functions[i].IsValid)
+      fprintf(fp,"  if (arg.size() == %d) return %s%s%dFunction(nargout,arg);\n",
+	      data->Functions[i].NumberOfArguments+1,
+	      data->ClassName,
+	      data->Functions[i].Name,
+	      data->Functions[i].OverloadCount);
+  fprintf(fp,"  throw Exception(\"unable to resolve to an overloaded instance of %s%s\");\n",
+	  data->ClassName,currentFunction->Name);
+  fprintf(fp,"}\n\n");
+}
+
 void outputFunction(FILE *fp, FileInfo *data)
 {
   int i;
   int args_ok = 1;
  
+
   /* some functions will not get wrapped no matter what else */
   if (currentFunction->IsOperator || 
       currentFunction->ArrayFailure ||
@@ -439,6 +581,7 @@ void outputFunction(FILE *fp, FileInfo *data)
   if ((currentFunction->ReturnType%1000) == 302) 
     {
       args_ok = 0;
+      printf("void* return type!\n");
     }
   
   /* watch out for functions that dont have enough info */
@@ -450,24 +593,43 @@ void outputFunction(FILE *fp, FileInfo *data)
       args_ok = currentFunction->HaveHint;
       break;
     }
+
+  currentFunction->IsValid = args_ok;
   /* if the args are OK and it is not a constructor or destructor */
   if (args_ok && 
       strcmp(data->ClassName,currentFunction->Name) &&
       strcmp(data->ClassName,currentFunction->Name + 1))
     {
-      int required_args = 0;
-    
-      /* calc the total required args */
-      for (i = 0; i < currentFunction->NumberOfArguments; i++)
-	{
-	  required_args = required_args + 1;
-	  //        (currentFunction->ArgCounts[i] ? currentFunction->ArgCounts[i] : 1);
-	}
+      char funcname[1024];
 
-      fprintf(fp,"  if ( ( method_name == \"%s\" ) && ( nargin == %i ) )\n    {\n",
-	      currentFunction->Name, required_args + 2);
+      if (currentFunction->OverloadCount == 0)
+	strcpy(funcname,currentFunction->Name);
+      else
+	sprintf(funcname,"%s%d",currentFunction->Name,currentFunction->OverloadCount);
+
+      fprintf(fp,"//@@Signature\n");
+      fprintf(fp,"//gfunction @%s:%s %s%sFunction\n",
+	      data->ClassName,funcname,
+	      data->ClassName,funcname);
+      fprintf(fp,"//input ");
+      for (i = 0;i < currentFunction->NumberOfArguments+1; i++)
+	fprintf(fp,"a%i ",i);
+      fprintf(fp,"\n");
+      fprintf(fp,"//output ");
+      if (isVoidType(currentFunction->ReturnType))
+	fprintf(fp,"none\n");
+      else
+	fprintf(fp,"y\n");
+      fprintf(fp,"ArrayVector %s%sFunction(int nargout, const ArrayVector& arg) {\n",
+	      data->ClassName,funcname);
       /* process the args */
-      fprintf(fp,"\n/* ah %s */\n",currentFunction->Signature); 
+      fprintf(fp,"  /* Signature %s */\n",currentFunction->Signature); 
+      fprintf(fp,"  if (arg.size() < %d) \n",currentFunction->NumberOfArguments+1);
+      fprintf(fp,"    throw Exception(\"Function %s for class %s requires %d argument(s)\");\n",
+	      funcname,data->ClassName,currentFunction->NumberOfArguments+1);
+      fprintf(fp,"  %s* vtk_pointer = GetVTKPointer<%s>(arg[0]);\n",
+	      data->ClassName,data->ClassName);
+      fprintf(fp,"  Array retval;\n");
       for (i = 0; i < currentFunction->NumberOfArguments; i++)
 	{
 	  output_temp(fp, i, currentFunction->ArgTypes[i],
@@ -477,7 +639,6 @@ void outputFunction(FILE *fp, FileInfo *data)
       output_temp(fp, MAX_ARGS,currentFunction->ReturnType,
 		  currentFunction->ReturnClass, 0);
       handle_return_prototype(fp);
-      fprintf(fp,"    error_flag = 0;\n\n");
     
       /* now get the required args from the stack */
       for (i = 0; i < currentFunction->NumberOfArguments; i++)
@@ -485,17 +646,16 @@ void outputFunction(FILE *fp, FileInfo *data)
 	  get_args(fp,i);
 	}
     
-      fprintf(fp,"    if (!error_flag)\n      {\n");
       switch (currentFunction->ReturnType%1000)
 	{
 	case 2:
-	  fprintf(fp,"      vtk_pointer->%s(",currentFunction->Name);
+	  fprintf(fp,"  vtk_pointer->%s(",currentFunction->Name);
 	  break;
 	case 109:
-	  fprintf(fp,"      temp%i = &(vtk_pointer)->%s(",MAX_ARGS,currentFunction->Name);
+	  fprintf(fp,"  temp%i = &(vtk_pointer)->%s(",MAX_ARGS,currentFunction->Name);
 	  break;
 	default:
-	  fprintf(fp,"      temp%i = (vtk_pointer)->%s(",MAX_ARGS,currentFunction->Name);
+	  fprintf(fp,"  temp%i = (vtk_pointer)->%s(",MAX_ARGS,currentFunction->Name);
 	}
       for (i = 0; i < currentFunction->NumberOfArguments; i++)
 	{
@@ -528,12 +688,28 @@ void outputFunction(FILE *fp, FileInfo *data)
 	  */
 	}
       return_result(fp);
-      fprintf(fp,"      return retval;\n      }\n");
-      fprintf(fp,"    }\n");
+      fprintf(fp,"  return retval;\n");
+      fprintf(fp,"}\n\n");
     
       wrappedFunctions[numberOfWrappedFunctions] = currentFunction;
       numberOfWrappedFunctions++;
     }
+}
+
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+
+int isOverloadedFunction(int j, FileInfo *data)
+{
+  int i;
+  for (i=0;i<data->NumberOfFunctions;i++)
+    if ((i!=j) && 
+	(data->Functions[i].Name) &&
+	(data->Functions[j].Name) &&
+	(strcmp(data->Functions[i].Name,
+		data->Functions[j].Name)==0) &&
+	(strcmp(data->Functions[i].Name,data->ClassName)))
+      return 1;
+  return 0;
 }
 
 /* print the parsed structures */
@@ -541,11 +717,31 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
 {
   int i,j;
   int in_example;
-  
-  fprintf(fp,"// Octave wrapper for %s object\n//\n",data->ClassName);
-    
-  fprintf(fp,"#include \"OctavizCommon.h\"\n");
 
+  for (i=0;i<data->NumberOfFunctions;i++)
+    {
+      int overloaded = 0;
+      int maxcount = 0;
+      for (j=0;j<i;j++)
+	{
+	  if (data->Functions[i].Name &&
+	      data->Functions[j].Name &&
+	      strcmp(data->Functions[i].Name,data->ClassName) &&
+	      strcmp(data->Functions[i].Name,data->Functions[j].Name)==0)
+	    {
+	      overloaded = 1;
+	      maxcount = max(maxcount,data->Functions[j].OverloadCount);
+	    }
+	}
+      if (isOverloadedFunction(i,data))
+	data->Functions[i].OverloadCount = maxcount+1;
+      else
+	data->Functions[i].OverloadCount = 0;
+    }
+  
+  fprintf(fp,"#include \"VTKWrap.hpp\"\n\n");
+  fprintf(fp,"// FreeMat wrapper for %s object\n//\n",data->ClassName);
+    
   if (strcmp("vtkObjectBase",data->ClassName) != 0)
     {
       /* Block inclusion of full streams. */
@@ -555,256 +751,51 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
   /* In particular this is only needed for Hybrid kit. The class that complains in vtkLineWidget */
   /* fprintf(fp,"#undef None\n"); */
   fprintf(fp,"#include \"%s.h\"\n\n",data->ClassName);
-  fprintf(fp,"void populate_help_map%s( std::map<std::string,std::string> &help_map );\n\n",data->ClassName);
-	
-  /* Make the function that is callable from octave */
-  /* Add class description into the function. */
-  /* This will displayed as help in octave */
-  fprintf(fp,"\nDEFUN_DLD ( %s, args, nargout, \n", data->ClassName);
-  fprintf(fp,"  \"-*- texinfo -*-\\n\\\n");
-  fprintf(fp,"@deftypefn {Built-in Function} {} %s\\n\\\n\\n\\\n", data->ClassName);
-  i = 0;
-  in_example = 0;
-  if ( data->Description != NULL )
-    while ( data->Description[i] != 0 )
-      {
-	if ( data->Description[i] == '"' ) fprintf(fp,"\\");
-       
-	/* Curly braces are special characters in Texinfo.  Quote them. */
-	if ( data->Description[i] == '{' || data->Description[i] == '}' )
-	  fprintf(fp,"@");       
 
-	/* Replace `\code [...] \endcode' constructs by the texinfo equivalent
-	   @example [..] @end example' */   
-	if (strncmp (data->Description + i, "\\code", 5) == 0) {
-	  fprintf(fp,"@example");
-	  in_example = 1;
-	  i += 5;
-	}
-	if (strncmp (data->Description + i, "\\endcode", 8) == 0) {
-	  fprintf(fp,"@end example");
-	  in_example = 0;
-	  i += 8;
-	}
-	/* Skip emphasis markup.  This could be replaced by @emph, 
-	   but it is trick because @emph needs a bracketed argument */
-	if (strncmp (data->Description + i, "\\em", 3) == 0) {
-	  i += 3;
-	}
-	/* Unscape \sum macro */
-	if (strncmp (data->Description + i, "\\sum", 4) == 0) {
-	  i += 1;
-	}
-    
-	/* Unscape \pre macro -- this will probably look like shit in the final .oct files */
-	if (strncmp (data->Description + i, "\\pre", 4) == 0) {
-	  i += 1;
-	}
-    
-	/* Unscape \post macro -- this will probably look like shit in the final .oct files */
-	if (strncmp (data->Description + i, "\\post", 5) == 0) {
-	  i += 1;
-	}
-
-	if ( data->Description[i] == '\n' )
-	  {
-	    /* Don't want the last newline */
-	    if ( i + 2 < strlen(data->Description) )
-	      {
-		fprintf(fp,"\\n\\\n");
-		/* Eat spaces at beginning of lines */
-		if (in_example != 1) 
-		  while (data->Description[i + 1] == ' ')
-		    i++;
-	      }
-	    i++;
-	  } else
-	  {
-	    fprintf(fp,"%c",data->Description[i++]);
-	  }
-      }
-  fprintf(fp,"\\n\\\n@end deftypefn\")\n{\n" );
-  fprintf(fp,"  octave_value retval;\n" );
-
-  /* This associative map holds help for each method (if avaliable) */
-  fprintf(fp,"  static std::map<std::string,std::string> help_map;\n");
-  fprintf(fp,"  static bool help_populated = false;\n");
-  fprintf(fp,"  if ( !help_populated ) \n    {\n");
-  fprintf(fp,"    populate_help_map%s( help_map );\n    help_populated = true;\n    }\n\n",data->ClassName);
-	
-  fprintf(fp,"  int nargin  = args.length ();\n\n" );
-  fprintf(fp,"  if ( nargin < 1 )\n    {\n");
-  fprintf(fp,"    vtkObjectBase *new_vtk_object = %s::New();\n",data->ClassName,data->ClassName);
-  fprintf(fp,"    retval = octave_value( new vtk_object( new_vtk_object, true ) );\n");
-  fprintf(fp,"    return retval;\n    }\n\n" );
-
-  fprintf(fp,"  if ( nargin == 1 )\n    {\n    // This can only be the \"New\" command\n");
-  fprintf(fp,"    if ( !args(0).is_string() )\n      {\n");
-  fprintf(fp,"      error(\"If a single parameter is passed, then it has to be \\\"New\\\" or \\\"List\\\".\");\n");
-  fprintf(fp,"      return retval;\n");
-  fprintf(fp,"      }\n    if ( args(0).string_value() == \"New\" )\n      {\n");
-  fprintf(fp,"      vtkObjectBase *new_vtk_object = %s::New();\n",data->ClassName,data->ClassName);
-  fprintf(fp,"      retval = octave_value( new vtk_object( new_vtk_object, true ) );\n");
-  fprintf(fp,"      return retval;\n");
-  fprintf(fp,"      }\n    if ( args(0).string_value() == \"List\" )\n      {\n");
-  fprintf(fp,"      octave_stdout << help_map[\"List\"] << std::endl;\n");
-  fprintf(fp,"      return retval;\n      }\n");
-  fprintf(fp,"    error(\"If a single parameter is passed, then it has to be \\\"New\\\" or \\\"List\\\".\");\n");
-  fprintf(fp,"    return retval;\n");
-  fprintf(fp,"    }\n");
-
-  fprintf(fp,"  // The second parameter has to be a string command\n");
-  fprintf(fp,"  if ( !args(1).is_string() )\n    {\n");
-  fprintf(fp,"    error(\"Second parameter has to be a string command.\");\n");
-  fprintf(fp,"    return retval;\n	  }\n\n");
-
-  fprintf(fp,"\n  // If it is not the command New, the first parameter has to be a vtk_object" );
-  fprintf(fp,"\n  // or a method name followed by a string Help\n" );
-  fprintf(fp,"  if ( ( args(0).type_id() != vtk_object::static_type_id() ) &&\n");
-  fprintf(fp,"       ( args(1).string_value() != \"Help\" ) )\n    {\n");
-  fprintf(fp,"    error(\"First parameter has to be a vtk_object or the command \\\"New\\\".");
-  fprintf(fp," If the first parameter is a method name, then the second has to be Help\");\n");
-  fprintf(fp,"    return retval;\n    }\n\n");
-
-  fprintf(fp,"    if ( args(1).string_value() == \"Help\" )\n    {\n");
-  fprintf(fp,"    octave_stdout << help_map[args(0).string_value()] << std::endl;\n");
-  fprintf(fp,"    return retval;\n    }\n\n");
-					
-# if __WORDSIZE == 64
-  fprintf(fp,"  %s *vtk_pointer = reinterpret_cast<%s*>( args(0).uint64_scalar_value().value() );\n",data->ClassName,data->ClassName);
-# else
-  fprintf(fp,"  %s *vtk_pointer = reinterpret_cast<%s*>( args(0).uint32_scalar_value().value() );\n",data->ClassName,data->ClassName);
-# endif
-  fprintf(fp,"  std::string method_name = args(1).string_value();\n");
-  fprintf(fp,"  int    error_flag;\n");
-  fprintf(fp,"  error_flag = 0; error_flag = error_flag;\n\n");
-	
+  fprintf(fp,"//@@Signature\n");
+  fprintf(fp,"//gfunction @%s:%s %sConstructorFunction\n",data->ClassName,data->ClassName,data->ClassName);
+  fprintf(fp,"//input a\n");
+  fprintf(fp,"//output p\n");
+  fprintf(fp,"ArrayVector %sConstructorFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);
+  fprintf(fp,"  if (arg.size() == 0) {\n");
+  fprintf(fp,"    Array ret(MakeVTKPointer(%s::New()));\n",data->ClassName);
+  fprintf(fp,"    ret.structPtr().setClassPath(StringVector() << \"%s\");\n",data->ClassName);
+  fprintf(fp,"    return ret;\n");
+  fprintf(fp,"  } else if (arg[0].className() == \"%s\") {\n",data->ClassName);
+  fprintf(fp,"    return arg[0];\n");
+  fprintf(fp,"  } else {\n");
+  fprintf(fp,"    vtkObjectBase *p = GetVTKPointer<vtkObjectBase>(arg[0]);\n");
+  fprintf(fp,"    %s*q = dynamic_cast<%s*>(p);\n",data->ClassName,data->ClassName);
+  fprintf(fp,"    if (!q)\n");
+  fprintf(fp,"      throw Exception(\"Unable to type convert supplied object to an instance of type %s\");\n",data->ClassName);
+  fprintf(fp,"    Array ret(arg[0]);\n");
+  fprintf(fp,"    ret.structPtr().setClassPath(StringVector() << \"%s\");\n",data->ClassName);
+  fprintf(fp,"    return ret;\n");
+  fprintf(fp,"  }\n");
+  fprintf(fp,"}\n");
+	  
   /* insert function handling code here */
   for (i = 0; i < data->NumberOfFunctions; i++)
     {
       currentFunction = data->Functions + i;
       if ( currentFunction->Name == NULL ) continue;
-      if ( strcmp("New",currentFunction->Name) )
+      if ( strcmp("New",currentFunction->Name) != 0)
 	{
 	  outputFunction(fp, data);
 	}
     }	
-	
-  if (!strcmp("vtkObject",data->ClassName))
-    {
-      /* Add the AddObserver method to vtkObject. */
 
-      fprintf(fp,"  if ( ( method_name == \"AddObserver\" ) && ( nargin == 4 ) )\n");
-      fprintf(fp,"    {\n");
-      fprintf(fp,"    error_flag = 0;\n");
-      fprintf(fp,"		vtkOctaveCommand* comm = vtkOctaveCommand::New();\n");
-      fprintf(fp,"		comm->SetFunctionName(args(3).string_value().c_str());\n");
-# if __WORDSIZE == 64
-      fprintf(fp,"		vtk_object *vtk_obj = reinterpret_cast<vtk_object*>( args(0).uint64_scalar_value().value() );\n");
-# else
-      fprintf(fp,"		vtk_object *vtk_obj = reinterpret_cast<vtk_object*>( args(0).uint32_scalar_value().value() );\n");
-# endif
-      fprintf(fp,"		comm->SetObject( vtk_obj );\n");
-      fprintf(fp,"		vtk_pointer->AddObserver(args(2).string_value().c_str(),comm);\n");
-      fprintf(fp,"		comm->Delete();\n");
-      fprintf(fp,"    return retval;\n");
-      fprintf(fp,"    }\n");
+  /* insert overloaded function handling code here */
+  for (i = 0; i < data->NumberOfFunctions; i++)
+    {
+      currentFunction = data->Functions + i;
+      if (currentFunction->OverloadCount == 1)
+	outputOverloadedFunction(fp, data);
     }
-				
-	
-  if (!strcmp("vtkCellLocator",data->ClassName))
-    {
-      /* Add the IntersectWithLine method to vtkCellLocator. */
-      /* IntersectWithLine( double a0[3], double a1[3], double tol, double& t, double x[3], double pcoords[3], int & subId ); */
-      fprintf(fp,"	if ( ( method_name == \"IntersectWithLine\" ) && ( nargin == 5 ) )\n");
-      fprintf(fp,"    {\n");
-      fprintf(fp,"    double  a0[3];\n");
-      fprintf(fp,"    double  a1[3];\n");
-      fprintf(fp,"		double  tol;\n");
-      fprintf(fp,"		double  t;\n");
-      fprintf(fp,"		double	x[3];\n");
-      fprintf(fp,"		double  pcoords[3];\n");
-      fprintf(fp,"		int 		subId;\n");
-      fprintf(fp,"    error_flag = 0;\n\n");
 
-      fprintf(fp,"    if ( ( args(2).rows()*args(2).columns() != 3 ) ) error_flag = 1;\n");
-      fprintf(fp,"    else \n");
-      fprintf(fp,"      {\n");
-      fprintf(fp,"      Array<double> vect = args(2).vector_value();\n");
-      fprintf(fp,"      int length = args(2).length();\n");
-      fprintf(fp,"      if ( length != 3 ) error_flag = 1;\n");
-      fprintf(fp,"      else for ( int k = 0; k < length; k++ ) a0[k] = (double)vect(k);\n");
-      fprintf(fp,"      }\n");
-      fprintf(fp,"    if ( ( args(3).rows()*args(3).columns() != 3 ) ) error_flag = 1;\n");
-      fprintf(fp,"    else \n");
-      fprintf(fp,"      {\n");
-      fprintf(fp,"      Array<double> vect = args(3).vector_value();\n");
-      fprintf(fp,"      int length = args(3).length();\n");
-      fprintf(fp,"      if ( length != 3 ) error_flag = 1;\n");
-      fprintf(fp,"      else for ( int k = 0; k < length; k++ ) a1[k] = (double)vect(k);\n");
-      fprintf(fp,"      }\n");
-      fprintf(fp,"    if ( ( args(4).rows()*args(4).columns() != 1 ) ) error_flag = 1;\n");
-      fprintf(fp,"    else \n");
-      fprintf(fp,"      {\n");
-      fprintf(fp,"      Array<double> vect = args(4).vector_value();\n");
-      fprintf(fp,"			t = (float)vect(0);\n");
-      fprintf(fp,"      }\n");
-      fprintf(fp,"    if (!error_flag)\n");
-      fprintf(fp,"      {\n");
-      fprintf(fp,"      int res = vtk_pointer->IntersectWithLine( a0, a1, tol, t, x, pcoords, subId );\n");
-      fprintf(fp,"		  octave_value_list retval_list;\n");
-      fprintf(fp,"			retval_list(0) = (double)res;\n");
-      fprintf(fp,"			retval_list(1) = t;\n");
-      fprintf(fp,"      ColumnVector tempv1(3);\n");
-      fprintf(fp,"      tempv1(0) = x[0];\n");
-      fprintf(fp,"      tempv1(1) = x[1];\n");
-      fprintf(fp,"      tempv1(2) = x[2];\n");
-      fprintf(fp,"			retval_list(2) = tempv1;\n");
-      fprintf(fp,"      ColumnVector tempv2(3);\n");
-      fprintf(fp,"      tempv2(0) = pcoords[0];\n");
-      fprintf(fp,"      tempv2(1) = pcoords[1];\n");
-      fprintf(fp,"      tempv2(2) = pcoords[2];\n");
-      fprintf(fp,"			retval_list(3) = tempv2;\n");
-      fprintf(fp,"			retval_list(4) = (double)subId;\n");
-      fprintf(fp,"      return retval_list;\n");
-      fprintf(fp,"      }\n");
-      fprintf(fp,"    }\n");
-    }
-		
-  fprintf(fp,"\n  if ( error_flag )\n    {\n");
-  fprintf(fp,"    error(\"Method was found but arguments were wrong.\");\n");
-  fprintf(fp,"    return retval;\n    }\n");
-
-  /* If get here in vtkObjectBase class that means that the method was not found */
-  if (strcmp("vtkObjectBase",data->ClassName) == 0)
-    {
-      fprintf(fp,"  error( \"Requested method could not be found.\" );\n");
-      fprintf(fp,"  return retval;\n");
-      fprintf(fp,"}\n\n" );
-      outputFunctionHelp(fp,data);
-      fprintf(fp,"\n\n" );
-      return;
-    } 
-	
-  fprintf(fp,"\n  // Check superclass methods.\n");
-	
-  for (i = 0; i < data->NumberOfSuperClasses; i++)
-    {
-      fprintf(fp,"  retval = feval(\"%s\",args, nargout); \n", data->SuperClasses[i]);
-    } 
-
-  fprintf(fp,"  // Reduce the result list to a scalar (if it is a single result)\n");
-  fprintf(fp,"  while ( retval.is_list() && retval.length() == 1 )\n");
-  fprintf(fp,"    {\n");
-  fprintf(fp,"    octave_value_list list = retval.list_value();\n");
-  fprintf(fp,"    retval = list(0);\n");
-  fprintf(fp,"    }\n");
-		
-  fprintf(fp,"\n\n" );
-  fprintf(fp,"\n\n  return retval;\n}\n\n");
-
-  outputFunctionHelp(fp,data);
-  fprintf(fp,"\n\n" );
+  outputDisplayFunction(fp, data);
+  outputSubsrefFunction(fp, data);
+  //  outputSubsasgnFunction(fp, data);
 }
 
 /*

@@ -34,6 +34,9 @@
     char *Comment;
     char *Signature;  
     int   IsLegacy;
+    int   IsOverloaded;
+    int   OverloadCount;
+    int   IsValid;
   } FunctionInfo;
   
   typedef struct _FileInfo

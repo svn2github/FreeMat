@@ -1,5 +1,4 @@
-#include "Array.hpp"
-#include "Interpreter.hpp"
+#include "VTKWrap.hpp"
 
 #ifdef HAVE_VTK
 #include "VTKWindow.hpp"
@@ -175,6 +174,15 @@ ArrayVector VolRenderFunction(int nargout, const ArrayVector& arg, Interpreter *
   foo->show();
   return ArrayVector();
 }
+
+//**********************************************************************
+
+
+//#include "/home/sbasu/Devel/fm4/tools/vtkwrap/tst.c"
+
+//**********************************************************************
+
+
 #else
 ArrayVector VolRenderFunction(int nargout, const ArrayVector& arg, Interpreter *) 
 {

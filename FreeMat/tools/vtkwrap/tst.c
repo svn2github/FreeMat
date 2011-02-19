@@ -1,38 +1,40 @@
-// FreeMat wrapper for vtkRenderer object
+#include "VTKWrap.hpp"
+
+// FreeMat wrapper for vtkDataArray object
 //
 #define VTK_STREAMS_FWD_ONLY
-#include "vtkRenderer.h"
+#include "vtkDataArray.h"
 
 //@@Signature
-//gfunction @vtkRenderer:vtkRenderer vtkRendererConstructorFunction
+//gfunction @vtkDataArray:vtkDataArray vtkDataArrayConstructorFunction
 //input a
 //output p
-ArrayVector vtkRendererConstructorFunction(int nargout, const ArrayVector& arg) {
+ArrayVector vtkDataArrayConstructorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0) {
-    Array ret(MakeVTKPointer(vtkRenderer::New()));
-    ret.structPtr().setClassPath(StringVector() << "vtkRenderer");
+    Array ret(MakeVTKPointer(vtkDataArray::New()));
+    ret.structPtr().setClassPath(StringVector() << "vtkDataArray");
     return ret;
-  } else if (arg[0].className() == "vtkRenderer") {
+  } else if (arg[0].className() == "vtkDataArray") {
     return arg[0];
   } else {
     vtkObjectBase *p = GetVTKPointer<vtkObjectBase>(arg[0]);
-    vtkRenderer*q = dynamic_cast<vtkRenderer*>(p);
+    vtkDataArray*q = dynamic_cast<vtkDataArray*>(p);
     if (!q)
-      throw Exception("Unable to type convert supplied object to an instance of type vtkRenderer");
+      throw Exception("Unable to type convert supplied object to an instance of type vtkDataArray");
     Array ret(arg[0]);
-    ret.structPtr().setClassPath(StringVector() << "vtkRenderer");
+    ret.structPtr().setClassPath(StringVector() << "vtkDataArray");
     return ret;
   }
 }
 //@@Signature
-//gfunction @vtkRenderer:GetClassName vtkRendererGetClassNameFunction
+//gfunction @vtkDataArray:GetClassName vtkDataArrayGetClassNameFunction
 //input a0 
 //output y
-ArrayVector vtkRendererGetClassNameFunction(int nargout, const ArrayVector& arg) {
+ArrayVector vtkDataArrayGetClassNameFunction(int nargout, const ArrayVector& arg) {
   /* Signature const char *GetClassName (); */
   if (arg.size() < 1) 
-    throw Exception("Function GetClassName for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetClassName for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   const char    *temp20;
   temp20 = (vtk_pointer)->GetClassName();
@@ -41,14 +43,14 @@ ArrayVector vtkRendererGetClassNameFunction(int nargout, const ArrayVector& arg)
 }
 
 //@@Signature
-//gfunction @vtkRenderer:IsA vtkRendererIsAFunction
+//gfunction @vtkDataArray:IsA vtkDataArrayIsAFunction
 //input a0 a1 
 //output y
-ArrayVector vtkRendererIsAFunction(int nargout, const ArrayVector& arg) {
+ArrayVector vtkDataArrayIsAFunction(int nargout, const ArrayVector& arg) {
   /* Signature int IsA (const char *name); */
   if (arg.size() < 2) 
-    throw Exception("Function IsA for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function IsA for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   char    *temp0;
   int      temp20;
@@ -61,33 +63,33 @@ ArrayVector vtkRendererIsAFunction(int nargout, const ArrayVector& arg) {
 }
 
 //@@Signature
-//gfunction @vtkRenderer:NewInstance vtkRendererNewInstanceFunction
+//gfunction @vtkDataArray:NewInstance vtkDataArrayNewInstanceFunction
 //input a0 
 //output y
-ArrayVector vtkRendererNewInstanceFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkRenderer *NewInstance (); */
+ArrayVector vtkDataArrayNewInstanceFunction(int nargout, const ArrayVector& arg) {
+  /* Signature vtkDataArray *NewInstance (); */
   if (arg.size() < 1) 
-    throw Exception("Function NewInstance for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function NewInstance for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtkRenderer  *temp20;
+  vtkDataArray  *temp20;
   temp20 = (vtk_pointer)->NewInstance();
   retval = MakeVTKPointer((vtkObjectBase*)(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SafeDownCast vtkRendererSafeDownCastFunction
+//gfunction @vtkDataArray:SafeDownCast vtkDataArraySafeDownCastFunction
 //input a0 a1 
 //output y
-ArrayVector vtkRendererSafeDownCastFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkRenderer *SafeDownCast (vtkObject* o); */
+ArrayVector vtkDataArraySafeDownCastFunction(int nargout, const ArrayVector& arg) {
+  /* Signature vtkDataArray *SafeDownCast (vtkObject* o); */
   if (arg.size() < 2) 
-    throw Exception("Function SafeDownCast for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function SafeDownCast for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   vtkObject  *temp0;
-  vtkRenderer  *temp20;
+  vtkDataArray  *temp20;
   temp0 = GetVTKPointer<vtkObject>(arg[1]);
   temp20 = (vtk_pointer)->SafeDownCast(temp0);
   retval = MakeVTKPointer((vtkObjectBase*)(temp20));
@@ -95,674 +97,304 @@ ArrayVector vtkRendererSafeDownCastFunction(int nargout, const ArrayVector& arg)
 }
 
 //@@Signature
-//gfunction @vtkRenderer:AddActor vtkRendererAddActorFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererAddActorFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void AddActor (vtkProp *p); */
-  if (arg.size() < 2) 
-    throw Exception("Function AddActor for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkProp  *temp0;
-  temp0 = GetVTKPointer<vtkProp>(arg[1]);
-  vtk_pointer->AddActor(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:AddVolume vtkRendererAddVolumeFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererAddVolumeFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void AddVolume (vtkProp *p); */
-  if (arg.size() < 2) 
-    throw Exception("Function AddVolume for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkProp  *temp0;
-  temp0 = GetVTKPointer<vtkProp>(arg[1]);
-  vtk_pointer->AddVolume(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:RemoveActor vtkRendererRemoveActorFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererRemoveActorFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void RemoveActor (vtkProp *p); */
-  if (arg.size() < 2) 
-    throw Exception("Function RemoveActor for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkProp  *temp0;
-  temp0 = GetVTKPointer<vtkProp>(arg[1]);
-  vtk_pointer->RemoveActor(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:RemoveVolume vtkRendererRemoveVolumeFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererRemoveVolumeFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void RemoveVolume (vtkProp *p); */
-  if (arg.size() < 2) 
-    throw Exception("Function RemoveVolume for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkProp  *temp0;
-  temp0 = GetVTKPointer<vtkProp>(arg[1]);
-  vtk_pointer->RemoveVolume(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:AddLight vtkRendererAddLightFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererAddLightFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void AddLight (vtkLight *); */
-  if (arg.size() < 2) 
-    throw Exception("Function AddLight for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkLight  *temp0;
-  temp0 = GetVTKPointer<vtkLight>(arg[1]);
-  vtk_pointer->AddLight(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:RemoveLight vtkRendererRemoveLightFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererRemoveLightFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void RemoveLight (vtkLight *); */
-  if (arg.size() < 2) 
-    throw Exception("Function RemoveLight for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkLight  *temp0;
-  temp0 = GetVTKPointer<vtkLight>(arg[1]);
-  vtk_pointer->RemoveLight(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:RemoveAllLights vtkRendererRemoveAllLightsFunction
-//input a0 
-//output none
-ArrayVector vtkRendererRemoveAllLightsFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void RemoveAllLights (); */
-  if (arg.size() < 1) 
-    throw Exception("Function RemoveAllLights for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->RemoveAllLights();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetLights vtkRendererGetLightsFunction
+//gfunction @vtkDataArray:IsNumeric vtkDataArrayIsNumericFunction
 //input a0 
 //output y
-ArrayVector vtkRendererGetLightsFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkLightCollection *GetLights (); */
+ArrayVector vtkDataArrayIsNumericFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual int IsNumeric ();return  */
   if (arg.size() < 1) 
-    throw Exception("Function GetLights for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkLightCollection  *temp20;
-  temp20 = (vtk_pointer)->GetLights();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:CreateLight vtkRendererCreateLightFunction
-//input a0 
-//output none
-ArrayVector vtkRendererCreateLightFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void CreateLight (void ); */
-  if (arg.size() < 1) 
-    throw Exception("Function CreateLight for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->CreateLight();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:MakeLight vtkRendererMakeLightFunction
-//input a0 
-//output y
-ArrayVector vtkRendererMakeLightFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual vtkLight *MakeLight (); */
-  if (arg.size() < 1) 
-    throw Exception("Function MakeLight for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkLight  *temp20;
-  temp20 = (vtk_pointer)->MakeLight();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetTwoSidedLighting vtkRendererGetTwoSidedLightingFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetTwoSidedLightingFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetTwoSidedLighting (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetTwoSidedLighting for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function IsNumeric for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   int      temp20;
-  temp20 = (vtk_pointer)->GetTwoSidedLighting();
+  temp20 = (vtk_pointer)->IsNumeric();
   retval = Array(double(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetTwoSidedLighting vtkRendererSetTwoSidedLightingFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetTwoSidedLightingFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetTwoSidedLighting (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetTwoSidedLighting for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetTwoSidedLighting(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:TwoSidedLightingOn vtkRendererTwoSidedLightingOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererTwoSidedLightingOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void TwoSidedLightingOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function TwoSidedLightingOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->TwoSidedLightingOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:TwoSidedLightingOff vtkRendererTwoSidedLightingOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererTwoSidedLightingOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void TwoSidedLightingOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function TwoSidedLightingOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->TwoSidedLightingOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetLightFollowCamera vtkRendererSetLightFollowCameraFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetLightFollowCameraFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetLightFollowCamera (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetLightFollowCamera for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetLightFollowCamera(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetLightFollowCamera vtkRendererGetLightFollowCameraFunction
+//gfunction @vtkDataArray:GetElementComponentSize vtkDataArrayGetElementComponentSizeFunction
 //input a0 
 //output y
-ArrayVector vtkRendererGetLightFollowCameraFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetLightFollowCamera (); */
+ArrayVector vtkDataArrayGetElementComponentSizeFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual int GetElementComponentSize ();return this GetDataTypeSize  */
   if (arg.size() < 1) 
-    throw Exception("Function GetLightFollowCamera for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetElementComponentSize for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   int      temp20;
-  temp20 = (vtk_pointer)->GetLightFollowCamera();
+  temp20 = (vtk_pointer)->GetElementComponentSize();
   retval = Array(double(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:LightFollowCameraOn vtkRendererLightFollowCameraOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererLightFollowCameraOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void LightFollowCameraOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function LightFollowCameraOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->LightFollowCameraOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:LightFollowCameraOff vtkRendererLightFollowCameraOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererLightFollowCameraOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void LightFollowCameraOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function LightFollowCameraOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->LightFollowCameraOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetAutomaticLightCreation vtkRendererGetAutomaticLightCreationFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetAutomaticLightCreationFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetAutomaticLightCreation (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetAutomaticLightCreation for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetAutomaticLightCreation();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetAutomaticLightCreation vtkRendererSetAutomaticLightCreationFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetAutomaticLightCreationFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetAutomaticLightCreation (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetAutomaticLightCreation for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetAutomaticLightCreation(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:AutomaticLightCreationOn vtkRendererAutomaticLightCreationOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererAutomaticLightCreationOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void AutomaticLightCreationOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function AutomaticLightCreationOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->AutomaticLightCreationOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:AutomaticLightCreationOff vtkRendererAutomaticLightCreationOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererAutomaticLightCreationOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void AutomaticLightCreationOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function AutomaticLightCreationOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->AutomaticLightCreationOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:UpdateLightsGeometryToFollowCamera vtkRendererUpdateLightsGeometryToFollowCameraFunction
-//input a0 
-//output y
-ArrayVector vtkRendererUpdateLightsGeometryToFollowCameraFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual int UpdateLightsGeometryToFollowCamera (void ); */
-  if (arg.size() < 1) 
-    throw Exception("Function UpdateLightsGeometryToFollowCamera for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->UpdateLightsGeometryToFollowCamera();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetVolumes vtkRendererGetVolumesFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetVolumesFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkVolumeCollection *GetVolumes (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetVolumes for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkVolumeCollection  *temp20;
-  temp20 = (vtk_pointer)->GetVolumes();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetActors vtkRendererGetActorsFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetActorsFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkActorCollection *GetActors (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetActors for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkActorCollection  *temp20;
-  temp20 = (vtk_pointer)->GetActors();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetActiveCamera vtkRendererSetActiveCameraFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetActiveCameraFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetActiveCamera (vtkCamera *); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetActiveCamera for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkCamera  *temp0;
-  temp0 = GetVTKPointer<vtkCamera>(arg[1]);
-  vtk_pointer->SetActiveCamera(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetActiveCamera vtkRendererGetActiveCameraFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetActiveCameraFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkCamera *GetActiveCamera (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetActiveCamera for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkCamera  *temp20;
-  temp20 = (vtk_pointer)->GetActiveCamera();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:MakeCamera vtkRendererMakeCameraFunction
-//input a0 
-//output y
-ArrayVector vtkRendererMakeCameraFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual vtkCamera *MakeCamera (); */
-  if (arg.size() < 1) 
-    throw Exception("Function MakeCamera for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkCamera  *temp20;
-  temp20 = (vtk_pointer)->MakeCamera();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetErase vtkRendererSetEraseFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetEraseFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetErase (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetErase for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetErase(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetErase vtkRendererGetEraseFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetEraseFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetErase (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetErase for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetErase();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:EraseOn vtkRendererEraseOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererEraseOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void EraseOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function EraseOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->EraseOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:EraseOff vtkRendererEraseOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererEraseOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void EraseOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function EraseOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->EraseOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetDraw vtkRendererSetDrawFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetDrawFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetDraw (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetDraw for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetDraw(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetDraw vtkRendererGetDrawFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetDrawFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetDraw (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetDraw for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetDraw();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:DrawOn vtkRendererDrawOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererDrawOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void DrawOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function DrawOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->DrawOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:DrawOff vtkRendererDrawOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererDrawOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void DrawOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function DrawOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->DrawOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:AddCuller vtkRendererAddCullerFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererAddCullerFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void AddCuller (vtkCuller *); */
-  if (arg.size() < 2) 
-    throw Exception("Function AddCuller for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkCuller  *temp0;
-  temp0 = GetVTKPointer<vtkCuller>(arg[1]);
-  vtk_pointer->AddCuller(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:RemoveCuller vtkRendererRemoveCullerFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererRemoveCullerFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void RemoveCuller (vtkCuller *); */
-  if (arg.size() < 2) 
-    throw Exception("Function RemoveCuller for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkCuller  *temp0;
-  temp0 = GetVTKPointer<vtkCuller>(arg[1]);
-  vtk_pointer->RemoveCuller(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetCullers vtkRendererGetCullersFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetCullersFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkCullerCollection *GetCullers (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetCullers for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkCullerCollection  *temp20;
-  temp20 = (vtk_pointer)->GetCullers();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetAmbient1 vtkRendererSetAmbient1Function
+//gfunction @vtkDataArray:SetTuple__1 vtkDataArraySetTuple__1Function
 //input a0 a1 a2 a3 
 //output none
-ArrayVector vtkRendererSetAmbient1Function(int nargout, const ArrayVector& arg) {
-  /* Signature void SetAmbient (double , double , double ); */
+ArrayVector vtkDataArraySetTuple__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void SetTuple (vtkIdType i, vtkIdType j, vtkAbstractArray *source) = 0; */
   if (arg.size() < 4) 
-    throw Exception("Function SetAmbient1 for class vtkRenderer requires 4 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function SetTuple__1 for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  double   temp0;
-  double   temp1;
-  double   temp2;
+  vtkIdType   temp0;
+  vtkIdType   temp1;
+  vtkAbstractArray  *temp2;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
+  temp0 = (int) arg[1].asDouble();
   if ( !arg[2].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp1 = (double) arg[2].asDouble();
-  if ( !arg[3].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp2 = (double) arg[3].asDouble();
-  vtk_pointer->SetAmbient(temp0,temp1,temp2);
+  temp1 = (int) arg[2].asDouble();
+  temp2 = GetVTKPointer<vtkAbstractArray>(arg[3]);
+  vtk_pointer->SetTuple(temp0,temp1,temp2);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetAmbient2 vtkRendererSetAmbient2Function
-//input a0 a1 
+//gfunction @vtkDataArray:InsertTuple__1 vtkDataArrayInsertTuple__1Function
+//input a0 a1 a2 a3 
 //output none
-ArrayVector vtkRendererSetAmbient2Function(int nargout, const ArrayVector& arg) {
-  /* Signature void SetAmbient (double  a[3]); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetAmbient2 for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+ArrayVector vtkDataArrayInsertTuple__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void InsertTuple (vtkIdType i, vtkIdType j, vtkAbstractArray *source) = 0; */
+  if (arg.size() < 4) 
+    throw Exception("Function InsertTuple__1 for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  double temp0[3];
-  if ( !(arg[1].isVector() && arg[1].length() == 3) )
-    throw Exception("Mismatch in vector lengths");
-  Array vect = arg[1].asDenseArray().toClass(Double);
-  BasicArray<double> data = vect.real<double>();
-  int length = data.length();
-  for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
-  vtk_pointer->SetAmbient(temp0);
+  vtkIdType   temp0;
+  vtkIdType   temp1;
+  vtkAbstractArray  *temp2;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[2].asDouble();
+  temp2 = GetVTKPointer<vtkAbstractArray>(arg[3]);
+  vtk_pointer->InsertTuple(temp0,temp1,temp2);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetAmbient vtkRendererGetAmbientFunction
-//input a0 
+//gfunction @vtkDataArray:InsertNextTuple__1 vtkDataArrayInsertNextTuple__1Function
+//input a0 a1 a2 
 //output y
-ArrayVector vtkRendererGetAmbientFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double  *GetAmbient (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetAmbient for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+ArrayVector vtkDataArrayInsertNextTuple__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual vtkIdType InsertNextTuple (vtkIdType j, vtkAbstractArray *source) = 0; */
+  if (arg.size() < 3) 
+    throw Exception("Function InsertNextTuple__1 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
+  vtkIdType   temp0;
+  vtkAbstractArray  *temp1;
+  vtkIdType   temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp1 = GetVTKPointer<vtkAbstractArray>(arg[2]);
+  temp20 = (vtk_pointer)->InsertNextTuple(temp0,temp1);
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuples__1 vtkDataArrayGetTuples__1Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayGetTuples__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void GetTuples (vtkIdList *ptIds, vtkAbstractArray *output); */
+  if (arg.size() < 3) 
+    throw Exception("Function GetTuples__1 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdList  *temp0;
+  vtkAbstractArray  *temp1;
+  temp0 = GetVTKPointer<vtkIdList>(arg[1]);
+  temp1 = GetVTKPointer<vtkAbstractArray>(arg[2]);
+  vtk_pointer->GetTuples(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuples__2 vtkDataArrayGetTuples__2Function
+//input a0 a1 a2 a3 
+//output none
+ArrayVector vtkDataArrayGetTuples__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void GetTuples (vtkIdType p1, vtkIdType p2, vtkAbstractArray *output); */
+  if (arg.size() < 4) 
+    throw Exception("Function GetTuples__2 for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  vtkIdType   temp1;
+  vtkAbstractArray  *temp2;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[2].asDouble();
+  temp2 = GetVTKPointer<vtkAbstractArray>(arg[3]);
+  vtk_pointer->GetTuples(temp0,temp1,temp2);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InterpolateTuple__1 vtkDataArrayInterpolateTuple__1Function
+//input a0 a1 a2 a3 a4 
+//output none
+ArrayVector vtkDataArrayInterpolateTuple__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void InterpolateTuple (vtkIdType i, vtkIdList *ptIndices, vtkAbstractArray *source, double *weights); */
+  if (arg.size() < 5) 
+    throw Exception("Function InterpolateTuple__1 for class vtkDataArray requires 5 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  vtkIdList  *temp1;
+  vtkAbstractArray  *temp2;
+  double  *temp3;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp1 = GetVTKPointer<vtkIdList>(arg[2]);
+  temp2 = GetVTKPointer<vtkAbstractArray>(arg[3]);
+    if ( !arg[4].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[4].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp3 = new double[length];
+      for ( int k = 0; k < length; k++ ) temp3[k] = (double)data[k+1];
+      }
+  vtk_pointer->InterpolateTuple(temp0,temp1,temp2,temp3);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InterpolateTuple__2 vtkDataArrayInterpolateTuple__2Function
+//input a0 a1 a2 a3 a4 a5 a6 
+//output none
+ArrayVector vtkDataArrayInterpolateTuple__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void InterpolateTuple (vtkIdType i, vtkIdType id1, vtkAbstractArray *source1, vtkIdType id2, vtkAbstractArray *source2, double t); */
+  if (arg.size() < 7) 
+    throw Exception("Function InterpolateTuple__2 for class vtkDataArray requires 7 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  vtkIdType   temp1;
+  vtkAbstractArray  *temp2;
+  vtkIdType   temp3;
+  vtkAbstractArray  *temp4;
+  double   temp5;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[2].asDouble();
+  temp2 = GetVTKPointer<vtkAbstractArray>(arg[3]);
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (int) arg[4].asDouble();
+  temp4 = GetVTKPointer<vtkAbstractArray>(arg[5]);
+  if ( !arg[6].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp5 = (double) arg[6].asDouble();
+  vtk_pointer->InterpolateTuple(temp0,temp1,temp2,temp3,temp4,temp5);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuple__2 vtkDataArrayGetTuple__2Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayGetTuple__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void GetTuple (vtkIdType i, double *tuple) = 0; */
+  if (arg.size() < 3) 
+    throw Exception("Function GetTuple__2 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double  *temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+    if ( !arg[2].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[2].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp1 = new double[length];
+      for ( int k = 0; k < length; k++ ) temp1[k] = (double)data[k+1];
+      }
+  vtk_pointer->GetTuple(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuple1 vtkDataArrayGetTuple1Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayGetTuple1Function(int nargout, const ArrayVector& arg) {
+  /* Signature double GetTuple1 (vtkIdType i); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetTuple1 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetTuple1(temp0);
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuple2 vtkDataArrayGetTuple2Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayGetTuple2Function(int nargout, const ArrayVector& arg) {
+  /* Signature double *GetTuple2 (vtkIdType i); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetTuple2 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
   double  *temp20;
-  temp20 = (vtk_pointer)->GetAmbient();
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetTuple2(temp0);
+  BasicArray<double> tempResult(NTuple(2,1));
+  tempResult[1] = (double)temp20[0];
+  tempResult[2] = (double)temp20[1];
+  retval = Array(tempResult);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuple3 vtkDataArrayGetTuple3Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayGetTuple3Function(int nargout, const ArrayVector& arg) {
+  /* Signature double *GetTuple3 (vtkIdType i); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetTuple3 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double  *temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetTuple3(temp0);
   BasicArray<double> tempResult(NTuple(3,1));
   tempResult[1] = (double)temp20[0];
   tempResult[2] = (double)temp20[1];
@@ -772,231 +404,667 @@ ArrayVector vtkRendererGetAmbientFunction(int nargout, const ArrayVector& arg) {
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetAllocatedRenderTime vtkRendererSetAllocatedRenderTimeFunction
+//gfunction @vtkDataArray:GetTuple4 vtkDataArrayGetTuple4Function
 //input a0 a1 
-//output none
-ArrayVector vtkRendererSetAllocatedRenderTimeFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetAllocatedRenderTime (double ); */
+//output y
+ArrayVector vtkDataArrayGetTuple4Function(int nargout, const ArrayVector& arg) {
+  /* Signature double *GetTuple4 (vtkIdType i); */
   if (arg.size() < 2) 
-    throw Exception("Function SetAllocatedRenderTime for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetTuple4 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  double   temp0;
+  vtkIdType   temp0;
+  double  *temp20;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
-  vtk_pointer->SetAllocatedRenderTime(temp0);
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetTuple4(temp0);
+  BasicArray<double> tempResult(NTuple(4,1));
+  tempResult[1] = (double)temp20[0];
+  tempResult[2] = (double)temp20[1];
+  tempResult[3] = (double)temp20[2];
+  tempResult[4] = (double)temp20[3];
+  retval = Array(tempResult);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetAllocatedRenderTime vtkRendererGetAllocatedRenderTimeFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetAllocatedRenderTimeFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual double GetAllocatedRenderTime (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetAllocatedRenderTime for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetAllocatedRenderTime();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetTimeFactor vtkRendererGetTimeFactorFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetTimeFactorFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual double GetTimeFactor (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetTimeFactor for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetTimeFactor();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:Render vtkRendererRenderFunction
-//input a0 
-//output none
-ArrayVector vtkRendererRenderFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual void Render (); */
-  if (arg.size() < 1) 
-    throw Exception("Function Render for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->Render();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:DeviceRender vtkRendererDeviceRenderFunction
-//input a0 
-//output none
-ArrayVector vtkRendererDeviceRenderFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual void DeviceRender () = 0; */
-  if (arg.size() < 1) 
-    throw Exception("Function DeviceRender for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->DeviceRender();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:DeviceRenderTranslucentPolygonalGeometry vtkRendererDeviceRenderTranslucentPolygonalGeometryFunction
-//input a0 
-//output none
-ArrayVector vtkRendererDeviceRenderTranslucentPolygonalGeometryFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual void DeviceRenderTranslucentPolygonalGeometry (); */
-  if (arg.size() < 1) 
-    throw Exception("Function DeviceRenderTranslucentPolygonalGeometry for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->DeviceRenderTranslucentPolygonalGeometry();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:Clear vtkRendererClearFunction
-//input a0 
-//output none
-ArrayVector vtkRendererClearFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual void Clear (); */
-  if (arg.size() < 1) 
-    throw Exception("Function Clear for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->Clear();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:VisibleActorCount vtkRendererVisibleActorCountFunction
-//input a0 
-//output y
-ArrayVector vtkRendererVisibleActorCountFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int VisibleActorCount (); */
-  if (arg.size() < 1) 
-    throw Exception("Function VisibleActorCount for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->VisibleActorCount();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:VisibleVolumeCount vtkRendererVisibleVolumeCountFunction
-//input a0 
-//output y
-ArrayVector vtkRendererVisibleVolumeCountFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int VisibleVolumeCount (); */
-  if (arg.size() < 1) 
-    throw Exception("Function VisibleVolumeCount for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->VisibleVolumeCount();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:ComputeVisiblePropBounds1 vtkRendererComputeVisiblePropBounds1Function
+//gfunction @vtkDataArray:GetTuple9 vtkDataArrayGetTuple9Function
 //input a0 a1 
-//output none
-ArrayVector vtkRendererComputeVisiblePropBounds1Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ComputeVisiblePropBounds (double bounds[6]); */
-  if (arg.size() < 2) 
-    throw Exception("Function ComputeVisiblePropBounds1 for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double temp0[6];
-  if ( !(arg[1].isVector() && arg[1].length() == 6) )
-    throw Exception("Mismatch in vector lengths");
-  Array vect = arg[1].asDenseArray().toClass(Double);
-  BasicArray<double> data = vect.real<double>();
-  int length = data.length();
-  for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
-  vtk_pointer->ComputeVisiblePropBounds(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:ComputeVisiblePropBounds2 vtkRendererComputeVisiblePropBounds2Function
-//input a0 
 //output y
-ArrayVector vtkRendererComputeVisiblePropBounds2Function(int nargout, const ArrayVector& arg) {
-  /* Signature double *ComputeVisiblePropBounds (); */
-  if (arg.size() < 1) 
-    throw Exception("Function ComputeVisiblePropBounds2 for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+ArrayVector vtkDataArrayGetTuple9Function(int nargout, const ArrayVector& arg) {
+  /* Signature double *GetTuple9 (vtkIdType i); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetTuple9 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
+  vtkIdType   temp0;
   double  *temp20;
-  temp20 = (vtk_pointer)->ComputeVisiblePropBounds();
-  BasicArray<double> tempResult(NTuple(6,1));
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetTuple9(temp0);
+  BasicArray<double> tempResult(NTuple(9,1));
   tempResult[1] = (double)temp20[0];
   tempResult[2] = (double)temp20[1];
   tempResult[3] = (double)temp20[2];
   tempResult[4] = (double)temp20[3];
   tempResult[5] = (double)temp20[4];
   tempResult[6] = (double)temp20[5];
+  tempResult[7] = (double)temp20[6];
+  tempResult[8] = (double)temp20[7];
+  tempResult[9] = (double)temp20[8];
   retval = Array(tempResult);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ResetCameraClippingRange1 vtkRendererResetCameraClippingRange1Function
-//input a0 
+//gfunction @vtkDataArray:SetTuple__2 vtkDataArraySetTuple__2Function
+//input a0 a1 a2 
 //output none
-ArrayVector vtkRendererResetCameraClippingRange1Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ResetCameraClippingRange (); */
-  if (arg.size() < 1) 
-    throw Exception("Function ResetCameraClippingRange1 for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+ArrayVector vtkDataArraySetTuple__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void SetTuple (vtkIdType i, const float *tuple) = 0; */
+  if (arg.size() < 3) 
+    throw Exception("Function SetTuple__2 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtk_pointer->ResetCameraClippingRange();
+  vtkIdType   temp0;
+  float   *temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+    if ( !arg[2].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[2].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp1 = new float[length];
+      for ( int k = 0; k < length; k++ ) temp1[k] = (float)data[k+1];
+      }
+  vtk_pointer->SetTuple(temp0,temp1);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ResetCameraClippingRange2 vtkRendererResetCameraClippingRange2Function
+//gfunction @vtkDataArray:SetTuple__3 vtkDataArraySetTuple__3Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArraySetTuple__3Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void SetTuple (vtkIdType i, const double *tuple) = 0; */
+  if (arg.size() < 3) 
+    throw Exception("Function SetTuple__3 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double  *temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+    if ( !arg[2].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[2].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp1 = new double[length];
+      for ( int k = 0; k < length; k++ ) temp1[k] = (double)data[k+1];
+      }
+  vtk_pointer->SetTuple(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:SetTuple1 vtkDataArraySetTuple1Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArraySetTuple1Function(int nargout, const ArrayVector& arg) {
+  /* Signature void SetTuple1 (vtkIdType i, double value); */
+  if (arg.size() < 3) 
+    throw Exception("Function SetTuple1 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  vtk_pointer->SetTuple1(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:SetTuple2 vtkDataArraySetTuple2Function
+//input a0 a1 a2 a3 
+//output none
+ArrayVector vtkDataArraySetTuple2Function(int nargout, const ArrayVector& arg) {
+  /* Signature void SetTuple2 (vtkIdType i, double val0, double val1); */
+  if (arg.size() < 4) 
+    throw Exception("Function SetTuple2 for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  vtk_pointer->SetTuple2(temp0,temp1,temp2);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:SetTuple3 vtkDataArraySetTuple3Function
+//input a0 a1 a2 a3 a4 
+//output none
+ArrayVector vtkDataArraySetTuple3Function(int nargout, const ArrayVector& arg) {
+  /* Signature void SetTuple3 (vtkIdType i, double val0, double val1, double val2); */
+  if (arg.size() < 5) 
+    throw Exception("Function SetTuple3 for class vtkDataArray requires 5 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  vtk_pointer->SetTuple3(temp0,temp1,temp2,temp3);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:SetTuple4 vtkDataArraySetTuple4Function
+//input a0 a1 a2 a3 a4 a5 
+//output none
+ArrayVector vtkDataArraySetTuple4Function(int nargout, const ArrayVector& arg) {
+  /* Signature void SetTuple4 (vtkIdType i, double val0, double val1, double val2, double val3); */
+  if (arg.size() < 6) 
+    throw Exception("Function SetTuple4 for class vtkDataArray requires 6 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  double   temp4;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  if ( !arg[5].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp4 = (double) arg[5].asDouble();
+  vtk_pointer->SetTuple4(temp0,temp1,temp2,temp3,temp4);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:SetTuple9 vtkDataArraySetTuple9Function
+//input a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 
+//output none
+ArrayVector vtkDataArraySetTuple9Function(int nargout, const ArrayVector& arg) {
+  /* Signature void SetTuple9 (vtkIdType i, double val0, double val1, double val2, double val3, double val4, double val5, double val6, double val7, double val8); */
+  if (arg.size() < 11) 
+    throw Exception("Function SetTuple9 for class vtkDataArray requires 11 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  double   temp4;
+  double   temp5;
+  double   temp6;
+  double   temp7;
+  double   temp8;
+  double   temp9;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  if ( !arg[5].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp4 = (double) arg[5].asDouble();
+  if ( !arg[6].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp5 = (double) arg[6].asDouble();
+  if ( !arg[7].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp6 = (double) arg[7].asDouble();
+  if ( !arg[8].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp7 = (double) arg[8].asDouble();
+  if ( !arg[9].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp8 = (double) arg[9].asDouble();
+  if ( !arg[10].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp9 = (double) arg[10].asDouble();
+  vtk_pointer->SetTuple9(temp0,temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple__2 vtkDataArrayInsertTuple__2Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayInsertTuple__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void InsertTuple (vtkIdType i, const float *tuple) = 0; */
+  if (arg.size() < 3) 
+    throw Exception("Function InsertTuple__2 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  float   *temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+    if ( !arg[2].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[2].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp1 = new float[length];
+      for ( int k = 0; k < length; k++ ) temp1[k] = (float)data[k+1];
+      }
+  vtk_pointer->InsertTuple(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple__3 vtkDataArrayInsertTuple__3Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayInsertTuple__3Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void InsertTuple (vtkIdType i, const double *tuple) = 0; */
+  if (arg.size() < 3) 
+    throw Exception("Function InsertTuple__3 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double  *temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+    if ( !arg[2].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[2].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp1 = new double[length];
+      for ( int k = 0; k < length; k++ ) temp1[k] = (double)data[k+1];
+      }
+  vtk_pointer->InsertTuple(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple1 vtkDataArrayInsertTuple1Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayInsertTuple1Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertTuple1 (vtkIdType i, double value); */
+  if (arg.size() < 3) 
+    throw Exception("Function InsertTuple1 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  vtk_pointer->InsertTuple1(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple2 vtkDataArrayInsertTuple2Function
+//input a0 a1 a2 a3 
+//output none
+ArrayVector vtkDataArrayInsertTuple2Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertTuple2 (vtkIdType i, double val0, double val1); */
+  if (arg.size() < 4) 
+    throw Exception("Function InsertTuple2 for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  vtk_pointer->InsertTuple2(temp0,temp1,temp2);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple3 vtkDataArrayInsertTuple3Function
+//input a0 a1 a2 a3 a4 
+//output none
+ArrayVector vtkDataArrayInsertTuple3Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertTuple3 (vtkIdType i, double val0, double val1, double val2); */
+  if (arg.size() < 5) 
+    throw Exception("Function InsertTuple3 for class vtkDataArray requires 5 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  vtk_pointer->InsertTuple3(temp0,temp1,temp2,temp3);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple4 vtkDataArrayInsertTuple4Function
+//input a0 a1 a2 a3 a4 a5 
+//output none
+ArrayVector vtkDataArrayInsertTuple4Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertTuple4 (vtkIdType i, double val0, double val1, double val2, double val3); */
+  if (arg.size() < 6) 
+    throw Exception("Function InsertTuple4 for class vtkDataArray requires 6 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  double   temp4;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  if ( !arg[5].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp4 = (double) arg[5].asDouble();
+  vtk_pointer->InsertTuple4(temp0,temp1,temp2,temp3,temp4);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertTuple9 vtkDataArrayInsertTuple9Function
+//input a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 
+//output none
+ArrayVector vtkDataArrayInsertTuple9Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertTuple9 (vtkIdType i, double val0, double val1, double val2, double val3, double val4, double val5, double val6, double val7, double val8); */
+  if (arg.size() < 11) 
+    throw Exception("Function InsertTuple9 for class vtkDataArray requires 11 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  double   temp4;
+  double   temp5;
+  double   temp6;
+  double   temp7;
+  double   temp8;
+  double   temp9;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  if ( !arg[5].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp4 = (double) arg[5].asDouble();
+  if ( !arg[6].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp5 = (double) arg[6].asDouble();
+  if ( !arg[7].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp6 = (double) arg[7].asDouble();
+  if ( !arg[8].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp7 = (double) arg[8].asDouble();
+  if ( !arg[9].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp8 = (double) arg[9].asDouble();
+  if ( !arg[10].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp9 = (double) arg[10].asDouble();
+  vtk_pointer->InsertTuple9(temp0,temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8,temp9);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertNextTuple__2 vtkDataArrayInsertNextTuple__2Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayInsertNextTuple__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual vtkIdType InsertNextTuple (const float *tuple) = 0; */
+  if (arg.size() < 2) 
+    throw Exception("Function InsertNextTuple__2 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  float   *temp0;
+  vtkIdType   temp20;
+    if ( !arg[1].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[1].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp0 = new float[length];
+      for ( int k = 0; k < length; k++ ) temp0[k] = (float)data[k+1];
+      }
+  temp20 = (vtk_pointer)->InsertNextTuple(temp0);
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertNextTuple__3 vtkDataArrayInsertNextTuple__3Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayInsertNextTuple__3Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual vtkIdType InsertNextTuple (const double *tuple) = 0; */
+  if (arg.size() < 2) 
+    throw Exception("Function InsertNextTuple__3 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double  *temp0;
+  vtkIdType   temp20;
+    if ( !arg[1].isVector() )
+       throw Exception("expecting a vector");
+    else 
+      {
+      Array vect = arg[1].asDenseArray().toClass(Double);
+      BasicArray<double> data = vect.real<double>();
+      int length = data.length();
+      temp0 = new double[length];
+      for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
+      }
+  temp20 = (vtk_pointer)->InsertNextTuple(temp0);
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertNextTuple1 vtkDataArrayInsertNextTuple1Function
 //input a0 a1 
 //output none
-ArrayVector vtkRendererResetCameraClippingRange2Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ResetCameraClippingRange (double bounds[6]); */
+ArrayVector vtkDataArrayInsertNextTuple1Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertNextTuple1 (double value); */
   if (arg.size() < 2) 
-    throw Exception("Function ResetCameraClippingRange2 for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function InsertNextTuple1 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  double temp0[6];
-  if ( !(arg[1].isVector() && arg[1].length() == 6) )
-    throw Exception("Mismatch in vector lengths");
-  Array vect = arg[1].asDenseArray().toClass(Double);
-  BasicArray<double> data = vect.real<double>();
-  int length = data.length();
-  for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
-  vtk_pointer->ResetCameraClippingRange(temp0);
+  double   temp0;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (double) arg[1].asDouble();
+  vtk_pointer->InsertNextTuple1(temp0);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ResetCameraClippingRange3 vtkRendererResetCameraClippingRange3Function
-//input a0 a1 a2 a3 a4 a5 a6 
+//gfunction @vtkDataArray:InsertNextTuple2 vtkDataArrayInsertNextTuple2Function
+//input a0 a1 a2 
 //output none
-ArrayVector vtkRendererResetCameraClippingRange3Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ResetCameraClippingRange (double xmin, double xmax, double ymin, double ymax, double zmin, double zmax); */
-  if (arg.size() < 7) 
-    throw Exception("Function ResetCameraClippingRange3 for class vtkRenderer requires 7 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+ArrayVector vtkDataArrayInsertNextTuple2Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertNextTuple2 (double val0, double val1); */
+  if (arg.size() < 3) 
+    throw Exception("Function InsertNextTuple2 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double   temp0;
+  double   temp1;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (double) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  vtk_pointer->InsertNextTuple2(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertNextTuple3 vtkDataArrayInsertNextTuple3Function
+//input a0 a1 a2 a3 
+//output none
+ArrayVector vtkDataArrayInsertNextTuple3Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertNextTuple3 (double val0, double val1, double val2); */
+  if (arg.size() < 4) 
+    throw Exception("Function InsertNextTuple3 for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double   temp0;
+  double   temp1;
+  double   temp2;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (double) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  vtk_pointer->InsertNextTuple3(temp0,temp1,temp2);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertNextTuple4 vtkDataArrayInsertNextTuple4Function
+//input a0 a1 a2 a3 a4 
+//output none
+ArrayVector vtkDataArrayInsertNextTuple4Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertNextTuple4 (double val0, double val1, double val2, double val3); */
+  if (arg.size() < 5) 
+    throw Exception("Function InsertNextTuple4 for class vtkDataArray requires 5 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double   temp0;
+  double   temp1;
+  double   temp2;
+  double   temp3;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (double) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (double) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  if ( !arg[4].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp3 = (double) arg[4].asDouble();
+  vtk_pointer->InsertNextTuple4(temp0,temp1,temp2,temp3);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertNextTuple9 vtkDataArrayInsertNextTuple9Function
+//input a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 
+//output none
+ArrayVector vtkDataArrayInsertNextTuple9Function(int nargout, const ArrayVector& arg) {
+  /* Signature void InsertNextTuple9 (double val0, double val1, double val2, double val3, double val4, double val5, double val6, double val7, double val8); */
+  if (arg.size() < 10) 
+    throw Exception("Function InsertNextTuple9 for class vtkDataArray requires 10 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   double   temp0;
   double   temp1;
@@ -1004,6 +1072,9 @@ ArrayVector vtkRendererResetCameraClippingRange3Function(int nargout, const Arra
   double   temp3;
   double   temp4;
   double   temp5;
+  double   temp6;
+  double   temp7;
+  double   temp8;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp0 = (double) arg[1].asDouble();
@@ -1022,472 +1093,76 @@ ArrayVector vtkRendererResetCameraClippingRange3Function(int nargout, const Arra
   if ( !arg[6].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp5 = (double) arg[6].asDouble();
-  vtk_pointer->ResetCameraClippingRange(temp0,temp1,temp2,temp3,temp4,temp5);
+  if ( !arg[7].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp6 = (double) arg[7].asDouble();
+  if ( !arg[8].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp7 = (double) arg[8].asDouble();
+  if ( !arg[9].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp8 = (double) arg[9].asDouble();
+  vtk_pointer->InsertNextTuple9(temp0,temp1,temp2,temp3,temp4,temp5,temp6,temp7,temp8);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetNearClippingPlaneTolerance vtkRendererSetNearClippingPlaneToleranceFunction
+//gfunction @vtkDataArray:RemoveTuple vtkDataArrayRemoveTupleFunction
 //input a0 a1 
 //output none
-ArrayVector vtkRendererSetNearClippingPlaneToleranceFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetNearClippingPlaneTolerance (double ); */
+ArrayVector vtkDataArrayRemoveTupleFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void RemoveTuple (vtkIdType id) = 0; */
   if (arg.size() < 2) 
-    throw Exception("Function SetNearClippingPlaneTolerance for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function RemoveTuple for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  double   temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
-  vtk_pointer->SetNearClippingPlaneTolerance(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetNearClippingPlaneToleranceMinValue vtkRendererGetNearClippingPlaneToleranceMinValueFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetNearClippingPlaneToleranceMinValueFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetNearClippingPlaneToleranceMinValue (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetNearClippingPlaneToleranceMinValue for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetNearClippingPlaneToleranceMinValue();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetNearClippingPlaneToleranceMaxValue vtkRendererGetNearClippingPlaneToleranceMaxValueFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetNearClippingPlaneToleranceMaxValueFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetNearClippingPlaneToleranceMaxValue (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetNearClippingPlaneToleranceMaxValue for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetNearClippingPlaneToleranceMaxValue();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetNearClippingPlaneTolerance vtkRendererGetNearClippingPlaneToleranceFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetNearClippingPlaneToleranceFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetNearClippingPlaneTolerance (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetNearClippingPlaneTolerance for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetNearClippingPlaneTolerance();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:ResetCamera1 vtkRendererResetCamera1Function
-//input a0 
-//output none
-ArrayVector vtkRendererResetCamera1Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ResetCamera (); */
-  if (arg.size() < 1) 
-    throw Exception("Function ResetCamera1 for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->ResetCamera();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:ResetCamera2 vtkRendererResetCamera2Function
-//input a0 a1 
-//output none
-ArrayVector vtkRendererResetCamera2Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ResetCamera (double bounds[6]); */
-  if (arg.size() < 2) 
-    throw Exception("Function ResetCamera2 for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double temp0[6];
-  if ( !(arg[1].isVector() && arg[1].length() == 6) )
-    throw Exception("Mismatch in vector lengths");
-  Array vect = arg[1].asDenseArray().toClass(Double);
-  BasicArray<double> data = vect.real<double>();
-  int length = data.length();
-  for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
-  vtk_pointer->ResetCamera(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:ResetCamera3 vtkRendererResetCamera3Function
-//input a0 a1 a2 a3 a4 a5 a6 
-//output none
-ArrayVector vtkRendererResetCamera3Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ResetCamera (double xmin, double xmax, double ymin, double ymax, double zmin, double zmax); */
-  if (arg.size() < 7) 
-    throw Exception("Function ResetCamera3 for class vtkRenderer requires 7 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp0;
-  double   temp1;
-  double   temp2;
-  double   temp3;
-  double   temp4;
-  double   temp5;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
-  if ( !arg[2].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp1 = (double) arg[2].asDouble();
-  if ( !arg[3].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp2 = (double) arg[3].asDouble();
-  if ( !arg[4].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp3 = (double) arg[4].asDouble();
-  if ( !arg[5].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp4 = (double) arg[5].asDouble();
-  if ( !arg[6].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp5 = (double) arg[6].asDouble();
-  vtk_pointer->ResetCamera(temp0,temp1,temp2,temp3,temp4,temp5);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetRenderWindow vtkRendererSetRenderWindowFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetRenderWindowFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetRenderWindow (vtkRenderWindow *); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetRenderWindow for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkRenderWindow  *temp0;
-  temp0 = GetVTKPointer<vtkRenderWindow>(arg[1]);
-  vtk_pointer->SetRenderWindow(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetRenderWindow vtkRendererGetRenderWindowFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetRenderWindowFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkRenderWindow *GetRenderWindow ();return this RenderWindow  */
-  if (arg.size() < 1) 
-    throw Exception("Function GetRenderWindow for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkRenderWindow  *temp20;
-  temp20 = (vtk_pointer)->GetRenderWindow();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetVTKWindow vtkRendererGetVTKWindowFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetVTKWindowFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual vtkWindow *GetVTKWindow (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetVTKWindow for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtkWindow  *temp20;
-  temp20 = (vtk_pointer)->GetVTKWindow();
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetBackingStore vtkRendererSetBackingStoreFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetBackingStoreFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetBackingStore (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetBackingStore for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
+  vtkIdType   temp0;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetBackingStore(temp0);
+  vtk_pointer->RemoveTuple(temp0);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetBackingStore vtkRendererGetBackingStoreFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetBackingStoreFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetBackingStore (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetBackingStore for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetBackingStore();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:BackingStoreOn vtkRendererBackingStoreOnFunction
+//gfunction @vtkDataArray:RemoveFirstTuple vtkDataArrayRemoveFirstTupleFunction
 //input a0 
 //output none
-ArrayVector vtkRendererBackingStoreOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void BackingStoreOn (); */
+ArrayVector vtkDataArrayRemoveFirstTupleFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void RemoveFirstTuple () = 0; */
   if (arg.size() < 1) 
-    throw Exception("Function BackingStoreOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function RemoveFirstTuple for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtk_pointer->BackingStoreOn();
+  vtk_pointer->RemoveFirstTuple();
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:BackingStoreOff vtkRendererBackingStoreOffFunction
+//gfunction @vtkDataArray:RemoveLastTuple vtkDataArrayRemoveLastTupleFunction
 //input a0 
 //output none
-ArrayVector vtkRendererBackingStoreOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void BackingStoreOff (); */
+ArrayVector vtkDataArrayRemoveLastTupleFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void RemoveLastTuple () = 0; */
   if (arg.size() < 1) 
-    throw Exception("Function BackingStoreOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function RemoveLastTuple for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtk_pointer->BackingStoreOff();
+  vtk_pointer->RemoveLastTuple();
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetInteractive vtkRendererSetInteractiveFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetInteractiveFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetInteractive (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetInteractive for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetInteractive(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetInteractive vtkRendererGetInteractiveFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetInteractiveFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetInteractive (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetInteractive for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetInteractive();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:InteractiveOn vtkRendererInteractiveOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererInteractiveOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void InteractiveOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function InteractiveOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->InteractiveOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:InteractiveOff vtkRendererInteractiveOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererInteractiveOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void InteractiveOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function InteractiveOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->InteractiveOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetLayer vtkRendererSetLayerFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetLayerFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetLayer (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetLayer for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetLayer(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetLayer vtkRendererGetLayerFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetLayerFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetLayer (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetLayer for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetLayer();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetPreserveDepthBuffer vtkRendererSetPreserveDepthBufferFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetPreserveDepthBufferFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetPreserveDepthBuffer (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetPreserveDepthBuffer for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp0;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetPreserveDepthBuffer(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetPreserveDepthBuffer vtkRendererGetPreserveDepthBufferFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetPreserveDepthBufferFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetPreserveDepthBuffer (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetPreserveDepthBuffer for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetPreserveDepthBuffer();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:PreserveDepthBufferOn vtkRendererPreserveDepthBufferOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererPreserveDepthBufferOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void PreserveDepthBufferOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function PreserveDepthBufferOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->PreserveDepthBufferOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:PreserveDepthBufferOff vtkRendererPreserveDepthBufferOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererPreserveDepthBufferOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void PreserveDepthBufferOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function PreserveDepthBufferOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->PreserveDepthBufferOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:Transparent vtkRendererTransparentFunction
-//input a0 
-//output y
-ArrayVector vtkRendererTransparentFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int Transparent (); */
-  if (arg.size() < 1) 
-    throw Exception("Function Transparent for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->Transparent();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:WorldToView1 vtkRendererWorldToView1Function
-//input a0 
-//output none
-ArrayVector vtkRendererWorldToView1Function(int nargout, const ArrayVector& arg) {
-  /* Signature void WorldToView (); */
-  if (arg.size() < 1) 
-    throw Exception("Function WorldToView1 for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->WorldToView();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:ViewToWorld1 vtkRendererViewToWorld1Function
-//input a0 
-//output none
-ArrayVector vtkRendererViewToWorld1Function(int nargout, const ArrayVector& arg) {
-  /* Signature void ViewToWorld (); */
-  if (arg.size() < 1) 
-    throw Exception("Function ViewToWorld1 for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->ViewToWorld();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetZ vtkRendererGetZFunction
+//gfunction @vtkDataArray:GetComponent vtkDataArrayGetComponentFunction
 //input a0 a1 a2 
 //output y
-ArrayVector vtkRendererGetZFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetZ (int x, int y); */
+ArrayVector vtkDataArrayGetComponentFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual double GetComponent (vtkIdType i, int j); */
   if (arg.size() < 3) 
-    throw Exception("Function GetZ for class vtkRenderer requires 3 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetComponent for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  int      temp0;
+  vtkIdType   temp0;
   int      temp1;
   double   temp20;
   if ( !arg[1].isScalar() )
@@ -1496,1005 +1171,820 @@ ArrayVector vtkRendererGetZFunction(int nargout, const ArrayVector& arg) {
   if ( !arg[2].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp1 = (int) arg[2].asDouble();
-  temp20 = (vtk_pointer)->GetZ(temp0,temp1);
+  temp20 = (vtk_pointer)->GetComponent(temp0,temp1);
   retval = Array(double(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetMTime vtkRendererGetMTimeFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetMTimeFunction(int nargout, const ArrayVector& arg) {
-  /* Signature unsigned long GetMTime (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetMTime for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+//gfunction @vtkDataArray:SetComponent vtkDataArraySetComponentFunction
+//input a0 a1 a2 a3 
+//output none
+ArrayVector vtkDataArraySetComponentFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void SetComponent (vtkIdType i, int j, double c); */
+  if (arg.size() < 4) 
+    throw Exception("Function SetComponent for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  unsigned long     temp20;
-  temp20 = (vtk_pointer)->GetMTime();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetLastRenderTimeInSeconds vtkRendererGetLastRenderTimeInSecondsFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetLastRenderTimeInSecondsFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetLastRenderTimeInSeconds (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetLastRenderTimeInSeconds for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetLastRenderTimeInSeconds();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetNumberOfPropsRendered vtkRendererGetNumberOfPropsRenderedFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetNumberOfPropsRenderedFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetNumberOfPropsRendered (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetNumberOfPropsRendered for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetNumberOfPropsRendered();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:PickProp1 vtkRendererPickProp1Function
-//input a0 a1 a2 
-//output y
-ArrayVector vtkRendererPickProp1Function(int nargout, const ArrayVector& arg) {
-  /* Signature vtkAssemblyPath *PickProp (double selectionX, double selectionY);return this PickProp selectionX selectionY selectionX selectionY  */
-  if (arg.size() < 3) 
-    throw Exception("Function PickProp1 for class vtkRenderer requires 3 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp0;
-  double   temp1;
-  vtkAssemblyPath  *temp20;
-  if ( !arg[1].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
-  if ( !arg[2].isScalar() )
-    throw Exception("Expecting a scalar argument");
-  temp1 = (double) arg[2].asDouble();
-  temp20 = (vtk_pointer)->PickProp(temp0,temp1);
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:PickProp2 vtkRendererPickProp2Function
-//input a0 a1 a2 a3 a4 
-//output y
-ArrayVector vtkRendererPickProp2Function(int nargout, const ArrayVector& arg) {
-  /* Signature vtkAssemblyPath *PickProp (double selectionX1, double selectionY1, double selectionX2, double selectionY2); */
-  if (arg.size() < 5) 
-    throw Exception("Function PickProp2 for class vtkRenderer requires 5 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp0;
-  double   temp1;
+  vtkIdType   temp0;
+  int      temp1;
   double   temp2;
-  double   temp3;
-  vtkAssemblyPath  *temp20;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
+  temp0 = (int) arg[1].asDouble();
   if ( !arg[2].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp1 = (double) arg[2].asDouble();
+  temp1 = (int) arg[2].asDouble();
   if ( !arg[3].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp2 = (double) arg[3].asDouble();
+  vtk_pointer->SetComponent(temp0,temp1,temp2);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InsertComponent vtkDataArrayInsertComponentFunction
+//input a0 a1 a2 a3 
+//output none
+ArrayVector vtkDataArrayInsertComponentFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void InsertComponent (vtkIdType i, int j, double c); */
+  if (arg.size() < 4) 
+    throw Exception("Function InsertComponent for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  int      temp1;
+  double   temp2;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (double) arg[3].asDouble();
+  vtk_pointer->InsertComponent(temp0,temp1,temp2);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetData vtkDataArrayGetDataFunction
+//input a0 a1 a2 a3 a4 a5 
+//output none
+ArrayVector vtkDataArrayGetDataFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void GetData (vtkIdType tupleMin, vtkIdType tupleMax, int compMin, int compMax, vtkDoubleArray *data); */
+  if (arg.size() < 6) 
+    throw Exception("Function GetData for class vtkDataArray requires 6 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkIdType   temp0;
+  vtkIdType   temp1;
+  int      temp2;
+  int      temp3;
+  vtkDoubleArray  *temp4;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[2].asDouble();
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (int) arg[3].asDouble();
   if ( !arg[4].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp3 = (double) arg[4].asDouble();
-  temp20 = (vtk_pointer)->PickProp(temp0,temp1,temp2,temp3);
-  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
+  temp3 = (int) arg[4].asDouble();
+  temp4 = GetVTKPointer<vtkDoubleArray>(arg[5]);
+  vtk_pointer->GetData(temp0,temp1,temp2,temp3,temp4);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:StereoMidpoint vtkRendererStereoMidpointFunction
-//input a0 
-//output none
-ArrayVector vtkRendererStereoMidpointFunction(int nargout, const ArrayVector& arg) {
-  /* Signature virtual void StereoMidpoint ();return  */
-  if (arg.size() < 1) 
-    throw Exception("Function StereoMidpoint for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->StereoMidpoint();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetTiledAspectRatio vtkRendererGetTiledAspectRatioFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetTiledAspectRatioFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetTiledAspectRatio (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetTiledAspectRatio for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetTiledAspectRatio();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:IsActiveCameraCreated vtkRendererIsActiveCameraCreatedFunction
-//input a0 
-//output y
-ArrayVector vtkRendererIsActiveCameraCreatedFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int IsActiveCameraCreated ();return this ActiveCamera NULL  */
-  if (arg.size() < 1) 
-    throw Exception("Function IsActiveCameraCreated for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->IsActiveCameraCreated();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetUseDepthPeeling vtkRendererSetUseDepthPeelingFunction
+//gfunction @vtkDataArray:DeepCopy__1 vtkDataArrayDeepCopy__1Function
 //input a0 a1 
 //output none
-ArrayVector vtkRendererSetUseDepthPeelingFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetUseDepthPeeling (int ); */
+ArrayVector vtkDataArrayDeepCopy__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void DeepCopy (vtkAbstractArray *aa); */
   if (arg.size() < 2) 
-    throw Exception("Function SetUseDepthPeeling for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function DeepCopy__1 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkAbstractArray  *temp0;
+  temp0 = GetVTKPointer<vtkAbstractArray>(arg[1]);
+  vtk_pointer->DeepCopy(temp0);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:DeepCopy__2 vtkDataArrayDeepCopy__2Function
+//input a0 a1 
+//output none
+ArrayVector vtkDataArrayDeepCopy__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void DeepCopy (vtkDataArray *da); */
+  if (arg.size() < 2) 
+    throw Exception("Function DeepCopy__2 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkDataArray  *temp0;
+  temp0 = GetVTKPointer<vtkDataArray>(arg[1]);
+  vtk_pointer->DeepCopy(temp0);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:FillComponent vtkDataArrayFillComponentFunction
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayFillComponentFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void FillComponent (int j, double c); */
+  if (arg.size() < 3) 
+    throw Exception("Function FillComponent for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   int      temp0;
+  double   temp1;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetUseDepthPeeling(temp0);
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetUseDepthPeeling vtkRendererGetUseDepthPeelingFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetUseDepthPeelingFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetUseDepthPeeling (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetUseDepthPeeling for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetUseDepthPeeling();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:UseDepthPeelingOn vtkRendererUseDepthPeelingOnFunction
-//input a0 
-//output none
-ArrayVector vtkRendererUseDepthPeelingOnFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void UseDepthPeelingOn (); */
-  if (arg.size() < 1) 
-    throw Exception("Function UseDepthPeelingOn for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->UseDepthPeelingOn();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:UseDepthPeelingOff vtkRendererUseDepthPeelingOffFunction
-//input a0 
-//output none
-ArrayVector vtkRendererUseDepthPeelingOffFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void UseDepthPeelingOff (); */
-  if (arg.size() < 1) 
-    throw Exception("Function UseDepthPeelingOff for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  vtk_pointer->UseDepthPeelingOff();
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetOcclusionRatio vtkRendererSetOcclusionRatioFunction
-//input a0 a1 
-//output none
-ArrayVector vtkRendererSetOcclusionRatioFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetOcclusionRatio (double ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetOcclusionRatio for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp0;
-  if ( !arg[1].isScalar() )
+  if ( !arg[2].isScalar() )
     throw Exception("Expecting a scalar argument");
-  temp0 = (double) arg[1].asDouble();
-  vtk_pointer->SetOcclusionRatio(temp0);
+  temp1 = (double) arg[2].asDouble();
+  vtk_pointer->FillComponent(temp0,temp1);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetOcclusionRatioMinValue vtkRendererGetOcclusionRatioMinValueFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetOcclusionRatioMinValueFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetOcclusionRatioMinValue (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetOcclusionRatioMinValue for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetOcclusionRatioMinValue();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetOcclusionRatioMaxValue vtkRendererGetOcclusionRatioMaxValueFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetOcclusionRatioMaxValueFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetOcclusionRatioMaxValue (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetOcclusionRatioMaxValue for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetOcclusionRatioMaxValue();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:GetOcclusionRatio vtkRendererGetOcclusionRatioFunction
-//input a0 
-//output y
-ArrayVector vtkRendererGetOcclusionRatioFunction(int nargout, const ArrayVector& arg) {
-  /* Signature double GetOcclusionRatio (); */
-  if (arg.size() < 1) 
-    throw Exception("Function GetOcclusionRatio for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  Array retval;
-  double   temp20;
-  temp20 = (vtk_pointer)->GetOcclusionRatio();
-  retval = Array(double(temp20));
-  return retval;
-}
-
-//@@Signature
-//gfunction @vtkRenderer:SetMaximumNumberOfPeels vtkRendererSetMaximumNumberOfPeelsFunction
-//input a0 a1 
+//gfunction @vtkDataArray:CopyComponent vtkDataArrayCopyComponentFunction
+//input a0 a1 a2 a3 
 //output none
-ArrayVector vtkRendererSetMaximumNumberOfPeelsFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetMaximumNumberOfPeels (int ); */
-  if (arg.size() < 2) 
-    throw Exception("Function SetMaximumNumberOfPeels for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+ArrayVector vtkDataArrayCopyComponentFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual void CopyComponent (int j, vtkDataArray *from, int fromComponent); */
+  if (arg.size() < 4) 
+    throw Exception("Function CopyComponent for class vtkDataArray requires 4 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
   int      temp0;
+  vtkDataArray  *temp1;
+  int      temp2;
   if ( !arg[1].isScalar() )
     throw Exception("Expecting a scalar argument");
   temp0 = (int) arg[1].asDouble();
-  vtk_pointer->SetMaximumNumberOfPeels(temp0);
+  temp1 = GetVTKPointer<vtkDataArray>(arg[2]);
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp2 = (int) arg[3].asDouble();
+  vtk_pointer->CopyComponent(temp0,temp1,temp2);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetMaximumNumberOfPeels vtkRendererGetMaximumNumberOfPeelsFunction
+//gfunction @vtkDataArray:GetActualMemorySize vtkDataArrayGetActualMemorySizeFunction
 //input a0 
 //output y
-ArrayVector vtkRendererGetMaximumNumberOfPeelsFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetMaximumNumberOfPeels (); */
+ArrayVector vtkDataArrayGetActualMemorySizeFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual unsigned long GetActualMemorySize (); */
   if (arg.size() < 1) 
-    throw Exception("Function GetMaximumNumberOfPeels for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetActualMemorySize for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetMaximumNumberOfPeels();
+  unsigned long     temp20;
+  temp20 = (vtk_pointer)->GetActualMemorySize();
   retval = Array(double(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetLastRenderingUsedDepthPeeling vtkRendererGetLastRenderingUsedDepthPeelingFunction
+//gfunction @vtkDataArray:CreateDefaultLookupTable vtkDataArrayCreateDefaultLookupTableFunction
 //input a0 
-//output y
-ArrayVector vtkRendererGetLastRenderingUsedDepthPeelingFunction(int nargout, const ArrayVector& arg) {
-  /* Signature int GetLastRenderingUsedDepthPeeling (); */
+//output none
+ArrayVector vtkDataArrayCreateDefaultLookupTableFunction(int nargout, const ArrayVector& arg) {
+  /* Signature void CreateDefaultLookupTable (); */
   if (arg.size() < 1) 
-    throw Exception("Function GetLastRenderingUsedDepthPeeling for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function CreateDefaultLookupTable for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  int      temp20;
-  temp20 = (vtk_pointer)->GetLastRenderingUsedDepthPeeling();
-  retval = Array(double(temp20));
+  vtk_pointer->CreateDefaultLookupTable();
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetDelegate vtkRendererSetDelegateFunction
+//gfunction @vtkDataArray:SetLookupTable vtkDataArraySetLookupTableFunction
 //input a0 a1 
 //output none
-ArrayVector vtkRendererSetDelegateFunction(int nargout, const ArrayVector& arg) {
-  /* Signature void SetDelegate (vtkRendererDelegate *d); */
+ArrayVector vtkDataArraySetLookupTableFunction(int nargout, const ArrayVector& arg) {
+  /* Signature void SetLookupTable (vtkLookupTable *lut); */
   if (arg.size() < 2) 
-    throw Exception("Function SetDelegate for class vtkRenderer requires 2 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function SetLookupTable for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtkRendererDelegate  *temp0;
-  temp0 = GetVTKPointer<vtkRendererDelegate>(arg[1]);
-  vtk_pointer->SetDelegate(temp0);
+  vtkLookupTable  *temp0;
+  temp0 = GetVTKPointer<vtkLookupTable>(arg[1]);
+  vtk_pointer->SetLookupTable(temp0);
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetDelegate vtkRendererGetDelegateFunction
+//gfunction @vtkDataArray:GetLookupTable vtkDataArrayGetLookupTableFunction
 //input a0 
 //output y
-ArrayVector vtkRendererGetDelegateFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkRendererDelegate *GetDelegate (); */
+ArrayVector vtkDataArrayGetLookupTableFunction(int nargout, const ArrayVector& arg) {
+  /* Signature vtkLookupTable *GetLookupTable (); */
   if (arg.size() < 1) 
-    throw Exception("Function GetDelegate for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetLookupTable for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtkRendererDelegate  *temp20;
-  temp20 = (vtk_pointer)->GetDelegate();
+  vtkLookupTable  *temp20;
+  temp20 = (vtk_pointer)->GetLookupTable();
   retval = MakeVTKPointer((vtkObjectBase*)(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:GetSelector vtkRendererGetSelectorFunction
+//gfunction @vtkDataArray:GetRange__1 vtkDataArrayGetRange__1Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayGetRange__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature void GetRange (double range[2], int comp);this ComputeRange comp memcpy range this Range sizeof double  */
+  if (arg.size() < 3) 
+    throw Exception("Function GetRange__1 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double temp0[2];
+  int      temp1;
+  if ( !(arg[1].isVector() && arg[1].length() == 2) )
+    throw Exception("Mismatch in vector lengths");
+  {
+    Array vect = arg[1].asDenseArray().toClass(Double);
+    BasicArray<double> data = vect.real<double>();
+    int length = data.length();
+    for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
+  }
+  if ( !arg[3].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[3].asDouble();
+  vtk_pointer->GetRange(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetRange__2 vtkDataArrayGetRange__2Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayGetRange__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature double *GetRange (int comp);this ComputeRange comp return this Range  */
+  if (arg.size() < 2) 
+    throw Exception("Function GetRange__2 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  int      temp0;
+  double  *temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetRange(temp0);
+  BasicArray<double> tempResult(NTuple(2,1));
+  tempResult[1] = (double)temp20[0];
+  tempResult[2] = (double)temp20[1];
+  retval = Array(tempResult);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetRange__3 vtkDataArrayGetRange__3Function
 //input a0 
 //output y
-ArrayVector vtkRendererGetSelectorFunction(int nargout, const ArrayVector& arg) {
-  /* Signature vtkHardwareSelector *GetSelector (); */
+ArrayVector vtkDataArrayGetRange__3Function(int nargout, const ArrayVector& arg) {
+  /* Signature double *GetRange ();this ComputeRange return this Range  */
   if (arg.size() < 1) 
-    throw Exception("Function GetSelector for class vtkRenderer requires 1 argument(s)");
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+    throw Exception("Function GetRange__3 for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   Array retval;
-  vtkHardwareSelector  *temp20;
-  temp20 = (vtk_pointer)->GetSelector();
+  double  *temp20;
+  temp20 = (vtk_pointer)->GetRange();
+  BasicArray<double> tempResult(NTuple(2,1));
+  tempResult[1] = (double)temp20[0];
+  tempResult[2] = (double)temp20[1];
+  retval = Array(tempResult);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetRange__4 vtkDataArrayGetRange__4Function
+//input a0 a1 
+//output none
+ArrayVector vtkDataArrayGetRange__4Function(int nargout, const ArrayVector& arg) {
+  /* Signature void GetRange (double range[2]);this GetRange range  */
+  if (arg.size() < 2) 
+    throw Exception("Function GetRange__4 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double temp0[2];
+  if ( !(arg[1].isVector() && arg[1].length() == 2) )
+    throw Exception("Mismatch in vector lengths");
+  {
+    Array vect = arg[1].asDenseArray().toClass(Double);
+    BasicArray<double> data = vect.real<double>();
+    int length = data.length();
+    for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
+  }
+  vtk_pointer->GetRange(temp0);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeRange__1 vtkDataArrayGetDataTypeRange__1Function
+//input a0 a1 
+//output none
+ArrayVector vtkDataArrayGetDataTypeRange__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature void GetDataTypeRange (double range[2]); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetDataTypeRange__1 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double temp0[2];
+  if ( !(arg[1].isVector() && arg[1].length() == 2) )
+    throw Exception("Mismatch in vector lengths");
+  {
+    Array vect = arg[1].asDenseArray().toClass(Double);
+    BasicArray<double> data = vect.real<double>();
+    int length = data.length();
+    for ( int k = 0; k < length; k++ ) temp0[k] = (double)data[k+1];
+  }
+  vtk_pointer->GetDataTypeRange(temp0);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeMin__1 vtkDataArrayGetDataTypeMin__1Function
+//input a0 
+//output y
+ArrayVector vtkDataArrayGetDataTypeMin__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature double GetDataTypeMin (); */
+  if (arg.size() < 1) 
+    throw Exception("Function GetDataTypeMin__1 for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double   temp20;
+  temp20 = (vtk_pointer)->GetDataTypeMin();
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeMax__1 vtkDataArrayGetDataTypeMax__1Function
+//input a0 
+//output y
+ArrayVector vtkDataArrayGetDataTypeMax__1Function(int nargout, const ArrayVector& arg) {
+  /* Signature double GetDataTypeMax (); */
+  if (arg.size() < 1) 
+    throw Exception("Function GetDataTypeMax__1 for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double   temp20;
+  temp20 = (vtk_pointer)->GetDataTypeMax();
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeRange__2 vtkDataArrayGetDataTypeRange__2Function
+//input a0 a1 a2 
+//output none
+ArrayVector vtkDataArrayGetDataTypeRange__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature static void GetDataTypeRange (int type, double range[2]); */
+  if (arg.size() < 3) 
+    throw Exception("Function GetDataTypeRange__2 for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  int      temp0;
+  double temp1[2];
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  if ( !(arg[2].isVector() && arg[2].length() == 2) )
+    throw Exception("Mismatch in vector lengths");
+  {
+    Array vect = arg[2].asDenseArray().toClass(Double);
+    BasicArray<double> data = vect.real<double>();
+    int length = data.length();
+    for ( int k = 0; k < length; k++ ) temp1[k] = (double)data[k+1];
+  }
+  vtk_pointer->GetDataTypeRange(temp0,temp1);
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeMin__2 vtkDataArrayGetDataTypeMin__2Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayGetDataTypeMin__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature static double GetDataTypeMin (int type); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetDataTypeMin__2 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  int      temp0;
+  double   temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetDataTypeMin(temp0);
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeMax__2 vtkDataArrayGetDataTypeMax__2Function
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayGetDataTypeMax__2Function(int nargout, const ArrayVector& arg) {
+  /* Signature static double GetDataTypeMax (int type); */
+  if (arg.size() < 2) 
+    throw Exception("Function GetDataTypeMax__2 for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  int      temp0;
+  double   temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->GetDataTypeMax(temp0);
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetMaxNorm vtkDataArrayGetMaxNormFunction
+//input a0 
+//output y
+ArrayVector vtkDataArrayGetMaxNormFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual double GetMaxNorm (); */
+  if (arg.size() < 1) 
+    throw Exception("Function GetMaxNorm for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  double   temp20;
+  temp20 = (vtk_pointer)->GetMaxNorm();
+  retval = Array(double(temp20));
+  return retval;
+}
+
+//@@Signature
+//gfunction @vtkDataArray:CreateDataArray vtkDataArrayCreateDataArrayFunction
+//input a0 a1 
+//output y
+ArrayVector vtkDataArrayCreateDataArrayFunction(int nargout, const ArrayVector& arg) {
+  /* Signature static vtkDataArray *CreateDataArray (int dataType); */
+  if (arg.size() < 2) 
+    throw Exception("Function CreateDataArray for class vtkDataArray requires 2 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  int      temp0;
+  vtkDataArray  *temp20;
+  if ( !arg[1].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp0 = (int) arg[1].asDouble();
+  temp20 = (vtk_pointer)->CreateDataArray(temp0);
   retval = MakeVTKPointer((vtkObjectBase*)(temp20));
   return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:SetAmbient vtkRendererSetAmbientFunction
-//input varargin
-//output varargout
-ArrayVector vtkRendererSetAmbientFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 4) return vtkRendererSetAmbient1Function(nargout,arg);
-  if (arg.size() == 2) return vtkRendererSetAmbient2Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererSetAmbient");
+//gfunction @vtkDataArray:PER_COMPONENT vtkDataArrayPER_COMPONENTFunction
+//input a0 
+//output y
+ArrayVector vtkDataArrayPER_COMPONENTFunction(int nargout, const ArrayVector& arg) {
+  /* Signature static vtkInformationInformationVectorKey *PER_COMPONENT (); */
+  if (arg.size() < 1) 
+    throw Exception("Function PER_COMPONENT for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkInformationInformationVectorKey  *temp20;
+  temp20 = (vtk_pointer)->PER_COMPONENT();
+  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
+  return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ComputeVisiblePropBounds vtkRendererComputeVisiblePropBoundsFunction
-//input varargin
-//output varargout
-ArrayVector vtkRendererComputeVisiblePropBoundsFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 2) return vtkRendererComputeVisiblePropBounds1Function(nargout,arg);
-  if (arg.size() == 1) return vtkRendererComputeVisiblePropBounds2Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererComputeVisiblePropBounds");
+//gfunction @vtkDataArray:COMPONENT_RANGE vtkDataArrayCOMPONENT_RANGEFunction
+//input a0 
+//output y
+ArrayVector vtkDataArrayCOMPONENT_RANGEFunction(int nargout, const ArrayVector& arg) {
+  /* Signature static vtkInformationDoubleVectorKey *COMPONENT_RANGE (); */
+  if (arg.size() < 1) 
+    throw Exception("Function COMPONENT_RANGE for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkInformationDoubleVectorKey  *temp20;
+  temp20 = (vtk_pointer)->COMPONENT_RANGE();
+  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
+  return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ResetCameraClippingRange vtkRendererResetCameraClippingRangeFunction
-//input varargin
-//output varargout
-ArrayVector vtkRendererResetCameraClippingRangeFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 1) return vtkRendererResetCameraClippingRange1Function(nargout,arg);
-  if (arg.size() == 2) return vtkRendererResetCameraClippingRange2Function(nargout,arg);
-  if (arg.size() == 7) return vtkRendererResetCameraClippingRange3Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererResetCameraClippingRange");
+//gfunction @vtkDataArray:L2_NORM_RANGE vtkDataArrayL2_NORM_RANGEFunction
+//input a0 
+//output y
+ArrayVector vtkDataArrayL2_NORM_RANGEFunction(int nargout, const ArrayVector& arg) {
+  /* Signature static vtkInformationDoubleVectorKey *L2_NORM_RANGE (); */
+  if (arg.size() < 1) 
+    throw Exception("Function L2_NORM_RANGE for class vtkDataArray requires 1 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkInformationDoubleVectorKey  *temp20;
+  temp20 = (vtk_pointer)->L2_NORM_RANGE();
+  retval = MakeVTKPointer((vtkObjectBase*)(temp20));
+  return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ResetCamera vtkRendererResetCameraFunction
-//input varargin
-//output varargout
-ArrayVector vtkRendererResetCameraFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 1) return vtkRendererResetCamera1Function(nargout,arg);
-  if (arg.size() == 2) return vtkRendererResetCamera2Function(nargout,arg);
-  if (arg.size() == 7) return vtkRendererResetCamera3Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererResetCamera");
+//gfunction @vtkDataArray:CopyInformation vtkDataArrayCopyInformationFunction
+//input a0 a1 a2 
+//output y
+ArrayVector vtkDataArrayCopyInformationFunction(int nargout, const ArrayVector& arg) {
+  /* Signature virtual int CopyInformation (vtkInformation *infoFrom, int deep); */
+  if (arg.size() < 3) 
+    throw Exception("Function CopyInformation for class vtkDataArray requires 3 argument(s)");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  Array retval;
+  vtkInformation  *temp0;
+  int      temp1;
+  int      temp20;
+  temp0 = GetVTKPointer<vtkInformation>(arg[1]);
+  if ( !arg[2].isScalar() )
+    throw Exception("Expecting a scalar argument");
+  temp1 = (int) arg[2].asDouble();
+  temp20 = (vtk_pointer)->CopyInformation(temp0,temp1);
+  retval = Array(double(temp20));
+  return retval;
 }
 
 //@@Signature
-//gfunction @vtkRenderer:WorldToView vtkRendererWorldToViewFunction
+//gfunction @vtkDataArray:SetTuple vtkDataArraySetTupleFunction
 //input varargin
 //output varargout
-ArrayVector vtkRendererWorldToViewFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 1) return vtkRendererWorldToView1Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererWorldToView");
+ArrayVector vtkDataArraySetTupleFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 4) return vtkDataArraySetTuple__1Function(nargout,arg);
+  if (arg.size() == 3) return vtkDataArraySetTuple__2Function(nargout,arg);
+  if (arg.size() == 3) return vtkDataArraySetTuple__3Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArraySetTuple");
 }
 
 //@@Signature
-//gfunction @vtkRenderer:ViewToWorld vtkRendererViewToWorldFunction
+//gfunction @vtkDataArray:InsertTuple vtkDataArrayInsertTupleFunction
 //input varargin
 //output varargout
-ArrayVector vtkRendererViewToWorldFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 1) return vtkRendererViewToWorld1Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererViewToWorld");
+ArrayVector vtkDataArrayInsertTupleFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 4) return vtkDataArrayInsertTuple__1Function(nargout,arg);
+  if (arg.size() == 3) return vtkDataArrayInsertTuple__2Function(nargout,arg);
+  if (arg.size() == 3) return vtkDataArrayInsertTuple__3Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayInsertTuple");
 }
 
 //@@Signature
-//gfunction @vtkRenderer:PickProp vtkRendererPickPropFunction
+//gfunction @vtkDataArray:InsertNextTuple vtkDataArrayInsertNextTupleFunction
 //input varargin
 //output varargout
-ArrayVector vtkRendererPickPropFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() == 3) return vtkRendererPickProp1Function(nargout,arg);
-  if (arg.size() == 5) return vtkRendererPickProp2Function(nargout,arg);
-  throw Exception("unable to resolve to an overloaded instance of vtkRendererPickProp");
+ArrayVector vtkDataArrayInsertNextTupleFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 3) return vtkDataArrayInsertNextTuple__1Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayInsertNextTuple__2Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayInsertNextTuple__3Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayInsertNextTuple");
 }
 
 //@@Signature
-//sgfunction @vtkRenderer:display vtkRendererDisplayFunction
+//gfunction @vtkDataArray:GetTuples vtkDataArrayGetTuplesFunction
 //input varargin
 //output varargout
-ArrayVector vtkRendererDisplayFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+ArrayVector vtkDataArrayGetTuplesFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 3) return vtkDataArrayGetTuples__1Function(nargout,arg);
+  if (arg.size() == 4) return vtkDataArrayGetTuples__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayGetTuples");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:InterpolateTuple vtkDataArrayInterpolateTupleFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayInterpolateTupleFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 5) return vtkDataArrayInterpolateTuple__1Function(nargout,arg);
+  if (arg.size() == 7) return vtkDataArrayInterpolateTuple__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayInterpolateTuple");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetTuple vtkDataArrayGetTupleFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayGetTupleFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 3) return vtkDataArrayGetTuple__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayGetTuple");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:DeepCopy vtkDataArrayDeepCopyFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayDeepCopyFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 2) return vtkDataArrayDeepCopy__1Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayDeepCopy__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayDeepCopy");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetRange vtkDataArrayGetRangeFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayGetRangeFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 3) return vtkDataArrayGetRange__1Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayGetRange__2Function(nargout,arg);
+  if (arg.size() == 1) return vtkDataArrayGetRange__3Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayGetRange__4Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayGetRange");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeRange vtkDataArrayGetDataTypeRangeFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayGetDataTypeRangeFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 2) return vtkDataArrayGetDataTypeRange__1Function(nargout,arg);
+  if (arg.size() == 3) return vtkDataArrayGetDataTypeRange__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayGetDataTypeRange");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeMin vtkDataArrayGetDataTypeMinFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayGetDataTypeMinFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 1) return vtkDataArrayGetDataTypeMin__1Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayGetDataTypeMin__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayGetDataTypeMin");
+}
+
+//@@Signature
+//gfunction @vtkDataArray:GetDataTypeMax vtkDataArrayGetDataTypeMaxFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayGetDataTypeMaxFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 1) return vtkDataArrayGetDataTypeMax__1Function(nargout,arg);
+  if (arg.size() == 2) return vtkDataArrayGetDataTypeMax__2Function(nargout,arg);
+  throw Exception("unable to resolve to an overloaded instance of vtkDataArrayGetDataTypeMax");
+}
+
+//@@Signature
+//sgfunction @vtkDataArray:display vtkDataArrayDisplayFunction
+//input varargin
+//output varargout
+ArrayVector vtkDataArrayDisplayFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) return ArrayVector();
   if (arg[0].length() > 1) {
      PrintArrayClassic(arg[0],100,eval);
      return ArrayVector();
   }
-  eval->outputMessage("  " + arg[0].className() + "\n");
-  eval->outputMessage("  ClassName : ");
-  {
-    ArrayVector tmp = vtkRendererGetClassNameFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Lights : ");
-  {
-    ArrayVector tmp = vtkRendererGetLightsFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  TwoSidedLighting : ");
-  {
-    ArrayVector tmp = vtkRendererGetTwoSidedLightingFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  LightFollowCamera : ");
-  {
-    ArrayVector tmp = vtkRendererGetLightFollowCameraFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  AutomaticLightCreation : ");
-  {
-    ArrayVector tmp = vtkRendererGetAutomaticLightCreationFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Volumes : ");
-  {
-    ArrayVector tmp = vtkRendererGetVolumesFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Actors : ");
-  {
-    ArrayVector tmp = vtkRendererGetActorsFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  ActiveCamera : ");
-  {
-    ArrayVector tmp = vtkRendererGetActiveCameraFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Erase : ");
-  {
-    ArrayVector tmp = vtkRendererGetEraseFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Draw : ");
-  {
-    ArrayVector tmp = vtkRendererGetDrawFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Cullers : ");
-  {
-    ArrayVector tmp = vtkRendererGetCullersFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Ambient : ");
-  {
-    ArrayVector tmp = vtkRendererGetAmbientFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  AllocatedRenderTime : ");
-  {
-    ArrayVector tmp = vtkRendererGetAllocatedRenderTimeFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  TimeFactor : ");
-  {
-    ArrayVector tmp = vtkRendererGetTimeFactorFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  NearClippingPlaneToleranceMinValue : ");
-  {
-    ArrayVector tmp = vtkRendererGetNearClippingPlaneToleranceMinValueFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  NearClippingPlaneToleranceMaxValue : ");
-  {
-    ArrayVector tmp = vtkRendererGetNearClippingPlaneToleranceMaxValueFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  NearClippingPlaneTolerance : ");
-  {
-    ArrayVector tmp = vtkRendererGetNearClippingPlaneToleranceFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  RenderWindow : ");
-  {
-    ArrayVector tmp = vtkRendererGetRenderWindowFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  VTKWindow : ");
-  {
-    ArrayVector tmp = vtkRendererGetVTKWindowFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  BackingStore : ");
-  {
-    ArrayVector tmp = vtkRendererGetBackingStoreFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Interactive : ");
-  {
-    ArrayVector tmp = vtkRendererGetInteractiveFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Layer : ");
-  {
-    ArrayVector tmp = vtkRendererGetLayerFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  PreserveDepthBuffer : ");
-  {
-    ArrayVector tmp = vtkRendererGetPreserveDepthBufferFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  MTime : ");
-  {
-    ArrayVector tmp = vtkRendererGetMTimeFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  LastRenderTimeInSeconds : ");
-  {
-    ArrayVector tmp = vtkRendererGetLastRenderTimeInSecondsFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  NumberOfPropsRendered : ");
-  {
-    ArrayVector tmp = vtkRendererGetNumberOfPropsRenderedFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  TiledAspectRatio : ");
-  {
-    ArrayVector tmp = vtkRendererGetTiledAspectRatioFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  UseDepthPeeling : ");
-  {
-    ArrayVector tmp = vtkRendererGetUseDepthPeelingFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  OcclusionRatioMinValue : ");
-  {
-    ArrayVector tmp = vtkRendererGetOcclusionRatioMinValueFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  OcclusionRatioMaxValue : ");
-  {
-    ArrayVector tmp = vtkRendererGetOcclusionRatioMaxValueFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  OcclusionRatio : ");
-  {
-    ArrayVector tmp = vtkRendererGetOcclusionRatioFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  MaximumNumberOfPeels : ");
-  {
-    ArrayVector tmp = vtkRendererGetMaximumNumberOfPeelsFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  LastRenderingUsedDepthPeeling : ");
-  {
-    ArrayVector tmp = vtkRendererGetLastRenderingUsedDepthPeelingFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Delegate : ");
-  {
-    ArrayVector tmp = vtkRendererGetDelegateFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
-  eval->outputMessage("  Selector : ");
-  {
-    ArrayVector tmp = vtkRendererGetSelectorFunction(1,arg[0]);
-    if (tmp.size() > 0)
-      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));
-    else
-      eval->outputMessage("[]");
-  }
-  eval->outputMessage("\n");
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
+  std::ostringstream ss;
+  vtkIndent ind;
+  vtk_pointer->PrintSelf(ss,ind);
+  eval->outputMessage(QString::fromStdString(ss.str()));
   return ArrayVector();
 }
 //@@Signature
-//gfunction @vtkRenderer:subsref vtkRendererSubsrefFunction
+//gfunction @vtkDataArray:subsref vtkDataArraySubsrefFunction
 //input varargin
 //output varargout
-ArrayVector vtkRendererSubsrefFunction(int nargout, const ArrayVector& arg) {
+ArrayVector vtkDataArraySubsrefFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 2) return ArrayVector();
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
+  vtkDataArray* vtk_pointer = GetVTKPointer<vtkDataArray>(arg[0]);
   const StructArray& sa = arg[1].constStructPtr();
   const BasicArray<Array>& typea = sa["type"];
   const BasicArray<Array>& subsa = sa["subs"];
   if ((typea.length() == 1) && (typea[1].asString() == "."))
   {
     if (subsa[1].asString() == "ClassName")
-      return vtkRendererGetClassNameFunction(nargout,arg);
-    if (subsa[1].asString() == "Lights")
-      return vtkRendererGetLightsFunction(nargout,arg);
-    if (subsa[1].asString() == "TwoSidedLighting")
-      return vtkRendererGetTwoSidedLightingFunction(nargout,arg);
-    if (subsa[1].asString() == "LightFollowCamera")
-      return vtkRendererGetLightFollowCameraFunction(nargout,arg);
-    if (subsa[1].asString() == "AutomaticLightCreation")
-      return vtkRendererGetAutomaticLightCreationFunction(nargout,arg);
-    if (subsa[1].asString() == "Volumes")
-      return vtkRendererGetVolumesFunction(nargout,arg);
-    if (subsa[1].asString() == "Actors")
-      return vtkRendererGetActorsFunction(nargout,arg);
-    if (subsa[1].asString() == "ActiveCamera")
-      return vtkRendererGetActiveCameraFunction(nargout,arg);
-    if (subsa[1].asString() == "Erase")
-      return vtkRendererGetEraseFunction(nargout,arg);
-    if (subsa[1].asString() == "Draw")
-      return vtkRendererGetDrawFunction(nargout,arg);
-    if (subsa[1].asString() == "Cullers")
-      return vtkRendererGetCullersFunction(nargout,arg);
-    if (subsa[1].asString() == "Ambient")
-      return vtkRendererGetAmbientFunction(nargout,arg);
-    if (subsa[1].asString() == "AllocatedRenderTime")
-      return vtkRendererGetAllocatedRenderTimeFunction(nargout,arg);
-    if (subsa[1].asString() == "TimeFactor")
-      return vtkRendererGetTimeFactorFunction(nargout,arg);
-    if (subsa[1].asString() == "NearClippingPlaneToleranceMinValue")
-      return vtkRendererGetNearClippingPlaneToleranceMinValueFunction(nargout,arg);
-    if (subsa[1].asString() == "NearClippingPlaneToleranceMaxValue")
-      return vtkRendererGetNearClippingPlaneToleranceMaxValueFunction(nargout,arg);
-    if (subsa[1].asString() == "NearClippingPlaneTolerance")
-      return vtkRendererGetNearClippingPlaneToleranceFunction(nargout,arg);
-    if (subsa[1].asString() == "RenderWindow")
-      return vtkRendererGetRenderWindowFunction(nargout,arg);
-    if (subsa[1].asString() == "VTKWindow")
-      return vtkRendererGetVTKWindowFunction(nargout,arg);
-    if (subsa[1].asString() == "BackingStore")
-      return vtkRendererGetBackingStoreFunction(nargout,arg);
-    if (subsa[1].asString() == "Interactive")
-      return vtkRendererGetInteractiveFunction(nargout,arg);
-    if (subsa[1].asString() == "Layer")
-      return vtkRendererGetLayerFunction(nargout,arg);
-    if (subsa[1].asString() == "PreserveDepthBuffer")
-      return vtkRendererGetPreserveDepthBufferFunction(nargout,arg);
-    if (subsa[1].asString() == "MTime")
-      return vtkRendererGetMTimeFunction(nargout,arg);
-    if (subsa[1].asString() == "LastRenderTimeInSeconds")
-      return vtkRendererGetLastRenderTimeInSecondsFunction(nargout,arg);
-    if (subsa[1].asString() == "NumberOfPropsRendered")
-      return vtkRendererGetNumberOfPropsRenderedFunction(nargout,arg);
-    if (subsa[1].asString() == "TiledAspectRatio")
-      return vtkRendererGetTiledAspectRatioFunction(nargout,arg);
-    if (subsa[1].asString() == "UseDepthPeeling")
-      return vtkRendererGetUseDepthPeelingFunction(nargout,arg);
-    if (subsa[1].asString() == "OcclusionRatioMinValue")
-      return vtkRendererGetOcclusionRatioMinValueFunction(nargout,arg);
-    if (subsa[1].asString() == "OcclusionRatioMaxValue")
-      return vtkRendererGetOcclusionRatioMaxValueFunction(nargout,arg);
-    if (subsa[1].asString() == "OcclusionRatio")
-      return vtkRendererGetOcclusionRatioFunction(nargout,arg);
-    if (subsa[1].asString() == "MaximumNumberOfPeels")
-      return vtkRendererGetMaximumNumberOfPeelsFunction(nargout,arg);
-    if (subsa[1].asString() == "LastRenderingUsedDepthPeeling")
-      return vtkRendererGetLastRenderingUsedDepthPeelingFunction(nargout,arg);
-    if (subsa[1].asString() == "Delegate")
-      return vtkRendererGetDelegateFunction(nargout,arg);
-    if (subsa[1].asString() == "Selector")
-      return vtkRendererGetSelectorFunction(nargout,arg);
+      return vtkDataArrayGetClassNameFunction(nargout,arg);
+    if (subsa[1].asString() == "ElementComponentSize")
+      return vtkDataArrayGetElementComponentSizeFunction(nargout,arg);
+    if (subsa[1].asString() == "ActualMemorySize")
+      return vtkDataArrayGetActualMemorySizeFunction(nargout,arg);
+    if (subsa[1].asString() == "LookupTable")
+      return vtkDataArrayGetLookupTableFunction(nargout,arg);
+    if (subsa[1].asString() == "Range")
+      return vtkDataArrayGetRangeFunction(nargout,arg);
+    if (subsa[1].asString() == "DataTypeMin")
+      return vtkDataArrayGetDataTypeMinFunction(nargout,arg);
+    if (subsa[1].asString() == "DataTypeMax")
+      return vtkDataArrayGetDataTypeMaxFunction(nargout,arg);
+    if (subsa[1].asString() == "MaxNorm")
+      return vtkDataArrayGetMaxNormFunction(nargout,arg);
   }
   if ((typea.length() == 2) && (typea[1].asString() == ".")
       && (typea[2].asString() == "()"))
   {
-    if (subsa[1].asString() == "Z")
+    if (subsa[1].asString() == "Tuples")
     {
       ArrayVector tmp(arg[0]);
       tmp += ArrayVectorFromCellArray(subsa[2]);
-      return vtkRendererGetZFunction(nargout,tmp);
+      return vtkDataArrayGetTuplesFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuples")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTuplesFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuple")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTupleFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuple1")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTuple1Function(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuple2")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTuple2Function(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuple3")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTuple3Function(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuple4")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTuple4Function(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Tuple9")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetTuple9Function(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Component")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetComponentFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Data")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetDataFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Range")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetRangeFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Range")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetRangeFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "Range")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetRangeFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "DataTypeRange")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetDataTypeRangeFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "DataTypeRange")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetDataTypeRangeFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "DataTypeMin")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetDataTypeMinFunction(nargout,tmp);
+    }
+    if (subsa[1].asString() == "DataTypeMax")
+    {
+      ArrayVector tmp(arg[0]);
+      tmp += ArrayVectorFromCellArray(subsa[2]);
+      return vtkDataArrayGetDataTypeMaxFunction(nargout,tmp);
     }
   }
 }
 
-//@@Signature
-//sgfunction @vtkRenderer:subsasgn //input varargin
-//output varargin
-ArrayVector vtkRendererSubsasgnFunction(int nargout, const ArrayVector& arg) {
-  if (arg.size() != 3) return ArrayVector();
-  vtkRenderer* vtk_pointer = GetVTKPointer<vtkRenderer>(arg[0]);
-  const StructArray& sa = arg[1].constStructPtr();
-  const BasicArray<Array>& typea = sa["type"];
-  const BasicArray<Array>& subsa = sa["subs"];
-  if ((typea.length() == 1) && (typea[1].asString() == "."))
-  {
-    if (subsa[1].asString() == "TwoSidedLighting")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetTwoSidedLightingFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "LightFollowCamera")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetLightFollowCameraFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "AutomaticLightCreation")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetAutomaticLightCreationFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "ActiveCamera")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetActiveCameraFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Erase")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetEraseFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Draw")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetDrawFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Ambient")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetAmbientFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Ambient")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetAmbientFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "AllocatedRenderTime")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetAllocatedRenderTimeFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "NearClippingPlaneTolerance")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetNearClippingPlaneToleranceFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "RenderWindow")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetRenderWindowFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "BackingStore")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetBackingStoreFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Interactive")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetInteractiveFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Layer")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetLayerFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "PreserveDepthBuffer")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetPreserveDepthBufferFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "UseDepthPeeling")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetUseDepthPeelingFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "OcclusionRatio")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetOcclusionRatioFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "MaximumNumberOfPeels")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetMaximumNumberOfPeelsFunction(nargout,tmp);
-    }
-    if (subsa[1].asString() == "Delegate")
-    {
-      ArrayVector tmp(arg[0]);
-      tmp.push_back(arg[2]);
-      return vtkRendererSetDelegateFunction(nargout,tmp);
-    }
-  }
-  return ArrayVector();
-}

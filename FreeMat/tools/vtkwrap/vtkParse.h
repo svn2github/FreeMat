@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    $RCSfile: vtkParse.h,v $
+  Module:    vtkParse.h
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -28,12 +28,14 @@
     int   HintSize;
     int   ArgTypes[MAX_ARGS];
     int   ArgCounts[MAX_ARGS];
+    int   ArgExternals[MAX_ARGS];
     char *ArgClasses[MAX_ARGS];
     int   ReturnType;
     char *ReturnClass;
     char *Comment;
     char *Signature;  
     int   IsLegacy;
+    int   ReturnExternal;
     int   IsOverloaded;
     int   OverloadCount;
     int   IsValid;

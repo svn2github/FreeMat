@@ -24,9 +24,25 @@ int numberOfWrappedFunctions = 0;
 FunctionInfo *wrappedFunctions[1000];
 extern FunctionInfo *currentFunction;
 
-char* typeNames[17] = { "unknown", "float", "void", "char", "int", "short", "long",
-			"double", "unknown", "unknown", "unknown", "unknown", "unknown",
-			"unsigned char", "unsigned int", "unsigned short", "unsigned long" };
+const char * typeName(int p)
+{
+  switch (p)
+    {
+    case 0x1: return "float";
+    case 0x2: return "void";
+    case 0x3: return "char";
+    case 0x4: return "int";
+    case 0x5: return "short";
+    case 0x6: return "long";
+    case 0x7: return "double";
+    case 0x13: return "unsigned char";
+    case 0x14: return "unsigned int";
+    case 0x15: return "unsigned short";
+    case 0x16: return "unsigned long";
+    default:
+      return "unknown";
+    }
+}
 
 static void emitTempScalarFromArgs(FILE *fp, int i, int j, const char *typecode)
 {
@@ -44,7 +60,7 @@ static void emitTempArrayFromArgs(FILE *fp, int i, int k, int j, const char *typ
 
 int isVoidType(int aType)
 {
-  return (((aType % 10) == 2)&&(!((aType%1000)/100)));
+  return (((aType % 0x10) == 2)&&(!((aType%0x1000)/0x100)));
 }
 
 void outputFunctionHelp( FILE *fp, FileInfo *data )
@@ -99,20 +115,20 @@ void outputFunctionHelp( FILE *fp, FileInfo *data )
 void output_temp(FILE *fp, int i, int aType, char *Id, int count)
 {
   /* handle VAR FUNCTIONS */
-  if (aType == 5000)
+  if (aType == 0x5000)
     {
       fprintf(fp,"    vtkTclVoidFuncArg *temp%i = new vtkTclVoidFuncArg;\n",i);
       return;
     }
   
   /* ignore void */
-  if (((aType % 10) == 2)&&(!((aType%1000)/100)))
+  if (isVoidType(aType))
     {
       return;
     }
 
   /* for const * return types prototype with const */
-  if ((i == MAX_ARGS) && (aType%2000 >= 1000))
+  if ((i == MAX_ARGS) && (aType%0x2000 >= 0x1000))
     {
       fprintf(fp,"  const ");
     }
@@ -121,24 +137,29 @@ void output_temp(FILE *fp, int i, int aType, char *Id, int count)
       fprintf(fp,"  ");
     }
 
-  if ((aType%100)/10 == 1)
+  if ((aType%0x100)/0x10 == 0x1)
     {
       fprintf(fp,"unsigned ");
     }
 
-  switch (aType%10)
+  switch (aType%0x10)
     {
       /* FIXME 7 should be double but then vtkActor2D wont compile! */
       /* 7 should be double! */
-    case 1:   fprintf(fp,"float  "); break;
-    case 7:   fprintf(fp,"double "); break;
-    case 4:   fprintf(fp,"int    "); break;
-    case 5:   fprintf(fp,"short  "); break;
-    case 6:   fprintf(fp,"long   "); break;
-    case 2:     fprintf(fp,"void   "); break;
-    case 3:     fprintf(fp,"char   "); break;
-    case 9:     fprintf(fp,"%s ",Id); break;
-    case 8: return;
+    case 0x1:   fprintf(fp,"float  "); break;
+    case 0x7:   fprintf(fp,"double "); break;
+    case 0x4:   fprintf(fp,"int    "); break;
+    case 0x5:   fprintf(fp,"short  "); break;
+    case 0x6:   fprintf(fp,"long   "); break;
+    case 0x2:     fprintf(fp,"void   "); break;
+    case 0x3:     fprintf(fp,"char   "); break;
+    case 0xA:   fprintf(fp,"vtkIdType "); break;
+    case 0xB:   fprintf(fp,"long long "); break;
+    case 0xC:   fprintf(fp,"__int64 "); break;
+    case 0xD:     fprintf(fp,"signed char "); break;
+    case 0xE:     fprintf(fp,"bool "); break;
+    case 0x9:     fprintf(fp,"%s ",Id); break;
+    case 0x8: return;
     }
 
   /* handle array arguements */
@@ -148,14 +169,14 @@ void output_temp(FILE *fp, int i, int aType, char *Id, int count)
       return;
     }
   
-  switch ((aType%1000)/100)
+  switch ((aType%0x1000)/0x100)
     {
-    case 1: fprintf(fp, " *"); break; /* act " &" */
-    case 2: fprintf(fp, "&&"); break;
-    case 3: fprintf(fp, " *"); break;
-    case 4: fprintf(fp, "&*"); break;
-    case 5: fprintf(fp, "*&"); break;
-    case 7: fprintf(fp, "**"); break;
+    case 0x1: fprintf(fp, " *"); break; /* act " &" */
+    case 0x2: fprintf(fp, "&&"); break;
+    case 0x3: fprintf(fp, " *"); break;
+    case 0x4: fprintf(fp, "&*"); break;
+    case 0x5: fprintf(fp, "*&"); break;
+    case 0x7: fprintf(fp, "**"); break;
     default: fprintf(fp,"  "); break;
     }
   
@@ -168,11 +189,11 @@ void use_hints(FILE *fp)
 {
   int  i;
   /* use the hint */
-  switch (currentFunction->ReturnType%1000)
+  switch (currentFunction->ReturnType%0x1000)
     {
-    case 301: case 307:  
-    case 304: case 305: case 306: 
-    case 313: case 314: case 315: case 316:
+    case 0x301: case 0x307:  
+    case 0x304: case 0x305: case 0x306: 
+    case 0x30A: case 0x30B: case 0x30C: case 0x30D: case 0x30E:
       /* float array */
       fprintf(fp,"  BasicArray<double> tempResult(NTuple(%i,1));\n",currentFunction->HintSize);
       for (i = 0; i < currentFunction->HintSize; i++)
@@ -186,30 +207,30 @@ void use_hints(FILE *fp)
 
 void return_result(FILE *fp)
 {
-  switch (currentFunction->ReturnType%1000)
+  switch (currentFunction->ReturnType%0x1000)
     {
-    case 2:
+    case 0x2:
       /* void, do nothing */
       break;
-    case 1: case 7: 
-    case 4: case 5: case 6: case 14:
-    case 15: case 16: case 13:
-    case 3:
+    case 0x1: case 0x7: 
+    case 0x4: case 0x5: case 0x6: case 0xA: case 0xB: case 0xC: case 0xD:
+    case 0x13: case 0x14: case 0x15: case 0x16: case 0x1A: case 0x1B: case 0x1C:
+    case 0x3:
       fprintf(fp,"  retval = Array(double(temp%i));\n",MAX_ARGS); 
       break;
-    case 303:
+    case 0x303:
       /* string. i.e. char* */ 
       fprintf(fp,"  retval = Array(QString(temp%i));\n",MAX_ARGS);
       break;
-    case 109:
-    case 309:  
+    case 0x109:
+    case 0x309:  
       fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i));\n",MAX_ARGS);
       break;
       /* handle functions returning vectors */
       /* this is done by looking them up in a hint file */
-    case 301: case 307:
-    case 304: case 305: case 306:
-    case 313: case 314: case 315: case 316:      
+    case 0x301: case 0x307: case 0x313:
+    case 0x304: case 0x305: case 0x306: case 0x30A: case 0x30B: case 0x30C:
+    case 0x30D: case 0x30E: case 0x31A: case 0x31B: case 0x31C:
       use_hints(fp);
       break;
     default:
@@ -220,10 +241,10 @@ void return_result(FILE *fp)
 
 void handle_return_prototype(FILE *fp)
 {
-  switch (currentFunction->ReturnType%1000)
+  switch (currentFunction->ReturnType%0x1000)
     {
-    case 109:
-    case 309:  
+    case 0x109:
+    case 0x309:  
       /* FIXME
 	 fprintf(fp,"    int %sCommand(ClientData, Tcl_Interp *, int, char *[]);\n",currentFunction->ReturnClass);
       */
@@ -244,7 +265,7 @@ void get_args(FILE *fp, int i)
     }
   
   /* handle VAR FUNCTIONS */
-  if (currentFunction->ArgTypes[i] == 5000)
+  if (currentFunction->ArgTypes[i] == 0x5000)
     {
       fprintf(fp,"    temp%i->interp = interp;\n",i);
       fprintf(fp,"    temp%i->command = strcpy(new char [strlen(argv[2])+1],argv[2]);\n",i);
@@ -252,50 +273,51 @@ void get_args(FILE *fp, int i)
     }
 
   /* ignore void */
-  if (((currentFunction->ArgTypes[i] % 10) == 2)&&
-      (!((currentFunction->ArgTypes[i]%1000)/100)))
+  if (((currentFunction->ArgTypes[i] % 0x10) == 2)&&
+      (!((currentFunction->ArgTypes[i]%0x1000)/0x100)))
     {
       return;
     }
   
-  switch (currentFunction->ArgTypes[i]%1000)
+  switch (currentFunction->ArgTypes[i]%0x1000)
     {
-    case 1: case 7:  
+    case 0x1: case 0x7:  
       /* floating point, i.e. double */
       emitTempScalarFromArgs(fp,i,start_arg,"double");
       break;
-    case 4: case 5: case 6:
+    case 0x4: case 0x5: case 0x6: case 0xA: case 0xB: case 0xC: case 0xD:
       /* int */ 
       emitTempScalarFromArgs(fp,i,start_arg,"int");
       break;
-    case 3:
+    case 0x3:
       /* char */
       emitTempScalarFromArgs(fp,i,start_arg,"char");
       break;
-    case 13:
+    case 0x13:
       /* unsigned char */
       emitTempScalarFromArgs(fp,i,start_arg,"unsigned char");
       break;
-    case 14:
+    case 0x14:
       /* unsigned int */
       emitTempScalarFromArgs(fp,i,start_arg,"unsigned int");
       break;
-    case 15:
+    case 0x15:
       /* unsigned short */
       emitTempScalarFromArgs(fp,i,start_arg,"unsigned short");
       break;
-    case 16:
+    case 0x16:
       /* unsigned long */
       emitTempScalarFromArgs(fp,i,start_arg,"unsigned long");
       break;
-    case 303:
+    case 0x303:
       /* char* */
       fprintf(fp,"  char tmp_string%i[1024];\n",i);
       fprintf(fp,"  strcpy(tmp_string%i,qPrintable(arg[%i].asString())); \n",i,start_arg);
       fprintf(fp,"  temp%i = tmp_string%i;\n",i,i);
       break;
       /* FLOAT, int, short, long, double FIX */
-    case 301: case 304: case 305: case 306: case 307: case 314: case 313: case 315: case 316:
+    case 0x301: case 0x304: case 0x305: case 0x306: case 0x307: 
+    case 0x314: case 0x313: case 0x315: case 0x316:
       /* Check if the args(start_arg) is a vector */
       if ( currentFunction->ArgCounts[i] <= 1 )
 	{
@@ -306,61 +328,64 @@ void get_args(FILE *fp, int i)
 	  fprintf(fp,"      Array vect = arg[%i].asDenseArray().toClass(Double);\n",start_arg);
 	  fprintf(fp,"      BasicArray<double> data = vect.real<double>();\n");
 	  fprintf(fp,"      int length = data.length();\n");
-	  fprintf(fp,"      temp%i = new %s[length];\n", i, typeNames[currentFunction->ArgTypes[i]%100]);
-	  fprintf(fp,"      for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n      }\n",i,typeNames[currentFunction->ArgTypes[i]%100]);
+	  fprintf(fp,"      temp%i = new %s[length];\n", i, typeName(currentFunction->ArgTypes[i]%0x100));
+	  fprintf(fp,"      for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n      }\n",
+		  i,typeName(currentFunction->ArgTypes[i]%0x100));
 	} else
 	{
 	  fprintf(fp,"  if ( !(arg[%i].isVector() && arg[%i].length() == %i) )\n",
 		  start_arg,start_arg,currentFunction->ArgCounts[i]);
 	  fprintf(fp,"    throw Exception(\"Mismatch in vector lengths\");\n");
 	  /* now allocate the array and copy octave vector */
-	  fprintf(fp,"  Array vect = arg[%i].asDenseArray().toClass(Double);\n",start_arg);
-	  fprintf(fp,"  BasicArray<double> data = vect.real<double>();\n");
-	  fprintf(fp,"  int length = data.length();\n");
-	  fprintf(fp,"  for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n",
-		  i,typeNames[currentFunction->ArgTypes[i]%100]);
+	  fprintf(fp,"  {\n");
+	  fprintf(fp,"    Array vect = arg[%i].asDenseArray().toClass(Double);\n",start_arg);
+	  fprintf(fp,"    BasicArray<double> data = vect.real<double>();\n");
+	  fprintf(fp,"    int length = data.length();\n");
+	  fprintf(fp,"    for ( int k = 0; k < length; k++ ) temp%i[k] = (%s)data[k+1];\n",
+		  i,typeName(currentFunction->ArgTypes[i]%0x100));
+	  fprintf(fp,"  }\n");
 	}
       break;
-    case 109:
-    case 309:
+    case 0x109:
+    case 0x309:
       fprintf(fp,"  temp%i = GetVTKPointer<%s>(arg[%i]);\n",
 	      i,currentFunction->ArgClasses[i],start_arg);
       break;
-    case 2:    
-    case 9:
+    case 0x2:    
+    case 0x9:
       break;
     default:
       if (currentFunction->ArgCounts[i] > 1)
         {
 	  for (j = 0; j < currentFunction->ArgCounts[i]; j++)
 	    {
-	      switch (currentFunction->ArgTypes[i]%100)
+	      switch (currentFunction->ArgTypes[i]%0x100)
 		{
-		case 1: case 7:  
+		case 0x1: case 0x7:  
 		  /* floating point, i.e. double */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "double");
 		  break;
-		case 4: case 5: case 6: 
+		case 0x4: case 0x5: case 0x6: 
 		  /* int */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "int");
 		  break;
-		case 3:
+		case 0x3:
 		  /* char */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "char");
 		  break;
-		case 13:
+		case 0x13:
 		  /* unsigned char */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "unsigned char");
 		  break;
-		case 14:
+		case 0x14:
 		  /* unsigned int */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "unsigned int");
 		  break;
-		case 15:
+		case 0x15:
 		  /* unsigned short */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "unsigned short");
 		  break;
-		case 16:
+		case 0x16:
 		  /* unsigned long */
 		  emitTempArrayFromArgs(fp, i, j, start_arg, "unsigned long");
 		  break;
@@ -429,7 +454,8 @@ void outputSubsrefFunction(FILE *fp, FileInfo *data)
   for (i=0;i<data->NumberOfFunctions;i++)
     if (data->Functions[i].Name &&
 	(strncmp(data->Functions[i].Name,"Get",3) == 0) &&
-	(data->Functions[i].NumberOfArguments == 0))
+	(data->Functions[i].NumberOfArguments == 0) &&
+	data->Functions[i].IsValid)
       {
 	fprintf(fp,"    if (subsa[1].asString() == \"%s\")\n",
 		data->Functions[i].Name+3);
@@ -443,7 +469,8 @@ void outputSubsrefFunction(FILE *fp, FileInfo *data)
   for (i=0;i<data->NumberOfFunctions;i++)
     if (data->Functions[i].Name &&
 	(strncmp(data->Functions[i].Name,"Get",3) == 0) &&
-	(data->Functions[i].NumberOfArguments > 0))
+	(data->Functions[i].NumberOfArguments > 0) &&
+	data->Functions[i].IsValid)
       {
 	fprintf(fp,"    if (subsa[1].asString() == \"%s\")\n",
 		data->Functions[i].Name+3);
@@ -473,22 +500,11 @@ void outputDisplayFunction(FILE *fp, FileInfo *data)
   fprintf(fp,"     PrintArrayClassic(arg[0],100,eval);\n");
   fprintf(fp,"     return ArrayVector();\n");
   fprintf(fp,"  }\n");
-  fprintf(fp,"  eval->outputMessage(\"  \" + arg[0].className() + \"\\n\");\n");
-  for (i=0;i<data->NumberOfFunctions;i++)
-    if (data->Functions[i].Name &&
-	(strncmp(data->Functions[i].Name,"Get",3) == 0) &&
-	(data->Functions[i].NumberOfArguments == 0))
-      {
-	fprintf(fp,"  eval->outputMessage(\"  %s : \");\n",data->Functions[i].Name+3);
-	fprintf(fp,"  {\n");
-	fprintf(fp,"    ArrayVector tmp = %s%sFunction(1,arg[0]);\n",data->ClassName,data->Functions[i].Name);
-	fprintf(fp,"    if (tmp.size() > 0)\n");
-	fprintf(fp,"      eval->outputMessage(SummarizeArrayCellEntry(tmp[0]));\n");
-	fprintf(fp,"    else\n");
-	fprintf(fp,"      eval->outputMessage(\"[]\");\n");
-	fprintf(fp,"  }\n");
-	fprintf(fp,"  eval->outputMessage(\"\\n\");\n");
-      }
+  fprintf(fp,"  %s* vtk_pointer = GetVTKPointer<%s>(arg[0]);\n",data->ClassName,data->ClassName);
+  fprintf(fp,"  std::ostringstream ss;\n");
+  fprintf(fp,"  vtkIndent ind;\n");
+  fprintf(fp,"  vtk_pointer->PrintSelf(ss,ind);\n");
+  fprintf(fp,"  eval->outputMessage(QString::fromStdString(ss.str()));\n");
   fprintf(fp,"  return ArrayVector();\n");
   fprintf(fp,"}\n");
 }
@@ -506,9 +522,9 @@ void outputOverloadedFunction(FILE *fp, FileInfo *data)
 	  data->ClassName,currentFunction->Name);
   for (i=0;i<data->NumberOfFunctions;i++)
     if (data->Functions[i].Name &&
-	strcmp(data->Functions[i].Name,currentFunction->Name) == 0
+	(strcmp(data->Functions[i].Name,currentFunction->Name) == 0)
 	&& data->Functions[i].IsValid)
-      fprintf(fp,"  if (arg.size() == %d) return %s%s%dFunction(nargout,arg);\n",
+      fprintf(fp,"  if (arg.size() == %d) return %s%s__%dFunction(nargout,arg);\n",
 	      data->Functions[i].NumberOfArguments+1,
 	      data->ClassName,
 	      data->Functions[i].Name,
@@ -523,6 +539,7 @@ void outputFunction(FILE *fp, FileInfo *data)
   int i;
   int args_ok = 1;
  
+  //  printf("Processing function %s\n",currentFunction->Name);
 
   /* some functions will not get wrapped no matter what else */
   if (currentFunction->IsOperator || 
@@ -537,23 +554,23 @@ void outputFunction(FILE *fp, FileInfo *data)
   for (i = 0; i < currentFunction->NumberOfArguments; i++)
     {
       /* FIXME */
-      if (currentFunction->ArgTypes[i] == 5000) return;
-      if ((currentFunction->ArgTypes[i]%10) == 8) args_ok = 0;
+      if (currentFunction->ArgTypes[i] == 0x5000) return;
+      if ((currentFunction->ArgTypes[i]%0x10) == 0x8) args_ok = 0;
       /* if its a pointer arg make sure we have the ArgCount */
-      if ((currentFunction->ArgTypes[i]%1000 >= 100) &&
-	  (currentFunction->ArgTypes[i]%1000 != 303)&&
-	  (currentFunction->ArgTypes[i]%1000 != 301)&& /* FLOAT* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 303)&& /* char* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 304)&& /* int* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 305)&& /* short* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 306)&& /* long* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 307)&& /* double* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 313)&& /* unsigned char* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 314)&& /* unsigned int* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 315)&& /* unsigned short* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 316)&& /* unsigned long* FIX */
-	  (currentFunction->ArgTypes[i]%1000 != 309)&&
-	  (currentFunction->ArgTypes[i]%1000 != 109)) 
+      if ((currentFunction->ArgTypes[i]%0x1000 >= 0x100) &&
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x303)&&
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x301)&& /* FLOAT* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x303)&& /* char* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x304)&& /* int* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x305)&& /* short* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x306)&& /* long* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x307)&& /* double* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x313)&& /* unsigned char* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x314)&& /* unsigned int* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x315)&& /* unsigned short* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x316)&& /* unsigned long* FIX */
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x309)&&
+	  (currentFunction->ArgTypes[i]%0x1000 != 0x109)) 
 	{
 	  if (currentFunction->NumberOfArguments > 1 ||
 	      !currentFunction->ArgCounts[i])
@@ -569,30 +586,37 @@ void outputFunction(FILE *fp, FileInfo *data)
 				(currentFunction->ArgTypes[i] != 16)) args_ok = 0;
       */				
     }
-  if ((currentFunction->ReturnType%10) == 8) args_ok = 0;
-  if (((currentFunction->ReturnType%1000)/100 != 3)&&
-      ((currentFunction->ReturnType%1000)/100 != 1)&&
-      ((currentFunction->ReturnType%1000)/100)) args_ok = 0;
+  if ((currentFunction->ReturnType%0x10) == 0x8) args_ok = 0;
+  if (((currentFunction->ReturnType%0x1000)/0x100 != 0x3)&&
+      ((currentFunction->ReturnType%0x1000)/0x100 != 0x1)&&
+      ((currentFunction->ReturnType%0x1000)/0x100)) args_ok = 0;
   if (currentFunction->NumberOfArguments && 
-      (currentFunction->ArgTypes[0] == 5000)
-      &&(currentFunction->NumberOfArguments != 1)) args_ok = 0;
+      (currentFunction->ArgTypes[0] == 0x5000)
+      &&(currentFunction->NumberOfArguments != 0x1)) args_ok = 0;
 
   /* we can't handle void * return types */
-  if ((currentFunction->ReturnType%1000) == 302) 
+  if ((currentFunction->ReturnType%0x1000) == 0x302) 
     {
       args_ok = 0;
       printf("void* return type!\n");
     }
   
   /* watch out for functions that dont have enough info */
-  switch (currentFunction->ReturnType%1000)
+  switch (currentFunction->ReturnType%0x1000)
     {
-    case 301: case 307:
-    case 304: case 305: case 306:
-    case 313: case 314: case 315: case 316:
+    case 0x301: case 0x307:
+    case 0x304: case 0x305: case 0x306:
+    case 0x313: case 0x314: case 0x315: case 0x316:
       args_ok = currentFunction->HaveHint;
       break;
     }
+
+  //  printf("Is Valid %d\n",args_ok);
+  /* if (!args_ok) */
+  /*   { */
+  /*     printf("Signature %s\n",currentFunction->Signature); */
+  /*     printf("Return type %x\n",currentFunction->ReturnType); */
+  /*   } */
 
   currentFunction->IsValid = args_ok;
   /* if the args are OK and it is not a constructor or destructor */
@@ -605,7 +629,7 @@ void outputFunction(FILE *fp, FileInfo *data)
       if (currentFunction->OverloadCount == 0)
 	strcpy(funcname,currentFunction->Name);
       else
-	sprintf(funcname,"%s%d",currentFunction->Name,currentFunction->OverloadCount);
+	sprintf(funcname,"%s__%d",currentFunction->Name,currentFunction->OverloadCount);
 
       fprintf(fp,"//@@Signature\n");
       fprintf(fp,"//gfunction @%s:%s %s%sFunction\n",
@@ -646,12 +670,12 @@ void outputFunction(FILE *fp, FileInfo *data)
 	  get_args(fp,i);
 	}
     
-      switch (currentFunction->ReturnType%1000)
+      switch (currentFunction->ReturnType%0x1000)
 	{
-	case 2:
+	case 0x2:
 	  fprintf(fp,"  vtk_pointer->%s(",currentFunction->Name);
 	  break;
-	case 109:
+	case 0x109:
 	  fprintf(fp,"  temp%i = &(vtk_pointer)->%s(",MAX_ARGS,currentFunction->Name);
 	  break;
 	default:
@@ -663,11 +687,11 @@ void outputFunction(FILE *fp, FileInfo *data)
 	    {
 	      fprintf(fp,",");
 	    }
-	  if (currentFunction->ArgTypes[i] == 109)
+	  if (currentFunction->ArgTypes[i] == 0x109)
 	    {
 	      fprintf(fp,"*(temp%i)",i);
 	    }
-	  else if (currentFunction->ArgTypes[i] == 5000)
+	  else if (currentFunction->ArgTypes[i] == 0x5000)
 	    {
 	      /* FIXME				
 		 fprintf(fp,"vtkTclVoidFunc,(void *)temp%i",i);
@@ -680,7 +704,7 @@ void outputFunction(FILE *fp, FileInfo *data)
 	}
       fprintf(fp,");\n");
       if (currentFunction->NumberOfArguments && 
-	  (currentFunction->ArgTypes[0] == 5000))
+	  (currentFunction->ArgTypes[0] == 0x5000))
 	{
 	  /* FIXME
 	     fprintf(fp,"      vtk_pointer->%sArgDelete(vtkTclVoidFuncArgDelete);\n",
@@ -765,9 +789,9 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
   fprintf(fp,"    return arg[0];\n");
   fprintf(fp,"  } else {\n");
   fprintf(fp,"    vtkObjectBase *p = GetVTKPointer<vtkObjectBase>(arg[0]);\n");
-  fprintf(fp,"    %s*q = dynamic_cast<%s*>(p);\n",data->ClassName,data->ClassName);
-  fprintf(fp,"    if (!q)\n");
+  fprintf(fp,"    if (!p->IsA(\"%s\"))\n",data->ClassName);
   fprintf(fp,"      throw Exception(\"Unable to type convert supplied object to an instance of type %s\");\n",data->ClassName);
+  fprintf(fp,"    %s*q = reinterpret_cast<%s*>(p);\n",data->ClassName,data->ClassName);
   fprintf(fp,"    Array ret(arg[0]);\n");
   fprintf(fp,"    ret.structPtr().setClassPath(StringVector() << \"%s\");\n",data->ClassName);
   fprintf(fp,"    return ret;\n");

@@ -240,7 +240,7 @@ FIND_PACKAGE(VTK)
 IF (VTK_FOUND)
   ADD_DEFINITIONS( -DHAVE_VTK )
   INCLUDE(${VTK_USE_FILE})
-  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} QVTK vtkRendering vtkVolumeRendering vtkGraphics vtkIO vtkCommon)
+  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} QVTK vtkFiltering vtkRendering vtkVolumeRendering vtkGraphics vtkIO vtkCommon)
 ENDIF (VTK_FOUND)
 ENDIF (USE_VTK)
 

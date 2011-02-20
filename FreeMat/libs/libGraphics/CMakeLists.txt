@@ -27,6 +27,7 @@ macro(wrapvtkkit classlist destdir)
   endforeach(class)
 endmacro(wrapvtkkit)
 
+if (USE_VTK)
 INCLUDE(${VTK_KITS_DIR}/vtkCommonKit.cmake)
 wrapvtkkit("${VTK_COMMON_CLASSES}" "${CMAKE_CURRENT_SOURCE_DIR}/vtk/common")
 INCLUDE(${VTK_KITS_DIR}/vtkFilteringKit.cmake)
@@ -55,6 +56,7 @@ INCLUDE(${VTK_KITS_DIR}/vtkViewsKit.cmake)
 wrapvtkkit("${VTK_VIEWS_CLASSES}" "${CMAKE_CURRENT_SOURCE_DIR}/vtk/views")
 INCLUDE(${VTK_KITS_DIR}/vtkWidgetsKit.cmake)
 wrapvtkkit("${VTK_WIDGETS_CLASSES}" "${CMAKE_CURRENT_SOURCE_DIR}/vtk/widgets")
+endif(USE_VTK)
 
 ADD_LIBRARY( Graphics 
 GLRenderEngine.cpp 

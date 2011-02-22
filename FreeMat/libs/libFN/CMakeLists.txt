@@ -14,12 +14,25 @@ IF( MSVC )
   )
 ENDIF( MSVC )
 
-ADD_LIBRARY( FN
-FNFun.cpp 
+set(FN_SOURCES
 Interp1D.cpp 
 Interp2D.cpp 
-LoadFN.cpp 
+FNFun.cpp
 OptFun.cpp 
+)
+
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
+	DEPENDS ${FN_SOURCES}
+	COMMAND ${PYTHON_EXECUTABLE}
+	ARGS ${CMAKE_SOURCE_DIR}/tools/siggen.py ${CMAKE_CURRENT_SOURCE_DIR} FN
+	COMMENT "Generating function signatures"
+	VERBATIM
+	)
+
+ADD_LIBRARY( FN
+${FN_SOURCES}
+${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
 ${LIBM_FILES}
 )
 

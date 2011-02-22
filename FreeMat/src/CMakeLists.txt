@@ -8,6 +8,16 @@ QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/DumbTerminal.hpp ${CMAKE_CURRENT_S
 
 QT4_ADD_RESOURCES( FreeMat_qrc ${CMAKE_CURRENT_SOURCE_DIR}/FreeMat.qrc  )
 
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
+	DEPENDS MainApp.cpp
+	COMMAND ${PYTHON_EXECUTABLE}
+	ARGS ${CMAKE_SOURCE_DIR}/tools/siggen.py ${CMAKE_CURRENT_SOURCE_DIR} Main
+	COMMENT "Generating function signatures"
+	VERBATIM
+	)
+
+
 ADD_EXECUTABLE( FreeMat WIN32
 ${CMAKE_CURRENT_SOURCE_DIR}/application.moc.cpp 
 application.cpp
@@ -20,6 +30,7 @@ main.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/DumbTerminal.moc.cpp
 DumbTerminal.cpp 
 ${CMAKE_CURRENT_SOURCE_DIR}/Terminal.moc.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
 Terminal.cpp 
 ${FreeMat_qrc}
 freemat.rc 
@@ -35,6 +46,18 @@ IF( USE_DYNLINK )
 	TARGET_LINK_LIBRARIES( FreeMat blas )
 ENDIF( USE_DYNLINK )
 
+
+if (USE_VTK)
+set (VTK_WRAPPER_LIBS 
+vtkCommonWrapper        vtkIOWrapper
+vtkFilteringWrapper  vtkParallelWrapper
+vtkGeovisWrapper        vtkRenderingWrapper
+vtkGraphicsWrapper    vtkViewsWrapper
+vtkHybridWrapper        vtkVolumeRenderingWrapper
+vtkImagingWrapper      vtkWidgetsWrapper
+vtkInfovisWrapper)
+endif (USE_VTK)
+
 TARGET_LINK_LIBRARIES( FreeMat 
 Core 
 FN 
@@ -44,6 +67,7 @@ XP
 Mex
 MatC
 levmar
+${VTK_WRAPPER_LIBS}
 ${QT_QTCORE_LIBRARY} 
 ${QT_QTGUI_LIBRARY} 
 ${QT_QTNETWORK_LIBRARY} 

@@ -47,6 +47,8 @@ SET(QT_USE_QTSVG TRUE)
 
 FIND_PACKAGE(Qt4 REQUIRED)
 
+FIND_PACKAGE(PythonInterp REQUIRED)
+
 ADD_DEFINITIONS( ${QT_DEFINITIONS} ) 
 
 MACRO (QT4_GENERATE_UI infile outfile )
@@ -240,7 +242,7 @@ FIND_PACKAGE(VTK)
 IF (VTK_FOUND)
   ADD_DEFINITIONS( -DHAVE_VTK )
   INCLUDE(${VTK_USE_FILE})
-  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} QVTK vtkFiltering vtkRendering vtkVolumeRendering vtkGraphics vtkIO vtkCommon)
+  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} QVTK vtkFiltering vtkRendering vtkVolumeRendering vtkGraphics vtkIO vtkCommon vtkGeovis vtkImaging vtkInfovis vtkWidgets vtkHybrid vtkParallel)
 ENDIF (VTK_FOUND)
 ENDIF (USE_VTK)
 

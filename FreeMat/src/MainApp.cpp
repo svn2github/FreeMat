@@ -1054,8 +1054,53 @@ void MainApp::EnableRepaint() {
 void MainApp::DisableRepaint() {
   GfxDisableRepaint();
 }
+
+void  LoadBuiltinFunctionsFreeMat(Context* context,bool guimode);
+void  LoadBuiltinFunctionsCore(Context* context,bool guimode);
+void  LoadBuiltinFunctionsGraphics(Context* context,bool guimode);
+void  LoadBuiltinFunctionsFN(Context* context,bool guimode);
+void  LoadBuiltinFunctionsMain(Context* context,bool guimode);
+
+#ifdef HAVE_VTK
+void LoadBuiltinFunctionsVTKRendering(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKInfovis(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKWidgets(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKCommon(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKImaging(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKHybrid(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKParallel(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKVolumeRendering(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKIO(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKViews(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKFiltering(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKGeovis(Context *context, bool guiflag);
+void LoadBuiltinFunctionsVTKGraphics(Context *context, bool guiflag);
+#endif
+
 			 
-void LoadBuiltinFunctions(Context *context, bool guimode);
+void LoadBuiltinFunctions(Context *context, bool guimode)
+{
+  LoadBuiltinFunctionsFreeMat(context,guimode);
+  LoadBuiltinFunctionsCore(context,guimode);
+  LoadBuiltinFunctionsGraphics(context,guimode);
+  LoadBuiltinFunctionsFN(context,guimode);
+  LoadBuiltinFunctionsMain(context,guimode);
+#ifdef HAVE_VTK
+  LoadBuiltinFunctionsVTKRendering(context,guimode);
+  LoadBuiltinFunctionsVTKInfovis(context,guimode);
+  LoadBuiltinFunctionsVTKWidgets(context,guimode);
+  LoadBuiltinFunctionsVTKCommon(context,guimode);
+  LoadBuiltinFunctionsVTKImaging(context,guimode);
+  LoadBuiltinFunctionsVTKHybrid(context,guimode);
+  LoadBuiltinFunctionsVTKParallel(context,guimode);
+  LoadBuiltinFunctionsVTKVolumeRendering(context,guimode);
+  LoadBuiltinFunctionsVTKIO(context,guimode);
+  LoadBuiltinFunctionsVTKViews(context,guimode);
+  LoadBuiltinFunctionsVTKFiltering(context,guimode);
+  LoadBuiltinFunctionsVTKGeovis(context,guimode);
+  LoadBuiltinFunctionsVTKGraphics(context,guimode);
+#endif
+}
 
 void InitializeFileSubsystem();
 

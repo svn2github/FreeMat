@@ -3,8 +3,8 @@ INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIR} ${QT_QTCORE_I
 
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/Interpreter.hpp ${CMAKE_CURRENT_SOURCE_DIR}/Intrepreter.moc.cpp)
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/DebugStream.hpp ${CMAKE_CURRENT_SOURCE_DIR}/DebugStream.moc.cpp )
- 
-ADD_LIBRARY( FreeMatlib 
+
+set (FREEMAT_SOURCES
 Array.cpp 
 Algorithms.cpp 
 Interpreter.cpp 
@@ -35,6 +35,20 @@ FuncPtr.cpp
 AnonFunc.cpp 
 SparseCCS.cpp 
 Stats.cpp
+)
+
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
+	DEPENDS ${FREEMAT_SOURCES}
+	COMMAND ${PYTHON_EXECUTABLE}
+	ARGS ${CMAKE_SOURCE_DIR}/tools/siggen.py ${CMAKE_CURRENT_SOURCE_DIR} FreeMat
+	COMMENT "Generating function signatures"
+	VERBATIM
+	)
+ 
+ADD_LIBRARY( FreeMatlib 
+${FREEMAT_SOURCES}
+${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/Intrepreter.moc.cpp
 DebugStream.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/DebugStream.moc.cpp

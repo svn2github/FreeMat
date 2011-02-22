@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLU
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/helpwidget.hpp ${CMAKE_CURRENT_SOURCE_DIR}/helpwidget.moc.cpp )
 QT4_GENERATE_MOC( ${CMAKE_CURRENT_SOURCE_DIR}/XML.hpp ${CMAKE_CURRENT_SOURCE_DIR}/XML.moc.cpp )
 
-ADD_LIBRARY( Core 
+set(CORE_SOURCES
 Abs.cpp 
 Binary.cpp 
 Ceil.cpp 
@@ -72,9 +72,23 @@ Utils.cpp
 MatIO.cpp 
 XML.cpp 
 Cstruct.cpp 
-Loader.cpp 
 Control.cpp 
 Sparse.cpp 
-Matrix.cpp 
+Matrix.cpp )
+
+
+
+add_custom_command(
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
+	DEPENDS ${CORE_SOURCES}
+	COMMAND ${PYTHON_EXECUTABLE}
+	ARGS ${CMAKE_SOURCE_DIR}/tools/siggen.py ${CMAKE_CURRENT_SOURCE_DIR} Core
+	COMMENT "Generating function signatures"
+	VERBATIM
+	)
+
+ADD_LIBRARY( Core 
+${CORE_SOURCES}
+${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/helpwidget.moc.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/XML.moc.cpp )

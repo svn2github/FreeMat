@@ -1,6 +1,6 @@
-#include "VTKWrap.hpp"
 
 #ifdef HAVE_VTK
+#include "VTKWrap.hpp"
 #include "VTKWindow.hpp"
 
 #include <QtCore/QString>
@@ -151,6 +151,10 @@ VTKViewer::~VTKViewer() {
 //
 // volrender(volume, opacityfunction, colortransferfunction, matlpropvec)
 
+//@@Signature
+//sgfunction volrender VolRenderFunction
+//input volume opacity ctransfer material
+//output none
 ArrayVector VolRenderFunction(int nargout, const ArrayVector& arg, Interpreter *) 
 {
   if (arg.size() < 4)
@@ -184,8 +188,11 @@ ArrayVector VolRenderFunction(int nargout, const ArrayVector& arg, Interpreter *
 
 
 #else
+
+#include "Array.hpp"
+
 ArrayVector VolRenderFunction(int nargout, const ArrayVector& arg, Interpreter *) 
 {
-  throwException("volrender function requires VTK support, which was not enabled at compile time");
+  throw Exception("volrender function requires VTK support, which was not enabled at compile time");
 }
 #endif

@@ -8,6 +8,7 @@
 // First each function gets prototyped.
 #include "Array.hpp"
 #include "Context.hpp"
+#include "Class.hpp"
 
 
 ArrayVector ClassFunction(int, const ArrayVector&);
@@ -37,5 +38,8 @@ void LoadBuiltinFunctionsFreeMat(Context *context, bool guiflag) {
   context->addSpecialFunction("@anonfunction:display",AnonFuncDispFunction,1,0,"x",NULL);
   context->addSpecialFunction("@anonfunction:subsref",AnonFuncSubsrefFunction,2,-1,"x","s",NULL);
   context->addSpecialFunction("@anonfunction:feval",AnonFuncFevalFunction,2,-1,"x","varargin",NULL);
+
+
+// Writing hierarchy definitions for classes
 }
 

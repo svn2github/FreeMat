@@ -780,7 +780,14 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
   fprintf(fp,"//gfunction @%s:%s %sConstructorFunction\n",data->ClassName,data->ClassName,data->ClassName);
   fprintf(fp,"//input a\n");
   fprintf(fp,"//output p\n");
-  fprintf(fp,"ArrayVector %sConstructorFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);
+  if (data->NumberOfSuperClasses > 0)
+    {
+      fprintf(fp,"//@@Parents %s ",data->ClassName);
+      for (i=0;i<data->NumberOfSuperClasses;i++)
+	fprintf(fp,"%s ",data->SuperClasses[i]);
+      fprintf(fp,"\n");
+    }  
+  fprintf(fp,"ArrayVector %sConstructorFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);  
   fprintf(fp,"  if (arg.size() == 0) {\n");
   fprintf(fp,"    Array ret(MakeVTKPointer(%s::New()));\n",data->ClassName);
   fprintf(fp,"    ret.structPtr().setClassPath(StringVector() << \"%s\");\n",data->ClassName);

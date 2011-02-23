@@ -63,4 +63,9 @@ void registerUserClass(QString classname, UserClassTemplate cdata);
  */
 void clearUserClasses();
 
+/**
+ * Define the hierarchy for a class
+ */
+void defineHierarchyForClass(QString classname, StringVector parents);
+
 #endif

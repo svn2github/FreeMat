@@ -841,6 +841,7 @@ Array ClassUnaryOperator(Array a, QString funcname, Interpreter* eval) {
 bool ClassResolveFunction(Interpreter* eval, Array& args, QString funcName, FuncPtr& val) {
   Context *context = eval->getContext();
   // First try to resolve to a method of the base class
+  qDebug() << "Class resolve: " << args.className() << ":" << funcName << "\n";
   if (context->lookupFunction(ClassMangleName(args.className(),funcName),val)) {
     return true;
   } 
@@ -849,6 +850,7 @@ bool ClassResolveFunction(Interpreter* eval, Array& args, QString funcName, Func
   UserClassMetaInfo einfo = classTable[args.className()];
   // Now check the parent classes
   for (int i=0;i<einfo.parentClasses.size();i++) {
+    qDebug() << "Class resolve (parent): " << einfo.parentClasses.at(i) << ":" << funcName << "\n";
     if (context->lookupFunction(ClassMangleName(einfo.parentClasses.at(i),funcName),val)) {
       StringVector argClass(args.className());
       argClass.push_back(einfo.parentClasses.at(i));
@@ -1103,4 +1105,18 @@ QString ClassMangleName(QString className, QString funcName) {
 
 void clearUserClasses() {
   classTable.clear();
+}
+
+void defineHierarchyForClass(QString classname, StringVector parents)
+{
+  QMutexLocker lock(&classMutex);
+  UserClassMetaInfo info;
+  info.parentClasses = parents;
+  classTable[classname] = info;
+}
+
+bool isUserClassDefined(QString classname)
+{
+  QMutexLocker lock(&classMutex);
+  return (classTable.contains(classname));
 }

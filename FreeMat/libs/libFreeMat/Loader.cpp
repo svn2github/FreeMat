@@ -11,6 +11,9 @@
 #include "Class.hpp"
 
 
+ArrayVector AnonFuncDispFunction(int, const ArrayVector&, Interpreter*);
+ArrayVector AnonFuncSubsrefFunction(int, const ArrayVector&, Interpreter*);
+ArrayVector AnonFuncFevalFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector ClassFunction(int, const ArrayVector&);
 ArrayVector FuncPtrDispFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector FuncPtrHorzCatFunction(int, const ArrayVector&);
@@ -20,12 +23,12 @@ ArrayVector FuncPtrSubsasgnFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector LoadLibFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector ImportFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector BlaslibFunction(int, const ArrayVector&);
-ArrayVector AnonFuncDispFunction(int, const ArrayVector&, Interpreter*);
-ArrayVector AnonFuncSubsrefFunction(int, const ArrayVector&, Interpreter*);
-ArrayVector AnonFuncFevalFunction(int, const ArrayVector&, Interpreter*);
 
 
 void LoadBuiltinFunctionsFreeMat(Context *context, bool guiflag) {
+  context->addSpecialFunction("@anonfunction:display",AnonFuncDispFunction,1,0,"x",NULL);
+  context->addSpecialFunction("@anonfunction:subsref",AnonFuncSubsrefFunction,2,-1,"x","s",NULL);
+  context->addSpecialFunction("@anonfunction:feval",AnonFuncFevalFunction,2,-1,"x","varargin",NULL);
   context->addFunction("class",ClassFunction,-1,1,NULL);
   context->addSpecialFunction("@functionpointer:display",FuncPtrDispFunction,1,0,"x",NULL);
   context->addFunction("@functionpointer:horzcat",FuncPtrHorzCatFunction,-1,1,NULL);
@@ -35,9 +38,6 @@ void LoadBuiltinFunctionsFreeMat(Context *context, bool guiflag) {
   context->addSpecialFunction("loadlib",LoadLibFunction,5,0,"libfile","symbolname","functionname","nargin","nargout",NULL);
   context->addSpecialFunction("import",ImportFunction,5,0,"libraryname","symbol","function","returntype","arguments",NULL);
   context->addFunction("blaslib",BlaslibFunction,-1,0,NULL);
-  context->addSpecialFunction("@anonfunction:display",AnonFuncDispFunction,1,0,"x",NULL);
-  context->addSpecialFunction("@anonfunction:subsref",AnonFuncSubsrefFunction,2,-1,"x","s",NULL);
-  context->addSpecialFunction("@anonfunction:feval",AnonFuncFevalFunction,2,-1,"x","varargin",NULL);
 
 
 // Writing hierarchy definitions for classes

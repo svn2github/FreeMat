@@ -224,7 +224,8 @@ void return_result(FILE *fp)
       break;
     case 0x109:
     case 0x309:  
-      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i));\n",MAX_ARGS);
+      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i),\"%s\");\n",MAX_ARGS,
+	      currentFunction->ReturnClass);
       break;
       /* handle functions returning vectors */
       /* this is done by looking them up in a hint file */
@@ -789,9 +790,7 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
     }  
   fprintf(fp,"ArrayVector %sConstructorFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);  
   fprintf(fp,"  if (arg.size() == 0) {\n");
-  fprintf(fp,"    Array ret(MakeVTKPointer(%s::New()));\n",data->ClassName);
-  fprintf(fp,"    ret.structPtr().setClassPath(StringVector() << \"%s\");\n",data->ClassName);
-  fprintf(fp,"    return ret;\n");
+  fprintf(fp,"    return MakeVTKPointer(%s::New(),\"%s\");\n",data->ClassName,data->ClassName);
   fprintf(fp,"  } else if (arg[0].className() == \"%s\") {\n",data->ClassName);
   fprintf(fp,"    return arg[0];\n");
   fprintf(fp,"  } else {\n");

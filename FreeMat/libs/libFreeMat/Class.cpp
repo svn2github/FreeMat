@@ -838,27 +838,32 @@ Array ClassUnaryOperator(Array a, QString funcname, Interpreter* eval) {
 		  funcname + " for arguments of class " + a.className());
 }
 
+// ClassResolveHelper
+static bool ClassResolveHelper(Interpreter* eval, StringVector &classPath, QString funcName, FuncPtr& val) {
+  Context *context = eval->getContext();
+  if (context->lookupFunction(ClassMangleName(classPath.back(),funcName),val))
+    return true;
+  UserClassMetaInfo einfo = classTable[classPath.back()];
+  // Now check each of the parent classes
+  for (int i=0;i<einfo.parentClasses.size();i++) {
+    StringVector savePath(classPath);
+    savePath.push_back(einfo.parentClasses.at(i));
+    if (ClassResolveHelper(eval,savePath,funcName,val))
+      {
+	classPath = savePath;
+	return true;
+      }
+  }
+}
+
 bool ClassResolveFunction(Interpreter* eval, Array& args, QString funcName, FuncPtr& val) {
   Context *context = eval->getContext();
-  // First try to resolve to a method of the base class
-  qDebug() << "Class resolve: " << args.className() << ":" << funcName << "\n";
-  if (context->lookupFunction(ClassMangleName(args.className(),funcName),val)) {
-    return true;
-  } 
-  if (!args.isUserClass()) 
-    throw Exception("class resolve called with non user class");
-  UserClassMetaInfo einfo = classTable[args.className()];
-  // Now check the parent classes
-  for (int i=0;i<einfo.parentClasses.size();i++) {
-    qDebug() << "Class resolve (parent): " << einfo.parentClasses.at(i) << ":" << funcName << "\n";
-    if (context->lookupFunction(ClassMangleName(einfo.parentClasses.at(i),funcName),val)) {
-      StringVector argClass(args.className());
-      argClass.push_back(einfo.parentClasses.at(i));
-      args.structPtr().setClassPath(argClass);
+  StringVector CP = args.structPtr().classPath();
+  if (ClassResolveHelper(eval,CP,funcName,val))
+    {
+      args.structPtr().setClassPath(CP);
       return true;
     }
-  }
-  // Nothing matched, return
   return false;
 }
 

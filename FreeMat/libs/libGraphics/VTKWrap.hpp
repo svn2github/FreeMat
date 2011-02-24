@@ -24,12 +24,14 @@ inline T* GetVTKPointer(const Array &arg) {
   return reinterpret_cast<T*>(val[1].constRealScalar<uint64>());
 }
 
-inline Array MakeVTKPointer(vtkObjectBase *p) {
+inline Array MakeVTKPointer(vtkObjectBase *p, QString cname) {
   StringVector fields;
   fields.push_back("pointer");
   ArrayVector values;
   values.push_back(Array(reinterpret_cast<uint64>(p)));
-  return StructConstructor(fields,values);
+  Array sa = StructConstructor(fields,values);
+  sa.structPtr().setClassPath(StringVector() << cname);
+  return sa;
 }
 
 #endif

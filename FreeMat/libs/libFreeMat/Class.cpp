@@ -154,7 +154,10 @@ static Array ClassAux(const Array &s, QString classname, const StringVector &par
     meta = classTable.value(classname);
   StringVector s_fields(FieldNames(s));
   if (meta.fieldNames != s_fields)
-    throw Exception("fieldnames of structure provided must match the fieldnames for the registered class");
+    {
+      qDebug() << "Registered names " << meta.fieldNames << " vs passed " << s_fields;
+      throw Exception("fieldnames of structure provided must match the fieldnames for the registered class");
+    }
   // Now check to make sure all of the parent objects are the same size as the source object
   for (int i=0;i<parents.size();i++) 
     if (s.dimensions() != parents[i].dimensions())

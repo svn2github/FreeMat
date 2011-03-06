@@ -90,7 +90,7 @@ Array FuncPtrConstructor(Interpreter *eval, FuncPtr val) {
   values.push_back(Array(false));
   values.push_back(EmptyConstructor());
   Array ret(StructConstructor(fields,values));
-  ret.structPtr().setClassPath(StringVector() << "functionpointer");
+  ret.structPtr().setClassName("functionpointer");
   return ret;
 }
 

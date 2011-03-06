@@ -12,6 +12,7 @@ SetBackground(ren1,0.1,0.2,0.4);
 renWin = vtkRenderWindow;
 AddRenderer(renWin,ren1);
 SetSize(renWin,300,300);
+keyboard
 for i=1:360
 	sleep(0.03);
 Render(renWin);

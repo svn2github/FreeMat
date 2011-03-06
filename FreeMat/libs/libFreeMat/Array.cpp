@@ -500,7 +500,7 @@ static inline Array Tget_struct(const Array*ptr, S ndx) {
   StructArray &lp(ret.structPtr());
   for (int i=0;i<rp.fieldCount();i++)
     lp[rp.fieldName(i)] = Get(rp[i],ndx);
-  lp.setClassPath(rp.classPath());
+  lp.setClassName(rp.className());
   lp.updateDims();
   return ret;
 }
@@ -680,7 +680,7 @@ static inline Array Tget_struct_scalar(const Array*ptr, S ndx) {
   StructArray &lp(ret.structPtr());
   for (int i=0;i<rp.fieldCount();i++)
     lp[rp.fieldName(i)].set(1,rp[i].get(ndx));
-  lp.setClassPath(rp.classPath());
+  lp.setClassName(rp.className());
   lp.updateDims();
   return ret;
 }

@@ -304,7 +304,7 @@ double Serialize::getDouble() {
   return t;
 }
 
-DataClass Serialize::getDataClass(bool& sparseflag, StringVector& className, bool& complexflag) {
+DataClass Serialize::getDataClass(bool& sparseflag, QString& className, bool& complexflag) {
   checkSignature('a',1);
   unsigned char a = getByte();
   sparseflag = (a & 16) > 0;
@@ -586,7 +586,7 @@ void Serialize::putArray(const Array& dat) {
 void Serialize::getArray(Array& dat) {
   checkSignature('A',1);
   bool sparseflag;
-  StringVector className;
+  QString className;
   bool complexflag;
   DataClass dclass(getDataClass(sparseflag,className,complexflag));
   NTuple dims(getDimensions());
@@ -611,7 +611,7 @@ void Serialize::getArray(Array& dat) {
     StructArray rp;
     for (int i=0;i<ncount;i++) 
       rp.insert(getString(),BasicArray<Array>(dims));
-    rp.setClassPath(className);
+    rp.setClassName(className);
     for (index_t j=1;j<=dims.count();j++)
       for (int i=0;i<ncount;i++)
 	getArray(rp[i][j]);

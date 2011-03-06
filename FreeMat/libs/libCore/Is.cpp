@@ -94,7 +94,7 @@ static bool IsSameStruct(const Array& a, const Array& b) {
   const StructArray &ar(a.constStructPtr());
   const StructArray &br(b.constStructPtr());
   if (ar.fieldNames() != br.fieldNames()) return false;
-  if (ar.classPath() != br.classPath()) return false;
+  if (ar.className() != br.className()) return false;
   for (int i=0;i<ar.fieldCount();i++)
     if (!IsSame(ar[i],br[i])) return false;
   return true;

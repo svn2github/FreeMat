@@ -1,4 +1,4 @@
-set(wrapcmd "${CMAKE_SOURCE_DIR}/tools/vtkwrap/vtkWrapFreeMat")
+set(wrapcmd "vtkWrapFreeMat")
 
 INCLUDE(${VTK_KITS_DIR}/vtkIOKit.cmake)
 

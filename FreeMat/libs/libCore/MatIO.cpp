@@ -228,7 +228,7 @@ Array MatIO::getClassArray(NTuple dm) {
   Array className(getDataElement());
   Array structBase(getStructArray(dm));
   StructArray& rp(structBase.structPtr());
-  rp.setClassPath(StringVector() << className.asString());
+  rp.setClassName(className.asString());
   return structBase;
 }
 

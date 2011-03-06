@@ -32,17 +32,6 @@ struct UserClassMetaInfo {
 static QMutex classMutex;
 static QMap<QString,UserClassMetaInfo> classTable;
 
-// Bizzarrrrreee -- the class support needs a complete rewrite!
-class ClassPathSaver
-{
-  Array &m_ref;
-  StringVector m_path;
-public:
-  ClassPathSaver(Array& r) : m_ref(r), m_path(r.structPtr().classPath()) {}
-  ~ClassPathSaver() {m_ref.structPtr().setClassPath(m_path);}
-};
-
-
 // some behavioral observations on classes.
 //  The first call to "class" is the definitive one.
 //  The exact order of the structure fieldnames must be the same 
@@ -136,23 +125,15 @@ public:
 //
 // To revisit the class implementation... 
 //
-// First off, the data structure I used in the previous version was
-// strange.  I don't know why it is so archaic.  A struct is best
-// represented with a dynamic data structure -- such as a hash or
-// a map.  
+// The fundamental issue is that I stored the parent classes
+// as fields within the base class.  I'm not sure why I did this, 
+// but it makes everything more complicated.  I have now replaced
+// it with a simpler mechanism that simply merges the parent class
+// fields into the fields of the child.
 //
-// Suppose we redefine it as a map:
-// class StructArray : QMap<QString,BasicArray<Array> >
-// This will work perfectly for structures.
-//
-// The next question is what do about classes.  When a class is 
-// created with parent classes, I think all we must do is 
-// merge the parent members into the same map.  No namespace hiding
-// seems required.
-//
-// On the other hand... the problem with using a map is that the
-// fields are not stored in any particular order.  
-
+// This means that the following is no longer valid:
+//   a.class1.class2.foo = 32
+//  But I don't really see the point for it. 
 
 static Array ClassAux(const Array &s, QString classname, const StringVector &parentNames, 
 		      const ArrayVector &parents) {
@@ -181,13 +162,18 @@ static Array ClassAux(const Array &s, QString classname, const StringVector &par
   Array retval(Struct);
   StructArray &rp(retval.structPtr());
   const StructArray &sp(s.constStructPtr());
-  // First append the old fields
+  // First prepend the fields of the parent classes
+  for (int i=0;i<parentNames.size();i++)
+    {
+      const StructArray &pp(parents[i].constStructPtr());
+      StringVector p_fields(FieldNames(pp));
+      for (int j=0;j<p_fields.size();j++)
+	rp[p_fields.at(j)] = pp[p_fields.at(j)];
+    }
+  // Then append the class specific fields
   for (int i=0;i<s_fields.size();i++)
     rp[s_fields.at(i)] = sp[s_fields.at(i)];
-  // Now the parent members
-  for (int i=0;i<parentNames.size();i++)
-    rp[parentNames[i]] = BasicArray<Array>(parents[i]);
-  rp.setClassPath(StringVector() << classname);
+  rp.setClassName(classname);
   rp.updateDims();
   return retval;
 }
@@ -871,34 +857,21 @@ Array ClassUnaryOperator(Array a, QString funcname, Interpreter* eval) {
 }
 
 // ClassResolveHelper
-static bool ClassResolveHelper(Interpreter* eval, StringVector &classPath, QString funcName, FuncPtr& val) {
+static bool ClassResolveHelper(Interpreter* eval, QString className, QString funcName, FuncPtr& val) {
   Context *context = eval->getContext();
-  if (context->lookupFunction(ClassMangleName(classPath.back(),funcName),val))
+  if (context->lookupFunction(ClassMangleName(className,funcName),val))
     return true;
-  UserClassMetaInfo einfo = classTable[classPath.back()];
+  UserClassMetaInfo einfo = classTable[className];
   // Now check each of the parent classes
-  for (int i=0;i<einfo.parentClasses.size();i++) {
-    StringVector savePath(classPath);
-    savePath.push_back(einfo.parentClasses.at(i));
-    if (ClassResolveHelper(eval,savePath,funcName,val))
-      {
-	classPath = savePath;
-	return true;
-      }
-  }
+  for (int i=0;i<einfo.parentClasses.size();i++) 
+    if (ClassResolveHelper(eval,einfo.parentClasses.at(i),funcName,val))
+      return true;
+  return false;
 }
 
 bool ClassResolveFunction(Interpreter* eval, Array& args, QString funcName, FuncPtr& val) {
-  qDebug() << "Class resolve for " << args.structPtr().classPath() << " of " << funcName;
   Context *context = eval->getContext();
-  StringVector CP = args.structPtr().classPath();
-  if (ClassResolveHelper(eval,CP,funcName,val))
-    {
-      args.structPtr().setClassPath(CP);
-      qDebug() << "Class path set to " << CP;
-      return true;
-    }
-  return false;
+  return ClassResolveHelper(eval,args.className(),funcName,val);
 }
 
 
@@ -1053,7 +1026,6 @@ ArrayVector ClassRHSExpression(Array r, const Tree & t, Interpreter* eval)
 	((t.numChildren() == 3) && (t.child(2).is(TOK_PARENS))))))
     {
       FuncPtr val;
-      ClassPathSaver saver(r);
       if (ClassResolveFunction(eval,r,t.second().first().text(),val))
 	{
 	  val->updateCode(eval);
@@ -1120,12 +1092,6 @@ ArrayVector ClassRHSExpression(Array r, const Tree & t, Interpreter* eval)
       }
     }
     if (t.child(index).is('.')) {
-      // This is where the classname chain comes into being.
-      StringVector classPath(r.constStructPtr().classPath());
-      for (int i=1;i<classPath.size();i++) {
-	rv = r.get(classPath.at(i));
-	r = rv[0];
-      }
       rv = r.get(t.child(index).first().text());
       if (rv.size() <= 1) {
 	r = rv[0];
@@ -1154,7 +1120,6 @@ ArrayVector ClassRHSExpression(Array r, const Tree & t, Interpreter* eval)
 
 void ClassAssignExpression(ArrayReference dst, const Tree & t, const Array& value, Interpreter* eval) {
   FuncPtr val;
-  ClassPathSaver saver(*dst);
   if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
     throw Exception(QString("The method 'subsasgn' is not defined for objects of class ") + 
 		    dst->className());

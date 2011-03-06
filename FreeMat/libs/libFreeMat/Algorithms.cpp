@@ -1006,7 +1006,7 @@ Array NCat(const ArrayVector& pdata, int catdim) {
     iter.nextSlice();
   }
   if (userClassCase)
-    retval.structPtr().setClassPath(StringVector(classname));
+    retval.structPtr().setClassName(classname);
   return retval;
 }
 

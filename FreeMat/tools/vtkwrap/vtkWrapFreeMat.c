@@ -224,7 +224,7 @@ void return_result(FILE *fp)
       break;
     case 0x109:
     case 0x309:  
-      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i),\"%s\",eval);\n",MAX_ARGS,
+      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i),\"%s\",eval,true);\n",MAX_ARGS,
 	      currentFunction->ReturnClass);
       break;
       /* handle functions returning vectors */
@@ -519,8 +519,7 @@ void outputDeleteFunction(FILE *fp, FileInfo *data)
   fprintf(fp,"//output none\n");
   fprintf(fp,"ArrayVector %sDeleteFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);
   fprintf(fp,"  if (arg.size() == 0) return ArrayVector();\n");
-  fprintf(fp,"  vtkObjectBase* vtk_pointer = GetVTKPointer<vtkObjectBase>(arg[0]);\n",data->ClassName,data->ClassName);
-  fprintf(fp,"  vtk_pointer->Delete();\n");
+  fprintf(fp,"  DeleteVTKObject(arg[0]);\n");
   fprintf(fp,"  return ArrayVector();\n");
   fprintf(fp,"}\n");
 
@@ -816,7 +815,7 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
   fprintf(fp,"      throw Exception(\"Unable to type convert supplied object to an instance of type %s\");\n",data->ClassName);
   fprintf(fp,"    %s*q = reinterpret_cast<%s*>(p);\n",data->ClassName,data->ClassName);
   fprintf(fp,"    Array ret(arg[0]);\n");
-  fprintf(fp,"    ret.structPtr().setClassPath(StringVector() << \"%s\");\n",data->ClassName);
+  fprintf(fp,"    ret.structPtr().setClassName(\"%s\");\n",data->ClassName);
   fprintf(fp,"    return ret;\n");
   fprintf(fp,"  }\n");
   fprintf(fp,"}\n");

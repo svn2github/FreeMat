@@ -54,7 +54,7 @@ public:
 class StructArray {
   StringVector m_fields;
   QVector<BasicArray<Array> > m_data;
-  StringVector m_classPath;
+  QString m_class;
   NTuple m_dims;
   bool m_handleType;
   uint32 m_refCount;
@@ -79,25 +79,19 @@ public:
   {
     if (isHandleClass())
       return m_ptr->isUserClass();
-    return !m_classPath.empty();
+    return !m_class.isEmpty();
   }
   QString className() const 
   {
     if (isHandleClass())
       return m_ptr->className();
-    return m_classPath.back();
+    return m_class;
   }
-  const StringVector & classPath() const 
+  void setClassName(const QString& className) 
   {
     if (isHandleClass())
-      return m_ptr->classPath();
-    return m_classPath;
-  }
-  void setClassPath(const StringVector & classPath) 
-  {
-    if (isHandleClass())
-      return m_ptr->setClassPath(classPath);
-    m_classPath = classPath;
+      return m_ptr->setClassName(className);
+    m_class = className;
   }
   StringVector fieldNames() const 
   {

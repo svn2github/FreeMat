@@ -76,7 +76,7 @@ public:
   void putArray(const Array& dat);
   void putDimensions(const NTuple& dim);
   // Get an array
-  DataClass getDataClass(bool& sparseflag, StringVector& className, bool& complexflag);
+  DataClass getDataClass(bool& sparseflag, QString& className, bool& complexflag);
   void getArray(Array& dat);
   NTuple getDimensions();
 };

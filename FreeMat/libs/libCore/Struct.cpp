@@ -163,7 +163,7 @@ ArrayVector StructFunction(int nargout, const ArrayVector& arg) {
       return ArrayVector(t);
     if (!t.isUserClass())
       throw Exception("can only convert objects (user-defined types) into structs");
-    t.structPtr().setClassPath(StringVector());
+    t.structPtr().setClassName("");
     return ArrayVector(t);
   }
   if (arg.size() % 2)

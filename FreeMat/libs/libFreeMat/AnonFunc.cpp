@@ -49,7 +49,7 @@ Array AnonFuncConstructor(Interpreter* eval, const Tree & t) {
   ArrayVector values;
   values << args << workspace << expr;
   Array ret(StructConstructor(fieldnames,values));
-  ret.structPtr().setClassPath(StringVector() <<  "anonfunction");
+  ret.structPtr().setClassName("anonfunction");
   return ret;
 }
 

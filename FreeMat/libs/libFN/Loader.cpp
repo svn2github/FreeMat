@@ -8,10 +8,11 @@
 // First each function gets prototyped.
 #include "Array.hpp"
 #include "Context.hpp"
+#include "Class.hpp"
 
 
-ArrayVector Interplin1Function(int, const ArrayVector&);
 ArrayVector FitFunFunction(int, const ArrayVector&, Interpreter*);
+ArrayVector Interplin1Function(int, const ArrayVector&);
 ArrayVector ErfcFunction(int, const ArrayVector&);
 ArrayVector ErfFunction(int, const ArrayVector&);
 ArrayVector GammaFunction(int, const ArrayVector&);
@@ -20,12 +21,15 @@ ArrayVector Interp2Function(int, const ArrayVector&);
 
 
 void LoadBuiltinFunctionsFN(Context *context, bool guiflag) {
-  context->addFunction("interplin1",Interplin1Function,4,1,"x1","y1","xi","extrapflag",NULL);
   context->addSpecialFunction("fitfun",FitFunFunction,6,2,"fcn","xinit","y","weights","tol","varargin",NULL);
+  context->addFunction("interplin1",Interplin1Function,4,1,"x1","y1","xi","extrapflag",NULL);
   context->addFunction("erfc",ErfcFunction,1,1,"x",NULL);
   context->addFunction("erf",ErfFunction,1,1,"x",NULL);
   context->addFunction("gamma",GammaFunction,1,1,"x",NULL);
   context->addFunction("gammaln",GammaLnFunction,1,1,"x",NULL);
   context->addFunction("interp2",Interp2Function,5,1,"z","xi","yi","method","extrapflag",NULL);
+
+
+// Writing hierarchy definitions for classes
 }
 

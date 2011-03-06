@@ -577,9 +577,14 @@ public:
    * accesses must be made through the main thread.  So the interpreter
    * sends a signal out that a graphics call needs to be made, and then
    * waits for the result.  For non-graphics functions, the function is 
-   * called directly.
+   * called directly. 
    */
   ArrayVector doFunction(FuncPtr f, ArrayVector& m, int narg_out, VariableTable *vtable = 0);
+  /**
+   * Delete a structure array that is part of a handle class
+   * where the handles have all been deleted.
+   */
+  void deleteHandleClass(StructArray *ap);
 public slots:
   /**
    * Send file info to the file tool

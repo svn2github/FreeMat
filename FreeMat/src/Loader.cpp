@@ -8,6 +8,7 @@
 // First each function gets prototyped.
 #include "Array.hpp"
 #include "Context.hpp"
+#include "Class.hpp"
 
 
 ArrayVector EditorFunction(int, const ArrayVector&, Interpreter*);
@@ -41,5 +42,8 @@ void LoadBuiltinFunctionsMain(Context *context, bool guiflag) {
   if (guiflag)  context->addGfxFunction("clc",ClcFunction,0,0,NULL);
   context->addSpecialFunction("profiler",ProfilerFunction,-1,-1,NULL);
   if (guiflag)  context->addGfxSpecialFunction("rootpath",RootPathFunction,1,0,"path",NULL);
+
+
+// Writing hierarchy definitions for classes
 }
 

@@ -1424,6 +1424,20 @@ Array Interpreter::unitColon(const Tree & t) {
     return ClassBinaryOperator(a,b,"colon",this);
 }
 
+void Interpreter::deleteHandleClass(StructArray *ap)
+{
+  // We need to call the destructor on 
+  Array b(*ap);
+  delete ap;
+  FuncPtr val;
+  if (b.isUserClass() && ClassResolveFunction(this,b,"delete",val)) 
+    {
+      val->updateCode(this);
+      ArrayVector args(b);
+      doFunction(val,args,1);
+    }
+}
+
 //Works
 Array Interpreter::doubleColon(const Tree & t) {
   Array a, b, c;

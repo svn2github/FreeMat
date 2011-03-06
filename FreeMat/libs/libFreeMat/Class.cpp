@@ -32,6 +32,17 @@ struct UserClassMetaInfo {
 static QMutex classMutex;
 static QMap<QString,UserClassMetaInfo> classTable;
 
+// Bizzarrrrreee -- the class support needs a complete rewrite!
+class ClassPathSaver
+{
+  Array &m_ref;
+  StringVector m_path;
+public:
+  ClassPathSaver(Array& r) : m_ref(r), m_path(r.structPtr().classPath()) {}
+  ~ClassPathSaver() {m_ref.structPtr().setClassPath(m_path);}
+};
+
+
 // some behavioral observations on classes.
 //  The first call to "class" is the definitive one.
 //  The exact order of the structure fieldnames must be the same 
@@ -121,6 +132,27 @@ static QMap<QString,UserClassMetaInfo> classTable;
 // 2.  For each class, a list of superior classes is provided.
 // 3.  A inf B <--> B sup A
 // Precedence is then a simple question of testing interactions.
+
+//
+// To revisit the class implementation... 
+//
+// First off, the data structure I used in the previous version was
+// strange.  I don't know why it is so archaic.  A struct is best
+// represented with a dynamic data structure -- such as a hash or
+// a map.  
+//
+// Suppose we redefine it as a map:
+// class StructArray : QMap<QString,BasicArray<Array> >
+// This will work perfectly for structures.
+//
+// The next question is what do about classes.  When a class is 
+// created with parent classes, I think all we must do is 
+// merge the parent members into the same map.  No namespace hiding
+// seems required.
+//
+// On the other hand... the problem with using a map is that the
+// fields are not stored in any particular order.  
+
 
 static Array ClassAux(const Array &s, QString classname, const StringVector &parentNames, 
 		      const ArrayVector &parents) {
@@ -857,11 +889,13 @@ static bool ClassResolveHelper(Interpreter* eval, StringVector &classPath, QStri
 }
 
 bool ClassResolveFunction(Interpreter* eval, Array& args, QString funcName, FuncPtr& val) {
+  qDebug() << "Class resolve for " << args.structPtr().classPath() << " of " << funcName;
   Context *context = eval->getContext();
   StringVector CP = args.structPtr().classPath();
   if (ClassResolveHelper(eval,CP,funcName,val))
     {
       args.structPtr().setClassPath(CP);
+      qDebug() << "Class path set to " << CP;
       return true;
     }
   return false;
@@ -991,13 +1025,51 @@ static ArrayVector ClassSubsrefCall(Interpreter* eval, const Tree & t, Array r, 
   return n;
 }
 
+bool ClassHandleMethod(Array r, QString funcName, Interpreter* eval)
+{
+  FuncPtr p;
+  if (!ClassResolveFunction(eval,r,funcName,p)) return false;
+  p->updateCode(eval);
+  ArrayVector q(r);
+  eval->doFunction(p,q,1);
+  return true;
+}
+
 // What is special here...  Need to be able to do field indexing
 // 
-ArrayVector ClassRHSExpression(Array r, const Tree & t, Interpreter* eval) {
+ArrayVector ClassRHSExpression(Array r, const Tree & t, Interpreter* eval) 
+{
   Array q;
   Array n, p;
   FuncPtr val;
-    
+   
+  // New handle-type classes support normal C++ syntax for 
+  // method invokation... so foo.bar(args) is really
+  // bar(foo,args).  Lovely.
+  if (!eval->inMethodCall(r.className()) &&
+      r.constStructPtr().isHandleClass() &&
+      t.second().is('.') &&
+      (((t.numChildren() == 2) ||
+	((t.numChildren() == 3) && (t.child(2).is(TOK_PARENS))))))
+    {
+      FuncPtr val;
+      ClassPathSaver saver(r);
+      if (ClassResolveFunction(eval,r,t.second().first().text(),val))
+	{
+	  val->updateCode(eval);
+	  ArrayVector q(r);
+	  if (t.numChildren() == 2)
+	    return eval->doFunction(val,q,1);
+	  else
+	    {
+	      const Tree &s(t.child(2));
+	      for (int p=0;p<s.numChildren();p++)
+		eval->multiexpr(s.child(p),q);
+	      return eval->doFunction(val,q,1);
+	    }
+	}
+    }
+
   // Try and look up subsref, _unless_ we are already in a method 
   // of this class
   if (!eval->inMethodCall(r.className()))
@@ -1082,6 +1154,7 @@ ArrayVector ClassRHSExpression(Array r, const Tree & t, Interpreter* eval) {
 
 void ClassAssignExpression(ArrayReference dst, const Tree & t, const Array& value, Interpreter* eval) {
   FuncPtr val;
+  ClassPathSaver saver(*dst);
   if (!ClassResolveFunction(eval,*dst,"subsasgn",val))
     throw Exception(QString("The method 'subsasgn' is not defined for objects of class ") + 
 		    dst->className());
@@ -1124,4 +1197,19 @@ bool isUserClassDefined(QString classname)
 {
   QMutexLocker lock(&classMutex);
   return (classTable.contains(classname));
+}
+
+//@@Signature
+//sfunction makehandleclass MakeHandleClassFunction
+//input x
+//output handle
+ArrayVector MakeHandleClassFunction(int nargout, const ArrayVector &arg, 
+			  Interpreter *eval) 
+{
+  if (arg.size() == 0) return ArrayVector();
+  Array t = arg[0];
+  StructArray& sa = t.structPtr();
+  StructArray* mc = new StructArray(t.structPtr());
+  StructArray handle(mc,eval);
+  return Array(handle);
 }

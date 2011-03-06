@@ -8,6 +8,7 @@
 // First each function gets prototyped.
 #include "Array.hpp"
 #include "Context.hpp"
+#include "Class.hpp"
 
 
 ArrayVector GLDefMaterialFunction(int, const ArrayVector&);
@@ -16,6 +17,7 @@ ArrayVector GLClumpFunction(int, const ArrayVector&);
 ArrayVector GLAssemblyFunction(int, const ArrayVector&);
 ArrayVector GLNodeFunction(int, const ArrayVector&);
 ArrayVector GLShowFunction(int, const ArrayVector&);
+ArrayVector VolRenderFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector DrawNowFunction(int, const ArrayVector&);
 ArrayVector HFigureFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector HAxesFunction(int, const ArrayVector&, Interpreter*);
@@ -41,7 +43,6 @@ ArrayVector HTextBitmapFunction(int, const ArrayVector&);
 ArrayVector HRawPlotFunction(int, const ArrayVector&);
 ArrayVector HPointFunction(int, const ArrayVector&);
 ArrayVector HIs2DViewFunction(int, const ArrayVector&);
-ArrayVector VolRenderFunction(int, const ArrayVector&, Interpreter*);
 
 
 void LoadBuiltinFunctionsGraphics(Context *context, bool guiflag) {
@@ -51,6 +52,7 @@ void LoadBuiltinFunctionsGraphics(Context *context, bool guiflag) {
   if (guiflag)  context->addGfxFunction("glassembly",GLAssemblyFunction,2,0,"name","varargin",NULL);
   if (guiflag)  context->addGfxFunction("glnode",GLNodeFunction,3,0,"name","material","pointset",NULL);
   if (guiflag)  context->addGfxFunction("glshow",GLShowFunction,2,0,"name","scale",NULL);
+  if (guiflag)  context->addGfxSpecialFunction("volrender",VolRenderFunction,4,0,"volume","opacity","ctransfer","material",NULL);
   if (guiflag)  context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
   if (guiflag)  context->addGfxSpecialFunction("figure",HFigureFunction,1,1,"number",NULL);
   if (guiflag)  context->addGfxSpecialFunction("axes",HAxesFunction,-1,1,NULL);
@@ -76,6 +78,8 @@ void LoadBuiltinFunctionsGraphics(Context *context, bool guiflag) {
   if (guiflag)  context->addGfxFunction("hrawplot",HRawPlotFunction,2,0,"filename","commands",NULL);
   if (guiflag)  context->addGfxFunction("hpoint",HPointFunction,0,1,NULL);
   if (guiflag)  context->addGfxFunction("is2dview",HIs2DViewFunction,1,1,"handle",NULL);
-  if (guiflag)  context->addGfxSpecialFunction("volrender",VolRenderFunction,4,0,"volume","opacity","ctransfer","material",NULL);
+
+
+// Writing hierarchy definitions for classes
 }
 

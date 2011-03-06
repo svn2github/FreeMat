@@ -35,6 +35,7 @@ FuncPtr.cpp
 AnonFunc.cpp 
 SparseCCS.cpp 
 Stats.cpp
+Struct.cpp
 )
 
 add_custom_command(

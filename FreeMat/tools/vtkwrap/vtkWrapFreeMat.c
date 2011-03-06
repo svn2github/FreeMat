@@ -224,7 +224,7 @@ void return_result(FILE *fp)
       break;
     case 0x109:
     case 0x309:  
-      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i),\"%s\");\n",MAX_ARGS,
+      fprintf(fp,"  retval = MakeVTKPointer((vtkObjectBase*)(temp%i),\"%s\",eval);\n",MAX_ARGS,
 	      currentFunction->ReturnClass);
       break;
       /* handle functions returning vectors */
@@ -403,7 +403,7 @@ void outputSubsasgnFunction(FILE *fp, FileInfo *data)
 {
   int i;
   fprintf(fp,"//@@Signature\n");
-  fprintf(fp,"//sgfunction @%s:subsasgn %SubsasgnFunction\n",data->ClassName,
+  fprintf(fp,"//sfunction @%s:subsasgn %SubsasgnFunction\n",data->ClassName,
 	  data->ClassName);
   fprintf(fp,"//input varargin\n");
   fprintf(fp,"//output varargin\n");
@@ -425,7 +425,7 @@ void outputSubsasgnFunction(FILE *fp, FileInfo *data)
 	fprintf(fp,"    {\n");
 	fprintf(fp,"      ArrayVector tmp(arg[0]);\n");
 	fprintf(fp,"      tmp.push_back(arg[2]);\n");
-	fprintf(fp,"      return %s%sFunction(nargout,tmp);\n",
+	fprintf(fp,"      return %s%sFunction(nargout,tmp,eval);\n",
 		data->ClassName,data->Functions[i].Name);
 	fprintf(fp,"    }\n");
       }
@@ -439,7 +439,7 @@ void outputSubsrefFunction(FILE *fp, FileInfo *data)
 {						
   int i;
   fprintf(fp,"//@@Signature\n");
-  fprintf(fp,"//gfunction @%s:subsref %sSubsrefFunction\n",data->ClassName,
+  fprintf(fp,"//function @%s:subsref %sSubsrefFunction\n",data->ClassName,
 	  data->ClassName);
   fprintf(fp,"//input varargin\n");
   fprintf(fp,"//output varargout\n");
@@ -460,7 +460,7 @@ void outputSubsrefFunction(FILE *fp, FileInfo *data)
       {
 	fprintf(fp,"    if (subsa[1].asString() == \"%s\")\n",
 		data->Functions[i].Name+3);
-	fprintf(fp,"      return %s%sFunction(nargout,arg);\n",
+	fprintf(fp,"      return %s%sFunction(nargout,arg,eval);\n",
 		data->ClassName,data->Functions[i].Name);
       }
   fprintf(fp,"  }\n");
@@ -478,7 +478,7 @@ void outputSubsrefFunction(FILE *fp, FileInfo *data)
 	fprintf(fp,"    {\n");
 	fprintf(fp,"      ArrayVector tmp(arg[0]);\n");
 	fprintf(fp,"      tmp += ArrayVectorFromCellArray(subsa[2]);\n");
-	fprintf(fp,"      return %s%sFunction(nargout,tmp);\n",
+	fprintf(fp,"      return %s%sFunction(nargout,tmp,eval);\n",
 		data->ClassName,data->Functions[i].Name);
 	fprintf(fp,"    }\n");
       }
@@ -490,7 +490,7 @@ void outputDisplayFunction(FILE *fp, FileInfo *data)
 {
   int i;
   fprintf(fp,"//@@Signature\n");
-  fprintf(fp,"//sgfunction @%s:display %sDisplayFunction\n",
+  fprintf(fp,"//sfunction @%s:display %sDisplayFunction\n",
 	  data->ClassName,data->ClassName);
   fprintf(fp,"//input varargin\n");
   fprintf(fp,"//output varargout\n");
@@ -510,22 +510,39 @@ void outputDisplayFunction(FILE *fp, FileInfo *data)
   fprintf(fp,"}\n");
 }
 
+void outputDeleteFunction(FILE *fp, FileInfo *data)
+{
+  fprintf(fp,"//@@Signature\n");
+  fprintf(fp,"//function @%s:delete %sDeleteFunction\n",
+	  data->ClassName,data->ClassName);
+  fprintf(fp,"//input varargin\n");
+  fprintf(fp,"//output none\n");
+  fprintf(fp,"ArrayVector %sDeleteFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);
+  fprintf(fp,"  if (arg.size() == 0) return ArrayVector();\n");
+  fprintf(fp,"  vtkObjectBase* vtk_pointer = GetVTKPointer<vtkObjectBase>(arg[0]);\n",data->ClassName,data->ClassName);
+  fprintf(fp,"  vtk_pointer->Delete();\n");
+  fprintf(fp,"  return ArrayVector();\n");
+  fprintf(fp,"}\n");
+
+
+}
+
 void outputOverloadedFunction(FILE *fp, FileInfo *data)
 {
   int i;
   fprintf(fp,"//@@Signature\n");
-  fprintf(fp,"//gfunction @%s:%s %s%sFunction\n",
+  fprintf(fp,"//sfunction @%s:%s %s%sFunction\n",
 	  data->ClassName,currentFunction->Name,
 	  data->ClassName,currentFunction->Name);
   fprintf(fp,"//input varargin\n");
   fprintf(fp,"//output varargout\n");
-  fprintf(fp,"ArrayVector %s%sFunction(int nargout, const ArrayVector& arg) {\n",
+  fprintf(fp,"ArrayVector %s%sFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {\n",
 	  data->ClassName,currentFunction->Name);
   for (i=0;i<data->NumberOfFunctions;i++)
     if (data->Functions[i].Name &&
 	(strcmp(data->Functions[i].Name,currentFunction->Name) == 0)
 	&& data->Functions[i].IsValid)
-      fprintf(fp,"  if (arg.size() == %d) return %s%s__%dFunction(nargout,arg);\n",
+      fprintf(fp,"  if (arg.size() == %d) return %s%s__%dFunction(nargout,arg,eval);\n",
 	      data->Functions[i].NumberOfArguments+1,
 	      data->ClassName,
 	      data->Functions[i].Name,
@@ -633,7 +650,7 @@ void outputFunction(FILE *fp, FileInfo *data)
 	sprintf(funcname,"%s__%d",currentFunction->Name,currentFunction->OverloadCount);
 
       fprintf(fp,"//@@Signature\n");
-      fprintf(fp,"//gfunction @%s:%s %s%sFunction\n",
+      fprintf(fp,"//sfunction @%s:%s %s%sFunction\n",
 	      data->ClassName,funcname,
 	      data->ClassName,funcname);
       fprintf(fp,"//input ");
@@ -645,7 +662,7 @@ void outputFunction(FILE *fp, FileInfo *data)
 	fprintf(fp,"none\n");
       else
 	fprintf(fp,"y\n");
-      fprintf(fp,"ArrayVector %s%sFunction(int nargout, const ArrayVector& arg) {\n",
+      fprintf(fp,"ArrayVector %s%sFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {\n",
 	      data->ClassName,funcname);
       /* process the args */
       fprintf(fp,"  /* Signature %s */\n",currentFunction->Signature); 
@@ -778,7 +795,7 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
   fprintf(fp,"#include \"%s.h\"\n\n",data->ClassName);
 
   fprintf(fp,"//@@Signature\n");
-  fprintf(fp,"//gfunction @%s:%s %sConstructorFunction\n",data->ClassName,data->ClassName,data->ClassName);
+  fprintf(fp,"//sfunction @%s:%s %sConstructorFunction\n",data->ClassName,data->ClassName,data->ClassName);
   fprintf(fp,"//input a\n");
   fprintf(fp,"//output p\n");
   if (data->NumberOfSuperClasses > 0)
@@ -788,9 +805,9 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
 	fprintf(fp,"%s ",data->SuperClasses[i]);
       fprintf(fp,"\n");
     }  
-  fprintf(fp,"ArrayVector %sConstructorFunction(int nargout, const ArrayVector& arg) {\n",data->ClassName);  
+  fprintf(fp,"ArrayVector %sConstructorFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {\n",data->ClassName);  
   fprintf(fp,"  if (arg.size() == 0) {\n");
-  fprintf(fp,"    return MakeVTKPointer(%s::New(),\"%s\");\n",data->ClassName,data->ClassName);
+  fprintf(fp,"    return MakeVTKPointer(%s::New(),\"%s\",eval);\n",data->ClassName,data->ClassName);
   fprintf(fp,"  } else if (arg[0].className() == \"%s\") {\n",data->ClassName);
   fprintf(fp,"    return arg[0];\n");
   fprintf(fp,"  } else {\n");
@@ -824,7 +841,8 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
     }
 
   outputDisplayFunction(fp, data);
-  outputSubsrefFunction(fp, data);
+  outputDeleteFunction(fp, data);
+  //  outputSubsrefFunction(fp, data);
   //  outputSubsasgnFunction(fp, data);
 }
 

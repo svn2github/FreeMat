@@ -24,14 +24,13 @@ inline T* GetVTKPointer(const Array &arg) {
   return reinterpret_cast<T*>(val[1].constRealScalar<uint64>());
 }
 
-inline Array MakeVTKPointer(vtkObjectBase *p, QString cname) {
-  StringVector fields;
-  fields.push_back("pointer");
-  ArrayVector values;
-  values.push_back(Array(reinterpret_cast<uint64>(p)));
-  Array sa = StructConstructor(fields,values);
-  sa.structPtr().setClassPath(StringVector() << cname);
-  return sa;
+inline Array MakeVTKPointer(vtkObjectBase *p, QString cname, Interpreter *eval) {
+  StructArray *sap = new StructArray;
+  sap->insert("pointer",Array(reinterpret_cast<uint64>(p)));
+  sap->setClassPath(StringVector() << cname);
+  // Make it a handle-semantics class
+  StructArray hsap(sap,eval);
+  return Array(hsap);
 }
 
 #endif

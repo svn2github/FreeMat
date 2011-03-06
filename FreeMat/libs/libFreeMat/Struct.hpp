@@ -23,29 +23,116 @@
 #include "Types.hpp"
 
 class Array;
+class Interpreter;
+
+// A twist on the ever-useful structure array class.
+// Now, if the structure is of the handle type (i.e.,
+// a pointer), then the data is stored in a struct object
+// that is stored on the heap instead of inside the structure
+// object itself.  This trick allows multiple variables to 
+// point to and to modify the same physical data structure
+// effectively subverting the value semantics that variables
+// in FreeMat normally have.
+
+class StructArray;
+
+class SARefPtr
+{
+  StructArray *m_ptr;
+  Interpreter *m_eval;
+  SARefPtr& operator=(const SARefPtr& copy);
+public:
+  SARefPtr(StructArray* p, Interpreter *eval);
+  ~SARefPtr();
+  SARefPtr(const SARefPtr& copy);
+  StructArray& operator*();
+  StructArray* operator->();
+  const StructArray& operator*() const;
+  const StructArray* operator->() const;
+};
 
 class StructArray {
   StringVector m_fields;
   QVector<BasicArray<Array> > m_data;
   StringVector m_classPath;
   NTuple m_dims;
+  bool m_handleType;
+  uint32 m_refCount;
+  SARefPtr m_ptr;
 public:
-  bool isUserClass() const {return !m_classPath.empty();}
-  QString className() const {return m_classPath.back();}
-  void sliceClass(QString name) {m_classPath.push_back(name);}
-  void unsliceClass() {m_classPath.pop_back();}
-  const StringVector & classPath() const {return m_classPath;}
-  void setClassPath(const StringVector & classPath) {m_classPath = classPath;}
-  StringVector fieldNames() const {return m_fields;}
+  StructArray() : m_handleType(false), m_refCount(0), m_ptr(0,0) {}
+  StructArray(StructArray* ptr, Interpreter* eval) : 
+    m_handleType(true), m_ptr(ptr,eval) {}
+  void ref();
+  void deref();
+  uint32 getRefCount() const
+  {
+    if (isHandleClass())
+      return m_ptr->getRefCount();
+    return m_refCount;
+  }
+  bool isHandleClass() const
+  {
+    return m_handleType;
+  }
+  bool isUserClass() const 
+  {
+    if (isHandleClass())
+      return m_ptr->isUserClass();
+    return !m_classPath.empty();
+  }
+  QString className() const 
+  {
+    if (isHandleClass())
+      return m_ptr->className();
+    return m_classPath.back();
+  }
+  const StringVector & classPath() const 
+  {
+    if (isHandleClass())
+      return m_ptr->classPath();
+    return m_classPath;
+  }
+  void setClassPath(const StringVector & classPath) 
+  {
+    if (isHandleClass())
+      return m_ptr->setClassPath(classPath);
+    m_classPath = classPath;
+  }
+  StringVector fieldNames() const 
+  {
+    if (isHandleClass())
+      return m_ptr->fieldNames();
+    return m_fields;
+  }
   void setFieldNamesAndData(const StringVector& fields,
-			    const QVector<BasicArray<Array> > data) {
+			    const QVector<BasicArray<Array> > data) 
+  {
+    if (isHandleClass())
+      {
+	m_ptr->setFieldNamesAndData(fields,data);
+        return;
+      }
     m_fields = fields;
     m_data = data;
     updateDims();
   }
-  int fieldCount() const {return m_fields.size();}
-  QString fieldName(int i) const {return m_fields[i];}
-  index_t bytes() const {
+  int fieldCount() const 
+  {
+    if (isHandleClass())
+      return m_ptr->fieldCount();
+    return m_fields.size();
+  }
+  QString fieldName(int i) const 
+  {
+    if (isHandleClass())
+      return m_ptr->fieldName(i);
+    return m_fields[i];
+  }
+  index_t bytes() const 
+  {
+    if (isHandleClass())
+      return m_ptr->bytes();
     index_t count = 0;
     for (int i=0;i<m_fields.size();i++) {
       count += m_fields[i].size()*sizeof(QChar);
@@ -53,13 +140,24 @@ public:
     }
     return count;
   }
-  int fieldIndex(QString name) const {
+  int fieldIndex(QString name) const 
+  {
+    if (isHandleClass())
+      return m_ptr->fieldIndex(name);
     if (m_fields.contains(name)) 
       return m_fields.indexOf(name);
     throw Exception("Fieldname " + name + " not defined");
   }
-  bool contains(QString name) const { return m_fields.contains(name); }
-  void insert(QString name, const BasicArray<Array> &t) {
+  bool contains(QString name) const 
+  { 
+    if (isHandleClass())
+      return m_ptr->contains(name);
+    return m_fields.contains(name); 
+  }
+  void insert(QString name, const BasicArray<Array> &t) 
+  {
+    if (isHandleClass())
+      return m_ptr->insert(name,t);
     if (!contains(name)) {
       m_fields += name;
       m_data.push_back(t);
@@ -68,25 +166,66 @@ public:
     }
     updateDims();
   }
-  NTuple dimensions() const {return m_dims;}
-  const index_t length() const {return m_dims.count();}
-  void setDimensions(const NTuple &x) {m_dims = x;}
-  void updateDims() {
+  void insert(QString name, const Array &t)
+  {
+    BasicArray<Array> ba(t);
+    insert(name,ba);
+  }
+  NTuple dimensions() const 
+  {
+    if (isHandleClass())
+      return m_ptr->dimensions();
+    return m_dims;
+  }
+  const index_t length() const 
+  {
+    if (isHandleClass())
+      return m_ptr->length();
+    return m_dims.count();
+  }
+  void setDimensions(const NTuple &x) 
+  {
+    if (isHandleClass())
+      return m_ptr->setDimensions(x);
+    m_dims = x;
+  }
+  void updateDims() 
+  {
+    if (isHandleClass())
+      return m_ptr->updateDims();
     if (m_data.size() == 0)
       m_dims = NTuple(0,0);
     else
       m_dims = m_data[0].dimensions();
   }
-  BasicArray<Array>& operator[](int i) {return m_data[i];}
-  const BasicArray<Array>& operator[](int i) const {return m_data[i];}
-  BasicArray<Array>& operator[](QString name) {
+  BasicArray<Array>& operator[](int i) 
+  {
+    if (isHandleClass())
+      return (*m_ptr)[i];
+    return m_data[i];
+  }
+  const BasicArray<Array>& operator[](int i) const 
+  {
+    if (isHandleClass())
+      return (*m_ptr)[i];
+    return m_data[i];
+  }
+  BasicArray<Array>& operator[](QString name) 
+  {
+    if (isHandleClass())
+      return (*m_ptr)[name];
     if (!m_fields.contains(name)) {
       m_fields += name;
       m_data.push_back(BasicArray<Array>());
     }
     return m_data[fieldIndex(name)];
   }
-  const BasicArray<Array>& operator[](QString name) const {return m_data[fieldIndex(name)];}
+  const BasicArray<Array>& operator[](QString name) const 
+  {
+    if (isHandleClass())
+      return (*m_ptr)[name];
+    return m_data[fieldIndex(name)];
+  }
 };
 
 #endif

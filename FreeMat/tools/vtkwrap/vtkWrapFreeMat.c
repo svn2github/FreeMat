@@ -522,13 +522,47 @@ void outputDeleteFunction(FILE *fp, FileInfo *data)
   fprintf(fp,"  DeleteVTKObject(arg[0]);\n");
   fprintf(fp,"  return ArrayVector();\n");
   fprintf(fp,"}\n");
+}
 
 
+void computeAbbreviatedSignature(FunctionInfo *func, char *buf)
+{
+  int i;
+  int argtype;
+  for (i=0;i<func->NumberOfArguments;i++)
+    {
+      argtype = func->ArgTypes[i] % 0x1000;
+      switch (argtype)
+	{
+	case 0x301: case 0x304:	case 0x307:
+	case 0x30A: case 0x30B:	case 0x30C:
+	  *buf = 'V'; buf++;
+	  break;
+	case 0x1: case 0x7: case 0x14: case 0x4:
+	case 0x15: case 0x5: case 0x16:	case 0x6:
+	case 0x1A: case 0xA: case 0x1B: case 0x1C:
+	case 0xB: case 0xC: case 0xD: case 0x3:
+	case 0x13: case 0xE:
+	  *buf = 's'; buf++;
+	  break;
+	case 0x302:
+	  *buf = 'S'; buf++;
+	  break;
+	case 0x109:
+	case 0x309:
+	  *buf = 'O'; buf++;
+	  strcpy(buf,func->ArgClasses[i]); buf += strlen(func->ArgClasses[i]);
+	  break;
+	default:
+	  *buf = '?'; buf++;
+	}
+    }
+  *buf = 0;
 }
 
 void outputOverloadedFunction(FILE *fp, FileInfo *data)
 {
-  int i;
+  int i, j, argtype;
   fprintf(fp,"//@@Signature\n");
   fprintf(fp,"//sfunction @%s:%s %s%sFunction\n",
 	  data->ClassName,currentFunction->Name,
@@ -541,11 +575,42 @@ void outputOverloadedFunction(FILE *fp, FileInfo *data)
     if (data->Functions[i].Name &&
 	(strcmp(data->Functions[i].Name,currentFunction->Name) == 0)
 	&& data->Functions[i].IsValid)
-      fprintf(fp,"  if (arg.size() == %d) return %s%s__%dFunction(nargout,arg,eval);\n",
-	      data->Functions[i].NumberOfArguments+1,
-	      data->ClassName,
-	      data->Functions[i].Name,
-	      data->Functions[i].OverloadCount);
+      {
+	fprintf(fp,"  if ((arg.size() == %d)",data->Functions[i].NumberOfArguments+1);
+	// Loop over the arguments
+	for (j=0;j<data->Functions[i].NumberOfArguments;j++)
+	  {
+	    argtype = data->Functions[i].ArgTypes[j] % 0x1000;
+	    switch (argtype)
+	      {
+	      case 0x301: case 0x304:	case 0x307:
+	      case 0x30A: case 0x30B:	case 0x30C:
+		fprintf(fp," && VTKIsVectorArg(arg[%d])",j+1);
+		break;
+	      case 0x1: case 0x7: case 0x14: case 0x4:
+	      case 0x15: case 0x5: case 0x16:	case 0x6:
+	      case 0x1A: case 0xA: case 0x1B: case 0x1C:
+	      case 0xB: case 0xC: case 0xD: case 0x3:
+	      case 0x13: case 0xE:
+		fprintf(fp," && VTKIsScalarArg(arg[%d])",j+1);
+		break;
+	      case 0x302:
+		fprintf(fp," && VTKIsStringArg(arg[%d])",j+1);
+		break;
+	      case 0x109:
+	      case 0x309:
+		fprintf(fp," && VTKIsClass(arg[%d],\"%s\")",
+			j+1,data->Functions[i].ArgClasses[j]);
+		break;
+	      default:
+		break;
+	      }
+	  }
+	fprintf(fp,")\n    return %s%s__%dFunction(nargout,arg,eval);\n",
+		data->ClassName,
+		data->Functions[i].Name,
+		data->Functions[i].OverloadCount);
+      }
   fprintf(fp,"  throw Exception(\"unable to resolve to an overloaded instance of %s%s\");\n",
 	  data->ClassName,currentFunction->Name);
   fprintf(fp,"}\n\n");

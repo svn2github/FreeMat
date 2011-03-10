@@ -61,6 +61,7 @@ HandleMultiEdit.cpp
 GLWindow.cpp
 trackball.cpp
 VTKWindow.cpp
+VTKWrap.cpp
 )
 
 add_custom_command(

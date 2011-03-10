@@ -68,4 +68,6 @@ void clearUserClasses();
  */
 void defineHierarchyForClass(QString classname, StringVector parents);
 
+bool isParentClass(QString parent, QString child);
+
 #endif

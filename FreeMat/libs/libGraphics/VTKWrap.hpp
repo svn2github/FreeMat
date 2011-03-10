@@ -24,23 +24,15 @@ inline T* GetVTKPointer(const Array &arg) {
   return reinterpret_cast<T*>(val[1].constRealScalar<uint64>());
 }
 
-inline Array MakeVTKPointer(vtkObjectBase *p, QString cname, Interpreter *eval, bool nodelete = false) {
-  StructArray *sap = new StructArray;
-  sap->insert("pointer",Array(reinterpret_cast<uint64>(p)));
-  sap->insert("nodelete",Array(nodelete));
-  sap->setClassName(cname);
-  // Make it a handle-semantics class
-  StructArray hsap(sap,eval);
-  return Array(hsap);
-}
+Array MakeVTKPointer(vtkObjectBase *p, QString cname, Interpreter *eval, bool nodelete = false);
 
-inline void DeleteVTKObject(const Array &arg) {
-  StructArray sa = arg.constStructPtr();
-  BasicArray<Array>& val = sa["nodelete"];
-  if (val[1].constRealScalar<bool>()) return;
-  vtkObjectBase *vtk_pointer = GetVTKPointer<vtkObjectBase>(arg);
-  vtk_pointer->Delete();
-}
+void DeleteVTKObject(const Array &arg);
+
+bool VTKIsScalarArg(const Array &g);
+
+bool VTKIsVectorArg(const Array &g);
+
+bool VTKIsClass(const Array &g, QString cname);
 
 #endif
 

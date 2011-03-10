@@ -61,13 +61,13 @@ endif (USE_VTK)
 TARGET_LINK_LIBRARIES( FreeMat 
 Core 
 FN 
+${VTK_WRAPPER_LIBS}
 Graphics 
 FreeMatlib 
 XP 
 Mex
 MatC
 levmar
-${VTK_WRAPPER_LIBS}
 ${QT_QTCORE_LIBRARY} 
 ${QT_QTGUI_LIBRARY} 
 ${QT_QTNETWORK_LIBRARY} 

@@ -17,6 +17,7 @@ ArrayVector GLClumpFunction(int, const ArrayVector&);
 ArrayVector GLAssemblyFunction(int, const ArrayVector&);
 ArrayVector GLNodeFunction(int, const ArrayVector&);
 ArrayVector GLShowFunction(int, const ArrayVector&);
+ArrayVector VTKFigureFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector VolRenderFunction(int, const ArrayVector&, Interpreter*);
 ArrayVector DrawNowFunction(int, const ArrayVector&);
 ArrayVector HFigureFunction(int, const ArrayVector&, Interpreter*);
@@ -52,6 +53,7 @@ void LoadBuiltinFunctionsGraphics(Context *context, bool guiflag) {
   if (guiflag)  context->addGfxFunction("glassembly",GLAssemblyFunction,2,0,"name","varargin",NULL);
   if (guiflag)  context->addGfxFunction("glnode",GLNodeFunction,3,0,"name","material","pointset",NULL);
   if (guiflag)  context->addGfxFunction("glshow",GLShowFunction,2,0,"name","scale",NULL);
+  if (guiflag)  context->addGfxSpecialFunction("vtkfigure",VTKFigureFunction,1,0,"render",NULL);
   if (guiflag)  context->addGfxSpecialFunction("volrender",VolRenderFunction,4,0,"volume","opacity","ctransfer","material",NULL);
   if (guiflag)  context->addGfxFunction("drawnow",DrawNowFunction,0,0,NULL);
   if (guiflag)  context->addGfxSpecialFunction("figure",HFigureFunction,1,1,"number",NULL);

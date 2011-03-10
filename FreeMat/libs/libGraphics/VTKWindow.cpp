@@ -152,6 +152,21 @@ VTKViewer::~VTKViewer() {
 // volrender(volume, opacityfunction, colortransferfunction, matlpropvec)
 
 //@@Signature
+//sgfunction vtkfigure VTKFigureFunction
+//input render
+//output none
+ArrayVector VTKFigureFunction(int nargout, const ArrayVector& arg, Interpreter *)
+{
+  if (arg.size() != 1) return ArrayVector();
+  vtkRenderer *r = GetVTKPointer<vtkRenderer>(arg[0]);
+  QVTKWidget *p = new QVTKWidget;
+  p->setMinimumSize(400,400);
+  p->GetRenderWindow()->AddRenderer(r);
+  p->show();
+  return ArrayVector();
+}
+
+//@@Signature
 //sgfunction volrender VolRenderFunction
 //input volume opacity ctransfer material
 //output none

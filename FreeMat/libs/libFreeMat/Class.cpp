@@ -872,6 +872,14 @@ static bool ClassResolveHelper(Interpreter* eval, QString className, QString fun
   return false;
 }
 
+bool isParentClass(QString parent, QString child)
+{
+  UserClassMetaInfo einfo = classTable[child];
+  for (int i=0;i<einfo.parentClasses.size();i++)
+    if (einfo.parentClasses.at(i) == parent) return true;
+  return false;
+}
+
 bool ClassResolveFunction(Interpreter* eval, Array& args, QString funcName, FuncPtr& val) {
   Context *context = eval->getContext();
   return ClassResolveHelper(eval,args.className(),funcName,val);

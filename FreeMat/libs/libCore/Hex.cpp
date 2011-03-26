@@ -56,7 +56,7 @@ ArrayVector Hex2DecFunction(int nargout, const ArrayVector& arg) {
   Array x(arg[0]);
   if (x.dataClass() == Double) x = x.toClass(StringArray);
   if (x.isVector()) 
-    return ArrayVector(Array(double(x.asString().toInt(0,16))));
+    return ArrayVector(Array(double(x.asString().toLongLong(0,16))));
   else {
     StringVector sv(StringVectorFromArray(x));
     Array rp(Double,NTuple(sv.size(),1));

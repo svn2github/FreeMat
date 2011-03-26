@@ -307,6 +307,8 @@ Array RangeConstructor(double minval, double stepsize, double maxval, bool vert)
   NTuple dim;
   if (stepsize == 0) 
     throw Exception("step size must be nonzero in colon expression");
+  if (!IsFinite(minval) || !IsFinite(stepsize) || !IsFinite(maxval))
+    return EmptyConstructor();
   //ideally, n = (c-a)/b
   // But this really defines an interval... we let
   // n_min = min(c-a)/max(b)

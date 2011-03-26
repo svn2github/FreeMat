@@ -151,6 +151,7 @@ void PathTool::save() {
     pathList << item->text();
   }
   settings.setValue("interpreter/path",pathList);
+  settings.sync();
   modified = false;
 }
 

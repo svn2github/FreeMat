@@ -409,7 +409,11 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
   // Case 1 - if the number of columns in a is 1, then this is a diagonal
   // constructor call.
   if (arg[0].isVector())
-    return ArrayVector(DiagonalArray(arg[0],diagonalOrder));
+    {
+      Array a = arg[0];
+      a.ensureNotScalarEncoded();
+      return ArrayVector(DiagonalArray(a,diagonalOrder));
+    }
   else
     return ArrayVector(GetDiagonal(arg[0],diagonalOrder));
 }

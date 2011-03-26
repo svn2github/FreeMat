@@ -26,6 +26,34 @@
 // Real, Real --> Real
 template <typename S, typename T, class Op>
 static inline SparseMatrix<S> DotOp(const SparseMatrix<T>& A, 
+				    const T & B) {
+  ConstSparseIterator<T> aspin(&A);
+  SparseMatrix<S> retval(A.dimensions());
+  // While more columns...
+  while (aspin.isValid()) {
+    retval.set(aspin.pos(),Op::func(aspin.value(),B));
+    aspin.next();
+  }
+  return retval;
+}
+
+// Real, Real --> Real
+template <typename S, typename T, class Op>
+static inline SparseMatrix<S> DotOp(const T& A, 
+				    const SparseMatrix<T>& B) {
+  ConstSparseIterator<T> bspin(&B);
+  SparseMatrix<S> retval(B.dimensions());
+  // While more columns...
+  while (bspin.isValid()) {
+    retval.set(bspin.pos(),Op::func(A,bspin.value()));
+    bspin.next();
+  }
+  return retval;
+}
+
+// Real, Real --> Real
+template <typename S, typename T, class Op>
+static inline SparseMatrix<S> DotOp(const SparseMatrix<T>& A, 
 				    const SparseMatrix<T>& B) {
   ConstSparseIterator<T> aspin(&A);
   ConstSparseIterator<T> bspin(&B);
@@ -85,6 +113,51 @@ static inline void DotOp(const SparseMatrix<T>& A_real,
     }
   }
 }
+
+// Complex, Complex --> Complex
+template <typename S, typename T, class Op>
+static inline void DotOp(const SparseMatrix<T>& A_real, 
+			 const SparseMatrix<T>& A_imag,
+			 const T& B_real,
+			 const T& B_imag,
+			 SparseMatrix<S>& C_real,
+			 SparseMatrix<S>& C_imag) {
+  C_real = SparseMatrix<S>(A_real.dimensions());
+  C_imag = SparseMatrix<S>(A_imag.dimensions());
+  ConstComplexSparseIterator<T> a_spin(&A_real, &A_imag);
+  NTuple dim(A_real.dimensions());
+  while (a_spin.isValid()) {
+    S value_c_real, value_c_imag;
+    Op::func(a_spin.realValue(),a_spin.imagValue(),
+	     B_real,B_imag,value_c_real,value_c_imag);
+    C_real.set(a_spin.pos(),value_c_real);
+    C_imag.set(a_spin.pos(),value_c_imag);
+    a_spin.next();
+  } 
+}
+
+// Complex, Complex --> Complex
+template <typename S, typename T, class Op>
+static inline void DotOp(const T& A_real, 
+			 const T& A_imag,
+			 const SparseMatrix<T>& B_real,
+			 const SparseMatrix<T>& B_imag,
+			 SparseMatrix<S>& C_real,
+			 SparseMatrix<S>& C_imag) {
+  C_real = SparseMatrix<S>(B_real.dimensions());
+  C_imag = SparseMatrix<S>(B_imag.dimensions());
+  ConstComplexSparseIterator<T> b_spin(&B_real, &B_imag);
+  NTuple dim(B_real.dimensions());
+  while (b_spin.isValid()) {
+    S value_c_real, value_c_imag;
+    Op::func(A_real,A_imag,
+	     b_spin.realValue(),b_spin.imagValue(),
+	     value_c_real,value_c_imag);
+    C_real.set(b_spin.pos(),value_c_real);
+    C_imag.set(b_spin.pos(),value_c_imag);
+    b_spin.next();
+  } 
+}
 	
 // Complex, Complex --> Real
 template <typename S, typename T, class Op>
@@ -137,6 +210,34 @@ Array DotOp(const Array &Ain, const Array &Bin, DataClass Tclass) {
       F = Array(Freal,Fimag);
     }
     return F;
+  }
+  if (Acast.isSparse() && Bcast.isScalar()) {
+    if (Acast.allReal() && Bcast.allReal()) 
+      return DotOp<T,T,Op>(Acast.constRealSparse<T>(),Bcast.constRealScalar<T>());
+    else {
+      Acast.forceComplex(); Bcast.forceComplex();
+      SparseMatrix<T> Freal(Acast.dimensions());
+      SparseMatrix<T> Fimag(Acast.dimensions());
+      DotOp<T,T,Op>(Acast.constRealSparse<T>(),
+		    Acast.constImagSparse<T>(),
+		    Bcast.constRealScalar<T>(),
+		    Bcast.constImagScalar<T>(), Freal, Fimag);
+      return Array(Freal,Fimag);
+    }
+  }
+  if (Acast.isScalar() && Bcast.isSparse()) {
+    if (Acast.allReal() && Bcast.allReal()) 
+      return DotOp<T,T,Op>(Acast.constRealScalar<T>(),Bcast.constRealSparse<T>());
+    else {
+      Acast.forceComplex(); Bcast.forceComplex();
+      SparseMatrix<T> Freal(Bcast.dimensions());
+      SparseMatrix<T> Fimag(Bcast.dimensions());
+      DotOp<T,T,Op>(Acast.constRealScalar<T>(),
+		    Acast.constImagScalar<T>(),
+		    Bcast.constRealSparse<T>(),
+		    Bcast.constImagSparse<T>(), Freal, Fimag);
+      return Array(Freal,Fimag);
+    }
   }
   if (!Acast.isScalar()) Acast = Acast.asDenseArray();
   if (!Bcast.isScalar()) Bcast = Bcast.asDenseArray();

@@ -705,6 +705,7 @@ static inline Array Tget_cell_scalar(const Array* ptr, S ndx) {
 const Array Array::get(const NTuple& index) const {
   if ((m_type.Scalar == 1) && index.isScalar())
     return *this;
+  if (m_type.Scalar == 1) return asDenseArray().get(index);
   switch (m_type.Class) {
   default:
     throw Exception("Unsupported type for get(const NTuple&)");
@@ -723,6 +724,7 @@ const Array Array::get(const NTuple& index) const {
 const Array Array::get(index_t index) const {
   if ((m_type.Scalar == 1) && (index == 1))
     return *this;
+  if (m_type.Scalar == 1) return asDenseArray().get(index);
   switch (m_type.Class) {
   default:
     throw Exception("Unhandled case for get(index)");

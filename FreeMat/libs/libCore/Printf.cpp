@@ -123,6 +123,7 @@ private:
   int vec_ind;
   int elem_ind;
   bool hasMoreData;
+  bool dataUsed;
   void IncDataPtr(void){
     if( ++elem_ind >= arg[ vec_ind ].length() ){
       if( ++vec_ind < arg.size() ){
@@ -132,12 +133,14 @@ private:
 	hasMoreData = false;
       }
     }
+    dataUsed = true;
   };
 
 public:
   PrintfDataServer( const ArrayVector& arg_ ):arg(arg_),vec_ind(1),elem_ind(0){
     //vec_ind starts with 1, because zeroth argument is format string
     hasMoreData = (arg.size() > 1); //( (arg.size() > 1) && (arg[1].getLength() > 0));
+    dataUsed = false;
   };
 
   void GetNextAsDouble(double& data){
@@ -172,6 +175,7 @@ public:
     IncDataPtr();
   };
   bool HasMoreData(void){ return hasMoreData; };
+  bool WasDataUsed(void) {return dataUsed;};
 };
 
 //Common routine used by sprintf,printf,fprintf.  They all
@@ -209,7 +213,15 @@ void PrintfHelperFunction(int nargout, const ArrayVector& arg, PrintfStream& out
   //do while there is still data to output or format string to save
   while( (*dp) || ps.HasMoreData() ) {
     if ( !(*dp) && ps.HasMoreData() ) //still have arguments, need to rewind format.
-      dp = &buff[0];
+      {
+	if (ps.WasDataUsed())
+	  dp = &buff[0];
+	else
+	  {
+	    WarningMessage("Unused data (format string had no usable format specs)");
+	    break;
+	  }
+      }
 
     np = dp;
     int nbuf_ind = 0;
@@ -224,8 +236,7 @@ void PrintfHelperFunction(int nargout, const ArrayVector& arg, PrintfStream& out
 	  *(nbuff+nbuf_ind) = '\n';
 	  break;
 	case 't':
-	  *(nbuff+nbuf_ind) = '\t';
-	  break;
+	  *(nbuff+nbuf_ind) = '\t';	  break;
 	case 'r':
 	  *(nbuff+nbuf_ind) = '\r';
 	  break;

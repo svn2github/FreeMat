@@ -77,7 +77,11 @@ ArrayVector GetPathFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("setpath function requires exactly one string argument");
+  QSettings settings("FreeMat",Interpreter::getVersionString());
+  settings.setValue("interpreter/path",arg[0].asString());
+  settings.sync();
   eval->setPath(arg[0].asString());
+  eval->rescanPath();
   return ArrayVector();
 }
 
@@ -98,7 +102,7 @@ ArrayVector SetPathFunction(int nargout, const ArrayVector& arg, Interpreter* ev
 ArrayVector PathToolFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   PathTool p;
   p.exec();
-  QSettings settings("FreeMat","FreeMat");
+  QSettings settings("FreeMat",Interpreter::getVersionString());
   QStringList userPath = settings.value("interpreter/path").toStringList();
   eval->setUserPath(userPath);
   eval->rescanPath();

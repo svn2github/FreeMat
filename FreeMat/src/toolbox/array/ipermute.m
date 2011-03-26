@@ -34,6 +34,6 @@
 % Licensed under the GPL
 
 function y = ipermute(x,p)
-  iperm = zeros(1,ndims(x));
-  iperm(p) = 1:ndims(x);
+  iperm = zeros(1,length(x));
+  iperm(p) = 1:length(p);
   y = permute(x,iperm);

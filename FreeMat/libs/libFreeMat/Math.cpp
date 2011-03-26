@@ -587,6 +587,22 @@ Array Add(const Array& A, const Array& B) {
 //[yz2,zz2] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1-yi2,zi1-zi2) & testeq(yf1-yf2,zf1-zf2) & testeq(yd1-yd2,zd1-zd2) & testeq(yc1-yc2,zc1-zc2) & testeq(yz1-yz2,zz1-zz2);
 //@}
+//@{ test_sparse117.m
+//function x = test_sparse117
+//% large sparse matrices
+//n=250000;
+//h1=1:n;
+//h2=2:n;
+//a=1.5; %an arbitrary factor
+//g1=ones(1,n);
+//g2=ones(1,n-1);
+//m1=sparse(h1,h1,a*g1,n,n); %works fine
+//m2=a*sparse(h1,h1,g1,n,n); %fails under freemat 4.0
+//%Error message: Cannot allocate enough memory to store an array of size 2370457856
+//m3=sparse(h2-1,h2,g2,n,n);
+//m4=m3+m3'; %works
+//x = 1;
+//@}
 //@$exact#y1=x1-x2
 //!
 Array Subtract(const Array& A, const Array &B) {

@@ -73,7 +73,7 @@ if (p == inf)
   y = max(abs(A));
 elseif (p == -inf)
   y = min(abs(A));
-elseif (p == 2)
+elseif ((p == 2) || strcmp(p,'fro'))
   y = xnrm2(A);
 else
   y = sum(abs(A).^p)^(1/p);

@@ -199,7 +199,202 @@ ArrayVector IsSetFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 //equal (compared element-wise).  Unlike @|issame|
 //the @|isequal| function will type convert where
 //possible to do the comparison.
+//@@Signature
+//sfunction isequal IsEqualFunction
+//inputs a b
+//outputs y
 //!
+
+template <typename T>
+static bool IsEqual(const T& a, const T& b);
+
+#define MacroDefIsEqual(ctype)			       \
+  template <>					       \
+  bool IsEqual(const ctype& a, const ctype& b) {	       \
+    return (a == b);				       \
+  }
+
+MacroDefIsEqual(bool);
+MacroDefIsEqual(int8);
+MacroDefIsEqual(uint8);
+MacroDefIsEqual(int16);
+MacroDefIsEqual(uint16);
+MacroDefIsEqual(int32);
+MacroDefIsEqual(uint32);
+MacroDefIsEqual(int64);
+MacroDefIsEqual(uint64);
+MacroDefIsEqual(QChar);
+MacroDefIsEqual(float);
+MacroDefIsEqual(double);
+
+template <>
+bool IsEqual(const Array&, const Array&);
+
+template <typename T>
+static bool IsEqual(const BasicArray<T>& ar, const BasicArray<T>& br) {
+  if (ar.dimensions() != br.dimensions()) return false;
+  for (index_t i=1;i<=ar.length();i++)
+    if (!IsEqual(ar[i],br[i])) 
+      return false;
+  return true;
+}
+
+static bool IsEqualStruct(const Array& a, const Array& b) {
+  const StructArray &ar(a.constStructPtr());
+  const StructArray &br(b.constStructPtr());
+  if (ar.fieldNames() != br.fieldNames()) return false;
+  if (ar.className() != br.className()) return false;
+  for (int i=0;i<ar.fieldCount();i++)
+    if (!IsEqual(ar[i],br[i])) return false;
+  return true;
+}
+
+#define MacroIsEqual(ctype,cls)						\
+  case cls:								\
+  { 									\
+  if (ad.allReal() && bd.allReal())					\
+    return IsEqual(ad.constReal<ctype>(),bd.constReal<ctype>());		\
+  else {								\
+    Array ac(ad); ac.forceComplex();					\
+    Array bc(bd); bc.forceComplex();					\
+    return (IsEqual(ac.constReal<ctype>(),bc.constReal<ctype>()) &&	\
+	    IsEqual(ac.constImag<ctype>(),bc.constImag<ctype>()));	\
+  }									\
+  }									
+
+template <>
+bool IsEqual(const Array& a, const Array& b) {
+  if (a.dataClass() != b.dataClass()) return false;
+  if (a.dimensions() != b.dimensions()) return false;
+  Array ad(a.asDenseArray());
+  Array bd(b.asDenseArray());
+  switch (ad.dataClass()) {
+  default:
+    return false;
+  MacroExpandCasesAll(MacroIsEqual);
+  case Struct:
+    return IsEqualStruct(a,b);
+  }
+}
+
+ArrayVector IsEqualFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 2) return ArrayVector(Array(false));
+  Array a(arg[0]);
+  Array b(arg[1]);
+  if (a.isReferenceType() || b.isReferenceType())
+    return ArrayVector(Array(IsEqual(a,b)));
+  return ArrayVector(Array(IsEqual(a.toClass(Double),b.toClass(Double))));
+}
+
+//!
+//@Module ISEQUALWITHEQUALNANS Test For Matrix Equality
+//@@Section INSPECTION
+//@@Usage
+//Test two arrays for equality, with NaNs being equal.  The general format
+//for its use is
+//@[
+//   y = isequalwithequalnans(a,b)
+//@]
+//This function returns true if the two arrays are
+//equal (compared element-wise).  Unlike @|issame|
+//the @|isequalwithequalnans| function will type convert where
+//possible to do the comparison.
+//@@Signature
+//sfunction isequalwithequalnans IsEqualWithEqualNaNsFunction
+//inputs a b
+//outputs y
+//!
+
+template <typename T>
+static bool IsEqualWithEqualNaNs(const T& a, const T& b);
+
+#define MacroDefIsEqualWithEqualNaNs(ctype)			       \
+  template <>					       \
+  bool IsEqualWithEqualNaNs(const ctype& a, const ctype& b) {	       \
+    return (a == b);				       \
+  }
+
+MacroDefIsEqualWithEqualNaNs(bool);
+MacroDefIsEqualWithEqualNaNs(int8);
+MacroDefIsEqualWithEqualNaNs(uint8);
+MacroDefIsEqualWithEqualNaNs(int16);
+MacroDefIsEqualWithEqualNaNs(uint16);
+MacroDefIsEqualWithEqualNaNs(int32);
+MacroDefIsEqualWithEqualNaNs(uint32);
+MacroDefIsEqualWithEqualNaNs(int64);
+MacroDefIsEqualWithEqualNaNs(uint64);
+MacroDefIsEqualWithEqualNaNs(QChar);
+
+
+template <>
+bool IsEqualWithEqualNaNs(const float& a, const float& b) {
+  return ((a == b) || (IsNaN(a) && IsNaN(b)));
+}
+
+template <>
+bool IsEqualWithEqualNaNs(const double& a, const double& b) {
+  return ((a == b) || (IsNaN(a) && IsNaN(b)));
+}
+
+template <>
+bool IsEqualWithEqualNaNs(const Array&, const Array&);
+
+template <typename T>
+static bool IsEqualWithEqualNaNs(const BasicArray<T>& ar, const BasicArray<T>& br) {
+  if (ar.dimensions() != br.dimensions()) return false;
+  for (index_t i=1;i<=ar.length();i++)
+    if (!IsEqualWithEqualNaNs(ar[i],br[i])) 
+      return false;
+  return true;
+}
+
+static bool IsEqualWithEqualNaNsStruct(const Array& a, const Array& b) {
+  const StructArray &ar(a.constStructPtr());
+  const StructArray &br(b.constStructPtr());
+  if (ar.fieldNames() != br.fieldNames()) return false;
+  if (ar.className() != br.className()) return false;
+  for (int i=0;i<ar.fieldCount();i++)
+    if (!IsEqualWithEqualNaNs(ar[i],br[i])) return false;
+  return true;
+}
+
+#define MacroIsEqualWithEqualNaNs(ctype,cls)						\
+  case cls:								\
+  { 									\
+  if (ad.allReal() && bd.allReal())					\
+    return IsEqualWithEqualNaNs(ad.constReal<ctype>(),bd.constReal<ctype>());		\
+  else {								\
+    Array ac(ad); ac.forceComplex();					\
+    Array bc(bd); bc.forceComplex();					\
+    return (IsEqualWithEqualNaNs(ac.constReal<ctype>(),bc.constReal<ctype>()) &&	\
+	    IsEqualWithEqualNaNs(ac.constImag<ctype>(),bc.constImag<ctype>()));	\
+  }									\
+  }									
+
+template <>
+bool IsEqualWithEqualNaNs(const Array& a, const Array& b) {
+  if (a.dataClass() != b.dataClass()) return false;
+  if (a.dimensions() != b.dimensions()) return false;
+  Array ad(a.asDenseArray());
+  Array bd(b.asDenseArray());
+  switch (ad.dataClass()) {
+  default:
+    return false;
+  MacroExpandCasesAll(MacroIsEqualWithEqualNaNs);
+  case Struct:
+    return IsEqualWithEqualNaNsStruct(a,b);
+  }
+}
+
+ArrayVector IsEqualWithEqualNaNsFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  if (arg.size() < 2) return ArrayVector(Array(false));
+  Array a(arg[0]);
+  Array b(arg[1]);
+  if (a.isReferenceType() || b.isReferenceType())
+    return ArrayVector(Array(IsEqualWithEqualNaNs(a,b)));
+  return ArrayVector(Array(IsEqualWithEqualNaNs(a.toClass(Double),b.toClass(Double))));
+}
+
 
 //!
 //@Module ISSPARSE Test for Sparse Matrix

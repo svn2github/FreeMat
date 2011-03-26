@@ -96,6 +96,7 @@ public:
   QVector<double> UnitsReinterpret(RenderEngine& gc, QVector<double> a);
   QVector<double> GetPropertyVectorAsPixels(RenderEngine& gc, QString name);
   QVector<double> GetAxisLimits(bool rawmode = false);
+  void GetAxisLimitsHelper(QString axisname, QVector<double> &lims, bool rawmode);
   void SetAxisLimits(QVector<double>);
   double MapX(double x);
   double MapY(double y);

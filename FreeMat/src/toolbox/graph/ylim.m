@@ -19,6 +19,11 @@
 %automatically.  The @|ylim('mode')| form returns the current mode for the axis
 %(either @|'auto'| or @|'manual'|).  Finally, you can specify the handle of an
 %axis to manipulate instead of using the current one.
+%
+%As an additional feature, you can now specify @|inf| for a limit, and
+%FreeMat will take that limit from the automatic set.  So, for example 
+%@|ylim([10,inf])| will set the minimum for the y axis, but use the
+%automatic value for the maximum.
 %@@Example
 %@<
 %x = linspace(-1,1);
@@ -37,6 +42,14 @@
 %@>
 %which results in
 %@figure ylim2
+%To demonstrate the infinite limits feature.  Consider the following
+%@<
+%plot(x,y,'r-');
+%ylim([0,inf])
+%mprint ylim3
+%@>
+%which results in 
+%@figure ylim3
 %!
 
 %Copyright (c) 2004,2006 Brian Yanoff, Samit Basu

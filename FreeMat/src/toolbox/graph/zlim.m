@@ -19,24 +19,6 @@
 %automatically.  The @|zlim('mode')| form returns the current mode for the axis
 %(either @|'auto'| or @|'manual'|).  Finally, you can specify the handle of an
 %axis to manipulate instead of using the current one.
-%@@Example
-%@<
-%x = linspace(-1,1);
-%y = sin(2*pi*x);
-%plot(x,y,'r-');
-%zlim  % what are the current limits?
-%mprint zlim1
-%@>
-%which results in
-%@figure zlim1
-%Next, we zoom in on the plot using the @|zlim| function
-%@<
-%plot(x,y,'r-')
-%zlim([-0.2,0.2])
-%mprint zlim2
-%@>
-%which results in
-%@figure zlim2
 %!
 
 %Copyright (c) 2004,2006 Brian Yanoff, Samit Basu

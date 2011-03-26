@@ -876,46 +876,38 @@ void HandleAxis::SetAxisLimits(QVector<double> lims) {
     SetTwoVectorDefault("zlim",pow(10.0,lims[4]),pow(10.0,lims[5]));
 }
 
-QVector<double> HandleAxis::GetAxisLimits(bool rawmode) {
+void HandleAxis::GetAxisLimitsHelper(QString axisname, QVector<double> &lims, bool rawmode)
+{
   HPTwoVector *hp;
-  QVector<double> lims;
   HPLinearLog *sp;
-  if (rawmode && IsAuto("xlimmode"))
-    hp = (HPTwoVector*) LookupProperty("xlim_raw");
+  double minval, maxval;
+  if (rawmode && IsAuto(axisname + "limmode"))
+    hp = (HPTwoVector*) LookupProperty(axisname + "lim_raw");
   else
-    hp = (HPTwoVector*) LookupProperty("xlim");
-  sp = (HPLinearLog*) LookupProperty("xscale");
+    hp = (HPTwoVector*) LookupProperty(axisname + "lim");
+  minval = hp->Data()[0];
+  maxval = hp->Data()[1];
+  if (!IsFinite(minval) || !IsFinite(maxval))
+    {
+      hp = (HPTwoVector*) LookupProperty(axisname + "lim_raw");
+      if (!IsFinite(minval)) minval = hp->Data()[0];
+      if (!IsFinite(maxval)) maxval = hp->Data()[1];
+    }
+  sp = (HPLinearLog*) LookupProperty(axisname + "scale");
   if (sp->Is("linear")) {
-    lims.push_back(hp->Data()[0]);
-    lims.push_back(hp->Data()[1]);
+    lims.push_back(minval);
+    lims.push_back(maxval);
   } else {
-    lims.push_back(tlog(hp->Data()[0]));
-    lims.push_back(tlog(hp->Data()[1]));
+    lims.push_back(tlog(minval));
+    lims.push_back(tlog(maxval));
   }
-  if (rawmode && IsAuto("ylimmode"))
-    hp = (HPTwoVector*) LookupProperty("ylim_raw");
-  else
-    hp = (HPTwoVector*) LookupProperty("ylim");
-  sp = (HPLinearLog*) LookupProperty("yscale");
-  if (sp->Is("linear")) {
-    lims.push_back(hp->Data()[0]);
-    lims.push_back(hp->Data()[1]);
-  } else {
-    lims.push_back(tlog(hp->Data()[0]));
-    lims.push_back(tlog(hp->Data()[1]));
-  }
-  if (rawmode && IsAuto("zlimmode"))
-    hp = (HPTwoVector*) LookupProperty("zlim_raw");
-  else
-    hp = (HPTwoVector*) LookupProperty("zlim");
-  sp = (HPLinearLog*) LookupProperty("zscale");
-  if (sp->Is("linear")) {
-    lims.push_back(hp->Data()[0]);
-    lims.push_back(hp->Data()[1]);
-  } else {
-    lims.push_back(tlog(hp->Data()[0]));
-    lims.push_back(tlog(hp->Data()[1]));
-  }
+}
+
+QVector<double> HandleAxis::GetAxisLimits(bool rawmode) {
+  QVector<double> lims;
+  GetAxisLimitsHelper("x",lims,rawmode);
+  GetAxisLimitsHelper("y",lims,rawmode);
+  GetAxisLimitsHelper("z",lims,rawmode);
   return lims;
 }
 

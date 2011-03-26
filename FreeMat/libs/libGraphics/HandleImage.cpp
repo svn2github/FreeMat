@@ -291,16 +291,16 @@ void HandleImage::UpdateState() {
   HPTwoVector *xp = (HPTwoVector *) LookupProperty("xdata");
   if (xp->Data().empty()) {
     if (cdata.cols() > 1)
-      SetTwoVectorDefault("xdata",1,cdata.cols());
+      SetTwoVectorDefault("xdata",0,cdata.cols());
     else
-      SetTwoVectorDefault("xdata",1,2);
+      SetTwoVectorDefault("xdata",0,1);
   }
   HPTwoVector *yp = (HPTwoVector *) LookupProperty("ydata");
   if (yp->Data().empty()) {
     if (cdata.rows() > 1)
-      SetTwoVectorDefault("ydata",1,cdata.rows());
+      SetTwoVectorDefault("ydata",0,cdata.rows());
     else
-      SetTwoVectorDefault("ydata",1,2);
+      SetTwoVectorDefault("ydata",0,1);
   }
   ClearAllChanged();
 }

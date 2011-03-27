@@ -278,7 +278,7 @@ ArrayVector FopenFunction(int nargout, const ArrayVector& arg) {
     FilePtr *fptr = new FilePtr();
     fptr->fp = new QFile(fname);
     if (mustExist && !fptr->fp->exists())
-      throw Exception("Access mode " + mode + " requires file to exist ");
+      return Array(double(-1));
     if (!fptr->fp->open(modeFlag))
       throw Exception(fptr->fp->errorString() + QString(" for fopen argument ") + fname);
     fptr->swapflag = swapendian;

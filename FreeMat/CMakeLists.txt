@@ -247,19 +247,17 @@ ENDIF (VTK_FOUND)
 ENDIF (USE_VTK)
 
 ######################################################################
-# VOLPACK Support
+# ITK Support
 ######################################################################
-OPTION(USE_VOLPACK "Build with VOLPACK support?" OFF)
-IF( USE_VOLPACK )
-FIND_LIBRARY(VOLPACK_LIBRARY NAMES volpack DOC "Location of VOLPACK library" PATHS ${LOCAL_PATH})
-FIND_PATH(VOLPACK_INCLUDE_DIR NAMES volpack.h DOC "Location of volpack.h" PATHS ${LOCAL_PATH})
-IF( VOLPACK_LIBRARY AND VOLPACK_INCLUDE_DIR ) 
-	INCLUDE_DIRECTORIES( ${VOLPACK_INCLUDE_DIR} )
-	ADD_DEFINITIONS( -DHAVE_VOLPACK )
-        SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${VOLPACK_LIBRARY} )
-ENDIF( VOLPACK_LIBRARY AND VOLPACK_INCLUDE_DIR )	
-ENDIF( USE_VOLPACK)
-
+OPTION(USE_ITK "Build with InsightToolkit support?" OFF)
+IF (USE_ITK)
+FIND_PACKAGE(ITK)
+IF (ITK_FOUND)
+  ADD_DEFINITIONS( -DHAVE_ITK)
+  INCLUDE(${ITK_USE_FILE})
+  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ITKBasicFilters)
+ENDIF(ITK_FOUND)
+ENDIF(USE_ITK)
 
 ######################################################################
 # LLVM Support

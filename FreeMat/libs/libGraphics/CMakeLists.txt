@@ -29,9 +29,11 @@ ADD_SUBDIRECTORY(vtk/parallel)
 ADD_SUBDIRECTORY(vtk/views)
 ADD_SUBDIRECTORY(vtk/widgets)
 
-ADD_SUBDIRECTORY(itk)
-
 endif(USE_VTK)
+
+if (USE_ITK)
+ADD_SUBDIRECTORY(itk)
+endif(USE_ITK)
 
 set (VTK_WRAPPER_LIBS 
 vtkCommonWrapper        vtkIOWrapper
@@ -85,7 +87,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/HandleUIControl.moc.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/HandleMultiEdit.moc.cpp 
 ${CMAKE_CURRENT_SOURCE_DIR}/HandleWindow.moc.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/GLWindow.moc.cpp
-${VTK_CLASSES}
 )
 
 

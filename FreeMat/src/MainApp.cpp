@@ -1075,6 +1075,7 @@ void LoadBuiltinFunctionsVTKViews(Context *context, bool guiflag);
 void LoadBuiltinFunctionsVTKFiltering(Context *context, bool guiflag);
 void LoadBuiltinFunctionsVTKGeovis(Context *context, bool guiflag);
 void LoadBuiltinFunctionsVTKGraphics(Context *context, bool guiflag);
+void LoadBuiltinFunctionsITK(Context *context, bool guiflag);
 #endif
 
 			 
@@ -1099,6 +1100,7 @@ void LoadBuiltinFunctions(Context *context, bool guimode)
   LoadBuiltinFunctionsVTKFiltering(context,guimode);
   LoadBuiltinFunctionsVTKGeovis(context,guimode);
   LoadBuiltinFunctionsVTKGraphics(context,guimode);
+  LoadBuiltinFunctionsITK(context,guimode);
 #endif
 }
 

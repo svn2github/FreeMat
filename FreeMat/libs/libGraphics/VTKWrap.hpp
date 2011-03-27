@@ -1,6 +1,8 @@
 #ifndef __VTKWrap_hpp__
 #define __VTKWrap_hpp__
 
+#ifdef HAVE_VTK
+
 #include "Array.hpp"
 #include "Struct.hpp"
 #include "Interpreter.hpp"
@@ -33,6 +35,8 @@ bool VTKIsScalarArg(const Array &g);
 bool VTKIsVectorArg(const Array &g);
 
 bool VTKIsClass(const Array &g, QString cname);
+
+#endif
 
 #endif
 

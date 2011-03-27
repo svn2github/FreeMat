@@ -210,4 +210,11 @@ ArrayVector VolRenderFunction(int nargout, const ArrayVector& arg, Interpreter *
 {
   throw Exception("volrender function requires VTK support, which was not enabled at compile time");
 }
+
+
+ArrayVector VTKFigureFunction(int nargout, const ArrayVector& arg, Interpreter *)
+{
+  throw Exception("vtkfigure function requries VTK support, which was not enabled at compile time");
+}
+
 #endif

@@ -24,7 +24,6 @@ volumeProperty.SetAmbient(matlprop(2));
 volumeProperty.SetSpecular(matlprop(3));
 volumeProperty.SetSpecularPower(matlprop(4));
 volumeProperty.SetInterpolationTypeToLinear();
-keyboard
 compositeFunction = vtkVolumeRayCastCompositeFunction;
 mapper = vtkFixedPointVolumeRayCastMapper;
 mapper.SetInput(image_data);

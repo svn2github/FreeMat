@@ -1,3 +1,5 @@
+#ifdef HAVE_VTK
+
 #include "VTKWrap.hpp"
 #include "Class.hpp"
 
@@ -39,3 +41,4 @@ bool VTKIsClass(const Array &g, QString cname)
 	   isParentClass(cname,g.className())));
 }
 
+#endif

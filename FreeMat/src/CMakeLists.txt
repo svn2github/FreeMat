@@ -55,13 +55,18 @@ vtkGeovisWrapper        vtkRenderingWrapper
 vtkGraphicsWrapper    vtkViewsWrapper
 vtkHybridWrapper        vtkVolumeRenderingWrapper
 vtkImagingWrapper      vtkWidgetsWrapper
-vtkInfovisWrapper)
+vtkInfovisWrapper )
 endif (USE_VTK)
+
+if (USE_ITK)
+set (ITK_WRAPPER_LIBS itkWrapper)
+endif (USE_ITK)
 
 TARGET_LINK_LIBRARIES( FreeMat 
 Core 
 FN 
 ${VTK_WRAPPER_LIBS}
+${ITK_WRAPPER_LIBS}
 Graphics 
 FreeMatlib 
 XP 

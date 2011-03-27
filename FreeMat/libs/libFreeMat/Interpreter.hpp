@@ -258,6 +258,10 @@ class Interpreter : public QThread {
    * to the GUI.
    */
   bool m_liveUpdateFlag;
+  /**
+   * Enable or disable warning messages
+   */
+  bool m_enableWarnings;
   /******************************************
    *  Public Methods for the Interpreter    *
    ******************************************/
@@ -307,6 +311,11 @@ public:
   inline void setDiaryState(bool t) {m_diaryState = t;}
   inline void setDiaryFilename(QString name) {m_diaryFilename = name;}
   void diaryMessage(QString msg);
+  /**
+   * Manipulate the warning enable state
+   */
+  inline bool getEnableWarnings() {return m_enableWarnings;}
+  inline void setEnableWarnings(bool t) {m_enableWarnings = t;}
   /**
    * Manipulate the capture state
    */

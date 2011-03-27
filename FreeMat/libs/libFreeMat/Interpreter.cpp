@@ -491,6 +491,7 @@ void Interpreter::errorMessage(QString msg) {
 void Interpreter::warningMessage(QString msg) {
   static QString lastWarning;
   static bool lastWarningRepeat = false;
+  if (!m_enableWarnings) return;
   if (m_diaryState) diaryMessage("Warning: " + msg + "\n");
   if (m_captureState) 
     m_capture += "Warning: " + msg + "\n";
@@ -5313,6 +5314,7 @@ Interpreter::Interpreter(Context* aContext) {
   m_capture = "";
   m_profile = false;
   m_quietlevel = 0;
+  m_enableWarnings = true;
   context->pushScope("base","base",false);
 }
 

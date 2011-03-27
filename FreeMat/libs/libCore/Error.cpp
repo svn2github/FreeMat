@@ -89,6 +89,12 @@ ArrayVector ErrorCountFunction(int nargout, const ArrayVector& arg,
   return ArrayVector(Array(double(eval->getErrorCount())));
 }
 
+static QString BoolToFlag(bool t)
+{
+  if (t) return "on";
+  return "off";
+}
+
 //!
 //@Module WARNING Emits a Warning Message
 //@@Section FLOW
@@ -99,17 +105,48 @@ ArrayVector ErrorCountFunction(int nargout, const ArrayVector& arg,
 //   warning(s)
 //@]
 //where @|s| is the string message containing the warning.
+//
+//The @|warning| function can also be used to turn off warnings, and to
+//retrieve the current state of the warning flag.  To turn off warnings
+//use the syntax
+//@[
+//   warning off
+//@]
+//at which point, warnings will not be displayed.  To turn on warnings
+//use the syntax
+//@[
+//   warning on
+//@]
+//In both cases, you can also retrieve the current state of the warnings
+//flag
+//@[
+//   y = warning('on')
+//   y = warning('off')
+//@]
 //@@Signature
 //sfunction warning WarningFunction
 //inputs msg
-//outputs none
+//outputs flag
 //!
 ArrayVector WarningFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() == 0)
-    throw Exception("Not enough inputs to warning function");
+    return Array(BoolToFlag(eval->getEnableWarnings()));
   if (!(arg[0].isString()))
     throw Exception("Input to error function must be a string");
-  eval->warningMessage(arg[0].asString());
+  QString txt = arg[0].asString();
+  if (txt.toLower() == "on")
+    {
+      Array ret = Array(BoolToFlag(eval->getEnableWarnings()));
+      eval->setEnableWarnings(true);
+      return ret; 
+   }
+  else if (txt.toLower() == "off")
+    {
+      Array ret = Array(BoolToFlag(eval->getEnableWarnings()));
+      eval->setEnableWarnings(false);
+      return ret;
+    }
+  eval->warningMessage(txt);
   return ArrayVector();
 }
 

@@ -97,6 +97,46 @@ Array FuncPtrConstructor(Interpreter *eval, FuncPtr val) {
 }
 
 //!
+//@Module FUNC2STR Function to String conversion
+//@@Section FUNCTIONS
+//@@Usage
+//The @|func2str| function converts a function pointer into a
+//string.  The syntax is
+//@[
+//    y = func2str(funcptr)
+//@]
+//where @|funcptr| is a function pointer.  If @|funcptr| is a 
+//pointer to a function, then @|y| is the name of the function.
+//On the other hand, if @|funcptr| is an anonymous function then
+//@|func2str| returns the definition of the anonymous function.
+//@@Example
+//Here is a simple example of using @|func2str|
+//@<
+//y = @sin
+//x = func2str(y)
+//@>
+//If we use an anonymous function, then @|func2str|
+//returns the definition of the anonymous function
+//@<
+//y = @(x) x.^2
+//x = func2str(y)
+//@>
+//!
+//@@Signature
+//sfunction func2str Func2StrFunction
+//input ptr
+//output name
+ArrayVector Func2StrFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  if (arg.size() == 0) return ArrayVector();
+  Array a = arg[0];
+  if (a.className() == "functionpointer")
+    return Array(LOOKUP(a,"name").asString());
+  if (a.className() == "anonfunction")
+    return Array(AnonFuncToString(a));
+  throw Exception("func2str requires either a function pointer or anonymous pointer as an argument");
+}
+
+//!
 //@Module STR2FUNC String to Function conversion
 //@@Section FUNCTIONS
 //@@Usage

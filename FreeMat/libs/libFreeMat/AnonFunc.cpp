@@ -53,6 +53,18 @@ Array AnonFuncConstructor(Interpreter* eval, const Tree & t) {
   return ret;
 }
 
+QString AnonFuncToString(const Array &a)
+{
+  QString ret = " @(";
+  StringVector argnames(StringVectorFromArray(LOOKUP(a,"args")));
+  if (argnames.size() > 0) 
+    ret += argnames[0];
+  for (int j=1;j<argnames.size();j++)
+    ret += "," + argnames[j];
+  ret += ")  " + LOOKUP(a,"expr").asString();
+  return ret;
+}
+
 //@@Signature
 //sfunction @anonfunction:display AnonFuncDispFunction
 //input x
@@ -60,13 +72,7 @@ Array AnonFuncConstructor(Interpreter* eval, const Tree & t) {
 ArrayVector AnonFuncDispFunction(int nargout, const ArrayVector& arg,
 				 Interpreter *eval) {
   for (int i=0;i<arg.size();i++) {
-    eval->outputMessage(" @(");
-    StringVector argnames(StringVectorFromArray(LOOKUP(arg[i],"args")));
-    if (argnames.size() > 0) 
-      eval->outputMessage(argnames[0]);
-    for (int j=1;j<argnames.size();j++)
-      eval->outputMessage("," + argnames[j]);
-    eval->outputMessage(")  " + LOOKUP(arg[i],"expr").asString());
+    eval->outputMessage(AnonFuncToString(arg[i]));
     eval->outputMessage("\n");
   }
   return ArrayVector();

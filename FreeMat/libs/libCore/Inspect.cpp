@@ -21,7 +21,7 @@
 #include "Interpreter.hpp"
 #include <QtCore>
 #include "Algorithms.hpp"
-
+#include "Struct.hpp"
 
 //!
 //@Module END End Function
@@ -321,6 +321,8 @@ ArrayVector AddrFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(arg[0].address()));
 }
 
+#define LOOKUP(x,field) x.constStructPtr()[field].get(1)
+
 //!
 //@Module NARGIN Number of Input Arguments
 //@@Section FUNCTIONS
@@ -335,6 +337,14 @@ ArrayVector AddrFunction(int nargout, const ArrayVector& arg) {
 //fewer arguments to be passed to a function than were declared,
 //and @|nargin|, along with @|isset| can be used to determine
 //exactly what subset of the arguments were defined.
+//
+//You can also use @|nargin| on a function handle to return the
+//number of input arguments expected by the function
+//@[
+//  y = nargin(fun)
+//@]
+//where @|fun| is the name of the function (e.g. @|'sin'|) or 
+//a function handle.
 //@@Example
 //Here is a function that is declared to take five 
 //arguments, and that simply prints the value of @|nargin|
@@ -348,6 +358,9 @@ ArrayVector AddrFunction(int nargout, const ArrayVector& arg) {
 //nargintest(3,'h');
 //nargintest(3,'h',1.34);
 //nargintest(3,'h',1.34,pi,e);
+//nargin('sin')
+//y = @sin
+//nargin(y)
 //@>
 //@@Tests
 //@{ test_nargin1.m
@@ -370,14 +383,27 @@ ArrayVector AddrFunction(int nargout, const ArrayVector& arg) {
 //@}
 //@@Signature
 //sfunction nargin NarginFunction
-//inputs none
+//inputs funcname
 //outputs count
 //!
 ArrayVector NarginFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
-  Context *ctxt = eval->getContext();
-  ParentScopeLocker lock(ctxt);
-  int nargin = ctxt->scopeNargin();
-  return ArrayVector() << Array(double(nargin));
+  if (arg.size() == 0)
+    {
+      Context *ctxt = eval->getContext();
+      ParentScopeLocker lock(ctxt);
+      int nargin = ctxt->scopeNargin();
+      return ArrayVector() << Array(double(nargin));
+    }
+  Array a = arg[0];
+  QString txt;
+  if (a.className() == "functionpointer")
+    txt = LOOKUP(a,"name").asString();
+  else
+    txt = arg[0].asString();
+  FuncPtr val;
+  if (!eval->lookupFunction(txt,val))
+    throw Exception("Unable to resolve " + txt + " to a function call");
+  return Array(double(val->inputArgCount()));
 }
 
 //!
@@ -393,6 +419,14 @@ ArrayVector NarginFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //fewer return values to be requested from a function than were declared,
 //and @|nargout| can be used to determine exactly what subset of 
 //the functions outputs are required.  
+//
+//You can also use @|nargout| on a function handle to return the
+//number of input arguments expected by the function
+//@[
+//  y = nargout(fun)
+//@]
+//where @|fun| is the name of the function (e.g. @|'sin'|) or 
+//a function handle.
 //@@Example
 //Here is a function that is declared to return five 
 //values, and that simply prints the value of @|nargout|
@@ -407,17 +441,33 @@ ArrayVector NarginFunction(int nargout, const ArrayVector& arg, Interpreter* eva
 //[a1,a2] = nargouttest
 //[a1,a2,a3] = nargouttest
 //[a1,a2,a3,a4,a5] = nargouttest
+//nargout('sin')
+//y = @sin
+//nargout(y)
 //@>
 //@@Signature
 //sfunction nargout NargoutFunction
-//inputs none
+//inputs func
 //outputs count
 //!
 ArrayVector NargoutFunction(int, const ArrayVector&arg, Interpreter* eval) {
-  Context *ctxt = eval->getContext();
-  ParentScopeLocker lock(ctxt);
-  int nargout = ctxt->scopeNargout();
-  return ArrayVector() << Array(double(nargout));
+  if (arg.size() == 0)
+    {
+      Context *ctxt = eval->getContext();
+      ParentScopeLocker lock(ctxt);
+      int nargout = ctxt->scopeNargout();
+      return ArrayVector() << Array(double(nargout));
+    }
+  Array a = arg[0];
+  QString txt;
+  if (a.className() == "functionpointer")
+    txt = LOOKUP(a,"name").asString();
+  else
+    txt = arg[0].asString();
+  FuncPtr val;
+  if (!eval->lookupFunction(txt,val))
+    throw Exception("Unable to resolve " + txt + " to a function call");
+  return Array(double(val->outputArgCount()));  
 }
 
 

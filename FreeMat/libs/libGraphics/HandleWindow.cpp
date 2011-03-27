@@ -75,6 +75,7 @@ void BaseFigureQt::paintEvent(QPaintEvent *e) {
 BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) : 
   QWidget(parent) {
   hfig = fig;
+  setMouseTracking(true);
   //  hfig->resizeGL(width(),height());
 }
 
@@ -179,6 +180,7 @@ HandleWindow::HandleWindow(unsigned ahandle, Interpreter *eval) : QMainWindow(),
   createMenus();
   createToolBars();
   setCentralWidget(child);
+  setMouseTracking(true);
   resize(600,400);
   initialized = true;
   mode = normal_mode;

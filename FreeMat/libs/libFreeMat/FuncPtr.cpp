@@ -21,6 +21,8 @@
 #include "Interpreter.hpp"
 #include "Algorithms.hpp"
 #include "HandleList.hpp"
+#include "Parser.hpp"
+#include "AnonFunc.hpp"
 
 #define LOOKUP(x,field) x.constStructPtr()[field].get(1)
 
@@ -92,6 +94,62 @@ Array FuncPtrConstructor(Interpreter *eval, FuncPtr val) {
   Array ret(StructConstructor(fields,values));
   ret.structPtr().setClassName("functionpointer");
   return ret;
+}
+
+//!
+//@Module STR2FUNC String to Function conversion
+//@@Section FUNCTIONS
+//@@Usage
+//The @|str2func| function converts a function name into a 
+//function pointer.  The syntax is 
+//@[
+//    y = str2func('funcname')
+//@]
+//where @|funcname| is the name of the function. The return
+//variable @|y| is a function handle that points to the given
+//function.
+//
+//An alternate syntax is used to construct an anonymous function
+//given an expression.  They syntax is
+//@[
+//    y = str2func('anonymous def')
+//@]
+//where @|anonymous def| is an expression that defines an
+//anonymous function, for example @|'@(x) x.^2'|.
+//@@Example
+//Here is a simple example of using @|str2func|.
+//@<
+//sin(.5)              % Calling the function directly
+//y = str2func('sin')  % Convert it into a function handle
+//y(.5)                % Calling 'sin' via the function handle
+//@>
+//Here we use @|str2func| to define an anonymous function
+//@<
+//y = str2func('@(x) x.^2')
+//y(2)
+//@>
+//!
+//@@Signature
+//sfunction str2func Str2FuncFunction
+//input name
+//output ptr
+ArrayVector Str2FuncFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
+  if (arg.size() == 0) return ArrayVector();
+  QString txt = arg[0].asString();
+  if (txt.startsWith('@'))
+    {
+      Tree t = ParseExpressionString(txt+"\n");
+      if (t.first().is(TOK_ANONYMOUS_FUNC))
+	return AnonFuncConstructor(eval,t.first());
+      throw Exception("Unable to construct anonymous function from string " + txt);
+    }
+  else
+    {
+      FuncPtr val;
+      if (!eval->lookupFunction(txt,val))
+	throw Exception("Unable to resolve " + txt + " to a function call");
+      return FuncPtrConstructor(eval,val);
+    }
 }
 
 //@@Signature

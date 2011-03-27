@@ -28,6 +28,9 @@ ADD_SUBDIRECTORY(vtk/infovis)
 ADD_SUBDIRECTORY(vtk/parallel)
 ADD_SUBDIRECTORY(vtk/views)
 ADD_SUBDIRECTORY(vtk/widgets)
+
+ADD_SUBDIRECTORY(itk)
+
 endif(USE_VTK)
 
 set (VTK_WRAPPER_LIBS 

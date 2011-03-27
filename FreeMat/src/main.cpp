@@ -33,10 +33,12 @@
 #include "Exception.hpp"
 #include "application.hpp"
 #include "FuncMode.hpp"
+#include "ScriptMode.hpp"
 
 
 MainApp *m_app;
 FuncMode *m_func;
+ScriptMode *m_script;
 
 void usage() {
   printf("%s\n  Command Line Help\n",qPrintable(Interpreter::getVersionString()));
@@ -47,14 +49,18 @@ void usage() {
   printf("                   command line, so use it last.\n");
 #ifdef Q_WS_X11
   printf("     -nogui        Suppress the GUI for FreeMat.\n");
-  //  printf("     -noplastique  Do not force the plastique style for GUI.\n");
 #endif
   printf("     -noX          Disables the graphics subsystem.\n");
+  printf("     -nogreet      Skips the greeting when starting.\n");
   printf("     -e            uses a dumb terminal interface \n");
   printf("                   (no command line editing, etc.)\n");
   printf("                   This flag is primarily used when \n");
   printf("                   you want to capture input/output\n");
   printf("                   to FreeMat from another application.\n");
+  printf("     -s <file>     Script mode.  If you put a #!FreeMat -s at the\n");
+  printf("                   beginning of a .m file, and make it executable\n");
+  printf("                   in Unix-like OSes, FreeMat will start up, execute\n");
+  printf("                   the script, and quit automatically.\n");
   printf("     -i <path>     Install FreeMat - provide the path to the\n");
   printf("                   FreeMat data directory (containing the\n");
   printf("                   scripts, help and other files.).  Normally\n");
@@ -98,15 +104,15 @@ void sigDoNothing(int arg) {
 int main(int argc, char *argv[]) {  
   QCoreApplication *app;
   int nogui = parseFlagArg(argc,argv,"-nogui",false);
-  int scriptMode = parseFlagArg(argc,argv,"-e",false); 
+  int dumbTerminal = parseFlagArg(argc,argv,"-e",false); 
   int noX = parseFlagArg(argc,argv,"-noX",false);
   int help = parseFlagArg(argc,argv,"-help",false);
   int help2 = parseFlagArg(argc,argv,"--help",false);
   int funcMode = parseFlagArg(argc,argv,"-f",true);
   int nogreet = parseFlagArg(argc,argv,"-nogreet",false);
-  //  int noplastique = parseFlagArg(argc,argv,"-noplastique",false);
   int installMode = parseFlagArg(argc,argv,"-i",true);
   int pathMode = parseFlagArg(argc,argv,"-p",true);
+  int scriptMode = parseFlagArg(argc,argv,"-s",true);
 
   signal(SIGINT,sigDoNothing);
   
@@ -121,10 +127,6 @@ int main(int argc, char *argv[]) {
   if (help || help2) usage();
   if (!noX) {
     app = new QApplication(argc, argv);
-    //#ifdef Q_WS_X11
-    //    if (!noplastique)
-    //      QApplication::setStyle(new QPlastiqueStyle);
-    //#endif
   } else {
     app = new QCoreApplication(argc, argv);
     nogui = true;
@@ -138,16 +140,24 @@ int main(int argc, char *argv[]) {
     settings.setValue("interpreter/path",QString::fromStdString(argv[pathMode+1]).split(":"));
   }
 
-  if (scriptMode) nogui = 1;
+  if (dumbTerminal) nogui = 1;
+  if (scriptMode) 
+    {
+      nogui = 1;
+      nogreet = 1;
+      funcMode = 0;
+    }
   m_app = new MainApp;
   if (!nogui)
     m_app->SetupGUICase();
-  else if (!scriptMode) 
+  else if (!dumbTerminal) 
     m_app->SetupInteractiveTerminalCase();
   else
     m_app->SetupDumbTerminalCase();
   m_app->SetGUIMode(!noX);
   m_app->SetSkipGreeting(nogreet);
+  if (scriptMode)
+    m_app->SetNoPrompt(true);
   m_app->Run();
   //  QTimer::singleShot(0,m_app,SLOT(Run()));
   // In function mode, we need to send a command to the GUI
@@ -156,6 +166,12 @@ int main(int argc, char *argv[]) {
     QObject::connect(m_func,SIGNAL(SendCommand(QString)),
  		     m_app->GetKeyManager(),SLOT(QueueSilent(QString)));
     QTimer::singleShot(0,m_func,SLOT(Fire()));
+  }
+  if (scriptMode) {
+    m_script = new ScriptMode(argv[scriptMode+1]);
+    QObject::connect(m_script,SIGNAL(SendCommand(QString)),
+ 		     m_app->GetKeyManager(),SLOT(QueueSilent(QString)));
+    QTimer::singleShot(0,m_script,SLOT(Fire()));
   }
   return app->exec();
 }

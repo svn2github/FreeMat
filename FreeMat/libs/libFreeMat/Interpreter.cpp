@@ -5302,6 +5302,7 @@ Interpreter::Interpreter(Context* aContext) {
   jitcontrol = false;
   stopoverload = false;
   m_skipflag = false;
+  m_noprompt = false;
   m_liveUpdateFlag = false;
   tracetrap = 0;
   tracecurrentline = 0;
@@ -5443,6 +5444,10 @@ void Interpreter::setGreetingFlag(bool skip) {
   m_skipflag = skip;
 }
 
+void Interpreter::setNoPromptFlag(bool noprompt) {
+  m_noprompt = noprompt;
+}
+
 bool NeedsMoreInput(Interpreter *eval, QString txt) {
   // Check for ... or an open []
   try {
@@ -5470,7 +5475,7 @@ void Interpreter::sleepMilliseconds(unsigned long msecs) {
 }
 
 QString Interpreter::getLine(QString prompt) {
-  emit SetPrompt(prompt);
+  if (!m_noprompt) emit SetPrompt(prompt);
   if (m_diaryState) diaryMessage(prompt);
   QString retstring;
   emit EnableRepaint();
@@ -5520,7 +5525,7 @@ void Interpreter::evalCLI() {
     if (m_captureState) 
       m_capture += prompt;
     else {
-      emit SetPrompt(prompt);
+      if (!m_noprompt) emit SetPrompt(prompt);
       if (m_diaryState) diaryMessage(prompt);
     }
     if (m_liveUpdateFlag) {

@@ -33,6 +33,7 @@ class MainApp : public QObject
   QObject *m_term;
   bool guimode;
   bool skipGreeting;
+  bool noPrompt;
   ApplicationWindow *m_win;
   Interpreter *m_eval;
   bool GUIHack;
@@ -46,6 +47,7 @@ public:
   ~MainApp();
   void SetKeyManager(KeyManager* term);
   void SetSkipGreeting(bool skip);
+  void SetNoPrompt(bool noprompt);
   void SetupGUICase();
   void SetupInteractiveTerminalCase();
   void SetupDumbTerminalCase();

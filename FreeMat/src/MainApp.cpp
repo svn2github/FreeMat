@@ -92,6 +92,7 @@ MainApp::MainApp() {
   guimode = true;
   GUIHack = false;
   skipGreeting = false;
+  noPrompt = false;
   m_keys = new KeyManager;
   m_global = new Scope("global",false);
   // The global scope is special
@@ -327,6 +328,10 @@ void MainApp::SetGUIMode(bool mode) {
 
 void MainApp::SetSkipGreeting(bool skip) {
   skipGreeting = skip;
+}
+
+void MainApp::SetNoPrompt(bool noprompt) {
+  noPrompt = noprompt;
 }
 
 void MainApp::Crashed() {
@@ -1279,6 +1284,7 @@ int MainApp::StartNewInterpreterThread() {
   connect(p_eval,SIGNAL(DisableRepaint()),this,SLOT(DisableRepaint()));
   p_eval->setTerminalWidth(m_keys->getTerminalWidth());
   p_eval->setGreetingFlag(skipGreeting);
+  p_eval->setNoPromptFlag(noPrompt);
   int threadID = m_threadHandles.assignHandle(p_eval);
   p_eval->setThreadID(threadID);
 #ifdef __OpenBSD__

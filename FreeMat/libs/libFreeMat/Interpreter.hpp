@@ -197,6 +197,10 @@ class Interpreter : public QThread {
    */
   bool m_skipflag;
   /**
+   * Setting this flag suppresses the prompt
+   */
+  bool m_noprompt;
+  /**
    * Our thread ID
    */
   int m_threadID;
@@ -530,6 +534,10 @@ public:
    * Set to false to turn off the greeting.
    */
   void setGreetingFlag(bool skip);
+  /**
+   * Set to true to turn off the "-->" prompt.
+   */
+  void setNoPromptFlag(bool noprompt);
   /**
    * Register the result of a gfx call
    */

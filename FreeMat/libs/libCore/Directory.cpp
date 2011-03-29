@@ -312,6 +312,250 @@ ArrayVector PrintWorkingDirectoryFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(QDir::currentPath()));
 }
 
+//!
+//@Module FILEATTRIB Get and Set File or Directory Attributes
+//@@Section OS
+//@@Usage
+//Retrieves information about a file or directory. The first version
+//uses the syntax
+//@[
+//   y = fileattrib(filename)
+//@]
+//where @|filename| is the name of a file or directory.  The returned
+//structure contains several entries, corresponding to the attributes
+//of the file.  Here is a list of the entries, and their meaning:
+//\begin{itemize}
+//  \item @|Name| - the full pathname for the file
+//  \item @|archive| - not used, set to @|0|
+//  \item @|system| - not used, set to @|0|
+//  \item @|hidden| - set to @|1| for a hidden file, and @|0| else.
+//  \item @|directory| - set to @|1| for a directory, and @|0| for a file.
+//  \item @|UserRead| - set to @|1| if the user has read permission, @|0| otherwise.
+//  \item @|UserWrite| - set to @|1| if the user has write permission, @|0| otherwise.
+//  \item @|UserExecute| - set to @|1| if the user has execute permission, @|0| otherwise.
+//  \item @|GroupRead| - set to @|1| if the group has read permission, @|0| otherwise.
+//  \item @|GroupWrite| - set to @|1| if the group has write permission, @|0| otherwise.
+//  \item @|GroupExecute| - set to @|1| if the group has execute permission, @|0| otherwise.
+//  \item @|OtherRead| - set to @|1| if the world has read permission, @|0| otherwise.
+//  \item @|OtherWrite| - set to @|1| if the world has write permission, @|0| otherwise.
+//  \item @|OtherExecute| - set to @|1| if the world has execute permission, @|0| otherwise.
+//\end{itemize}
+//You can also provide a wildcard filename to get the attributes for a set of files
+//e.g.,
+//@[
+//   y = fileattrib('foo*')
+//@]
+//
+//You can also use @|fileattrib| to change the attributes of a file and/or directories.
+//To change attributes, use one of the following syntaxes
+//@[
+//   y = fileattrib(filename,attributelist)
+//   y = fileattrib(filename,attributelist,userlist)
+//   y = fileattrib(filename,attributelist,userlist,'s')
+//@]
+//where @|attributelist| is a string that consists of a list of attributes, each preceeded by 
+//a @|+| to enable the attribute, and @|-| to disable the attribute. The valid list of
+//attributes that can be changed are
+//\begin{itemize}
+// \item @|'w'| - change write permissions
+// \item @|'r'| - change read permissions
+// \item @|'x'| - change execute permissions
+//\end{itemize}
+//for example, @|'-w +r'| would indicate removal of write permissions and addition of read
+//permissions.  The @|userlist| is a string that lists the realm of the permission changes.
+//If it is not specified, it defaults to @|'u'|.
+//\begin{itemize}
+//  \item @|'u'| - user or owner permissions
+//  \item @|'g'| - group permissions
+//  \item @|'o'| - other permissions ("world" in normal Unix terminology)
+//  \item @|'a'| - equivalent to 'ugo'.
+//\end{itemize}
+//Finally, if you specify a @|'s'| for the last argument, the attribute change is applied
+//recursively, so that setting the attributes for a directory will apply to all the entries
+//within the directory.
+//@@Signature
+//function fileattrib FileAttribFunction
+//inputs filename attribset userset recursiveflag
+//outputs attribs
+//!
+
+static Array FileAttrib(QString filename)
+{
+  StringVector fields;
+  fields << "Name" << "archive" << "system" << "hidden" << 
+    "directory" << "UserRead" << "UserWrite" << "UserExecute" <<
+    "GroupRead" << "GroupWrite" << "GroupExecute" <<
+    "OtherRead" << "OtherWrite" << "OtherExecute";
+  ArrayVector data;
+  QFileInfo finfo(filename);
+  data << Array(finfo.absoluteFilePath());
+  data << Array(double(0));
+  data << Array(double(0));
+  data << Array(double(finfo.isHidden() ? 1 : 0));
+  data << Array(double(finfo.isDir() ? 1 : 0));
+  QFile::Permissions perm = finfo.permissions();
+  data << Array(double((perm & QFile::ReadUser) ? 1 : 0));
+  data << Array(double((perm & QFile::WriteUser) ? 1 : 0));
+  data << Array(double((perm & QFile::ExeUser) ? 1 : 0));
+  data << Array(double((perm & QFile::ReadGroup) ? 1 : 0));
+  data << Array(double((perm & QFile::WriteGroup) ? 1 : 0));
+  data << Array(double((perm & QFile::ExeGroup) ? 1 : 0));
+  data << Array(double((perm & QFile::ReadOther) ? 1 : 0));
+  data << Array(double((perm & QFile::WriteOther) ? 1 : 0));
+  data << Array(double((perm & QFile::ExeOther) ? 1 : 0));
+  return StructConstructor(fields,data);
+}
+
+static ArrayVector FileAttribFunctionNoChange(int nargout, const ArrayVector& arg) {
+  QString filename(arg[0].asString());
+  QFileInfo fname(filename);
+  if (fname.exists())
+    return FileAttrib(fname.fileName());
+  else {
+    Array ret(Struct);
+    QFileInfoList foo(QDir::current().entryInfoList(QStringList() << filename));
+    for (int i=0;i<foo.size();i++)
+      {
+	QFileInfo fileInfo = foo.at(i);
+	ret.set(i+1,FileAttrib(fileInfo.fileName()));
+      }
+    return ret;
+  }  
+}
+
+static QFile::Permissions MapAttribToPermission(QChar type, QChar group)
+{
+  if (type == 'r' && group == 'o') return QFile::ReadOther;
+  if (type == 'w' && group == 'o') return QFile::WriteOther;
+  if (type == 'x' && group == 'o') return QFile::ExeOther;
+  if (type == 'r' && group == 'u') return QFile::ReadUser | QFile::ReadOwner;
+  if (type == 'w' && group == 'u') return QFile::WriteUser | QFile::WriteOwner;
+  if (type == 'x' && group == 'u') return QFile::ExeUser | QFile::ExeOwner;
+  if (type == 'r' && group == 'g') return QFile::ReadGroup;
+  if (type == 'w' && group == 'g') return QFile::WriteGroup;
+  if (type == 'x' && group == 'g') return QFile::ExeGroup;
+  if (type == 'r' && group == 'a') 
+    return QFile::ReadGroup | QFile::ReadUser | QFile::ReadOther | QFile::ReadOwner;
+  if (type == 'w' && group == 'a') 
+    return QFile::WriteGroup | QFile::WriteUser | QFile::WriteOther | QFile::WriteOwner;
+  if (type == 'x' && group == 'a') 
+    return QFile::ExeGroup | QFile::ExeUser | QFile::ExeOther | QFile::ExeOwner;
+  return 0;
+}
+
+static ArrayVector FileAttribChange(QString filename, QString addset,
+				    QString subset, QString userset) {
+  QFile p(filename);
+  QFile::Permissions perm = p.permissions();
+  for (int i=0;i<addset.size();i++)
+    for (int j=0;j<userset.size();j++)
+      perm |= MapAttribToPermission(addset[i],userset[j]);
+  for (int i=0;i<subset.size();i++)
+    for (int j=0;j<userset.size();j++)
+      perm &= ~MapAttribToPermission(subset[i],userset[j]);
+  return ArrayVector(Array(double(p.setPermissions(perm))));
+}
+
+static ArrayVector FileAttribChangeDirRecursive(QString filename, QString addset, QString subset,
+						QString userset) {
+  QDir dir(filename);
+  dir.setFilter(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+  QFileInfoList list = dir.entryInfoList();
+  for (int i=0;i<list.size();i++) {
+    QFileInfo fileInfo = list.at(i);
+    if (fileInfo.isDir())
+      FileAttribChangeDirRecursive(fileInfo.absoluteFilePath(),addset,subset,userset);
+    else
+      FileAttribChange(fileInfo.absoluteFilePath(),addset,subset,userset);
+  }
+  return ArrayVector(Array(double(1)));
+}
+
+static ArrayVector FileAttribFunctionChange(int nargout, const ArrayVector& arg,
+				     QString addset, QString subset, 
+				     QString userset, bool recursive) {
+  QString filename(arg[0].asString());
+  QFileInfo fname(filename);
+  if (fname.exists() && !recursive)
+    return FileAttribChange(fname.fileName(),addset,subset,userset);
+  if (fname.exists() && fname.isDir() && recursive)
+    return FileAttribChangeDirRecursive(fname.fileName(),addset,subset,userset);
+  QFileInfoList foo(QDir::current().entryInfoList(QStringList() << filename));
+  for (int i=0;i<foo.size();i++)
+    {
+      QFileInfo fname(foo.at(i));
+      if (fname.exists() && !recursive)
+	FileAttribChange(fname.fileName(),addset,subset,userset);
+      else if (fname.exists() && fname.isDir() && recursive)
+	FileAttribChangeDirRecursive(fname.fileName(),addset,subset,userset);
+    }
+  return Array(double(1));
+}
+
+ArrayVector FileAttribFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0) return ArrayVector();
+  if (arg.size() == 1) return FileAttribFunctionNoChange(nargout,arg);
+  // Get the set of attribute changes
+  QString attributeSet = arg[1].asString();
+  // Parse the attribute set
+  QChar p;
+  QString addset;
+  QString subset;
+  int state = 0;
+  for (int i=0;i<attributeSet.size();i++) {
+    p = attributeSet[i];
+    if (!p.isSpace())
+      {
+	if ((p == '+') && (state == 0)) {state = 1;}
+	else if ((p == '-') && (state == 0)) {state = 2;}
+	else if ((p == 'w') && (state == 1)) {addset += p; state = 0;}
+	else if ((p == 'r') && (state == 1)) {addset += p; state = 0;}
+	else if ((p == 'x') && (state == 1)) {addset += p; state = 0;}
+	else if ((p == 'w') && (state == 2)) {subset += p; state = 0;}
+	else if ((p == 'r') && (state == 2)) {subset += p; state = 0;}
+	else if ((p == 'x') && (state == 2)) {subset += p; state = 0;}
+	else
+	  throw Exception("Malformed list of attribute changes:" + attributeSet);
+      }
+  }
+  if (state != 0)
+    throw Exception("Malformed list of attribute changes:" + attributeSet);
+  qDebug() << "addset: " << addset;
+  qDebug() << "subset: " << subset;
+  QString userset;
+  if (arg.size() >= 3)
+    {
+      QString userlist = arg[2].asString();
+      for (int i=0;i<userlist.size();i++) {
+	p = userlist[i];
+	if (!p.isSpace())
+	  {
+	    if (p == 'u') userset += p;
+	    else if (p == 'o') userset += p;
+	    else if (p == 'g') userset += p;
+	    else if (p == 'a') userset += p;
+	    else
+	      throw Exception("Malformed list of users:" + userlist);
+	  }
+      }
+      if (userset.size() == 0) userset += 'u';
+    }
+  else
+    userset += 'u';
+  qDebug() << "userset: " << userset;
+  bool recursive = false;
+  if (arg.size() >= 4)
+    {
+      QString sflag = arg[3].asString();
+      if (sflag == "s") recursive = true;
+      else if (sflag == "") recursive = false;
+      else
+	throw Exception("Last argument must be either 's' or ''");
+    }
+  qDebug() << "recursive: " << recursive;
+  return FileAttribFunctionChange(nargout,arg,addset,subset,userset,recursive);
+}
+
 
 //!
 //@Module RMDIR Remove Directory

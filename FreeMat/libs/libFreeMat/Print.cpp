@@ -457,7 +457,7 @@ static void PrintStructArray(const Array& A, Interpreter* io) {
       io->outputMessage("\n");
     }
   } else {
-    io->outputMessage(" Fields\n");
+    io->outputMessage(A.dimensions().toString() + " struct array with fields:\n");
     for (int i=0;i<rp.fieldCount();i++) {
       io->outputMessage("    ");
       io->outputMessage(rp.fieldName(i));

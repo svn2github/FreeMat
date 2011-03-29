@@ -244,7 +244,7 @@ public:
     int last_not_one = lastNotOne();
     QString ret = QString("%1").arg(m_data[0]);
     for (int i=1;i<last_not_one;i++)
-      ret += QString(" %1").arg(m_data[i]);
+      ret += QString("x%1").arg(m_data[i]);
     return ret;
   }
 };

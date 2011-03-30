@@ -421,6 +421,205 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
 }
 
 //!
+//@Module CELLFUN Appy a Function To Elements of a Cell Array
+//@@Section ARRAY
+//@@Usage
+//The @|cellfun| function is used to apply a function handle
+//(or anonymous function) to each element of a cell array and to
+//collect the outputs into an array.  The general syntax for its
+//use is 
+//@[
+//   y = cellfun(fun, x)
+//@]
+//where @|x| is an N-dimensional array.  In this case, each
+//element of the output @|y_i| is defined as @|fun(x{i})|.  You can
+//also supply multiple arguments to @|cellfun|, provided all of the
+//arguments are the same size
+//@[
+//   y = cellfun(fun, x, z, ...)
+//@]
+//in which case each output @|y_i| is defined as @|fun(x{i},z{i},...)|.
+//Note that unlike @|arrayfun|, the @|cellfun| function will allow for
+//different types (if there are overloaded versions of the function
+//@|fun|) for each element.
+//
+//If the function returns multiple outputs, then @|arrayfun| can be
+//called with multiple outputs, in which case each output goes to
+//a separate array output
+//@[
+//   [y1,y2,...] = cellfun(fun, x, z, ...)
+//@]
+//The assumption is that the output types for each call to @|fun| is
+//the same across the inputs.
+//
+//Finally, some hints can be provided to @|cellfun| using the syntax
+//@[
+//   [y1,y2,...] = cellfun(fun, x, z, ..., 'param', value, 'param', value)
+//@]
+//where @|param| and @|value| take on the following possible values:
+//\begin{itemize}
+//  \item @|'UniformOutput'| - if the @|value| is @|true| then each output of @|fun|
+//   must be a scalar, and the outputs are concatenated into an array the same size
+//   as the input arrays.  If the @|value| is @|false| then the outputs are encapsulated
+//   into a cell array, with each entry in the cell array containing the call to 
+//   @|fun(x_i,z_i,...)|.
+//  \item @|'ErrorHandler'| - in this case @|value| is a function handle that gets called
+//  when @|fun| throws an error.  If @|'ErrorHandler'| is not specified, then @|arrayfun|
+//  allows the error to propogate (i.e., and exception is thrown).
+//\end{itemize}
+//@@Signature
+//sfunction cellfun CellFunFunction
+//inputs varargin
+//output varargout
+//!
+static ArrayVector CellFunNonuniformAnon(int nargout, const ArrayVector &arg,
+					  Interpreter *eval, NTuple argdims,
+					  int argcount, Array fun)
+{
+  Array outputs(CellArray, argdims);
+  BasicArray<Array> &op = outputs.real<Array>();
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      input.push_back(fun);
+      for (int j=1;j<argcount;j++)
+	input.push_back(ArrayFromCellArray(arg[j].get(i+1)));
+      ArrayVector ret = AnonFuncFevalFunction(nargout,input,eval);
+      Array g = CellArrayFromArrayVector(ret);
+      op[i+1] = g;
+    }
+  return outputs;  
+}
+
+static ArrayVector CellFunNonuniform(int nargout, const ArrayVector &arg,
+				      Interpreter *eval, NTuple argdims,
+				      int argcount, FuncPtr fptr)
+{
+  Array outputs(CellArray, argdims);
+  BasicArray<Array> &op = outputs.real<Array>();
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      for (int j=1;j<argcount;j++)
+	input.push_back(ArrayFromCellArray(arg[j].get(i+1)));
+      ArrayVector ret = fptr->evaluateFunc(eval,input,fptr->outputArgCount());
+      Array g = CellArrayFromArrayVector(ret);
+      op[i+1] = g;
+    }
+  return outputs;  
+}
+
+static ArrayVector CellFunUniformAnon(int nargout, const ArrayVector &arg,
+				       Interpreter *eval, NTuple argdims,
+				       int argcount, Array fun)
+{
+  ArrayVector outputs;
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      input.push_back(fun);
+      for (int j=1;j<argcount;j++)
+	input.push_back(ArrayFromCellArray(arg[j].get(i+1)));
+      ArrayVector ret = AnonFuncFevalFunction(nargout,input,eval);
+      if (ret.size() < nargout)
+	throw Exception("function returned fewer outputs than expected");
+      if (i==0)
+	for (int j=0;j<nargout;j++)
+	  {
+	    if (!ret[j].isScalar()) throw Exception("function returned non-scalar result");
+	    outputs.push_back(ret[j]);
+	    outputs[j].resize(argdims);
+	  }
+      else
+	for (int j=0;j<nargout;j++)
+	  outputs[j].set(i+1,ret[j]);
+    }
+  return outputs;
+}
+
+static ArrayVector CellFunUniform(int nargout, const ArrayVector &arg,
+				   Interpreter *eval, NTuple argdims,
+				   int argcount, FuncPtr fptr)
+{
+  ArrayVector outputs;
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      for (int j=1;j<argcount;j++)
+	input.push_back(ArrayFromCellArray(arg[j].get(i+1)));
+      ArrayVector ret = fptr->evaluateFunc(eval,input,nargout);
+      if (ret.size() < nargout)
+	throw Exception("function returned fewer outputs than expected");
+      if (i==0)
+	for (int j=0;j<nargout;j++)
+	  {
+	    if (!ret[j].isScalar()) throw Exception("function returned non-scalar result");
+	    outputs.push_back(ret[j]);
+	    outputs[j].resize(argdims);
+	  }
+      else
+	for (int j=0;j<nargout;j++)
+	  outputs[j].set(i+1,ret[j]);
+    }
+  return outputs;
+}
+
+ArrayVector CellFunFunction(int nargout, const ArrayVector& arg, 
+			     Interpreter*eval) {
+  if (arg.size() < 2) return ArrayVector(); // Don't bother
+  // Remove the key/value properties
+  int argcount = arg.size();
+  Array errorHandler;
+  bool uniformOutput = true; // We assume this to be the case
+  bool foundNVP = true;
+  while (foundNVP && (argcount >=2))
+    {
+      foundNVP = false;
+      if (arg[argcount-2].isString() &&
+	  (arg[argcount-2].asString() == "UniformOutput"))
+	{
+	  uniformOutput = arg[argcount-1].asInteger();
+	  argcount-=2;
+	  foundNVP = true;
+	}
+      if (arg[argcount-2].isString() &&
+	  (arg[argcount-2].asString() == "ErrorHandler"))
+	{
+	  errorHandler = arg[argcount-1];
+	  argcount-=2;
+	  foundNVP = true;
+	}
+    }
+  if (argcount < 2) return ArrayVector();
+  NTuple argdims = arg[1].dimensions();
+  for (int i=1;i<argcount;i++)
+    {
+      if (arg[i].dimensions() != argdims)
+	throw Exception("All arguments must match dimensions");
+      if (arg[i].dataClass() != CellArray)
+	throw Exception("All arguments must be cell arrays");
+    }
+  if (arg[0].className() == "anonfunction")
+    {
+      if (nargout == 0) nargout = 1;
+      if (uniformOutput)
+	return CellFunUniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+      return CellFunNonuniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+    }
+  else
+    {
+      // Map the first argument to a function ptr
+      FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
+      fptr->updateCode(eval);
+      if (nargout == 0) nargout = 1;
+      if (uniformOutput)
+	return CellFunUniform(nargout,arg,eval,argdims,argcount,fptr);
+      return CellFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+    }
+}
+
+
+//!
 //@Module ARRAYFUN Apply a Function To Elements of an Array
 //@@Section ARRAY
 //@@Usage
@@ -448,7 +647,7 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
 //The assumption is that the output types for each call to @|fun| is
 //the same across the inputs.
 //
-//Finally, some hints can be provided to @|arrayfun| using th
+//Finally, some hints can be provided to @|arrayfun| using the syntax
 //@[
 //   [y1,y2,...] = arrayfun(fun, x, z, ..., 'param', value, 'param', value)
 //@]

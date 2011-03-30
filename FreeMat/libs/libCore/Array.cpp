@@ -572,6 +572,7 @@ ArrayVector CellFunFunction(int nargout, const ArrayVector& arg,
   Array errorHandler;
   bool uniformOutput = true; // We assume this to be the case
   bool foundNVP = true;
+  bool customEH = false;
   while (foundNVP && (argcount >=2))
     {
       foundNVP = false;
@@ -586,6 +587,7 @@ ArrayVector CellFunFunction(int nargout, const ArrayVector& arg,
 	  (arg[argcount-2].asString() == "ErrorHandler"))
 	{
 	  errorHandler = arg[argcount-1];
+	  customEH = true;
 	  argcount-=2;
 	  foundNVP = true;
 	}
@@ -599,22 +601,42 @@ ArrayVector CellFunFunction(int nargout, const ArrayVector& arg,
       if (arg[i].dataClass() != CellArray)
 	throw Exception("All arguments must be cell arrays");
     }
-  if (arg[0].className() == "anonfunction")
+  FuncPtr eh;
+  if (customEH) 
     {
-      if (nargout == 0) nargout = 1;
-      if (uniformOutput)
-	return CellFunUniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
-      return CellFunNonuniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+      eh = FuncPtrLookup(eval,errorHandler);
+      eh->updateCode(eval);
+      eval->setTryCatchActive(true);
     }
-  else
+  try
     {
-      // Map the first argument to a function ptr
-      FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
-      fptr->updateCode(eval);
-      if (nargout == 0) nargout = 1;
-      if (uniformOutput)
-	return CellFunUniform(nargout,arg,eval,argdims,argcount,fptr);
-      return CellFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+      if (arg[0].className() == "anonfunction")
+	{
+	  if (nargout == 0) nargout = 1;
+	  if (uniformOutput)
+	    return CellFunUniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+	  return CellFunNonuniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+	}
+      else
+	{
+	  // Map the first argument to a function ptr
+	  FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
+	  fptr->updateCode(eval);
+	  if (nargout == 0) nargout = 1;
+	  if (uniformOutput)
+	    return CellFunUniform(nargout,arg,eval,argdims,argcount,fptr);
+	  return CellFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+	}
+    }
+  catch (Exception &e)
+    {
+      if (customEH)
+	{
+	  ArrayVector input;
+	  return eh->evaluateFunc(eval,input,1);
+	}
+      else
+	throw;
     }
 }
 
@@ -768,6 +790,7 @@ ArrayVector ArrayFunFunction(int nargout, const ArrayVector& arg,
   Array errorHandler;
   bool uniformOutput = true; // We assume this to be the case
   bool foundNVP = true;
+  bool customEH = false;
   while (foundNVP && (argcount >=2))
     {
       foundNVP = false;
@@ -782,6 +805,7 @@ ArrayVector ArrayFunFunction(int nargout, const ArrayVector& arg,
 	  (arg[argcount-2].asString() == "ErrorHandler"))
 	{
 	  errorHandler = arg[argcount-1];
+	  customEH = true;
 	  argcount-=2;
 	  foundNVP = true;
 	}
@@ -791,21 +815,41 @@ ArrayVector ArrayFunFunction(int nargout, const ArrayVector& arg,
   for (int i=1;i<argcount;i++)
     if (arg[i].dimensions() != argdims)
       throw Exception("All arguments must match dimensions");
-  if (arg[0].className() == "anonfunction")
+  FuncPtr eh;
+  if (customEH) 
     {
-      if (nargout == 0) nargout = 1;
-      if (uniformOutput)
-	return ArrayFunUniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
-      return ArrayFunNonuniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+      eh = FuncPtrLookup(eval,errorHandler);
+      eh->updateCode(eval);
+      eval->setTryCatchActive(true);
     }
-  else
+  try
     {
-      // Map the first argument to a function ptr
-      FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
-      fptr->updateCode(eval);
-      if (nargout == 0) nargout = 1;
-      if (uniformOutput)
-	return ArrayFunUniform(nargout,arg,eval,argdims,argcount,fptr);
-      return ArrayFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+      if (arg[0].className() == "anonfunction")
+	{
+	  if (nargout == 0) nargout = 1;
+	  if (uniformOutput)
+	    return ArrayFunUniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+	  return ArrayFunNonuniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+	}
+      else
+	{
+	  // Map the first argument to a function ptr
+	  FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
+	  fptr->updateCode(eval);
+	  if (nargout == 0) nargout = 1;
+	  if (uniformOutput)
+	    return ArrayFunUniform(nargout,arg,eval,argdims,argcount,fptr);
+	  return ArrayFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+	}
+    }
+  catch (Exception &e)
+    {
+      if (customEH)
+	{
+	  ArrayVector input;
+	  return eh->evaluateFunc(eval,input,1);
+	}
+      else
+	throw;
     }
 }

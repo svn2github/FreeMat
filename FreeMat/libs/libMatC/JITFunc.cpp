@@ -336,7 +336,7 @@ JITScalar JITFunc::compile_m_function_call(const Tree & t) {
   define_local_symbol(new_symbol_prefix+"nargout",jit->DoubleValue(1));
   define_local_symbol(new_symbol_prefix+"nargin",jit->DoubleValue(args_defed));
   // compile the code for the function
-  fptr->code.print();
+  //  fptr->code.print();
   QString save_prefix = symbol_prefix;
   symbol_prefix = new_symbol_prefix;
   compile_block(fptr->code);

@@ -402,6 +402,35 @@ ArrayVector DoCLIFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   return ArrayVector();
 }
 
+//!
+//@Module GETENV Get the Value of an Environment Variable
+//@@Section OS
+//@@Usage
+//The @|getenv| function returns the value for an environment
+//variable from the underlying OS.  The syntax for the @|getenv|
+//function is 
+//@[
+//   y = getenv(environment_variable)
+//@]
+//where @|environment_variable| is the name of the environment
+//variable to return.  The return is a string.
+//@@Example
+//Here is an example of using the @|getenv| function to
+//get the value for the @|HOME| variable
+//@<
+//getenv('HOME')
+//@>
+//@@Signature
+//function getenv GetEnvFunction
+//inputs var
+//outputs value
+//!
+ArrayVector GetEnvFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() != 1) throw Exception("getenv requires one string argument");
+  QString name(arg[0].asString());
+  QByteArray ret = qgetenv(qPrintable(name));
+  return Array(QString(ret));
+}
 
 //!
 //@Module SYSTEM Call an External Program

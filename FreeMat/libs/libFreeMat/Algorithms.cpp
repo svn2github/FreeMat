@@ -198,6 +198,14 @@ const Array CellArrayFromArrayVector(ArrayVector &arg, index_t cnt) {
   return ret;
 }
 
+const Array CellArrayFromArrayVector(ArrayVector arg) {
+  Array ret(CellArray,NTuple(1,arg.size()));
+  BasicArray<Array> &rp(ret.real<Array>());
+  for (index_t i=1;i<=arg.size();i++)
+    rp.set(i,arg[i-1]);
+  return ret;
+}
+
 Array CellConstructor(const ArrayVector &arg) {
   ArrayVector copy(arg);
   return CellArrayFromArrayVector(copy,copy.size());

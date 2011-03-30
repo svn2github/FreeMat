@@ -33,6 +33,7 @@ const IndexArray IndexArrayFromArray(const Array &index);
 const ArrayVector ArrayVectorFromCellArray(const Array &arg);
 Array ArrayFromCellArray(const Array &arg);
 const Array CellArrayFromArrayVector(ArrayVector &arg, index_t cnt);
+const Array CellArrayFromArrayVector(ArrayVector arg);
 const Array CellArrayFromArray(const Array &arg);
 const Array CellArrayFromStringVector(const StringVector& arg);
 const Array StringArrayFromStringVector(const StringVector& arg, QChar pad);

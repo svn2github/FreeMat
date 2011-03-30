@@ -23,6 +23,7 @@
 #include <QtCore>
 #include "Algorithms.hpp"
 #include "FuncPtr.hpp"
+#include "AnonFunc.hpp"
 
 //!
 //@Module PERMUTE Array Permutation Function
@@ -467,9 +468,29 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
 //inputs varargin
 //output varargout
 //!
+
+static ArrayVector ArrayFunNonuniformAnon(int nargout, const ArrayVector &arg,
+					  Interpreter *eval, NTuple argdims,
+					  int argcount, Array fun)
+{
+  Array outputs(CellArray, argdims);
+  BasicArray<Array> &op = outputs.real<Array>();
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      input.push_back(fun);
+      for (int j=1;j<argcount;j++)
+	input.push_back(arg[j].get(i+1));
+      ArrayVector ret = AnonFuncFevalFunction(nargout,input,eval);
+      Array g = CellArrayFromArrayVector(ret);
+      op[i+1] = g;
+    }
+  return outputs;  
+}
+
 static ArrayVector ArrayFunNonuniform(int nargout, const ArrayVector &arg,
-				   Interpreter *eval, NTuple argdims,
-				   int argcount, FuncPtr fptr)
+				      Interpreter *eval, NTuple argdims,
+				      int argcount, FuncPtr fptr)
 {
   Array outputs(CellArray, argdims);
   BasicArray<Array> &op = outputs.real<Array>();
@@ -483,6 +504,34 @@ static ArrayVector ArrayFunNonuniform(int nargout, const ArrayVector &arg,
       op[i+1] = g;
     }
   return outputs;  
+}
+
+static ArrayVector ArrayFunUniformAnon(int nargout, const ArrayVector &arg,
+				       Interpreter *eval, NTuple argdims,
+				       int argcount, Array fun)
+{
+  ArrayVector outputs;
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      input.push_back(fun);
+      for (int j=1;j<argcount;j++)
+	input.push_back(arg[j].get(i+1));
+      ArrayVector ret = AnonFuncFevalFunction(nargout,input,eval);
+      if (ret.size() < nargout)
+	throw Exception("function returned fewer outputs than expected");
+      if (i==0)
+	for (int j=0;j<nargout;j++)
+	  {
+	    if (!ret[j].isScalar()) throw Exception("function returned non-scalar result");
+	    outputs.push_back(ret[j]);
+	    outputs[j].resize(argdims);
+	  }
+      else
+	for (int j=0;j<nargout;j++)
+	  outputs[j].set(i+1,ret[j]);
+    }
+  return outputs;
 }
 
 static ArrayVector ArrayFunUniform(int nargout, const ArrayVector &arg,
@@ -543,11 +592,21 @@ ArrayVector ArrayFunFunction(int nargout, const ArrayVector& arg,
   for (int i=1;i<argcount;i++)
     if (arg[i].dimensions() != argdims)
       throw Exception("All arguments must match dimensions");
-  // Map the first argument to a function ptr
-  FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
-  fptr->updateCode(eval);
-  if (nargout == 0) nargout = 1;
-  if (uniformOutput)
-    return ArrayFunUniform(nargout,arg,eval,argdims,argcount,fptr);
-  return ArrayFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+  if (arg[0].className() == "anonfunction")
+    {
+      if (nargout == 0) nargout = 1;
+      if (uniformOutput)
+	return ArrayFunUniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+      return ArrayFunNonuniformAnon(nargout,arg,eval,argdims,argcount,arg[0]);
+    }
+  else
+    {
+      // Map the first argument to a function ptr
+      FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
+      fptr->updateCode(eval);
+      if (nargout == 0) nargout = 1;
+      if (uniformOutput)
+	return ArrayFunUniform(nargout,arg,eval,argdims,argcount,fptr);
+      return ArrayFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
+    }
 }

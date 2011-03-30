@@ -22,6 +22,7 @@
 #include "MemPtr.hpp"
 #include <QtCore>
 #include "Algorithms.hpp"
+#include "FuncPtr.hpp"
 
 //!
 //@Module PERMUTE Array Permutation Function
@@ -461,12 +462,56 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
 //  when @|fun| throws an error.  If @|'ErrorHandler'| is not specified, then @|arrayfun|
 //  allows the error to propogate (i.e., and exception is thrown).
 //\end{itemize}
-////Signature
+//@@Signature
 //sfunction arrayfun ArrayFunFunction
 //inputs varargin
 //output varargout
 //!
-#if 0
+static ArrayVector ArrayFunNonuniform(int nargout, const ArrayVector &arg,
+				   Interpreter *eval, NTuple argdims,
+				   int argcount, FuncPtr fptr)
+{
+  Array outputs(CellArray, argdims);
+  BasicArray<Array> &op = outputs.real<Array>();
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      for (int j=1;j<argcount;j++)
+	input.push_back(arg[j].get(i+1));
+      ArrayVector ret = fptr->evaluateFunc(eval,input,fptr->outputArgCount());
+      Array g = CellArrayFromArrayVector(ret);
+      op[i+1] = g;
+    }
+  return outputs;  
+}
+
+static ArrayVector ArrayFunUniform(int nargout, const ArrayVector &arg,
+				   Interpreter *eval, NTuple argdims,
+				   int argcount, FuncPtr fptr)
+{
+  ArrayVector outputs;
+  for (int i=0;i<argdims.count();i++)
+    {
+      ArrayVector input;
+      for (int j=1;j<argcount;j++)
+	input.push_back(arg[j].get(i+1));
+      ArrayVector ret = fptr->evaluateFunc(eval,input,nargout);
+      if (ret.size() < nargout)
+	throw Exception("function returned fewer outputs than expected");
+      if (i==0)
+	for (int j=0;j<nargout;j++)
+	  {
+	    if (!ret[j].isScalar()) throw Exception("function returned non-scalar result");
+	    outputs.push_back(ret[j]);
+	    outputs[j].resize(argdims);
+	  }
+      else
+	for (int j=0;j<nargout;j++)
+	  outputs[j].set(i+1,ret[j]);
+    }
+  return outputs;
+}
+
 ArrayVector ArrayFunFunction(int nargout, const ArrayVector& arg, 
 			     Interpreter*eval) {
   if (arg.size() < 2) return ArrayVector(); // Don't bother
@@ -495,20 +540,14 @@ ArrayVector ArrayFunFunction(int nargout, const ArrayVector& arg,
     }
   if (argcount < 2) return ArrayVector();
   NTuple argdims = arg[1].dimensions();
-  for (int i=2;i<argcount;i++)
+  for (int i=1;i<argcount;i++)
     if (arg[i].dimensions() != argdims)
       throw Exception("All arguments must match dimensions");
   // Map the first argument to a function ptr
   FuncPtr fptr = FuncPtrLookup(eval,arg[0]);
   fptr->updateCode(eval);
-  ArrayVector outputs;
-  for (int i=0;i<argdims.count();i++)
-    {
-      ArrayVector input;
-      for (int j=2;j<argcount;j++)
-	input.
-      ArrayVector ret = fptr->evaluateFunc(eval,
-					   }
-    }
+  if (nargout == 0) nargout = 1;
+  if (uniformOutput)
+    return ArrayFunUniform(nargout,arg,eval,argdims,argcount,fptr);
+  return ArrayFunNonuniform(nargout,arg,eval,argdims,argcount,fptr);
 }
-#endif

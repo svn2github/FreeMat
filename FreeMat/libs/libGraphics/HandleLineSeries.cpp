@@ -136,7 +136,7 @@ void HandleLineSeries::SetupDefaults() {
   SetScalarDefault("linewidth",1.0);
   SetConstrainedStringDefault("marker","none");
   SetThreeVectorDefault("markeredgecolor",0,0,0);
-  SetThreeVectorDefault("markerfacecolor",0,0,0);
+  SetThreeVectorDefault("markerfacecolor",-1,-1,-1);
   SetScalarDefault("markersize",6);
   SetStringDefault("type","line");
   SetConstrainedStringDefault("visible","on");

@@ -278,7 +278,7 @@ function k = tplotvector(handle,x,y,lineprops)
    % select the row using a modulo
    ndxmod = round(mod(ndx-1,size(colororder,1))+1);
    if (~any(strcmp(lineprops,'color')))
-     lineprops = [lineprops,{'markeredgecolor',colororder(ndxmod,:),'markerfacecolor',colororder(ndxmod,:)}];
+     lineprops = [lineprops,{'markeredgecolor',colororder(ndxmod,:)}];
    end
    k = hline('xdata',x,'ydata',y,'color',colororder(ndxmod,:),lineprops{:});
    

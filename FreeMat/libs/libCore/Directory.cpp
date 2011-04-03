@@ -111,6 +111,71 @@ static void TabledOutput(StringVector sysresult, Interpreter* eval) {
 }
 
 //!
+//@Module WHAT List FreeMat Files In Directory
+//@@Section INSPECTION
+//@@Usage
+//Lists files in a directory (or the current directory if no
+//argument is supplied) that are relevant to FreeMat.  These
+//are @|M|-files, @|MAT|-files, and class directories.  There
+//are several syntaxes for its use.  The first is
+//@[
+//   what
+//@]
+//which lists the aforementioned items.  If you provide a 
+//path instead
+//@[
+//   what path-to-folder
+//@]
+//then @|what| will list the relevant FreeMat items in the specified
+//directory.
+//@@Signature
+//sfunction what WhatFunction
+//inputs folder
+//outputs none
+//!
+ArrayVector WhatFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  QDir pdir(QDir::current());
+  if (arg.size() > 0)
+    pdir.cd(arg[0].asString());
+  QFileInfoList foo;
+  foo = pdir.entryInfoList(QStringList() << "*.m" << "*.M");
+  eval->outputMessage("\n");
+  if (foo.size() > 0)
+    {
+      eval->outputMessage(QString("M-Files in directory ") + pdir.currentPath() + "\n\n");
+      QStringList out;
+      for (int i=0;i<foo.size();i++) out << foo[i].baseName();
+      TabledOutput(out,eval);
+      eval->outputMessage("\n");
+    }
+  foo = pdir.entryInfoList(QStringList() << "*.mat" << "*.MAT");
+  if (foo.size() > 0)
+    {
+      eval->outputMessage(QString("MAT-Files in directory ") + pdir.currentPath() + "\n\n");
+      QStringList out;
+      for (int i=0;i<foo.size();i++) out << foo[i].baseName();
+      TabledOutput(out,eval);
+      eval->outputMessage("\n");
+    }
+  foo = pdir.entryInfoList(QStringList() << "@*");
+  if (foo.size() > 0)
+    {
+      eval->outputMessage(QString("Classes in directory ") + pdir.currentPath() + "\n\n");
+      QStringList out;
+      for (int i=0;i<foo.size();i++)
+	{
+	  QString t = foo[i].baseName();
+	  t = t.right(t.size()-1);
+	  out << t;
+	}
+      TabledOutput(out,eval);
+      eval->outputMessage("\n");
+    }
+  return ArrayVector();
+}
+
+
+//!
 //@Module DIR List Files Function
 //@@Section OS
 //@@Usage

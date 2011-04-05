@@ -105,6 +105,36 @@ public slots:
   void copy();
 };
 
+
+class BaseFigureQt : public QWidget {
+  Q_OBJECT
+  HandleFigure *hfig;
+  QPixmap backStore;
+public:
+  BaseFigureQt(QWidget *parent, HandleFigure *fig);
+  void paintEvent(QPaintEvent *e);
+  void resizeEvent(QResizeEvent *e);
+  QSize sizeHint() const;
+  //  QSizePolicy sizePolicy() const;
+};
+
+class BaseFigureGL : public QGLWidget {
+  Q_OBJECT
+  HandleFigure *hfig;
+public:
+  BaseFigureGL(QWidget *parent, HandleFigure *fig);
+  virtual void initializeGL();
+  virtual void paintGL();
+  virtual void resizeGL(int width, int height);
+  QSize sizeHint() const;
+  // Support dragging...
+  //   void mousePressEvent(QMouseEvent* e);
+  //   void mouseMoveEvent(QMouseEvent* e);
+  //   void mouseReleaseEvent(QMouseEvent* e);
+  //  virtual void Show() {QWidget::show();};
+};
+
+
 void GfxEnableRepaint();
 void GfxDisableRepaint();
 bool GfxEnableFlag();

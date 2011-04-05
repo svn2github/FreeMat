@@ -28,16 +28,6 @@
 #include "IEEEFP.hpp"
 #include "DebugStream.hpp"
 
-class BaseFigureQt : public QWidget {
-  HandleFigure *hfig;
-  QPixmap backStore;
-public:
-  BaseFigureQt(QWidget *parent, HandleFigure *fig);
-  void paintEvent(QPaintEvent *e);
-  void resizeEvent(QResizeEvent *e);
-  QSize sizeHint() const;
-  //  QSizePolicy sizePolicy() const;
-};
 
 QSize BaseFigureQt::sizeHint() const {
   HPTwoVector *htv = (HPTwoVector*) hfig->LookupProperty("figsize");
@@ -78,21 +68,6 @@ BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) :
   setMouseTracking(true);
   //  hfig->resizeGL(width(),height());
 }
-
-class BaseFigureGL : public QGLWidget {
-  HandleFigure *hfig;
-public:
-  BaseFigureGL(QWidget *parent, HandleFigure *fig);
-  virtual void initializeGL();
-  virtual void paintGL();
-  virtual void resizeGL(int width, int height);
-  QSize sizeHint() const;
-  // Support dragging...
-  //   void mousePressEvent(QMouseEvent* e);
-  //   void mouseMoveEvent(QMouseEvent* e);
-  //   void mouseReleaseEvent(QMouseEvent* e);
-  //  virtual void Show() {QWidget::show();};
-};
 
 BaseFigureGL::BaseFigureGL(QWidget *parent, HandleFigure *fig) : 
   QGLWidget(parent) {
@@ -416,6 +391,7 @@ void HandleWindow::mousePressEvent(QMouseEvent* e) {
 	pan_yrange = (hp->Data()[1] - hp->Data()[0]);
 	pan_ymean = (hp->Data()[1] + hp->Data()[0])/2;
 	pan_active = true;
+	e->accept();
       } else {
 	pan_active = false;
       }
@@ -487,6 +463,7 @@ void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
 	//	hfig->Repaint();
 	hfig->markDirty();
       }
+      e->accept();
     }
     if ((mode == rotate_mode) && rotate_active) {
       QPoint dest(e->pos());
@@ -576,8 +553,10 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
 	  //    
 	  //}
    // }
-    if (mode == pan_mode)
+    if (mode == pan_mode){
       pan_active = false;
+      e->accept();
+    }
     if (mode == zoom_mode) {
       if (zoom_active) {
 	band->hide();

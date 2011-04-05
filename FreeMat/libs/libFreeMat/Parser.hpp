@@ -30,7 +30,7 @@ class Parser {
   void serror(QString);
   bool match(TokenValueType t);
   void consume();
-  const Token& expect(TokenValueType t);
+  const Token& expect(TokenValueType t, QString because = "");
   const Token& next();
   bool matchNumber();
   void flushSeperators();

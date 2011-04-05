@@ -258,7 +258,7 @@ Tree Parser::forStatement() {
   Tree index = forIndexExpression();
   statementSeperator();
   Tree block = statementList();
-  expect(TOK_END);
+  expect(TOK_END,"FOR statement");
   root.addChildren(index,block);
   return root;
 }
@@ -268,7 +268,7 @@ Tree Parser::whileStatement() {
   Tree warg = expression();
   statementSeperator();
   Tree block = statementList();
-  expect(TOK_END);
+  expect(TOK_END,"WHILE statement");
   root.addChildren(warg,block);
   return root;
 }
@@ -294,7 +294,7 @@ Tree Parser::ifStatement() {
     elseblk.addChild(block);
     root.addChild(elseblk);
   }
-  expect(TOK_END);
+  expect(TOK_END," IF block");
   return root;
 }
 
@@ -327,7 +327,7 @@ Tree Parser::tryStatement() {
     catchblock.addChild(block);
     root.addChild(catchblock);
   }
-  expect(TOK_END);
+  expect(TOK_END, "TRY block");
   return root;
 }
 
@@ -436,7 +436,7 @@ Tree Parser::switchStatement() {
     otherwise.addChild(block);
     root.addChild(otherwise);
   }
-  expect(TOK_END);
+  expect(TOK_END, " SWITCH block");
   return root;
 }
 
@@ -498,7 +498,7 @@ Tree Parser::statement() {
     try {
       Tree retval = functionDefinition();
       retval.rename(TOK_NEST_FUNC);
-      expect(TOK_END);
+      expect(TOK_END, "FUNCTION definition");
       return retval;
     } catch (ParseException &e) {
       m_lex = save;
@@ -527,6 +527,7 @@ Tree Parser::statementList() {
     flushSeperators();
     s = statement();
   }
+  stlist.print();
   return stlist;
 }
 
@@ -550,11 +551,11 @@ void Parser::serror(QString errmsg) {
   throw ParseException(m_lex.contextNum(),errmsg);
 }
 
-const Token & Parser::expect(TokenValueType a) {
+const Token & Parser::expect(TokenValueType a, QString because) {
   const Token & ret(next());
   if (!m_lex.next().is(a)) {
     if (a != TOK_EOF)
-      serror(QString("Expecting ") + TokenToString(Token(a,0)));
+      serror(QString("Expecting ") + TokenToString(Token(a,0)) + " for " + because);
     else
       serror(QString("Unexpected input"));
   }  else {
@@ -677,7 +678,7 @@ Tree Parser::primaryExpression() {
     consume();
     return transposeFixup(t);
   } else if (match(TOK_END)) {
-    return transposeFixup(expect(TOK_END));
+    return transposeFixup(expect(TOK_END,"transpose"));
   } else if (match(TOK_IDENT)) {
     Tree t = variableDereference();
     return transposeFixup(t);

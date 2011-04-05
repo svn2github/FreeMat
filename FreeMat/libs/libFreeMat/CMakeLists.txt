@@ -28,6 +28,7 @@ Class.cpp
 Print.cpp 
 Token.cpp 
 Parser.cpp 
+OctaveScanner.cpp 
 Scanner.cpp 
 Tree.cpp 
 FunctionDef.cpp 

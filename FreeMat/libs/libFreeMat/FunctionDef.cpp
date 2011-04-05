@@ -19,6 +19,7 @@
 
 #include "FunctionDef.hpp"
 #include "Interpreter.hpp"
+#include "OctaveScanner.hpp"
 #include "Parser.hpp"
 #include "Exception.hpp"
 #include <iostream>
@@ -29,6 +30,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
+#include <QDir>
 #include <sys/stat.h>
 #include "MemPtr.hpp"
 #include "Algorithms.hpp"
@@ -353,6 +355,26 @@ static void RegisterNested(const Tree & t, Interpreter *m_eval, MFunctionDef *pa
       RegisterNested(t.child(i),m_eval,parent);
 }
 
+static Tree ParseMFile(QString fileName) {
+  // Read the file into a string
+  qDebug() << "Parse M File " << fileName ;
+  QString fileText = ReadFileIntoString(fileName);
+  if (!fileName.contains(QDir::separator()+QString("+octave")+QDir::separator()))
+    {
+      Scanner S(fileText,fileName);
+      Parser P(S);
+      return P.process();
+    }
+  else
+    {
+      OctaveScanner S(fileText,fileName);
+      Parser P(S);
+      Tree t = P.process();
+      t.print();
+      return t;
+    }
+}
+
 // Compile the function...
 bool MFunctionDef::updateCode(Interpreter *m_eval) {
   if (localFunction) return false;
@@ -387,11 +409,7 @@ bool MFunctionDef::updateCode(Interpreter *m_eval) {
     if (helpText.size() == 0)
       helpText.push_back(cp);
     try {
-      // Read the file into a string
-      QString fileText = ReadFileIntoString(fileName);
-      Scanner S(fileText,fileName);
-      Parser P(S);
-      const Tree & pcode(P.process());
+      const Tree &pcode(ParseMFile(fileName));
       if (pcode.is(TOK_FUNCTION_DEFS)) {
 	scriptFlag = false;
 	// Get the main function..

@@ -24,6 +24,7 @@
 #include <QStack>
 
 class Scanner {
+protected:
   QString m_filename;
   QString m_text;
   int m_ptr;
@@ -39,21 +40,22 @@ class Scanner {
   TokenValueType current();
   TokenValueType previous();
   TokenValueType ahead(int n);
-  void fetch();
-  void fetchWhitespace();
-  void fetchIdentifier();
   void fetchComment();
   void fetchContinuation();
   void fetchNumber();
   void fetchString();
   void fetchBlob();
-  void fetchOther();
   bool tryFetchBinary(const char* op, TokenValueType tok);
   void setToken(TokenValueType tok, QString text = QString());
   bool isBreakpointLine(int num);
   void deleteBreakpoint(int num);
+  virtual void fetchWhitespace();
+  virtual void fetchOther();
+  virtual void fetch();
+  virtual void fetchIdentifier();
 public:
   Scanner(QString buf, QString fname);
+  virtual ~Scanner() {}
   // Methods accessed by the parser
   const Token& next();
   void consume();

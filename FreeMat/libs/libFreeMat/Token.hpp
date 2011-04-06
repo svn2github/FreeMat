@@ -94,6 +94,13 @@ const TokenValueType TOK_NEST_FUNC = 193;
 const TokenValueType TOK_TYPE_DECL = 194;
 const TokenValueType TOK_DBUP = 195;
 const TokenValueType TOK_DBDOWN = 196;
+const TokenValueType TOK_REINDEX = 197;
+const TokenValueType TOK_INCR = 198;
+const TokenValueType TOK_DECR = 199;
+const TokenValueType TOK_INCR_PREFIX = 200;
+const TokenValueType TOK_DECR_PREFIX = 201;
+const TokenValueType TOK_INCR_POSTFIX = 202;
+const TokenValueType TOK_DECR_POSTFIX = 203;
 
 class Serialize;
 

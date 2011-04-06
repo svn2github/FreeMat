@@ -368,7 +368,7 @@ static Tree ParseMFile(QString fileName) {
   else
     {
       OctaveScanner S(fileText,fileName);
-      Parser P(S);
+      Parser P(S,true);
       Tree t = P.process();
       t.print();
       return t;

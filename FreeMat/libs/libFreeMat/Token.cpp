@@ -45,7 +45,9 @@ bool Token::isBinaryOperator() const {
 bool Token::isUnaryOperator() const {
   return ((m_tok == '+') || (m_tok == '-') || (m_tok == '~')
 	  || (m_tok == TOK_UNARY_MINUS) || 
-	  (m_tok == TOK_UNARY_PLUS));
+	  (m_tok == TOK_UNARY_PLUS) ||
+	  (m_tok == TOK_INCR) ||
+	  (m_tok == TOK_DECR));
 }
 
 
@@ -134,6 +136,13 @@ QString TokenToString(const Token& b) {
   case TOK_TYPE_DECL: return "type decl";
   case TOK_DBUP: return "dbup";
   case TOK_DBDOWN: return "dbdown";
+  case TOK_REINDEX: return "reindex";
+  case TOK_INCR: return "++";
+  case TOK_DECR: return "--";
+  case TOK_INCR_PREFIX: return "++(pre)";
+  case TOK_DECR_PREFIX: return "--(pre)";
+  case TOK_INCR_POSTFIX: return "++(post)";
+  case TOK_DECR_POSTFIX: return "--(post)";
   }
   return QString(1,QChar(b.value()))+QString(" val = %1").arg(b.value());
 }

@@ -27,6 +27,7 @@ class Parser {
   Scanner &m_lex;
   unsigned lastpos;
   QString lasterr;
+  bool octCompat;
   void serror(QString);
   bool match(TokenValueType t);
   void consume();
@@ -63,7 +64,7 @@ private:
   Tree anonymousFunction();
   Tree statementList();
 public:
-  Parser(Scanner& lex);
+  Parser(Scanner& lex, bool octaveCompatibility = false);
   Tree process();
   Tree processStatementList();
   QString lastErr() {return lasterr;}

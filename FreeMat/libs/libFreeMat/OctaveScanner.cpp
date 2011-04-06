@@ -75,7 +75,7 @@ static bool isalnumus(TokenValueType a) {
 }
 
 static bool isablank(TokenValueType a) {
-  return (a==' ' || a=='\t' || a=='\r' || a=='\n');
+  return (a==' ' || a=='\t' || a=='\r');
 }
 
 OctaveScanner::OctaveScanner(QString buf, QString fname) : Scanner(buf,fname) {
@@ -84,7 +84,7 @@ OctaveScanner::OctaveScanner(QString buf, QString fname) : Scanner(buf,fname) {
 
 void OctaveScanner::fetchWhitespace() {
   int len = 0;
-  while (isablank(ahead(len)) || (ahead(len) == '\n')) len++;
+  while (isablank(ahead(len)) || ((ahead(len) == '\n') && !m_ignorews.top())) len++;
   setToken(TOK_SPACE);
   m_ptr += len;
 }
@@ -97,6 +97,8 @@ void OctaveScanner::fetchOther() {
     if (tryFetchBinary(".^",TOK_DOTPOWER)) return;
     if (tryFetchBinary(".'",TOK_DOTTRANSPOSE)) return;
   }
+  if (tryFetchBinary("++",TOK_INCR)) return;
+  if (tryFetchBinary("--",TOK_DECR)) return;
   if (tryFetchBinary("<=",TOK_LE)) return;
   if (tryFetchBinary(">=",TOK_GE)) return;
   if (tryFetchBinary("==",TOK_EQ)) return;
@@ -169,8 +171,7 @@ void OctaveScanner::fetch() {
     fetchNumber();
   else if (isablank(current())) {
     fetchWhitespace();
-    //    if (m_ignorews.top()) return;
-    return;
+    if (m_ignorews.top()) return;
   } else if ((current() == '\'') && !((previous() == '\'') ||
 				      (previous() == ')') ||
 				      (previous() == ']') ||
@@ -179,8 +180,13 @@ void OctaveScanner::fetch() {
     fetchString();
   } else if (current() == '\"') {
     fetchOctString();
+  } else if ((current() == '\n') && m_ignorews.top() && (m_ignorews.size() > 1)) {
+    qDebug() << "Newline masked";
+    m_ptr++;
+    return;
   } else
     fetchOther();
   m_tokValid = true;
+  qDebug() << "Token: " << TokenToString(m_tok);
 }
 

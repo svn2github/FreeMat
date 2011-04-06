@@ -527,16 +527,49 @@ Tree Parser::statementList() {
     flushSeperators();
     s = statement();
   }
-  stlist.print();
+  if (octCompat) stlist.print();
   return stlist;
 }
 
 Tree Parser::expression() {
   if (match(TOK_SPACE)) consume();
-  return exp(0);
+  Tree tmp(exp(0));
+  if (!octCompat) return tmp;
+  if (match('(')) 
+    {
+      consume();
+      Tree sub = Tree(TOK_REINDEX,m_lex.contextNum());
+      sub.addChild(tmp);
+      while (!match(')')) {
+	if (match(':'))
+	  sub.addChild(expect(':'));
+	else
+	  sub.addChild(expression());
+	if (match(',')) consume();
+      }
+      consume();
+      return sub;
+    }
+  if (match(TOK_INCR))
+    {
+      Tree sub = Tree(TOK_INCR_POSTFIX,m_lex.contextNum());
+      consume();
+      sub.addChild(tmp);
+      return sub;
+    }
+  if (match(TOK_DECR))
+    {
+      Tree sub = Tree(TOK_DECR_POSTFIX,m_lex.contextNum());
+      consume();
+      sub.addChild(tmp);
+      return sub;
+    }
+  return tmp;
 }
 
-Parser::Parser(Scanner& lex) : m_lex(lex), lastpos(0) {
+Parser::Parser(Scanner& lex, bool octaveCompatibility) : 
+  m_lex(lex), lastpos(0), octCompat(octaveCompatibility) 
+{
 }
 
 const Token& Parser::next() {
@@ -588,6 +621,8 @@ static unsigned precedence(const Token& t) {
   case TOK_UNARY_PLUS: return 9;
   case TOK_UNARY_MINUS: return 9;
   case '~': return 9;
+  case TOK_INCR_PREFIX: return 9;
+  case TOK_DECR_PREFIX: return 9;
   case '^': return 10;
   case TOK_DOTPOWER: return 10;
   }
@@ -595,7 +630,9 @@ static unsigned precedence(const Token& t) {
 }
 
 Tree Parser::matDef(TokenValueType basetok, TokenValueType closebracket) {
-  m_lex.pushWSFlag(false);
+  // Octave compatibility mode requires commas between matrix entries, so white
+  // space is ignored inside matrix definitions.
+  if (!octCompat) m_lex.pushWSFlag(false);
   Tree matdef(basetok);
   if (match(TOK_SPACE)) consume();
   while (!match(closebracket)) {
@@ -613,7 +650,7 @@ Tree Parser::matDef(TokenValueType basetok, TokenValueType closebracket) {
     if (match(TOK_SPACE)) consume();
     matdef.addChild(rowdef);
   }
-  m_lex.popWSFlag();
+    if (!octCompat) m_lex.popWSFlag();
   return matdef;
 }
 
@@ -654,6 +691,8 @@ Tree Parser::primaryExpression() {
     if (match(TOK_SPACE)) consume();
     if (opr.is('+')) opr.setValue(TOK_UNARY_PLUS);
     if (opr.is('-')) opr.setValue(TOK_UNARY_MINUS);
+    if (opr.is(TOK_INCR)) opr.setValue(TOK_INCR_PREFIX);
+    if (opr.is(TOK_DECR)) opr.setValue(TOK_DECR_PREFIX);
     unsigned q = precedence(opr);
     Tree child = exp(q);
     Tree root(opr,child);

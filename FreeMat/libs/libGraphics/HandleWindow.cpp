@@ -137,6 +137,7 @@ bool HandleWindow::event(QEvent* e) {
   if (e->type() == QEvent::WindowActivate) {
     NotifyFigureActive(handle);
   }
+
   return QWidget::event(e);
 }
 
@@ -189,10 +190,14 @@ void HandleWindow::pan(bool active) {
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
   pointSampleAct->setChecked(false);
-  if (active)
+  if (active){
     mode = pan_mode;
-  else
+    setCursor( Qt::OpenHandCursor );
+  }
+  else{
     mode = normal_mode;
+    setCursor( Qt::ArrowCursor );
+  }
 }
 
 void HandleWindow::rotate(bool active) {
@@ -200,10 +205,14 @@ void HandleWindow::rotate(bool active) {
   panAct->setChecked(false);
   camRotateAct->setChecked(false);
   pointSampleAct->setChecked(false);
-  if (active)
+  if (active){
     mode = rotate_mode;
-  else
+    setCursor( Qt::OpenHandCursor );
+  }
+  else{
     mode = normal_mode;
+    setCursor( Qt::ArrowCursor );
+  }
 }
 
 void HandleWindow::camRotate(bool active) {
@@ -211,10 +220,14 @@ void HandleWindow::camRotate(bool active) {
   panAct->setChecked(false);
   rotateAct->setChecked(false);
   pointSampleAct->setChecked(false);
-  if (active)
+  if (active){
     mode = cam_rotate_mode;
-  else
+    setCursor( Qt::OpenHandCursor );
+  }
+  else{
     mode = normal_mode;
+    setCursor( Qt::ArrowCursor );
+  }
 }
 
 void HandleWindow::pointSample(bool active) {
@@ -391,8 +404,7 @@ void HandleWindow::mousePressEvent(QMouseEvent* e) {
 	pan_yrange = (hp->Data()[1] - hp->Data()[0]);
 	pan_ymean = (hp->Data()[1] + hp->Data()[0])/2;
 	pan_active = true;
-	e->accept();
-      } else {
+    } else {
 	pan_active = false;
       }
     }
@@ -436,6 +448,7 @@ void HandleWindow::mousePressEvent(QMouseEvent* e) {
 }
 
 void HandleWindow::mouseMoveEvent(QMouseEvent* e) {
+    e->accept();
   try {
     if ((mode == zoom_mode) && zoom_active)
       band->setGeometry(QRect(origin, e->pos()).normalized());
@@ -555,8 +568,14 @@ void HandleWindow::mouseReleaseEvent(QMouseEvent * e) {
    // }
     if (mode == pan_mode){
       pan_active = false;
-      e->accept();
     }
+    if (mode == rotate_mode){
+      rotate_active = false;
+    }
+    if (mode == cam_rotate_mode){
+      rotate_active = false;
+    }
+    
     if (mode == zoom_mode) {
       if (zoom_active) {
 	band->hide();

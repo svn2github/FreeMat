@@ -33,6 +33,7 @@
 #include <QMainWindow>
 #include <QActionGroup>
 #include <QRubberBand>
+#include <QtGui>
 
 const int normal_mode = 1;
 const int point_mode = 2;
@@ -116,6 +117,7 @@ public:
   void resizeEvent(QResizeEvent *e);
   QSize sizeHint() const;
   //  QSizePolicy sizePolicy() const;
+
 };
 
 class BaseFigureGL : public QGLWidget {

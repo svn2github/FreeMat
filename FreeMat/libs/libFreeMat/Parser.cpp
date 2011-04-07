@@ -550,20 +550,6 @@ Tree Parser::expression() {
       consume();
       return sub;
     }
-  if (match(TOK_INCR))
-    {
-      Tree sub = Tree(TOK_INCR_POSTFIX,m_lex.contextNum());
-      consume();
-      sub.addChild(tmp);
-      return sub;
-    }
-  if (match(TOK_DECR))
-    {
-      Tree sub = Tree(TOK_DECR_POSTFIX,m_lex.contextNum());
-      consume();
-      sub.addChild(tmp);
-      return sub;
-    }
   return tmp;
 }
 
@@ -662,6 +648,19 @@ Tree Parser::transposeFixup(Tree base) {
   if (match(TOK_SPACE))
     if (!((m_lex.peek(0,'-') || m_lex.peek(0,'+')) && !m_lex.peek(1,' ')))
       consume();
+  if (octCompat)
+    {
+      if (match(TOK_INCR))
+	{
+	  base = Tree(TOK_INCR_POSTFIX,base);
+	  consume();
+	}
+      else if (match(TOK_DECR))
+	{
+	  base = Tree(TOK_DECR_POSTFIX,base);
+	  consume();
+	}
+    }
   return base;
 }
 

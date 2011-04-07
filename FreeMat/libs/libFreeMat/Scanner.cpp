@@ -367,12 +367,10 @@ TokenValueType Scanner::previous() {
 
 void Scanner::pushWSFlag(bool ignoreWS) {
   m_ignorews.push(ignoreWS);
-  qDebug() << "+Whitespace flag set to " << m_ignorews.top();
 }
 
 void Scanner::popWSFlag() {
   m_ignorews.pop();
-  qDebug() << "-Whitespace flag set to " << m_ignorews.top();
 }
 
 TokenValueType Scanner::ahead(int n) {

@@ -181,12 +181,10 @@ void OctaveScanner::fetch() {
   } else if (current() == '\"') {
     fetchOctString();
   } else if ((current() == '\n') && m_ignorews.top() && (m_ignorews.size() > 1)) {
-    qDebug() << "Newline masked";
     m_ptr++;
     return;
   } else
     fetchOther();
   m_tokValid = true;
-  qDebug() << "Token: " << TokenToString(m_tok);
 }
 

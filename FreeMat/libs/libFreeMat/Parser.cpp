@@ -351,6 +351,7 @@ Tree Parser::variableDereference(bool blankRefOK) {
   while (deref) {
     if (match('(')) {
       consume();
+      if (octCompat) m_lex.pushWSFlag(true);
       Tree sub = Tree(TOK_PARENS,m_lex.contextNum());
       while (!match(')')) {
 	if (match(':'))
@@ -362,8 +363,12 @@ Tree Parser::variableDereference(bool blankRefOK) {
 	if (match(',')) consume();
       }
       if ((sub.numChildren() == 0) && (!blankRefOK)) 
-	serror("The expression A() is not allowed.");
+	{
+	  if (octCompat) m_lex.popWSFlag();
+	  serror("The expression A() is not allowed.");
+	}
       expect(')');
+      if (octCompat) m_lex.popWSFlag();
       root.addChild(sub);
     } else if (match('{')) {
       consume();
@@ -533,24 +538,7 @@ Tree Parser::statementList() {
 
 Tree Parser::expression() {
   if (match(TOK_SPACE)) consume();
-  Tree tmp(exp(0));
-  if (!octCompat) return tmp;
-  if (match('(')) 
-    {
-      consume();
-      Tree sub = Tree(TOK_REINDEX,m_lex.contextNum());
-      sub.addChild(tmp);
-      while (!match(')')) {
-	if (match(':'))
-	  sub.addChild(expect(':'));
-	else
-	  sub.addChild(expression());
-	if (match(',')) consume();
-      }
-      consume();
-      return sub;
-    }
-  return tmp;
+  return exp(0);
 }
 
 Parser::Parser(Scanner& lex, bool octaveCompatibility) : 
@@ -741,6 +729,26 @@ Tree Parser::primaryExpression() {
 
 Tree Parser::exp(unsigned p) {
   Tree t = primaryExpression();
+  qDebug() << "********************************";
+  t.print();
+  qDebug() << "********************************";
+
+  if (octCompat && match('(')) 
+    {
+      consume();
+      Tree sub = Tree(TOK_REINDEX,m_lex.contextNum());
+      sub.addChild(t);
+      while (!match(')')) {
+	if (match(':'))
+	  sub.addChild(expect(':'));
+	else
+	  sub.addChild(expression());
+	if (match(',')) consume();
+      }
+      consume();
+      t = sub;
+    }
+
   while (next().isBinaryOperator() && (precedence(next()) >= p)) {
     Token opr_save(next());
     consume();

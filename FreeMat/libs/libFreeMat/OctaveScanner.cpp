@@ -99,6 +99,8 @@ void OctaveScanner::fetchOther() {
   }
   if (tryFetchBinary("++",TOK_INCR)) return;
   if (tryFetchBinary("--",TOK_DECR)) return;
+  if (tryFetchBinary("+=",TOK_PLUS_EQ)) return;
+  if (tryFetchBinary("-=",TOK_MINUS_EQ)) return;
   if (tryFetchBinary("<=",TOK_LE)) return;
   if (tryFetchBinary(">=",TOK_GE)) return;
   if (tryFetchBinary("==",TOK_EQ)) return;
@@ -152,7 +154,8 @@ void OctaveScanner::fetchOctString() {
 void OctaveScanner::fetch() {
   if (m_ptr >= m_strlen)
     setToken(TOK_EOF);
-  else if ((current() == '#') && (ahead(1) == '#')) {
+  else if (((current() == '#') && (ahead(1) == '#')) ||
+	   (current() == '%')) {
     fetchComment();
     return;
   } else if ((current() == '.') && 

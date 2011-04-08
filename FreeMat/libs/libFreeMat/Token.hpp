@@ -101,6 +101,8 @@ const TokenValueType TOK_INCR_PREFIX = 200;
 const TokenValueType TOK_DECR_PREFIX = 201;
 const TokenValueType TOK_INCR_POSTFIX = 202;
 const TokenValueType TOK_DECR_POSTFIX = 203;
+const TokenValueType TOK_PLUS_EQ = 204;
+const TokenValueType TOK_MINUS_EQ = 205;
 
 class Serialize;
 

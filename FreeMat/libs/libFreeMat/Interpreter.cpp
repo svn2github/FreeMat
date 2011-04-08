@@ -1126,6 +1126,7 @@ Array Interpreter::expression(const Tree & t) {
   case TOK_IMAGF:
   case TOK_STRING:
     return t.array();
+    //  case TOK_INCR_PREFIX:
   case TOK_END:
     if (!endRef.valid()) 
       throw Exception("END keyword not allowed for undefined variables");

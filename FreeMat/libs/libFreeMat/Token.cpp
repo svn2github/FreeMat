@@ -143,6 +143,8 @@ QString TokenToString(const Token& b) {
   case TOK_DECR_PREFIX: return "--(pre)";
   case TOK_INCR_POSTFIX: return "++(post)";
   case TOK_DECR_POSTFIX: return "--(post)";
+  case TOK_PLUS_EQ: return "+=";
+  case TOK_MINUS_EQ: return "-=";
   }
   return QString(1,QChar(b.value()))+QString(" val = %1").arg(b.value());
 }

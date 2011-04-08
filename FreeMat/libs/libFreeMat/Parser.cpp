@@ -405,10 +405,40 @@ Tree Parser::variableDereference(bool blankRefOK) {
 
 Tree Parser::assignmentStatement() {
   Tree ident = variableDereference(false);
-  Tree root(expect('='));
-  Tree expr = expression();
-  root.addChildren(ident,expr);
-  return root;
+  if (!octCompat || match('='))
+    {
+      Tree root(expect('='));
+      Tree expr = expression();
+      root.addChildren(ident,expr);
+      return root;
+    }
+  if (match(TOK_PLUS_EQ))
+    {
+      Token opr(next());
+      consume();
+      opr.setValue('=');
+      Tree root(opr);
+      Tree expr = expression();
+      opr.setValue('+');
+      Tree adder(opr);
+      adder.addChildren(ident,expr);
+      root.addChildren(ident,adder);
+      return root;
+    }
+  if (match(TOK_MINUS_EQ))
+    {
+      Token opr(next());
+      consume();
+      opr.setValue('=');
+      Tree root(opr);
+      Tree expr = expression();
+      opr.setValue('-');
+      Tree adder(opr);
+      adder.addChildren(ident,expr);
+      root.addChildren(ident,adder);
+      return root;
+    }
+  serror("Not an assignment statement");
 }
 
 void Parser::flushSeperators() {
@@ -729,10 +759,6 @@ Tree Parser::primaryExpression() {
 
 Tree Parser::exp(unsigned p) {
   Tree t = primaryExpression();
-  qDebug() << "********************************";
-  t.print();
-  qDebug() << "********************************";
-
   if (octCompat && match('(')) 
     {
       consume();

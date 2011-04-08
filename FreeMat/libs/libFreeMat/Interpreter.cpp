@@ -1126,7 +1126,41 @@ Array Interpreter::expression(const Tree & t) {
   case TOK_IMAGF:
   case TOK_STRING:
     return t.array();
-    //  case TOK_INCR_PREFIX:
+  case TOK_REINDEX:
+    {
+      Array r = rhs(t.first());
+      for (int index = 1;index < t.numChildren();index++)
+	deref(r,t.child(index));
+      return r;
+    }
+  case TOK_INCR_PREFIX:
+    {
+      Array dummy = rhs(t.first());
+      Array ret = Add(dummy,Array((double)(1)));
+      assignment(t.first(),false,ret);
+      return ret;
+    }
+  case TOK_DECR_PREFIX:
+    {
+      Array dummy = rhs(t.first());
+      Array ret = Subtract(dummy,Array((double)(1)));
+      assignment(t.first(),false,ret);
+      return ret;
+    }
+  case TOK_INCR_POSTFIX:
+    {
+      Array dummy = rhs(t.first());
+      Array ret = Add(dummy,Array((double)(1)));
+      assignment(t.first(),false,ret);
+      return dummy;
+    }
+  case TOK_DECR_POSTFIX:
+    {
+      Array dummy = rhs(t.first());
+      Array ret = Subtract(dummy,Array((double)(1)));
+      assignment(t.first(),false,ret);
+      return dummy;
+    }
   case TOK_END:
     if (!endRef.valid()) 
       throw Exception("END keyword not allowed for undefined variables");

@@ -342,11 +342,7 @@ Tree Parser::keyword() {
   return root;
 }
 
-// Parse A(foo).goo{1:3}... etc
-Tree Parser::variableDereference(bool blankRefOK) {
-  Tree ident = identifier();
-  Tree root = Tree(TOK_VARIABLE,m_lex.contextNum());
-  root.addChild(ident);
+void Parser::indexingExpressions(Tree &root, bool blankRefOK) {
   bool deref = true;
   while (deref) {
     if (match('(')) {
@@ -400,6 +396,15 @@ Tree Parser::variableDereference(bool blankRefOK) {
     } else
       deref = false;
   }
+}
+
+// Parse A(foo).goo{1:3}... etc
+
+Tree Parser::variableDereference(bool blankRefOK) {
+  Tree ident = identifier();
+  Tree root = Tree(TOK_VARIABLE,m_lex.contextNum());
+  root.addChild(ident);
+  indexingExpressions(root,blankRefOK);
   return root;
 }
 
@@ -562,7 +567,6 @@ Tree Parser::statementList() {
     flushSeperators();
     s = statement();
   }
-  if (octCompat) stlist.print();
   return stlist;
 }
 
@@ -759,19 +763,11 @@ Tree Parser::primaryExpression() {
 
 Tree Parser::exp(unsigned p) {
   Tree t = primaryExpression();
-  if (octCompat && match('(')) 
+  if (octCompat && (match('(') || match('{') || match('.')))
     {
-      consume();
       Tree sub = Tree(TOK_REINDEX,m_lex.contextNum());
       sub.addChild(t);
-      while (!match(')')) {
-	if (match(':'))
-	  sub.addChild(expect(':'));
-	else
-	  sub.addChild(expression());
-	if (match(',')) consume();
-      }
-      consume();
+      indexingExpressions(sub,true);
       t = sub;
     }
 

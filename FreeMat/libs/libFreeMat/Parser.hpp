@@ -52,6 +52,7 @@ private:
   Tree statementSeperator();
   Tree identifier();
   Tree assignmentStatement();
+  void indexingExpressions(Tree&, bool blankRefOK);
   Tree variableDereference(bool blankRefOK = true);
   Tree multiFunctionCall();
   Tree matDef(TokenValueType basetok, TokenValueType closebracket);

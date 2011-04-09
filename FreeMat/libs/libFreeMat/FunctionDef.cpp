@@ -27,7 +27,6 @@
 #include "SymbolTable.hpp"
 #include "Types.hpp"
 #include "MexInterface.hpp"
-#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
@@ -357,7 +356,6 @@ static void RegisterNested(const Tree & t, Interpreter *m_eval, MFunctionDef *pa
 
 static Tree ParseMFile(QString fileName) {
   // Read the file into a string
-  qDebug() << "Parse M File " << fileName ;
   QString fileText = ReadFileIntoString(fileName);
   if (!fileName.contains(QDir::separator()+QString("+octave")+QDir::separator()))
     {

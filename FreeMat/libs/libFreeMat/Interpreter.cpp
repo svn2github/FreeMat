@@ -1128,7 +1128,7 @@ Array Interpreter::expression(const Tree & t) {
     return t.array();
   case TOK_REINDEX:
     {
-      Array r = rhs(t.first());
+      Array r = expression(t.first());
       for (int index = 1;index < t.numChildren();index++)
 	deref(r,t.child(index));
       return r;

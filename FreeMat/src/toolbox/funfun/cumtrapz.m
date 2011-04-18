@@ -1,5 +1,5 @@
 %!
-%@@Module CUMTRAPZ Trapezoidal Rule Cumulative Integration
+%@Module CUMTRAPZ Trapezoidal Rule Cumulative Integration
 %@@Section NUM
 %@@Usage
 % 

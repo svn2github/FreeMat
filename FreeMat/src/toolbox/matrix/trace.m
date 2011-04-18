@@ -1,5 +1,5 @@
 %!
-%@@Module TRACE Sum Diagonal Elements of an Array
+%@Module TRACE Sum Diagonal Elements of an Array
 %@@Section ARRAY
 %@@Usage
 % 

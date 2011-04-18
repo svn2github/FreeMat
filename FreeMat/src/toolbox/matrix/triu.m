@@ -1,5 +1,5 @@
 %!
-%@@Module TRIU Upper Triangular Matrix Function
+%@Module TRIU Upper Triangular Matrix Function
 %@@Section ARRAY
 %@@Usage
 % 

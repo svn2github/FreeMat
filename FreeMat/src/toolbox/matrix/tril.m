@@ -1,5 +1,5 @@
 %!
-%@@Module TRIL Lower Triangular Matrix Function
+%@Module TRIL Lower Triangular Matrix Function
 %@@Section ARRAY
 %@@Usage
 % 

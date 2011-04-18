@@ -1,5 +1,5 @@
 %!
-%@MODULE SPRAND Sparse Uniform Random Matrix
+%@Module SPRAND Sparse Uniform Random Matrix
 %@@Section SPARSE
 %@@Usage
 %Creates a sparse matrix with uniformly distributed random entries (on [0,1]).  The

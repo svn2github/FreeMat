@@ -1,5 +1,5 @@
 %!
-%@MODULE SPY Visualize Sparsity Pattern of a Sparse Matrix
+%@Module SPY Visualize Sparsity Pattern of a Sparse Matrix
 %@@Section SPARSE
 %@@Usage
 %Plots the sparsity pattern of a sparse matrix.  The syntax for its use is

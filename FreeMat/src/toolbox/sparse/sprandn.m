@@ -1,5 +1,5 @@
 %!
-%@MODULE SPRANDN Sparse Normal Random Matrix
+%@Module SPRANDN Sparse Normal Random Matrix
 %@@Section SPARSE
 %@@Usage
 %Creates a sparse matrix with normally distributed random entries (mean 0, sigma 1).  The

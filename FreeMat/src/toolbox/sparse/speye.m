@@ -1,5 +1,5 @@
 %!
-%@MODULE SPEYE Sparse Identity Matrix
+%@Module SPEYE Sparse Identity Matrix
 %@@Section SPARSE
 %@@Usage
 %Creates a sparse identity matrix of the given size.  The syntax for

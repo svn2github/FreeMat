@@ -554,30 +554,31 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 //executable is located).
 //
 //The format of blas.ini file is following:
-//
+//@[
 // [Linux64]
 //ATLAS64\libname=/usr/lib64/atlas/libblas.so
 //ATLAS64\capfnames=false
 //ATLAS64\prefix=
 //ATLAS64\suffix=_
 //ATLAS64\desc="ATLAS BLAS. Optimized."
-//
+//@]
 //Where Linux64 is the OS flavor for the blas library described below
 //it. Other options are [Win32], [Linux32], [OSX]. Note that Linux is our 
 //name for all unix platforms.
-//
-//ATLAS64 - name of the library as it will appear in the list when you
+//\begin{itemize}
+//\item @|ATLAS64| - name of the library as it will appear in the list when you
 //type blaslib command in FreeMat.
-//ATLAS64\libname - path to the library. It has to be a shared library
+//\item @|ATLAS64\libname| - path to the library. It has to be a shared library
 //(Linux), DLL (Windows), Bundle (? OSX). This library has to be a Fortran
 //BLAS library, not cblas!
-//ATLAS64\capfnames - does the library use capital letters for function
+//\item @|ATLAS64\capfnames| - does the library use capital letters for function
 //names (usually false).
-//ATLAS64\prefix - prefix (characters that are put in front of) for all
-//blas functions in the library (e.g. ATL_ or AMD_).
-//ATLAS64\suffix - suffix (characters that are put after) for all blas
-//function in the library (e.g. _)
-//ATLAS64\desc - text description of the library.
+//\item @|ATLAS64\prefix| - prefix (characters that are put in front of) for all
+//blas functions in the library (e.g. @|ATL_| or @|AMD_|).
+//\item @|ATLAS64\suffix| - suffix (characters that are put after) for all blas
+//function in the library (e.g. @|_|)
+//\item @|ATLAS64\desc| - text description of the library.
+//\end{itemize}
 //
 //On FreeMat startup it looks at the blas.ini file, and tries to load each
 //library described in the section for the given OS flavor. FreeMat will
@@ -589,7 +590,7 @@ ArrayVector ImportFunction(int nargout, const ArrayVector& arg,
 //
 //You should be a careful when using non-default BLAS
 //libraries. Some libraries do not implement all the BLAS functions
-//correctly. You should run FreeMat test suite (type run_tests()) and use
+//correctly. You should run FreeMat test suite (type @|run_tests()|) and use
 //common sense when evaluating the results of numerical computations. 
 //@@Signature
 //function blaslib BlaslibFunction

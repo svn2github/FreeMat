@@ -4814,7 +4814,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 }
 
 //!
-//@Module Function Handles
+//@Module FUNCTIONHANDLES Function Handles
 //@@Section VARIABLES
 //@@Usage
 //Starting with version 1.11, FreeMat now supports @|function handles|,

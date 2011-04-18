@@ -64,7 +64,6 @@ Version.cpp
 Error.cpp 
 Misc.cpp 
 Mean.cpp 
-MPIWrap.cpp 
 StringOps.cpp 
 Transcendental.cpp 
 Trigonometric.cpp 

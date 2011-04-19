@@ -31,13 +31,13 @@ def writeloader(dirname,gfuncs,classdefs,loadername):
         g.write('  context->add%s("%s",%s,'%(funcmapping[fnc["type"]],fnc["name"],fnc["internal_name"]))
         if fnc["inputs"][0]=='none':
             input_count = 0
-        elif fnc["inputs"][0]=='varargin':
+        elif fnc["inputs"][len(fnc["inputs"])-1]=='varargin':
             input_count = -1
         else:
             input_count = len(fnc["inputs"])
         if fnc["outputs"][0]=='none':
             output_count = 0
-        elif fnc["outputs"][0]=='varargout':
+        elif fnc["outputs"][len(fnc["outputs"])-1]=='varargout':
             output_count = -1
         else:
             output_count = len(fnc["outputs"])

@@ -739,7 +739,7 @@ void QTRenderEngine::quadStrips(QVector<QVector<cpoint> > faces, bool flatfaces,
 			 (int)(mapqds[i].a*255)));
     pnt->setPen(QColor((int)(mapqds[i].er*255),(int)(mapqds[i].eg*255),
 		       (int)(mapqds[i].eb*255),(int)(mapqds[i].ea*255)));
-    pnt->drawPolygon(poly);
+    pnt->drawConvexPolygon(poly);
   }
 }
 

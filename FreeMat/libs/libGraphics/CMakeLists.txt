@@ -14,20 +14,7 @@ ADD_EXECUTABLE (vtkWrapFreeMat
 ${CMAKE_SOURCE_DIR}/tools/vtkwrap/vtkWrapFreeMat.c
 ${CMAKE_SOURCE_DIR}/tools/vtkwrap/vtkParse.tab.c)
 
-ADD_SUBDIRECTORY(vtk/common)
-ADD_SUBDIRECTORY(vtk/filtering)
-ADD_SUBDIRECTORY(vtk/volumerendering)
-ADD_SUBDIRECTORY(vtk/rendering)
-ADD_SUBDIRECTORY(vtk/io)
-#ADD_SUBDIRECTORY(vtk/genericfiltering)
-ADD_SUBDIRECTORY(vtk/geovis)
-ADD_SUBDIRECTORY(vtk/graphics)
-ADD_SUBDIRECTORY(vtk/hybrid)
-ADD_SUBDIRECTORY(vtk/imaging)
-ADD_SUBDIRECTORY(vtk/infovis)
-ADD_SUBDIRECTORY(vtk/parallel)
-ADD_SUBDIRECTORY(vtk/views)
-ADD_SUBDIRECTORY(vtk/widgets)
+ADD_SUBDIRECTORY(vtk)
 
 endif(USE_VTK)
 

@@ -11,7 +11,7 @@ foreach(class ${VTK_GEOVIS_CLASSES})
       OUTPUT ${dest_name}
       DEPENDS ${wrapcmd}
       COMMAND ${wrapcmd}
-      ARGS ${src_name} ${CMAKE_SOURCE_DIR}/tools/vtkwrap/hints 1 ${dest_name}
+      ARGS ${src_name} ${CMAKE_SOURCE_DIR}/tools/vtkwrap/hints 1 ${dest_name} VTKGeovis
       COMMENT "Generating ${dest_name} from ${src_name}"
       VERBATIM)
   endif (NOT VTK_CLASS_WRAP_EXCLUDE_${class})

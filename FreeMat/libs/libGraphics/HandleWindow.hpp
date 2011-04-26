@@ -55,7 +55,7 @@ protected:
   unsigned handle;
   bool glActive;
   //QGLWidget *glchild;
-  QWidget *child;
+  QGLWidget *child;
   HandleFigure *hfig;
   //QStackedWidget *layout;
   QToolBar *toolBar;
@@ -94,7 +94,8 @@ public:
   void createActions();
   void createMenus();
   void createToolBars();
-  
+  void redraw();
+		       
 
 public slots:
   void zoom(bool);

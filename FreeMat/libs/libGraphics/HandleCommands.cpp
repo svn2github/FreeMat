@@ -172,7 +172,7 @@ void RefreshFigs() {
   if (!HGInitialized) return;
   for (int i=0;i<MAX_FIGS;i++) {
     if (Hfigs[i] && (Hfigs[i]->HFig()->isDirty())) {
-      Hfigs[i]->update();
+      Hfigs[i]->redraw();
     }
   }
 }

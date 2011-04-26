@@ -252,60 +252,6 @@ ArrayVector SourceFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   return ArrayVector();
 }
 
-
-//!
-//@Module TYPE Type
-//@@Section FREEMAT
-//@@Usage
-//Displays the content of a m-script file or an ascii file. 
-//The type function takes one argument:
-//@[
-//  type filename
-//  type ('filename')
-//@]
-//This command will first look for filename in FreeMat search path,
-//if not found it will look for m-script file by adding '.m' to filename
-//@@Signature
-//sfunction type TypeFunction
-//inputs function
-//outputs none
-//!
-ArrayVector TypeFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
-{
-  PathSearcher psearch(eval->getTotalPath());
-
-  if (arg.size() != 1)
-    throw Exception("type function requires a single argument (m-script name or ascii file name)");
-  QString fname = arg[0].asString();
-  bool isFun;
-  FuncPtr val;
-  QString filename = psearch.ResolvePath(fname);
-  if( filename.isNull() ){
-    isFun = eval->getContext()->lookupFunction(fname,val);
-    if (isFun && (val->type() == FM_M_FUNCTION)) {
-      MFunctionDef *mptr;
-      mptr = (MFunctionDef *) val;
-      if( mptr )
-        filename = mptr->fileName;
-      else
-        throw Exception(fname + " does not exist");
-    }
-    else
-      throw Exception(fname + " does not exist");
-  } 
-  QFile fp(filename);
-  if (!fp.open(QIODevice::ReadOnly))
-    throw Exception("Cannot open " + fname);
-  QTextStream io(&fp);
-  while (!io.atEnd()) {
-    QString cp = io.readLine();
-    eval->outputMessage(cp);
-    eval->outputMessage("\n");
-  }
-  return ArrayVector();
-}
-
-
 //!
 //@Module BUILTIN Evaulate Builtin Function
 //@@Section FREEMAT
@@ -449,7 +395,7 @@ ArrayVector GetEnvFunction(int nargout, const ArrayVector& arg) {
 //Here is an example of calling the @|ls| function (the
 //list files function under Un*x-like operating system).
 //@<
-//y = system('ls')
+//y = system('ls a*.m')
 //y{1}
 //@>
 //@@Signature

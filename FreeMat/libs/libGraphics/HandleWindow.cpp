@@ -72,6 +72,7 @@ BaseFigureQt::BaseFigureQt(QWidget *parent, HandleFigure *fig) :
 BaseFigureGL::BaseFigureGL(QWidget *parent, HandleFigure *fig) : 
   QGLWidget(parent) {
   hfig = fig;
+  setMouseTracking(true);
   //hfig->resizeGL(width(),height());
 }
   
@@ -85,7 +86,6 @@ void BaseFigureGL::initializeGL() {
 }
   
 void BaseFigureGL::paintGL() {
-  //    qDebug("GLpaint");
   GLRenderEngine gc(this,0,0,width(),height());
   hfig->PaintMe(gc);
 }
@@ -93,6 +93,7 @@ void BaseFigureGL::paintGL() {
 void BaseFigureGL::resizeGL(int width, int height) {
   //    qDebug("GLsize");
   //  hfig->resizeGL(width,height);
+  hfig->Resize(qMax(8,width),qMax(8,height));
 }
 
 QSize BaseFigureGL::sizeHint() const {
@@ -132,6 +133,10 @@ void BaseFigureGL::mouseReleaseEvent(QMouseEvent* e) {
 void HandleWindow::closeEvent(QCloseEvent* e) {
   NotifyFigureClosed(handle);
 }
+
+void HandleWindow::redraw() {
+  child->updateGL();
+}
   
 bool HandleWindow::event(QEvent* e) {
   if (e->type() == QEvent::WindowActivate) {
@@ -149,7 +154,8 @@ HandleWindow::HandleWindow(unsigned ahandle, Interpreter *eval) : QMainWindow(),
   char buffer[1000];
   sprintf(buffer,"Figure %d",ahandle+1);
   setWindowTitle(buffer);
-  child = new BaseFigureQt(this,hfig);
+  //child = new BaseFigureQt(this,hfig);
+  child = new BaseFigureGL(this,hfig);
   band = NULL;
   setMinimumSize(50,50);
   createActions();

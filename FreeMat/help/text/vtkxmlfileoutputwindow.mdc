@@ -1,0 +1,63 @@
+vtkXMLFileOutputWindow
+
+Usage
+
+ Writes debug/warning/error output to an XML file. Uses prefined XML
+ tags for each text display method. The text is processed to replace
+ XML markup characters.
+ 
+   DisplayText - <Text>
+ 
+   DisplayErrorText - <Error>
+ 
+   DisplayWarningText - <Warning>
+ 
+   DisplayGenericWarningText - <GenericWarning>
+ 
+   DisplayDebugText - <Debug>
+ 
+ The method DisplayTag outputs the text unprocessed. To use this
+ class, instantiate it and then call SetInstance(this).
+
+To create an instance of class vtkXMLFileOutputWindow, simply
+invoke its constructor as follows
+
+  obj = vtkXMLFileOutputWindow
+
+Usage
+
+The class vtkXMLFileOutputWindow has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkXMLFileOutputWindow class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkXMLFileOutputWindow = obj.NewInstance ()
+
+  -  vtkXMLFileOutputWindow = obj.SafeDownCast (vtkObject o)
+
+  -  obj.DisplayText (string ) -  Put the text into the log file. The text is processed to
+ replace &, <, > with &amp, &lt, and &gt.
+ Each display method outputs a different XML tag.
+
+  -  obj.DisplayErrorText (string ) -  Put the text into the log file. The text is processed to
+ replace &, <, > with &amp, &lt, and &gt.
+ Each display method outputs a different XML tag.
+
+  -  obj.DisplayWarningText (string ) -  Put the text into the log file. The text is processed to
+ replace &, <, > with &amp, &lt, and &gt.
+ Each display method outputs a different XML tag.
+
+  -  obj.DisplayGenericWarningText (string ) -  Put the text into the log file. The text is processed to
+ replace &, <, > with &amp, &lt, and &gt.
+ Each display method outputs a different XML tag.
+
+  -  obj.DisplayDebugText (string ) -  Put the text into the log file. The text is processed to
+ replace &, <, > with &amp, &lt, and &gt.
+ Each display method outputs a different XML tag.
+
+  -  obj.DisplayTag (string ) -  Put the text into the log file without processing it.
+

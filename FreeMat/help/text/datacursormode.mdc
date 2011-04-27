@@ -1,0 +1,8 @@
+DATACURSORMODE Interactive Data Cursor
+
+Usage
+
+Toggles the data cursor which allows interactive data exploration. 
+
+   datacursormode('on')
+

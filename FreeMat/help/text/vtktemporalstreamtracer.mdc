@@ -1,0 +1,196 @@
+vtkTemporalStreamTracer
+
+Usage
+
+ vtkTemporalStreamTracer is a filter that integrates a vector field to generate
+ 
+
+
+To create an instance of class vtkTemporalStreamTracer, simply
+invoke its constructor as follows
+
+  obj = vtkTemporalStreamTracer
+
+Usage
+
+The class vtkTemporalStreamTracer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkTemporalStreamTracer class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkTemporalStreamTracer = obj.NewInstance ()
+
+  -  vtkTemporalStreamTracer = obj.SafeDownCast (vtkObject o)
+
+  -  obj.SetTimeStep (int ) -  Set/Get the TimeStep. This is the primary means of advancing 
+ the particles. The TimeStep should be animated and this will drive
+ the pipeline forcing timesteps to be fetched from upstream.
+
+  -  int = obj.GetTimeStep () -  Set/Get the TimeStep. This is the primary means of advancing 
+ the particles. The TimeStep should be animated and this will drive
+ the pipeline forcing timesteps to be fetched from upstream.
+
+  -  obj.SetIgnorePipelineTime (int ) -  To get around problems with the Paraview Animation controls
+ we can just animate the time step and ignore the TIME_ requests
+
+  -  int = obj.GetIgnorePipelineTime () -  To get around problems with the Paraview Animation controls
+ we can just animate the time step and ignore the TIME_ requests
+
+  -  obj.IgnorePipelineTimeOn () -  To get around problems with the Paraview Animation controls
+ we can just animate the time step and ignore the TIME_ requests
+
+  -  obj.IgnorePipelineTimeOff () -  To get around problems with the Paraview Animation controls
+ we can just animate the time step and ignore the TIME_ requests
+
+  -  obj.SetTimeStepResolution (double ) -  If the data source does not have the correct time values 
+ present on each time step - setting this value to non unity can
+ be used to adjust the time step size from 1s pre step to
+ 1x_TimeStepResolution : Not functional in this version. 
+ Broke it @todo, put back time scaling
+
+  -  double = obj.GetTimeStepResolution () -  If the data source does not have the correct time values 
+ present on each time step - setting this value to non unity can
+ be used to adjust the time step size from 1s pre step to
+ 1x_TimeStepResolution : Not functional in this version. 
+ Broke it @todo, put back time scaling
+
+  -  obj.SetForceReinjectionEveryNSteps (int ) -  When animating particles, it is nice to inject new ones every Nth step
+ to produce a continuous flow. Setting ForceReinjectionEveryNSteps to a 
+ non zero value will cause the particle source to reinject particles
+ every Nth step even if it is otherwise unchanged.
+ Note that if the particle source is also animated, this flag will be
+ redundant as the particles will be reinjected whenever the source changes 
+ anyway
+
+  -  int = obj.GetForceReinjectionEveryNSteps () -  When animating particles, it is nice to inject new ones every Nth step
+ to produce a continuous flow. Setting ForceReinjectionEveryNSteps to a 
+ non zero value will cause the particle source to reinject particles
+ every Nth step even if it is otherwise unchanged.
+ Note that if the particle source is also animated, this flag will be
+ redundant as the particles will be reinjected whenever the source changes 
+ anyway
+
+  -  obj.SetTerminationTime (double ) -  Setting TerminationTime to a positive value will cause particles
+ to terminate when the time is reached. Use a vlue of zero to
+ diable termination. The units of time should be consistent with the 
+ primary time variable.
+
+  -  double = obj.GetTerminationTime () -  Setting TerminationTime to a positive value will cause particles
+ to terminate when the time is reached. Use a vlue of zero to
+ diable termination. The units of time should be consistent with the 
+ primary time variable.
+
+  -  obj.SetTerminationTimeUnit (int ) -  The units of TerminationTime may be actual 'Time' units as described
+ by the data, or just TimeSteps of iteration.
+
+  -  int = obj.GetTerminationTimeUnit () -  The units of TerminationTime may be actual 'Time' units as described
+ by the data, or just TimeSteps of iteration.
+
+  -  obj.SetTerminationTimeUnitToTimeUnit () -  The units of TerminationTime may be actual 'Time' units as described
+ by the data, or just TimeSteps of iteration.
+
+  -  obj.SetTerminationTimeUnitToStepUnit () -  The units of TerminationTime may be actual 'Time' units as described
+ by the data, or just TimeSteps of iteration.
+
+  -  obj.SetStaticSeeds (int ) -  if StaticSeeds is set and the mesh is static, 
+ then every time particles are injected we can re-use the same 
+ injection information. We classify particles according to
+ processor just once before start.
+ If StaticSeeds is set and a moving seed source is specified
+ the motion will be ignored and results will not be as expected.
+
+  -  int = obj.GetStaticSeeds () -  if StaticSeeds is set and the mesh is static, 
+ then every time particles are injected we can re-use the same 
+ injection information. We classify particles according to
+ processor just once before start.
+ If StaticSeeds is set and a moving seed source is specified
+ the motion will be ignored and results will not be as expected.
+
+  -  obj.StaticSeedsOn () -  if StaticSeeds is set and the mesh is static, 
+ then every time particles are injected we can re-use the same 
+ injection information. We classify particles according to
+ processor just once before start.
+ If StaticSeeds is set and a moving seed source is specified
+ the motion will be ignored and results will not be as expected.
+
+  -  obj.StaticSeedsOff () -  if StaticSeeds is set and the mesh is static, 
+ then every time particles are injected we can re-use the same 
+ injection information. We classify particles according to
+ processor just once before start.
+ If StaticSeeds is set and a moving seed source is specified
+ the motion will be ignored and results will not be as expected.
+
+  -  obj.SetStaticMesh (int ) -  if StaticMesh is set, many optimizations for cell caching
+ can be assumed. if StaticMesh is not set, the algorithm
+ will attempt to find out if optimizations can be used, but
+ setting it to true will force all optimizations.
+ Do not Set StaticMesh to true if a dynamic mesh is being used
+ as this will invalidate all results.
+
+  -  int = obj.GetStaticMesh () -  if StaticMesh is set, many optimizations for cell caching
+ can be assumed. if StaticMesh is not set, the algorithm
+ will attempt to find out if optimizations can be used, but
+ setting it to true will force all optimizations.
+ Do not Set StaticMesh to true if a dynamic mesh is being used
+ as this will invalidate all results.
+
+  -  obj.StaticMeshOn () -  if StaticMesh is set, many optimizations for cell caching
+ can be assumed. if StaticMesh is not set, the algorithm
+ will attempt to find out if optimizations can be used, but
+ setting it to true will force all optimizations.
+ Do not Set StaticMesh to true if a dynamic mesh is being used
+ as this will invalidate all results.
+
+  -  obj.StaticMeshOff () -  if StaticMesh is set, many optimizations for cell caching
+ can be assumed. if StaticMesh is not set, the algorithm
+ will attempt to find out if optimizations can be used, but
+ setting it to true will force all optimizations.
+ Do not Set StaticMesh to true if a dynamic mesh is being used
+ as this will invalidate all results.
+
+  -  obj.SetController (vtkMultiProcessController controller) -  Set/Get the controller used when sending particles between processes
+ The controller must be an instance of vtkMPIController.
+ If VTK was compiled without VTK_USE_MPI on, then the Controller is simply
+ ignored.
+
+  -  vtkMultiProcessController = obj.GetController () -  Set/Get the controller used when sending particles between processes
+ The controller must be an instance of vtkMPIController.
+ If VTK was compiled without VTK_USE_MPI on, then the Controller is simply
+ ignored.
+
+  -  obj.SetParticleWriter (vtkAbstractParticleWriter pw) -  Set/Get the Writer associated with this Particle Tracer
+ Ideally a parallel IO capable vtkH5PartWriter should be used
+ which will collect particles from all parallel processes
+ and write them to a single HDF5 file.
+
+  -  vtkAbstractParticleWriter = obj.GetParticleWriter () -  Set/Get the Writer associated with this Particle Tracer
+ Ideally a parallel IO capable vtkH5PartWriter should be used
+ which will collect particles from all parallel processes
+ and write them to a single HDF5 file.
+
+  -  obj.SetParticleFileName (string ) -  Set/Get the filename to be used with the particle writer when
+ dumping particles to disk    
+
+  -  string = obj.GetParticleFileName () -  Set/Get the filename to be used with the particle writer when
+ dumping particles to disk    
+
+  -  obj.SetEnableParticleWriting (int ) -  Set/Get the filename to be used with the particle writer when
+ dumping particles to disk    
+
+  -  int = obj.GetEnableParticleWriting () -  Set/Get the filename to be used with the particle writer when
+ dumping particles to disk    
+
+  -  obj.EnableParticleWritingOn () -  Set/Get the filename to be used with the particle writer when
+ dumping particles to disk    
+
+  -  obj.EnableParticleWritingOff () -  Set/Get the filename to be used with the particle writer when
+ dumping particles to disk    
+
+  -  obj.AddSourceConnection (vtkAlgorithmOutput input) -  Provide support for multiple see sources
+
+  -  obj.RemoveAllSources () -  Provide support for multiple see sources
+

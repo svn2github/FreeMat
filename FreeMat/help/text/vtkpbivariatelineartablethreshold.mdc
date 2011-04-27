@@ -1,0 +1,33 @@
+vtkPBivariateLinearTableThreshold
+
+Usage
+
+ Perform the table filtering operations provided by 
+ vtkBivariateLinearTableThreshold in parallel.
+
+To create an instance of class vtkPBivariateLinearTableThreshold, simply
+invoke its constructor as follows
+
+  obj = vtkPBivariateLinearTableThreshold
+
+Usage
+
+The class vtkPBivariateLinearTableThreshold has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkPBivariateLinearTableThreshold class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkPBivariateLinearTableThreshold = obj.NewInstance ()
+
+  -  vtkPBivariateLinearTableThreshold = obj.SafeDownCast (vtkObject o)
+
+  -  obj.SetController (vtkMultiProcessController ) -  Set the vtkMultiProcessController to be used for combining filter
+ results from the individual nodes.
+
+  -  vtkMultiProcessController = obj.GetController () -  Set the vtkMultiProcessController to be used for combining filter
+ results from the individual nodes.
+

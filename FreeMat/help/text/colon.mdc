@@ -1,25 +1,4 @@
-COLON COLON Overloaded Colon Operator
-
-Usage
-
-This is a method that is invoked in one of two forms, either
-the two argument version
-
-  c = colon(a,b)
-
-which is also called using the notation
-
-  c = a:b
-
-and the three argument version
-
-  d = colon(a,b,c)
-
-which is also called using the notation
-
-  d = a:b:c
-
-COLON COLON Index Generation Operator
+COLON Index Generation Operator
 
 Usage
 

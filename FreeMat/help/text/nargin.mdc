@@ -1,4 +1,4 @@
-NARGIN NARGIN Number of Input Arguments
+NARGIN Number of Input Arguments
 
 Usage
 
@@ -12,3 +12,11 @@ FreeMat allows for
 fewer arguments to be passed to a function than were declared,
 and nargin, along with isset can be used to determine
 exactly what subset of the arguments were defined.
+
+You can also use nargin on a function handle to return the
+number of input arguments expected by the function
+
+  y = nargin(fun)
+
+where fun is the name of the function (e.g. 'sin') or 
+a function handle.

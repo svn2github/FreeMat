@@ -1,4 +1,4 @@
-NARGOUT NARGOUT Number of Output Arguments
+NARGOUT Number of Output Arguments
 
 Usage
 
@@ -11,3 +11,11 @@ FreeMat allows for
 fewer return values to be requested from a function than were declared,
 and nargout can be used to determine exactly what subset of 
 the functions outputs are required.  
+
+You can also use nargout on a function handle to return the
+number of input arguments expected by the function
+
+  y = nargout(fun)
+
+where fun is the name of the function (e.g. 'sin') or 
+a function handle.

@@ -1,14 +1,4 @@
-COTD COTD Cotangent Degrees Function
-
-Usage
-
-Computes the cotangent of the argument, but takes
-the argument in degrees instead of radians (as is the case
-for cot). The syntax for its use is
-
-   y = cotd(x)
-
-COTD COTD Cotangent Degrees Function
+COTD Cotangent Degrees Function
 
 Usage
 

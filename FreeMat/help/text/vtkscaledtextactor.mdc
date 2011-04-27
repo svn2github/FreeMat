@@ -1,0 +1,28 @@
+vtkScaledTextActor
+
+Usage
+
+ vtkScaledTextActor is deprecated. New code should use vtkTextActor with
+ the Scaled = true option.
+
+
+To create an instance of class vtkScaledTextActor, simply
+invoke its constructor as follows
+
+  obj = vtkScaledTextActor
+
+Usage
+
+The class vtkScaledTextActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkScaledTextActor class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkScaledTextActor = obj.NewInstance ()
+
+  -  vtkScaledTextActor = obj.SafeDownCast (vtkObject o)
+

@@ -1,4 +1,4 @@
-SETPATH SETPATH Set Current Search Path
+SETPATH Set Current Search Path
 
 Usage
 
@@ -14,14 +14,3 @@ delimiter is a semicolon.  For all other systems, the delimiter is a colon.
 
 @Example
 The setpath function is straightforward.
-
---> getpath
-
-ans = 
-  Empty array 1 0
---> setpath('/usr/local/FreeMat/MFiles:/localhome/basu/MFiles')
---> getpath
-
-ans = 
-/usr/local/FreeMat/MFiles:/localhome/basu/MFiles
-

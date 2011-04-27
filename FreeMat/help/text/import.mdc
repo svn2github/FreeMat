@@ -1,4 +1,4 @@
-IMPORT IMPORT Foreign Function Import
+IMPORT Foreign Function Import
 
 Usage
 
@@ -157,4 +157,11 @@ text "I am going to double that argument" will appear in the FreeMat console.
 Your freemat_io_handler function is automatically called when your library is
 loaded by FreeMat, which happens with the first import statement that references
 it.
+
+Repeating import calls to import the same function name will be ignored, except
+the first call. In order to refresh the function without restarting FreeMat,
+you have to first clear all imported libraries via:
+
+   clear 'libs'
+
 

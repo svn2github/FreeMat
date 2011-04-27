@@ -1,0 +1,28 @@
+vtkImageNormalize
+
+Usage
+
+ For each point, vtkImageNormalize normalizes the vector defined by the 
+ scalar components.  If the magnitude of this vector is zero, the output
+ vector is zero also.
+
+To create an instance of class vtkImageNormalize, simply
+invoke its constructor as follows
+
+  obj = vtkImageNormalize
+
+Usage
+
+The class vtkImageNormalize has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkImageNormalize class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkImageNormalize = obj.NewInstance ()
+
+  -  vtkImageNormalize = obj.SafeDownCast (vtkObject o)
+

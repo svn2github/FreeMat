@@ -1,0 +1,34 @@
+vtkSynchronizedTemplatesCutter3D
+
+Usage
+
+ vtkSynchronizedTemplatesCutter3D is an implementation of the synchronized 
+ template algorithm. Note that vtkCutFilter will automatically
+ use this class when appropriate.
+
+To create an instance of class vtkSynchronizedTemplatesCutter3D, simply
+invoke its constructor as follows
+
+  obj = vtkSynchronizedTemplatesCutter3D
+
+Usage
+
+The class vtkSynchronizedTemplatesCutter3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkSynchronizedTemplatesCutter3D class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkSynchronizedTemplatesCutter3D = obj.NewInstance ()
+
+  -  vtkSynchronizedTemplatesCutter3D = obj.SafeDownCast (vtkObject o)
+
+  -  obj.ThreadedExecute (vtkImageData data, vtkInformation outInfo, int exExt, int ) -  Needed by templated functions.
+
+  -  obj.SetCutFunction (vtkImplicitFunction )
+
+  -  vtkImplicitFunction = obj.GetCutFunction ()
+

@@ -1,4 +1,4 @@
-MINUS MINUS Overloaded Addition Operator
+MINUS Overloaded Addition Operator
 
 Usage
 
@@ -10,23 +10,4 @@ and is invoked when you call
 or for
 
    c = a - b
-
-MINUS MINUS Subtraction Operator
-
-Usage
-
-Subtracts two numerical arrays (elementwise).  There are two forms
-for its use, both with the same general syntax:
-
-  y = a - b
-
-where a and b are n-dimensional arrays of numerical type.  In the
-first case, the two arguments are the same size, in which case, the 
-output y is the same size as the inputs, and is the element-wise
-difference of a and b.  In the second case, either a or b is a scalar, 
-in which case y is the same size as the larger argument,
-and is the difference of the scalar to each element of the other argument.
-
-The rules for manipulating types has changed in FreeMat 4.0.  See typerules
-for more details.
 

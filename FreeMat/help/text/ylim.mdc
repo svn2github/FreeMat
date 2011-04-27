@@ -1,4 +1,4 @@
-YLIM YLIM Adjust Y Axis limits of plot
+YLIM Adjust Y Axis limits of plot
 
 Usage
 
@@ -19,3 +19,8 @@ respectively.  In auto mode, FreeMat chooses the range for the axis
 automatically.  The ylim('mode') form returns the current mode for the axis
 (either 'auto' or 'manual').  Finally, you can specify the handle of an
 axis to manipulate instead of using the current one.
+
+As an additional feature, you can now specify inf for a limit, and
+FreeMat will take that limit from the automatic set.  So, for example 
+ylim([10,inf]) will set the minimum for the y axis, but use the
+automatic value for the maximum.

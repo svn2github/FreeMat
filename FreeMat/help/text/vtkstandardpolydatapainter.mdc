@@ -1,0 +1,31 @@
+vtkStandardPolyDataPainter
+
+Usage
+
+ vtkStandardPolyDataPainter is a catch-all painter.  It should work with pretty
+ much any vtkPolyData, and attributes, and vtkPolyDataPainterDeviceAdapter.  On
+ the flip side, the vtkStandardPolyDataPainter will be slower than the more
+ special purpose painters.
+
+To create an instance of class vtkStandardPolyDataPainter, simply
+invoke its constructor as follows
+
+  obj = vtkStandardPolyDataPainter
+
+Usage
+
+The class vtkStandardPolyDataPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkStandardPolyDataPainter class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkStandardPolyDataPainter = obj.NewInstance ()
+
+  -  vtkStandardPolyDataPainter = obj.SafeDownCast (vtkObject o)
+
+  -  obj.AddMultiTextureCoordsArray (vtkDataArray array)
+

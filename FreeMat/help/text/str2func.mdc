@@ -1,0 +1,20 @@
+STR2FUNC String to Function conversion
+
+Usage
+
+The str2func function converts a function name into a 
+function pointer.  The syntax is 
+
+    y = str2func('funcname')
+
+where funcname is the name of the function. The return
+variable y is a function handle that points to the given
+function.
+
+An alternate syntax is used to construct an anonymous function
+given an expression.  They syntax is
+
+    y = str2func('anonymous def')
+
+where anonymous def is an expression that defines an
+anonymous function, for example '@(x) x.^2'.

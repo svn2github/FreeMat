@@ -1,0 +1,36 @@
+vtkExtractLevel
+
+Usage
+
+ vtkExtractLevel filter extracts the levels between (and including) the user
+ specified min and max levels.
+
+To create an instance of class vtkExtractLevel, simply
+invoke its constructor as follows
+
+  obj = vtkExtractLevel
+
+Usage
+
+The class vtkExtractLevel has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkExtractLevel class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkExtractLevel = obj.NewInstance ()
+
+  -  vtkExtractLevel = obj.SafeDownCast (vtkObject o)
+
+  -  obj.AddLevel (int level) -  Select the levels that should be extracted. All other levels will have no
+ datasets in them.
+
+  -  obj.RemoveLevel (int level) -  Select the levels that should be extracted. All other levels will have no
+ datasets in them.
+
+  -  obj.RemoveAllLevels () -  Select the levels that should be extracted. All other levels will have no
+ datasets in them.
+

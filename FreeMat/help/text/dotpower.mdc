@@ -1,4 +1,4 @@
-DOTPOWER DOTPOWER Element-wise Power Operator
+DOTPOWER Element-wise Power Operator
 
 Usage
 
@@ -7,12 +7,11 @@ Raises one numerical array to another array (elementwise).  There are three oper
   y = a .^ b
 
 The result y depends on which of the following three situations applies to the arguments a and b:
-  1.  a is a scalar, b is an arbitrary n-dimensional numerical array, in which case the output is a raised to the power of each element of b, and the output is the same size as b.
-
-  2.  a is an n-dimensional numerical array, and b is a scalar, then the output is the same size as a, and is defined by each element of a raised to the power b.
-
-  3.  a and b are both n-dimensional numerical arrays of \emph{the same size}.  In this case, each element of the output is the corresponding element of a raised to the power defined by the corresponding element of b.
-
+\begin{enumerate}
+  \item a is a scalar, b is an arbitrary n-dimensional numerical array, in which case the output is a raised to the power of each element of b, and the output is the same size as b.
+  \item a is an n-dimensional numerical array, and b is a scalar, then the output is the same size as a, and is defined by each element of a raised to the power b.
+  \item a and b are both n-dimensional numerical arrays of \emph{the same size}.  In this case, each element of the output is the corresponding element of a raised to the power defined by the corresponding element of b.
+\end{enumerate}
 
 The rules for manipulating types has changed in FreeMat 4.0.  See typerules
 for more details.

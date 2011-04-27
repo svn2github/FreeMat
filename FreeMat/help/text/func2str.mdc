@@ -1,0 +1,13 @@
+FUNC2STR Function to String conversion
+
+Usage
+
+The func2str function converts a function pointer into a
+string.  The syntax is
+
+    y = func2str(funcptr)
+
+where funcptr is a function pointer.  If funcptr is a 
+pointer to a function, then y is the name of the function.
+On the other hand, if funcptr is an anonymous function then
+func2str returns the definition of the anonymous function.

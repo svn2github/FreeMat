@@ -1,0 +1,29 @@
+vtkPProbeFilter
+
+Usage
+
+
+To create an instance of class vtkPProbeFilter, simply
+invoke its constructor as follows
+
+  obj = vtkPProbeFilter
+
+Usage
+
+The class vtkPProbeFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkPProbeFilter class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkPProbeFilter = obj.NewInstance ()
+
+  -  vtkPProbeFilter = obj.SafeDownCast (vtkObject o)
+
+  -  obj.SetController (vtkMultiProcessController ) -  Set and get the controller.
+
+  -  vtkMultiProcessController = obj.GetController () -  Set and get the controller.
+

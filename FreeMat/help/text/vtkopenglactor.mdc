@@ -1,0 +1,29 @@
+vtkOpenGLActor
+
+Usage
+
+ vtkOpenGLActor is a concrete implementation of the abstract class vtkActor.
+ vtkOpenGLActor interfaces to the OpenGL rendering library.
+
+To create an instance of class vtkOpenGLActor, simply
+invoke its constructor as follows
+
+  obj = vtkOpenGLActor
+
+Usage
+
+The class vtkOpenGLActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkOpenGLActor class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkOpenGLActor = obj.NewInstance ()
+
+  -  vtkOpenGLActor = obj.SafeDownCast (vtkObject o)
+
+  -  obj.Render (vtkRenderer ren, vtkMapper mapper) -  Actual actor render method.
+

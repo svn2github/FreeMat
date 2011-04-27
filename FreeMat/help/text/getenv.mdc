@@ -1,0 +1,12 @@
+GETENV Get the Value of an Environment Variable
+
+Usage
+
+The getenv function returns the value for an environment
+variable from the underlying OS.  The syntax for the getenv
+function is 
+
+   y = getenv(environment_variable)
+
+where environment_variable is the name of the environment
+variable to return.  The return is a string.

@@ -1,12 +1,16 @@
-TYPE TYPE Type
+TYPE Type Contents of File or Function
 
 Usage
 
-Displays the content of a m-script file or an ascii file. 
-The type function takes one argument:
+Displays the contents of a file or a function to the screen
+or console.  The syntax for its use is
 
-  type filename
-  type ('filename')
+   type filename
+   type('filename')
 
-This command will first look for filename in FreeMat search path,
-if not found it will look for m-script file by adding '.m' to filename
+or
+
+   type function
+   type('function')
+
+in which case the function named 'function.m' will be displayed.

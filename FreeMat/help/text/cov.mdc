@@ -1,0 +1,30 @@
+COV Covariance Matrix
+
+Usage
+
+Computes the covariance of a matrix or a vector.  The general
+syntax for its use is
+
+  y = cov(x)
+
+where x is a matrix or a vector.  If x is a vector then
+cov returns the variance of x.  If x is a matrix then
+cov returns the covariance matrix of the columns of x.
+You can also call cov with two arguments to compute the 
+matrix of cross correlations.  The syntax for this mode is
+
+  y = cov(x,z)
+
+where x and z are matrices of the same size.  Finally,
+you can provide a normalization flag d that is either 0
+or 1, which changes the normalization factor from L-1 (for d=0) to 
+L (for d=1) where L is the number of rows in the matrix x.  In
+this case, the syntaxes are
+
+  y = cov(x,z,d)
+
+for the two-argument case, and
+
+  y = cov(x,d)
+
+for the one-argument case.

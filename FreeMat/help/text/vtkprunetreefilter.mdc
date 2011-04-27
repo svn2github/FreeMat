@@ -1,0 +1,31 @@
+vtkPruneTreeFilter
+
+Usage
+
+ Removes a subtree rooted at a particular vertex in a vtkTree.
+
+
+To create an instance of class vtkPruneTreeFilter, simply
+invoke its constructor as follows
+
+  obj = vtkPruneTreeFilter
+
+Usage
+
+The class vtkPruneTreeFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkPruneTreeFilter class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkPruneTreeFilter = obj.NewInstance ()
+
+  -  vtkPruneTreeFilter = obj.SafeDownCast (vtkObject o)
+
+  -  vtkIdType = obj.GetParentVertex () -  Set the parent vertex of the subtree to remove.
+
+  -  obj.SetParentVertex (vtkIdType ) -  Set the parent vertex of the subtree to remove.
+

@@ -1,0 +1,31 @@
+vtkOpenGLCamera
+
+Usage
+
+ vtkOpenGLCamera is a concrete implementation of the abstract class
+ vtkCamera.  vtkOpenGLCamera interfaces to the OpenGL rendering library.
+
+To create an instance of class vtkOpenGLCamera, simply
+invoke its constructor as follows
+
+  obj = vtkOpenGLCamera
+
+Usage
+
+The class vtkOpenGLCamera has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkOpenGLCamera class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkOpenGLCamera = obj.NewInstance ()
+
+  -  vtkOpenGLCamera = obj.SafeDownCast (vtkObject o)
+
+  -  obj.Render (vtkRenderer ren) -  Implement base class method.
+
+  -  obj.UpdateViewport (vtkRenderer ren)
+

@@ -1,0 +1,11 @@
+TRACE Sum Diagonal Elements of an Array
+
+Usage
+
+ 
+ Returns the sum of the diagonal elements of a square matrix. The general
+ syntax for its use is
+
+   y = trace(x)
+
+ where x is a square matrix.

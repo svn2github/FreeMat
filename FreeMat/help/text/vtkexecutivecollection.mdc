@@ -1,0 +1,31 @@
+vtkExecutiveCollection
+
+Usage
+
+ vtkExecutiveCollection is an object that creates and manipulates lists of
+ objects that are (inherited from) vtkExecutives.
+
+To create an instance of class vtkExecutiveCollection, simply
+invoke its constructor as follows
+
+  obj = vtkExecutiveCollection
+
+Usage
+
+The class vtkExecutiveCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkExecutiveCollection class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkExecutiveCollection = obj.NewInstance ()
+
+  -  vtkExecutiveCollection = obj.SafeDownCast (vtkObject o)
+
+  -  obj.AddItem (vtkExecutive exec) -  Get the next executive in the list.
+
+  -  vtkExecutive = obj.GetNextItem ()
+

@@ -1,0 +1,28 @@
+vtkPassThroughFilter
+
+Usage
+
+ This filter shallow copies it's input to it's output. It is normally
+ used by PVSources with multiple outputs as the VTK filter in the
+ dummy connection objects at each output.
+
+To create an instance of class vtkPassThroughFilter, simply
+invoke its constructor as follows
+
+  obj = vtkPassThroughFilter
+
+Usage
+
+The class vtkPassThroughFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, obj is an instance of the vtkPassThroughFilter class.
+  -  string = obj.GetClassName ()
+
+  -  int = obj.IsA (string name)
+
+  -  vtkPassThroughFilter = obj.NewInstance ()
+
+  -  vtkPassThroughFilter = obj.SafeDownCast (vtkObject o)
+

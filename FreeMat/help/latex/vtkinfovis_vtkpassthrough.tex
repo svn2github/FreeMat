@@ -1,0 +1,50 @@
+\section{vtkPassThrough}
+
+\subsection{Usage}
+
+ The output type is always the same as the input object type.
+
+To create an instance of class vtkPassThrough, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPassThrough
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPassThrough has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPassThrough class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPassThrough = obj.NewInstance ()|
+
+\item  \verb|vtkPassThrough = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.FillInputPortInformation (int port, vtkInformation info)| -  Specify the first input port as optional
+
+\item  \verb|obj.SetDeepCopyInput (int )| -  Whether or not to deep copy the input. This can be useful if you
+ want to create a copy of a data object. You can then disconnect
+ this filter's input connections and it will act like a source.
+ Defaults to OFF.
+
+\item  \verb|int = obj.GetDeepCopyInput ()| -  Whether or not to deep copy the input. This can be useful if you
+ want to create a copy of a data object. You can then disconnect
+ this filter's input connections and it will act like a source.
+ Defaults to OFF.
+
+\item  \verb|obj.DeepCopyInputOn ()| -  Whether or not to deep copy the input. This can be useful if you
+ want to create a copy of a data object. You can then disconnect
+ this filter's input connections and it will act like a source.
+ Defaults to OFF.
+
+\item  \verb|obj.DeepCopyInputOff ()| -  Whether or not to deep copy the input. This can be useful if you
+ want to create a copy of a data object. You can then disconnect
+ this filter's input connections and it will act like a source.
+ Defaults to OFF.
+
+\end{itemize}

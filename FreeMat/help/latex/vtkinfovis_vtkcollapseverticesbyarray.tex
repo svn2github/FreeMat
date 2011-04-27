@@ -1,0 +1,53 @@
+\section{vtkCollapseVerticesByArray}
+
+\subsection{Usage}
+
+ vtkCollapseVerticesByArray is a class which collapses the graph using
+ a vertex array as the key. So if the graph has vertices sharing common
+ traits then this class combines all these vertices into one. This class
+ does not perform aggregation on vertex data but allow to do so for edge data.
+ Users can choose one or more edge data arrays for aggregation using
+ AddAggregateEdgeArray function.
+
+ .SECTION Thanks
+
+
+To create an instance of class vtkCollapseVerticesByArray, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCollapseVerticesByArray
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCollapseVerticesByArray has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCollapseVerticesByArray class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCollapseVerticesByArray = obj.NewInstance ()|
+
+\item  \verb|vtkCollapseVerticesByArray = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|bool = obj.GetAllowSelfLoops ()| -  Boolean to allow self loops during collapse.
+
+\item  \verb|obj.SetAllowSelfLoops (bool )| -  Boolean to allow self loops during collapse.
+
+\item  \verb|obj.AllowSelfLoopsOn ()| -  Boolean to allow self loops during collapse.
+
+\item  \verb|obj.AllowSelfLoopsOff ()| -  Boolean to allow self loops during collapse.
+
+\item  \verb|obj.AddAggregateEdgeArray (string arrName)| -  Add arrays on which aggregation of data is allowed.
+ Default if replaced by the last value.
+
+\item  \verb|obj.ClearAggregateEdgeArray ()| -  Clear the list of arrays on which aggregation was set to allow.
+
+\item  \verb|string = obj.GetVertexArray ()| -  Set the array using which perform the collapse.
+
+\item  \verb|obj.SetVertexArray (string )| -  Set the array using which perform the collapse.
+
+\end{itemize}

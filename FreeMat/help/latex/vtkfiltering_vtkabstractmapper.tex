@@ -1,0 +1,60 @@
+\section{vtkAbstractMapper}
+
+\subsection{Usage}
+
+ vtkAbstractMapper is an abstract class to specify interface between data and 
+ graphics primitives or software rendering techniques. Subclasses of 
+ vtkAbstractMapper can be used for rendering 2D data, geometry, or volumetric
+ data.
+
+
+To create an instance of class vtkAbstractMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAbstractMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAbstractMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAbstractMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkAbstractMapper = obj.NewInstance ()|
+
+\item  \verb|vtkAbstractMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|long = obj.GetMTime ()| -  Override Modifiedtime as we have added Clipping planes
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this mapper.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|double = obj.GetTimeToDraw ()| -  Get the time required to draw the geometry last time it was rendered
+
+\item  \verb|obj.AddClippingPlane (vtkPlane plane)| -  Specify clipping planes to be applied when the data is mapped
+ (at most 6 clipping planes can be specified).
+
+\item  \verb|obj.RemoveClippingPlane (vtkPlane plane)| -  Specify clipping planes to be applied when the data is mapped
+ (at most 6 clipping planes can be specified).
+
+\item  \verb|obj.RemoveAllClippingPlanes ()| -  Specify clipping planes to be applied when the data is mapped
+ (at most 6 clipping planes can be specified).
+
+\item  \verb|obj.SetClippingPlanes (vtkPlaneCollection )| -  Get/Set the vtkPlaneCollection which specifies the
+ clipping planes.
+
+\item  \verb|vtkPlaneCollection = obj.GetClippingPlanes ()| -  Get/Set the vtkPlaneCollection which specifies the
+ clipping planes.
+
+\item  \verb|obj.SetClippingPlanes (vtkPlanes planes)| -  An alternative way to set clipping planes: use up to six planes found
+ in the supplied instance of the implicit function vtkPlanes.
+
+\item  \verb|obj.ShallowCopy (vtkAbstractMapper m)| -  Make a shallow copy of this mapper.
+
+\end{itemize}

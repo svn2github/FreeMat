@@ -1,0 +1,29 @@
+\section{vtkPointPicker}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkPointPicker, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPointPicker
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPointPicker has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPointPicker class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPointPicker = obj.NewInstance ()|
+
+\item  \verb|vtkPointPicker = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkIdType = obj.GetPointId ()| -  Get the id of the picked point. If PointId = -1, nothing was picked.
+
+\end{itemize}

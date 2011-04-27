@@ -33,32 +33,32 @@ the \verb|noX| flag
 \end{verbatim}
 For convenience, you may want to add FreeMat to your path.  The exact
 mechanism for doing this depends on your shell.  Assume that you have
-unpacked \verb|FreeMat-<VERSION_NUMBER>-Linux-Binary.tar.gz| into the directory
+unpacked \verb|FreeMat-<VERSION\_NUMBER>-Linux-Binary.tar.gz| into the directory
 \verb|/home/myname|.  Then if you use \verb|csh| or its derivatives (like \verb|tcsh|)
 you should add the following line to your \verb|.cshrc| file:
 \begin{verbatim}
   set path=($path /home/myname/FreeMat-<VERSION_NUMBER>-Linux/Binary/Contents/bin)
 \end{verbatim}
-If you use \verb|bash|, then add the following line to your \verb|.bash_profile|
+If you use \verb|bash|, then add the following line to your \verb|.bash\_profile|
 \begin{verbatim}
   PATH=$PATH:/home/myname/FreeMat-<VERSION_NUMBER>-Linux/Binary/Contents/bin
 \end{verbatim}
 If the prebuilt binary package does not work for your Linux distribution, you
 will need to build FreeMat from source (see the source section below).  When
 you have FreeMat running, you can setup your path using the \verb|pathtool|.  Note
-that the \verb|FREEMAT_PATH| is no longer used by FreeMat.  You must use the \verb|pathtool|
+that the \verb|FREEMAT\_PATH| is no longer used by FreeMat.  You must use the \verb|pathtool|
 to adjust the path.
 \subsection{Windows}
 
 For Windows, FreeMat is installed via a binary installer program.  To use it,
-simply download the setup program \verb|FreeMat-<VERSION_NUMBER>-Setup.exe|, and double
+simply download the setup program \verb|FreeMat-<VERSION\_NUMBER>-Setup.exe|, and double
 click it.  Follow the instructions to do the installation, then setup your path
 using \verb|pathtool|.
 \subsection{Mac OS X}
 
 For Mac OS X, FreeMat is distributed as an application bundle.  To install it,
-simply download the compressed disk image file \verb|FreeMat-<VERSION_NUMBER>.dmg|, double
-click to mount the disk image, and then copy the application \verb|FreeMat-<VERSION_NUMBER>| to
+simply download the compressed disk image file \verb|FreeMat-<VERSION\_NUMBER>.dmg|, double
+click to mount the disk image, and then copy the application \verb|FreeMat-<VERSION\_NUMBER>| to
 some convenient place.  To run FreeMat, simply double click on the application.  Run
 \verb|pathtool| to setup your FreeMat path.
 \subsection{Source Code}
@@ -66,29 +66,22 @@ some convenient place.  To run FreeMat, simply double click on the application. 
 The source code build is a little more complicated than previous versions of FreeMat.  Here
 are the current build instructions for all platforms.
 \begin{enumerate}
-\item  Build and install Qt 4.3 or later - \verb|http://trolltech.com/developer/downloads/opensource|
-
-\item  Install g77 or gfortran (use fink for Mac OS X, use \verb|gcc-g77| package for MinGW)
-
-\item  Download the source code \verb|FreeMat-<VERSION_NUMBER>-src.tar.gz|.
-
-\item  Unpack the source code: \verb|tar xvfz FreeMat-<VERSION_NUMBER>-src.tar.gz|.
-
-\item  For Windows, you will need to install MSYS as well as MINGW to
+\item Build and install Qt 4.3 or later - \verb|http://trolltech.com/developer/downloads/opensource|
+\item Install g77 or gfortran (use fink for Mac OS X, use \verb|gcc-g77| package for MinGW)
+\item Download the source code \verb|FreeMat-<VERSION\_NUMBER>-src.tar.gz|.
+\item Unpack the source code: \verb|tar xvfz FreeMat-<VERSION\_NUMBER>-src.tar.gz|.
+\item For Windows, you will need to install MSYS as well as MINGW to
 build FreeMat.  You will also need unzip to unpack the enclosed
 matio.zip archive.  Alternately, you can cross-build the WIndows version
 of FreeMat under Linux (this is how I build it now).
-
-\item  If you are extraordinarily lucky (or prepared), you can issue the
+\item If you are extraordinarily lucky (or prepared), you can issue the
 usual ./configure, then the make and make install.
 This is not likely to work
 because of the somewhat esoteric dependencies of FreeMat.  The configure
 step will probably fail and indicate what external dependencies are
 still needed. 
-
-\item  I assume that you are familiar with the process of installing 
+\item I assume that you are familiar with the process of installing 
 dependencies if you are trying to build FreeMat from source.
-
 \end{enumerate}
 To build a binary distributable (app bundle on the Mac, setup
 installer on win32, and a binary distribution on Linux), you will

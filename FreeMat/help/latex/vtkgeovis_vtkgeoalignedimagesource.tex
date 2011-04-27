@@ -1,0 +1,66 @@
+\section{vtkGeoAlignedImageSource}
+
+\subsection{Usage}
+
+ vtkGeoAlignedImageSource uses a high resolution image to generate tiles
+ at multiple resolutions in a hierarchy. It should be used as a source in
+ vtkGeoAlignedImageRepresentation.
+
+To create an instance of class vtkGeoAlignedImageSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGeoAlignedImageSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGeoAlignedImageSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGeoAlignedImageSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGeoAlignedImageSource = obj.NewInstance ()|
+
+\item  \verb|vtkGeoAlignedImageSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|bool = obj.FetchRoot (vtkGeoTreeNode node)| -  Fetch the root image.
+
+\item  \verb|bool = obj.FetchChild (vtkGeoTreeNode parent, int index, vtkGeoTreeNode child)| -  Fetch a child image.
+
+\item  \verb|vtkImageData = obj.GetImage ()| -  The high-resolution image to be used to cover the globe.
+
+\item  \verb|obj.SetImage (vtkImageData image)| -  The high-resolution image to be used to cover the globe.
+
+\item  \verb|obj.SetLatitudeRange (double , double )| -  The range of the input hi-res image.
+
+\item  \verb|obj.SetLatitudeRange (double  a[2])| -  The range of the input hi-res image.
+
+\item  \verb|double = obj. GetLatitudeRange ()| -  The range of the input hi-res image.
+
+\item  \verb|obj.SetLongitudeRange (double , double )| -  The range of the input hi-res image.
+
+\item  \verb|obj.SetLongitudeRange (double  a[2])| -  The range of the input hi-res image.
+
+\item  \verb|double = obj. GetLongitudeRange ()| -  The range of the input hi-res image.
+
+\item  \verb|obj.SetOverlap (double )| -  The overlap of adjacent tiles.
+
+\item  \verb|double = obj.GetOverlapMinValue ()| -  The overlap of adjacent tiles.
+
+\item  \verb|double = obj.GetOverlapMaxValue ()| -  The overlap of adjacent tiles.
+
+\item  \verb|double = obj.GetOverlap ()| -  The overlap of adjacent tiles.
+
+\item  \verb|obj.SetPowerOfTwoSize (bool )| -  Whether to force image sizes to a power of two.
+
+\item  \verb|bool = obj.GetPowerOfTwoSize ()| -  Whether to force image sizes to a power of two.
+
+\item  \verb|obj.PowerOfTwoSizeOn ()| -  Whether to force image sizes to a power of two.
+
+\item  \verb|obj.PowerOfTwoSizeOff ()| -  Whether to force image sizes to a power of two.
+
+\end{itemize}

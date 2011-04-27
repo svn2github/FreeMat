@@ -1,0 +1,125 @@
+\section{vtkTableToPolyData}
+
+\subsection{Usage}
+
+ vtkTableToPolyData is a filter used to convert a vtkTable  to a vtkPolyData
+ consisting of vertices.
+
+To create an instance of class vtkTableToPolyData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTableToPolyData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTableToPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTableToPolyData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTableToPolyData = obj.NewInstance ()|
+
+\item  \verb|vtkTableToPolyData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetXColumn (string )| -  Set the name of the column to use as the X coordinate for the points. 
+
+\item  \verb|string = obj.GetXColumn ()| -  Set the name of the column to use as the X coordinate for the points. 
+
+\item  \verb|obj.SetXColumnIndex (int )| -  Set the index of the column to use as the X coordinate for the points. 
+
+\item  \verb|int = obj.GetXColumnIndexMinValue ()| -  Set the index of the column to use as the X coordinate for the points. 
+
+\item  \verb|int = obj.GetXColumnIndexMaxValue ()| -  Set the index of the column to use as the X coordinate for the points. 
+
+\item  \verb|int = obj.GetXColumnIndex ()| -  Set the index of the column to use as the X coordinate for the points. 
+
+\item  \verb|obj.SetXComponent (int )| -  Specify the component for the column specified using SetXColumn() to
+ use as the xcoordinate in case the column is a multi-component array.
+ Default is 0.
+
+\item  \verb|int = obj.GetXComponentMinValue ()| -  Specify the component for the column specified using SetXColumn() to
+ use as the xcoordinate in case the column is a multi-component array.
+ Default is 0.
+
+\item  \verb|int = obj.GetXComponentMaxValue ()| -  Specify the component for the column specified using SetXColumn() to
+ use as the xcoordinate in case the column is a multi-component array.
+ Default is 0.
+
+\item  \verb|int = obj.GetXComponent ()| -  Specify the component for the column specified using SetXColumn() to
+ use as the xcoordinate in case the column is a multi-component array.
+ Default is 0.
+
+\item  \verb|obj.SetYColumn (string )| -  Set the name of the column to use as the Y coordinate for the points. 
+ Default is 0.
+
+\item  \verb|string = obj.GetYColumn ()| -  Set the name of the column to use as the Y coordinate for the points. 
+ Default is 0.
+
+\item  \verb|obj.SetYColumnIndex (int )| -  Set the index of the column to use as the Y coordinate for the points. 
+
+\item  \verb|int = obj.GetYColumnIndexMinValue ()| -  Set the index of the column to use as the Y coordinate for the points. 
+
+\item  \verb|int = obj.GetYColumnIndexMaxValue ()| -  Set the index of the column to use as the Y coordinate for the points. 
+
+\item  \verb|int = obj.GetYColumnIndex ()| -  Set the index of the column to use as the Y coordinate for the points. 
+
+\item  \verb|obj.SetYComponent (int )| -  Specify the component for the column specified using SetYColumn() to
+ use as the Ycoordinate in case the column is a multi-component array.
+
+\item  \verb|int = obj.GetYComponentMinValue ()| -  Specify the component for the column specified using SetYColumn() to
+ use as the Ycoordinate in case the column is a multi-component array.
+
+\item  \verb|int = obj.GetYComponentMaxValue ()| -  Specify the component for the column specified using SetYColumn() to
+ use as the Ycoordinate in case the column is a multi-component array.
+
+\item  \verb|int = obj.GetYComponent ()| -  Specify the component for the column specified using SetYColumn() to
+ use as the Ycoordinate in case the column is a multi-component array.
+
+\item  \verb|obj.SetZColumn (string )| -  Set the name of the column to use as the Z coordinate for the points.
+ Default is 0.
+
+\item  \verb|string = obj.GetZColumn ()| -  Set the name of the column to use as the Z coordinate for the points.
+ Default is 0.
+
+\item  \verb|obj.SetZColumnIndex (int )| -  Set the index of the column to use as the Z coordinate for the points. 
+
+\item  \verb|int = obj.GetZColumnIndexMinValue ()| -  Set the index of the column to use as the Z coordinate for the points. 
+
+\item  \verb|int = obj.GetZColumnIndexMaxValue ()| -  Set the index of the column to use as the Z coordinate for the points. 
+
+\item  \verb|int = obj.GetZColumnIndex ()| -  Set the index of the column to use as the Z coordinate for the points. 
+
+\item  \verb|obj.SetZComponent (int )| -  Specify the component for the column specified using SetZColumn() to
+ use as the Zcoordinate in case the column is a multi-component array.
+
+\item  \verb|int = obj.GetZComponentMinValue ()| -  Specify the component for the column specified using SetZColumn() to
+ use as the Zcoordinate in case the column is a multi-component array.
+
+\item  \verb|int = obj.GetZComponentMaxValue ()| -  Specify the component for the column specified using SetZColumn() to
+ use as the Zcoordinate in case the column is a multi-component array.
+
+\item  \verb|int = obj.GetZComponent ()| -  Specify the component for the column specified using SetZColumn() to
+ use as the Zcoordinate in case the column is a multi-component array.
+
+\item  \verb|obj.SetCreate2DPoints (bool )| -  Specify whether the points of the polydata are 3D or 2D. If this is set to
+ true then the Z Column will be ignored and the z value of each point on the 
+ polydata will be set to 0. By default this will be off.
+
+\item  \verb|bool = obj.GetCreate2DPoints ()| -  Specify whether the points of the polydata are 3D or 2D. If this is set to
+ true then the Z Column will be ignored and the z value of each point on the 
+ polydata will be set to 0. By default this will be off.
+
+\item  \verb|obj.Create2DPointsOn ()| -  Specify whether the points of the polydata are 3D or 2D. If this is set to
+ true then the Z Column will be ignored and the z value of each point on the 
+ polydata will be set to 0. By default this will be off.
+
+\item  \verb|obj.Create2DPointsOff ()| -  Specify whether the points of the polydata are 3D or 2D. If this is set to
+ true then the Z Column will be ignored and the z value of each point on the 
+ polydata will be set to 0. By default this will be off.
+
+\end{itemize}

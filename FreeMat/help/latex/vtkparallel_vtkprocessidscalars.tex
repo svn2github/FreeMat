@@ -1,0 +1,53 @@
+\section{vtkProcessIdScalars}
+
+\subsection{Usage}
+
+ vtkProcessIdScalars is meant to display which processor owns which cells
+ and points.  It is useful for visualizing the partitioning for
+ streaming or distributed pipelines.
+
+
+To create an instance of class vtkProcessIdScalars, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkProcessIdScalars
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkProcessIdScalars has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkProcessIdScalars class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkProcessIdScalars = obj.NewInstance ()|
+
+\item  \verb|vtkProcessIdScalars = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetScalarModeToCellData ()| -  Option to centerate cell scalars of points scalars.  Default is point
+ scalars.
+
+\item  \verb|obj.SetScalarModeToPointData ()| -  Option to centerate cell scalars of points scalars.  Default is point
+ scalars.
+
+\item  \verb|int = obj.GetScalarMode ()|
+
+\item  \verb|obj.SetRandomMode (int )|
+
+\item  \verb|int = obj.GetRandomMode ()|
+
+\item  \verb|obj.RandomModeOn ()|
+
+\item  \verb|obj.RandomModeOff ()|
+
+\item  \verb|obj.SetController (vtkMultiProcessController )| -  By defualt this filter uses the global controller,
+ but this method can be used to set another instead.
+
+\item  \verb|vtkMultiProcessController = obj.GetController ()| -  By defualt this filter uses the global controller,
+ but this method can be used to set another instead.
+
+\end{itemize}

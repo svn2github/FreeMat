@@ -1,0 +1,84 @@
+\section{vtkTransformToGrid}
+
+\subsection{Usage}
+
+ vtkTransformToGrid takes any transform as input and produces a grid
+ for use by a vtkGridTransform.  This can be used, for example, to 
+ invert a grid transform, concatenate two grid transforms, or to
+ convert a thin plate spline transform into a grid transform.
+
+To create an instance of class vtkTransformToGrid, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTransformToGrid
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTransformToGrid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTransformToGrid class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTransformToGrid = obj.NewInstance ()|
+
+\item  \verb|vtkTransformToGrid = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInput (vtkAbstractTransform )| -  Set/Get the transform which will be converted into a grid.
+
+\item  \verb|vtkAbstractTransform = obj.GetInput ()| -  Set/Get the transform which will be converted into a grid.
+
+\item  \verb|obj.SetGridExtent (int , int , int , int , int , int )| -  Get/Set the extent of the grid.
+
+\item  \verb|obj.SetGridExtent (int  a[6])| -  Get/Set the extent of the grid.
+
+\item  \verb|int = obj. GetGridExtent ()| -  Get/Set the extent of the grid.
+
+\item  \verb|obj.SetGridOrigin (double , double , double )| -  Get/Set the origin of the grid.
+
+\item  \verb|obj.SetGridOrigin (double  a[3])| -  Get/Set the origin of the grid.
+
+\item  \verb|double = obj. GetGridOrigin ()| -  Get/Set the origin of the grid.
+
+\item  \verb|obj.SetGridSpacing (double , double , double )| -  Get/Set the spacing between samples in the grid.
+
+\item  \verb|obj.SetGridSpacing (double  a[3])| -  Get/Set the spacing between samples in the grid.
+
+\item  \verb|double = obj. GetGridSpacing ()| -  Get/Set the spacing between samples in the grid.
+
+\item  \verb|obj.SetGridScalarType (int )| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|int = obj.GetGridScalarType ()| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|obj.SetGridScalarTypeToFloat ()| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|obj.SetGridScalarTypeToShort ()| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|obj.SetGridScalarTypeToUnsignedShort ()| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|obj.SetGridScalarTypeToUnsignedChar ()| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|obj.SetGridScalarTypeToChar ()| -  Get/Set the scalar type of the grid.  The default is
+ double.
+
+\item  \verb|double = obj.GetDisplacementScale ()| -  Get the scale and shift to convert integer grid elements into
+ real values:  dx = scale*di + shift.  If the grid is of double type,
+ then scale = 1 and shift = 0.
+
+\item  \verb|double = obj.GetDisplacementShift ()| -  Get the scale and shift to convert integer grid elements into
+ real values:  dx = scale*di + shift.  If the grid is of double type,
+ then scale = 1 and shift = 0.
+
+\item  \verb|vtkImageData = obj.GetOutput ()| -  Get the output data object for a port on this algorithm.
+
+\end{itemize}

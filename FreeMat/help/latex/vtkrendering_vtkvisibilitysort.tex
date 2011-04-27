@@ -1,0 +1,106 @@
+\section{vtkVisibilitySort}
+
+\subsection{Usage}
+
+ vtkVisibilitySort encapsulates a method for depth sorting the cells of a
+ vtkDataSet for a given viewpoint.  It should be noted that subclasses
+ are not required to give an absolutely correct sorting.  Many types of
+ unstructured grids may have sorting cycles, meaning that there is no
+ possible correct sorting.  Some subclasses also only give an approximate
+ sorting in the interest of speed.
+
+ .SECTION Note
+ The Input field of this class tends to causes reference cycles.  To help
+ break these cycles, garbage collection is enabled on this object and the
+ input parameter is traced.  For this to work, though, an object in the
+ loop holding the visibility sort should also report that to the garbage
+ collector.
+
+
+To create an instance of class vtkVisibilitySort, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVisibilitySort
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVisibilitySort has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVisibilitySort class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVisibilitySort = obj.NewInstance ()|
+
+\item  \verb|vtkVisibilitySort = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.InitTraversal ()| -  To facilitate incremental sorting algorithms, the cells are retrieved
+ in an iteration process.  That is, call InitTraversal to start the
+ iteration and call GetNextCells to get the cell IDs in order.
+ However, for efficiencies sake, GetNextCells returns an ordered list
+ of several id's in once call (but not necessarily all).  GetNextCells
+ will return NULL once the entire sorted list is output.  The
+ vtkIdTypeArray returned from GetNextCells is a cached array, so do not
+ delete it.  At the same note, do not expect the array to be valid
+ after subsequent calls to GetNextCells.
+
+\item  \verb|vtkIdTypeArray = obj.GetNextCells ()| -  To facilitate incremental sorting algorithms, the cells are retrieved
+ in an iteration process.  That is, call InitTraversal to start the
+ iteration and call GetNextCells to get the cell IDs in order.
+ However, for efficiencies sake, GetNextCells returns an ordered list
+ of several id's in once call (but not necessarily all).  GetNextCells
+ will return NULL once the entire sorted list is output.  The
+ vtkIdTypeArray returned from GetNextCells is a cached array, so do not
+ delete it.  At the same note, do not expect the array to be valid
+ after subsequent calls to GetNextCells.
+
+\item  \verb|obj.SetMaxCellsReturned (int )| -  Set/Get the maximum number of cells that GetNextCells will return
+ in one invocation.
+
+\item  \verb|int = obj.GetMaxCellsReturnedMinValue ()| -  Set/Get the maximum number of cells that GetNextCells will return
+ in one invocation.
+
+\item  \verb|int = obj.GetMaxCellsReturnedMaxValue ()| -  Set/Get the maximum number of cells that GetNextCells will return
+ in one invocation.
+
+\item  \verb|int = obj.GetMaxCellsReturned ()| -  Set/Get the maximum number of cells that GetNextCells will return
+ in one invocation.
+
+\item  \verb|obj.SetModelTransform (vtkMatrix4x4 mat)| -  Set/Get the matrix that transforms from object space to world space.
+ Generally, you get this matrix from a call to GetMatrix of a vtkProp3D
+ (vtkActor).
+
+\item  \verb|vtkMatrix4x4 = obj.GetModelTransform ()| -  Set/Get the matrix that transforms from object space to world space.
+ Generally, you get this matrix from a call to GetMatrix of a vtkProp3D
+ (vtkActor).
+
+\item  \verb|vtkMatrix4x4 = obj.GetInverseModelTransform ()|
+
+\item  \verb|obj.SetCamera (vtkCamera camera)| -  Set/Get the camera that specifies the viewing parameters.
+
+\item  \verb|vtkCamera = obj.GetCamera ()| -  Set/Get the camera that specifies the viewing parameters.
+
+\item  \verb|obj.SetInput (vtkDataSet data)| -  Set/Get the data set containing the cells to sort.
+
+\item  \verb|vtkDataSet = obj.GetInput ()| -  Set/Get the data set containing the cells to sort.
+
+\item  \verb|int = obj.GetDirection ()| -  Set/Get the sorting direction.  Be default, the direction is set
+ to back to front.
+
+\item  \verb|obj.SetDirection (int )| -  Set/Get the sorting direction.  Be default, the direction is set
+ to back to front.
+
+\item  \verb|obj.SetDirectionToBackToFront ()| -  Set/Get the sorting direction.  Be default, the direction is set
+ to back to front.
+
+\item  \verb|obj.SetDirectionToFrontToBack ()| -  Overwritten to enable garbage collection.
+
+\item  \verb|obj.Register (vtkObjectBase o)| -  Overwritten to enable garbage collection.
+
+\item  \verb|obj.UnRegister (vtkObjectBase o)| -  Overwritten to enable garbage collection.
+
+\end{itemize}

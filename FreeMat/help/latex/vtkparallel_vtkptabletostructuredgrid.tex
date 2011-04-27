@@ -1,0 +1,35 @@
+\section{vtkPTableToStructuredGrid}
+
+\subsection{Usage}
+
+ vtkPTableToStructuredGrid is vtkTableToStructuredGrid specialization
+ which handles distribution of the input table.
+ For starters, this assumes that the input table is only available on the root
+ node.
+
+To create an instance of class vtkPTableToStructuredGrid, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPTableToStructuredGrid
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPTableToStructuredGrid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPTableToStructuredGrid class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPTableToStructuredGrid = obj.NewInstance ()|
+
+\item  \verb|vtkPTableToStructuredGrid = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetController (vtkMultiProcessController )| -  Get/Set the controller.
+
+\item  \verb|vtkMultiProcessController = obj.GetController ()| -  Get/Set the controller.
+
+\end{itemize}

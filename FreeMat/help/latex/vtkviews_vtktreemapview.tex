@@ -1,0 +1,44 @@
+\section{vtkTreeMapView}
+
+\subsection{Usage}
+
+ vtkTreeMapView shows a vtkTree in a tree map, where each vertex in the
+ tree is represented by a box.  Child boxes are contained within the
+ parent box, and may be colored and sized by various parameters.
+
+To create an instance of class vtkTreeMapView, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTreeMapView
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTreeMapView has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTreeMapView class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTreeMapView = obj.NewInstance ()|
+
+\item  \verb|vtkTreeMapView = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetLayoutStrategy (vtkAreaLayoutStrategy s)| -  Sets the treemap layout strategy
+
+\item  \verb|obj.SetLayoutStrategy (string name)| -  Sets the treemap layout strategy
+
+\item  \verb|obj.SetLayoutStrategyToBox ()| -  Sets the treemap layout strategy
+
+\item  \verb|obj.SetLayoutStrategyToSliceAndDice ()| -  Sets the treemap layout strategy
+
+\item  \verb|obj.SetLayoutStrategyToSquarify ()| -  Sets the treemap layout strategy
+
+\item  \verb|obj.SetFontSizeRange (int maxSize, int minSize, int delta)| -  The sizes of the fonts used for labeling.
+
+\item  \verb|obj.GetFontSizeRange (int range[3])| -  The sizes of the fonts used for labeling.
+
+\end{itemize}

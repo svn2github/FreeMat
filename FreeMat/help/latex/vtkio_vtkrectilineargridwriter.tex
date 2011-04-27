@@ -1,0 +1,33 @@
+\section{vtkRectilinearGridWriter}
+
+\subsection{Usage}
+
+ vtkRectilinearGridWriter is a source object that writes ASCII or binary 
+ rectilinear grid data files in vtk format. See text for format details.
+
+To create an instance of class vtkRectilinearGridWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRectilinearGridWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRectilinearGridWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRectilinearGridWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRectilinearGridWriter = obj.NewInstance ()|
+
+\item  \verb|vtkRectilinearGridWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkRectilinearGrid = obj.GetInput ()| -  Get the input to this writer.
+
+\item  \verb|vtkRectilinearGrid = obj.GetInput (int port)| -  Get the input to this writer.
+
+\end{itemize}

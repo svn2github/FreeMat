@@ -51,7 +51,7 @@ of a general matrix \verb|A = U S V'| is defined as
 and again, using the facts that \verb|U' U = I| and \verb|V V' = I|, one
 can quickly verify that this choice of pseudoinverse satisfies the
 four defining properties of the MP pseudoinverse.  Note that in
-practice, the diagonal pseudoinverse \verb|S^{+}| is computed with
+practice, the diagonal pseudoinverse \verb|S\^{+}| is computed with
 a threshold (the \verb|tol| argument to \verb|pinv|) so that singular
 values smaller than \verb|tol| are treated like zeros.
 \subsection{Examples}
@@ -62,24 +62,24 @@ Moore-Penrose conditions:
 --> A = float(rand(1,2))
 
 A = 
-    0.9526    0.4847 
+    0.4840    0.0187 
 
 --> B = pinv(A)
 
 B = 
-    0.8338 
-    0.4243 
+    2.0630 
+    0.0796 
 
 --> A*B*A
 
 ans = 
-    0.9526    0.4847 
+    0.4840    0.0187 
 
 --> B*A*B
 
 ans = 
-    0.8338 
-    0.4243 
+    2.0630 
+    0.0796 
 
 --> A*B
 
@@ -89,8 +89,8 @@ ans =
 --> B*A
 
 ans = 
-    0.7943    0.4042 
-    0.4042    0.2057 
+    0.9985    0.0385 
+    0.0385    0.0015 
 \end{verbatim}
 To demonstrate that \verb|pinv| returns the least squares solution,
 consider the following very simple case
@@ -119,9 +119,9 @@ the following simple case
 A = 
  1 1 
 \end{verbatim}
-The solutions of \verb|A x = 5| are those \verb|x_1| and \verb|x_2| such that
-\verb|x_1 + x_2 = 5|.  The norm of \verb|x| is \verb|x_1^ + x_2^2|, which is
-\verb|x_1^2 + (5-x_1)^2|, which is minimized for \verb|x_1 = x_2 = 2.5|:
+The solutions of \verb|A x = 5| are those \verb|x\_1| and \verb|x\_2| such that
+\verb|x\_1 + x\_2 = 5|.  The norm of \verb|x| is \verb|x\_1\^ + x\_2\^2|, which is
+\verb|x\_1\^2 + (5-x\_1)\^2|, which is minimized for \verb|x\_1 = x\_2 = 2.5|:
 \begin{verbatim}
 --> pinv(A) * 5.0
 

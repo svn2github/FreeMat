@@ -1,0 +1,52 @@
+\section{vtkMutableGraphHelper}
+
+\subsection{Usage}
+
+ vtkMutableGraphHelper has helper methods AddVertex and AddEdge which
+ add vertices/edges to the underlying mutable graph. This is helpful in
+ filters which need to (re)construct graphs which may be either directed
+ or undirected.
+
+
+To create an instance of class vtkMutableGraphHelper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMutableGraphHelper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMutableGraphHelper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMutableGraphHelper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMutableGraphHelper = obj.NewInstance ()|
+
+\item  \verb|vtkMutableGraphHelper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGraph (vtkGraph g)| -  Set the underlying graph that you want to modify with this helper.
+ The graph must be an instance of vtkMutableDirectedGraph or
+ vtkMutableUndirectedGraph.
+
+\item  \verb|vtkGraph = obj.GetGraph ()| -  Set the underlying graph that you want to modify with this helper.
+ The graph must be an instance of vtkMutableDirectedGraph or
+ vtkMutableUndirectedGraph.
+
+\item  \verb|vtkGraphEdge = obj.AddGraphEdge (vtkIdType u, vtkIdType v)| -  Add an edge to the underlying mutable graph.
+
+\item  \verb|vtkIdType = obj.AddVertex ()| -  Add a vertex to the underlying mutable graph.
+
+\item  \verb|obj.RemoveVertex (vtkIdType v)| -  Remove a vertex from the underlying mutable graph.
+
+\item  \verb|obj.RemoveVertices (vtkIdTypeArray verts)| -  Remove a collection of vertices from the underlying mutable graph.
+
+\item  \verb|obj.RemoveEdge (vtkIdType e)| -  Remove an edge from the underlying mutable graph.
+
+\item  \verb|obj.RemoveEdges (vtkIdTypeArray edges)| -  Remove a collection of edges from the underlying mutable graph.
+
+\end{itemize}

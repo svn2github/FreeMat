@@ -1,0 +1,74 @@
+\section{vtkMedicalImageReader2}
+
+\subsection{Usage}
+
+ vtkMedicalImageReader2 is a parent class for medical image readers.
+ It provides a place to store patient information that may be stored
+ in the image header.
+
+To create an instance of class vtkMedicalImageReader2, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMedicalImageReader2
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMedicalImageReader2 has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMedicalImageReader2 class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMedicalImageReader2 = obj.NewInstance ()|
+
+\item  \verb|vtkMedicalImageReader2 = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkMedicalImageProperties = obj.GetMedicalImageProperties ()| -  Get the medical image properties object
+
+\item  \verb|obj.SetPatientName (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetPatientName ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|obj.SetPatientID (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetPatientID ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|obj.SetDate (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetDate ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|obj.SetSeries (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetSeries ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|obj.SetStudy (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetStudy ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|obj.SetImageNumber (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetImageNumber ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|obj.SetModality (string )| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\item  \verb|string = obj.GetModality ()| -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+
+\end{itemize}

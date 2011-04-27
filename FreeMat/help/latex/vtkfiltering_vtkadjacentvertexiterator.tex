@@ -1,0 +1,42 @@
+\section{vtkAdjacentVertexIterator}
+
+\subsection{Usage}
+
+ vtkAdjacentVertexIterator iterates through all vertices adjacent to a
+ vertex, i.e. the vertices which may be reached by traversing an out edge
+ of the source vertex. Use graph->GetAdjacentVertices(v, it) to initialize
+ the iterator.
+
+
+To create an instance of class vtkAdjacentVertexIterator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAdjacentVertexIterator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAdjacentVertexIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAdjacentVertexIterator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkAdjacentVertexIterator = obj.NewInstance ()|
+
+\item  \verb|vtkAdjacentVertexIterator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Initialize (vtkGraph g, vtkIdType v)| -  Initialize the iterator with a graph and vertex.
+
+\item  \verb|vtkGraph = obj.GetGraph ()| -  Get the graph and vertex associated with this iterator.
+
+\item  \verb|vtkIdType = obj.GetVertex ()| -  Get the graph and vertex associated with this iterator.
+
+\item  \verb|vtkIdType = obj.Next ()| -  Whether this iterator has more edges.
+
+\item  \verb|bool = obj.HasNext ()|
+
+\end{itemize}

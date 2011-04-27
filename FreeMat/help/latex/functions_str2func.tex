@@ -1,0 +1,49 @@
+\section{STR2FUNC String to Function conversion}
+
+\subsection{Usage}
+
+The \verb|str2func| function converts a function name into a 
+function pointer.  The syntax is 
+\begin{verbatim}
+    y = str2func('funcname')
+\end{verbatim}
+where \verb|funcname| is the name of the function. The return
+variable \verb|y| is a function handle that points to the given
+function.
+
+An alternate syntax is used to construct an anonymous function
+given an expression.  They syntax is
+\begin{verbatim}
+    y = str2func('anonymous def')
+\end{verbatim}
+where \verb|anonymous def| is an expression that defines an
+anonymous function, for example \verb|'@(x) x.\^2'|.
+\subsection{Example}
+
+Here is a simple example of using \verb|str2func|.
+\begin{verbatim}
+--> sin(.5)              % Calling the function directly
+
+ans = 
+    0.4794 
+
+--> y = str2func('sin')  % Convert it into a function handle
+
+y = 
+ @sin
+--> y(.5)                % Calling 'sin' via the function handle
+
+ans = 
+    0.4794 
+\end{verbatim}
+Here we use \verb|str2func| to define an anonymous function
+\begin{verbatim}
+--> y = str2func('@(x) x.^2')
+
+y = 
+ @(x)   x.^2
+--> y(2)
+
+ans = 
+ 4 
+\end{verbatim}

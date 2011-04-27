@@ -1,0 +1,641 @@
+\section{vtkExodusIIReader}
+
+\subsection{Usage}
+
+ vtkExodusIIReader is a unstructured grid source object that reads ExodusII
+ files.  Most of the meta data associated with the file is loaded when 
+ UpdateInformation is called.  This includes information like Title, number
+ of blocks, number and names of arrays. This data can be retrieved from 
+ methods in this reader. Separate arrays that are meant to be a single 
+ vector, are combined internally for convenience.  To be combined, the array 
+ names have to be identical except for a trailing X,Y and Z (or x,y,z).  By 
+ default cell and point arrays are not loaded.  However, the user can flag 
+ arrays to load with the methods ''SetPointArrayStatus'' and
+ ''SetCellArrayStatus''.  The reader DOES NOT respond to piece requests
+ 
+
+To create an instance of class vtkExodusIIReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkExodusIIReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkExodusIIReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkExodusIIReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkExodusIIReader = obj.NewInstance ()|
+
+\item  \verb|vtkExodusIIReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CanReadFile (string fname)| -  Determine if the file can be readed with this reader.
+
+\item  \verb|long = obj.GetMTime ()| -  Return the object's MTime. This is overridden to include the timestamp of its internal class.
+
+\item  \verb|long = obj.GetMetadataMTime ()| -  Return the MTime of the internal data structure.
+ This is really only intended for use by vtkPExodusIIReader in order
+ to determine if the filename is newer than the metadata.
+
+\item  \verb|obj.SetFileName (string fname)| -  Specify file name of the Exodus file.
+
+\item  \verb|string = obj.GetFileName ()| -  Specify file name of the Exodus file.
+
+\item  \verb|obj.SetXMLFileName (string fname)| -  Specify file name of the xml file.
+
+\item  \verb|string = obj.GetXMLFileName ()| -  Specify file name of the xml file.
+
+\item  \verb|obj.SetTimeStep (int )| -  Which TimeStep to read.    
+
+\item  \verb|int = obj.GetTimeStep ()| -  Which TimeStep to read.    
+
+\item  \verb|obj.SetModeShape (int val)| -  Returns the available range of valid integer time steps.
+
+\item  \verb|int = obj. GetTimeStepRange ()| -  Returns the available range of valid integer time steps.
+
+\item  \verb|obj.SetTimeStepRange (int , int )| -  Returns the available range of valid integer time steps.
+
+\item  \verb|obj.SetTimeStepRange (int  a[2])| -  Returns the available range of valid integer time steps.
+
+\item  \verb|obj.SetGenerateObjectIdCellArray (int g)| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName(). For cells representing elements from
+ an Exodus element block, this is set to the element block ID. For
+ cells representing edges from an Exodus edge block, this is the
+ edge block ID. Similarly, ths is the face block ID for cells
+ representing faces from an Exodus face block. The same holds
+ for cells representing entries of node, edge, face, side, and element sets.
+
+\item  \verb|int = obj.GetGenerateObjectIdCellArray ()| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName(). For cells representing elements from
+ an Exodus element block, this is set to the element block ID. For
+ cells representing edges from an Exodus edge block, this is the
+ edge block ID. Similarly, ths is the face block ID for cells
+ representing faces from an Exodus face block. The same holds
+ for cells representing entries of node, edge, face, side, and element sets.
+
+\item  \verb|obj.GenerateObjectIdCellArrayOn ()| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName(). For cells representing elements from
+ an Exodus element block, this is set to the element block ID. For
+ cells representing edges from an Exodus edge block, this is the
+ edge block ID. Similarly, ths is the face block ID for cells
+ representing faces from an Exodus face block. The same holds
+ for cells representing entries of node, edge, face, side, and element sets.
+
+\item  \verb|obj.GenerateObjectIdCellArrayOff ()| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName(). For cells representing elements from
+ an Exodus element block, this is set to the element block ID. For
+ cells representing edges from an Exodus edge block, this is the
+ edge block ID. Similarly, ths is the face block ID for cells
+ representing faces from an Exodus face block. The same holds
+ for cells representing entries of node, edge, face, side, and element sets.
+
+\item  \verb|obj.SetGenerateGlobalElementIdArray (int g)|
+
+\item  \verb|int = obj.GetGenerateGlobalElementIdArray ()|
+
+\item  \verb|obj.GenerateGlobalElementIdArrayOn ()|
+
+\item  \verb|obj.GenerateGlobalElementIdArrayOff ()|
+
+\item  \verb|obj.SetGenerateGlobalNodeIdArray (int g)|
+
+\item  \verb|int = obj.GetGenerateGlobalNodeIdArray ()|
+
+\item  \verb|obj.GenerateGlobalNodeIdArrayOn ()|
+
+\item  \verb|obj.GenerateGlobalNodeIdArrayOff ()|
+
+\item  \verb|obj.SetGenerateImplicitElementIdArray (int g)|
+
+\item  \verb|int = obj.GetGenerateImplicitElementIdArray ()|
+
+\item  \verb|obj.GenerateImplicitElementIdArrayOn ()|
+
+\item  \verb|obj.GenerateImplicitElementIdArrayOff ()|
+
+\item  \verb|obj.SetGenerateImplicitNodeIdArray (int g)|
+
+\item  \verb|int = obj.GetGenerateImplicitNodeIdArray ()|
+
+\item  \verb|obj.GenerateImplicitNodeIdArrayOn ()|
+
+\item  \verb|obj.GenerateImplicitNodeIdArrayOff ()|
+
+\item  \verb|obj.SetGenerateFileIdArray (int f)|
+
+\item  \verb|int = obj.GetGenerateFileIdArray ()|
+
+\item  \verb|obj.GenerateFileIdArrayOn ()|
+
+\item  \verb|obj.GenerateFileIdArrayOff ()|
+
+\item  \verb|obj.SetFileId (int f)|
+
+\item  \verb|int = obj.GetFileId ()|
+
+\item  \verb|obj.SetApplyDisplacements (int d)| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|int = obj.GetApplyDisplacements ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.ApplyDisplacementsOn ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.ApplyDisplacementsOff ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.SetDisplacementMagnitude (float s)| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|float = obj.GetDisplacementMagnitude ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.SetHasModeShapes (int ms)| -  Set/Get whether the Exodus sequence number corresponds to time steps or mode shapes.
+ By default, HasModeShapes is false unless two time values in the Exodus file are identical,
+ in which case it is true.
+
+\item  \verb|int = obj.GetHasModeShapes ()| -  Set/Get whether the Exodus sequence number corresponds to time steps or mode shapes.
+ By default, HasModeShapes is false unless two time values in the Exodus file are identical,
+ in which case it is true.
+
+\item  \verb|obj.HasModeShapesOn ()| -  Set/Get whether the Exodus sequence number corresponds to time steps or mode shapes.
+ By default, HasModeShapes is false unless two time values in the Exodus file are identical,
+ in which case it is true.
+
+\item  \verb|obj.HasModeShapesOff ()| -  Set/Get whether the Exodus sequence number corresponds to time steps or mode shapes.
+ By default, HasModeShapes is false unless two time values in the Exodus file are identical,
+ in which case it is true.
+
+\item  \verb|obj.SetModeShapeTime (double phase)| -  Set/Get the time used to animate mode shapes.
+ This is a number between 0 and 1 that is used to scale the  DisplacementMagnitude
+ in a sinusoidal pattern. Specifically, the displacement vector for each vertex is scaled by
+ $ \mathrm{DisplacementMagnitude} cos( 2i \mathrm{ModeShapeTime} ) $ before it is
+ added to the vertex coordinates.
+
+\item  \verb|double = obj.GetModeShapeTime ()| -  Set/Get the time used to animate mode shapes.
+ This is a number between 0 and 1 that is used to scale the  DisplacementMagnitude
+ in a sinusoidal pattern. Specifically, the displacement vector for each vertex is scaled by
+ $ \mathrm{DisplacementMagnitude} cos( 2i \mathrm{ModeShapeTime} ) $ before it is
+ added to the vertex coordinates.
+
+\item  \verb|obj.SetAnimateModeShapes (int flag)| -  If this flag is on (the default) and HasModeShapes is also on, then this
+ reader will report a continuous time range [0,1] and animate the
+ displacements in a periodic sinusoid.  If this flag is off and
+ HasModeShapes is on, this reader ignores time.  This flag has no effect if
+ HasModeShapes is off.
+
+\item  \verb|int = obj.GetAnimateModeShapes ()| -  If this flag is on (the default) and HasModeShapes is also on, then this
+ reader will report a continuous time range [0,1] and animate the
+ displacements in a periodic sinusoid.  If this flag is off and
+ HasModeShapes is on, this reader ignores time.  This flag has no effect if
+ HasModeShapes is off.
+
+\item  \verb|obj.AnimateModeShapesOn ()| -  If this flag is on (the default) and HasModeShapes is also on, then this
+ reader will report a continuous time range [0,1] and animate the
+ displacements in a periodic sinusoid.  If this flag is off and
+ HasModeShapes is on, this reader ignores time.  This flag has no effect if
+ HasModeShapes is off.
+
+\item  \verb|obj.AnimateModeShapesOff ()| -  If this flag is on (the default) and HasModeShapes is also on, then this
+ reader will report a continuous time range [0,1] and animate the
+ displacements in a periodic sinusoid.  If this flag is off and
+ HasModeShapes is on, this reader ignores time.  This flag has no effect if
+ HasModeShapes is off.
+
+\item  \verb|obj.SetEdgeFieldDecorations (int d)| -  FIXME
+
+\item  \verb|int = obj.GetEdgeFieldDecorations ()| -  FIXME
+
+\item  \verb|obj.EdgeFieldDecorationsNone ()| -  FIXME
+
+\item  \verb|obj.EdgeFieldDecorationsGlyphs ()| -  FIXME
+
+\item  \verb|obj.EdgeFieldDecorationsCornerAveraged ()| -  FIXME
+
+\item  \verb|obj.SetFaceFieldDecorations (int d)| -  FIXME
+
+\item  \verb|int = obj.GetFaceFieldDecorations ()| -  FIXME
+
+\item  \verb|obj.FaceFieldDecorationsNone ()| -  FIXME
+
+\item  \verb|obj.FaceFieldDecorationsGlyphs ()| -  FIXME
+
+\item  \verb|obj.FaceFieldDecorationsCornerAveraged ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|string = obj.GetTitle ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetDimensionality ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfTimeSteps ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfNodesInFile ()|
+
+\item  \verb|int = obj.GetNumberOfEdgesInFile ()|
+
+\item  \verb|int = obj.GetNumberOfFacesInFile ()|
+
+\item  \verb|int = obj.GetNumberOfElementsInFile ()|
+
+\item  \verb|int = obj.GetObjectTypeFromName (string name)|
+
+\item  \verb|string = obj.GetObjectTypeName (int )|
+
+\item  \verb|int = obj.GetNumberOfNodes ()|
+
+\item  \verb|int = obj.GetNumberOfObjects (int objectType)|
+
+\item  \verb|int = obj.GetNumberOfEntriesInObject (int objectType, int objectIndex)|
+
+\item  \verb|int = obj.GetObjectId (int objectType, int objectIndex)|
+
+\item  \verb|string = obj.GetObjectName (int objectType, int objectIndex)|
+
+\item  \verb|int = obj.GetObjectIndex (int objectType, string objectName)|
+
+\item  \verb|int = obj.GetObjectIndex (int objectType, int id)|
+
+\item  \verb|int = obj.GetObjectStatus (int objectType, int objectIndex)|
+
+\item  \verb|int = obj.GetObjectStatus (int objectType, string objectName)|
+
+\item  \verb|obj.SetObjectStatus (int objectType, int objectIndex, int status)|
+
+\item  \verb|obj.SetObjectStatus (int objectType, string objectName, int status)|
+
+\item  \verb|int = obj.GetNumberOfObjectArrays (int objectType)|
+
+\item  \verb|string = obj.GetObjectArrayName (int objectType, int arrayIndex)|
+
+\item  \verb|int = obj.GetObjectArrayIndex (int objectType, string arrayName)|
+
+\item  \verb|int = obj.GetNumberOfObjectArrayComponents (int objectType, int arrayIndex)|
+
+\item  \verb|int = obj.GetObjectArrayStatus (int objectType, int arrayIndex)|
+
+\item  \verb|int = obj.GetObjectArrayStatus (int objectType, string arrayName)|
+
+\item  \verb|obj.SetObjectArrayStatus (int objectType, int arrayIndex, int status)|
+
+\item  \verb|obj.SetObjectArrayStatus (int objectType, string arrayName, int status)|
+
+\item  \verb|int = obj.GetNumberOfObjectAttributes (int objectType, int objectIndex)|
+
+\item  \verb|string = obj.GetObjectAttributeName (int objectType, int objectIndex, int attribIndex)|
+
+\item  \verb|int = obj.GetObjectAttributeIndex (int objectType, int objectIndex, string attribName)|
+
+\item  \verb|int = obj.GetObjectAttributeStatus (int objectType, int objectIndex, int attribIndex)|
+
+\item  \verb|int = obj.GetObjectAttributeStatus (int objectType, int objectIndex, string attribName)|
+
+\item  \verb|obj.SetObjectAttributeStatus (int objectType, int objectIndex, int attribIndex, int status)|
+
+\item  \verb|obj.SetObjectAttributeStatus (int objectType, int objectIndex, string attribName, int status)|
+
+\item  \verb|vtkIdType = obj.GetTotalNumberOfNodes ()|
+
+\item  \verb|vtkIdType = obj.GetTotalNumberOfEdges ()|
+
+\item  \verb|vtkIdType = obj.GetTotalNumberOfFaces ()|
+
+\item  \verb|vtkIdType = obj.GetTotalNumberOfElements ()|
+
+\item  \verb|int = obj.GetNumberOfPartArrays ()|
+
+\item  \verb|string = obj.GetPartArrayName (int arrayIdx)|
+
+\item  \verb|int = obj.GetPartArrayID (string name)|
+
+\item  \verb|string = obj.GetPartBlockInfo (int arrayIdx)|
+
+\item  \verb|obj.SetPartArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetPartArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetPartArrayStatus (int index)|
+
+\item  \verb|int = obj.GetPartArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfMaterialArrays ()|
+
+\item  \verb|string = obj.GetMaterialArrayName (int arrayIdx)|
+
+\item  \verb|int = obj.GetMaterialArrayID (string name)|
+
+\item  \verb|obj.SetMaterialArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetMaterialArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetMaterialArrayStatus (int index)|
+
+\item  \verb|int = obj.GetMaterialArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfAssemblyArrays ()|
+
+\item  \verb|string = obj.GetAssemblyArrayName (int arrayIdx)|
+
+\item  \verb|int = obj.GetAssemblyArrayID (string name)|
+
+\item  \verb|obj.SetAssemblyArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetAssemblyArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetAssemblyArrayStatus (int index)|
+
+\item  \verb|int = obj.GetAssemblyArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfHierarchyArrays ()|
+
+\item  \verb|string = obj.GetHierarchyArrayName (int arrayIdx)|
+
+\item  \verb|obj.SetHierarchyArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetHierarchyArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetHierarchyArrayStatus (int index)|
+
+\item  \verb|int = obj.GetHierarchyArrayStatus (string )|
+
+\item  \verb|int = obj.GetDisplayType ()|
+
+\item  \verb|obj.SetDisplayType (int type)|
+
+\item  \verb|obj.ExodusModelMetadataOn ()|
+
+\item  \verb|obj.ExodusModelMetadataOff ()|
+
+\item  \verb|obj.SetExodusModelMetadata (int )|
+
+\item  \verb|int = obj.GetExodusModelMetadata ()|
+
+\item  \verb|vtkExodusModel = obj.GetExodusModel ()| -    Returns the object which encapsulates the model metadata.
+
+\item  \verb|obj.SetPackExodusModelOntoOutput (int )|
+
+\item  \verb|int = obj.GetPackExodusModelOntoOutput ()|
+
+\item  \verb|obj.PackExodusModelOntoOutputOn ()|
+
+\item  \verb|obj.PackExodusModelOntoOutputOff ()|
+
+\item  \verb|int = obj.IsValidVariable (string type, string name)|
+
+\item  \verb|int = obj.GetVariableID (string type, string name)|
+
+\item  \verb|obj.SetAllArrayStatus (int otype, int status)|
+
+\item  \verb|int = obj.GetTimeSeriesData (int ID, string vName, string vType, vtkFloatArray result)|
+
+\item  \verb|int = obj.GetNumberOfEdgeBlockArrays ()|
+
+\item  \verb|string = obj.GetEdgeBlockArrayName (int index)|
+
+\item  \verb|int = obj.GetEdgeBlockArrayStatus (string name)|
+
+\item  \verb|obj.SetEdgeBlockArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfFaceBlockArrays ()|
+
+\item  \verb|string = obj.GetFaceBlockArrayName (int index)|
+
+\item  \verb|int = obj.GetFaceBlockArrayStatus (string name)|
+
+\item  \verb|obj.SetFaceBlockArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfElementBlockArrays ()|
+
+\item  \verb|string = obj.GetElementBlockArrayName (int index)|
+
+\item  \verb|int = obj.GetElementBlockArrayStatus (string name)|
+
+\item  \verb|obj.SetElementBlockArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfGlobalResultArrays ()|
+
+\item  \verb|string = obj.GetGlobalResultArrayName (int index)|
+
+\item  \verb|int = obj.GetGlobalResultArrayStatus (string name)|
+
+\item  \verb|obj.SetGlobalResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfPointResultArrays ()|
+
+\item  \verb|string = obj.GetPointResultArrayName (int index)|
+
+\item  \verb|int = obj.GetPointResultArrayStatus (string name)|
+
+\item  \verb|obj.SetPointResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfEdgeResultArrays ()|
+
+\item  \verb|string = obj.GetEdgeResultArrayName (int index)|
+
+\item  \verb|int = obj.GetEdgeResultArrayStatus (string name)|
+
+\item  \verb|obj.SetEdgeResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfFaceResultArrays ()|
+
+\item  \verb|string = obj.GetFaceResultArrayName (int index)|
+
+\item  \verb|int = obj.GetFaceResultArrayStatus (string name)|
+
+\item  \verb|obj.SetFaceResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfElementResultArrays ()|
+
+\item  \verb|string = obj.GetElementResultArrayName (int index)|
+
+\item  \verb|int = obj.GetElementResultArrayStatus (string name)|
+
+\item  \verb|obj.SetElementResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfNodeMapArrays ()|
+
+\item  \verb|string = obj.GetNodeMapArrayName (int index)|
+
+\item  \verb|int = obj.GetNodeMapArrayStatus (string name)|
+
+\item  \verb|obj.SetNodeMapArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfEdgeMapArrays ()|
+
+\item  \verb|string = obj.GetEdgeMapArrayName (int index)|
+
+\item  \verb|int = obj.GetEdgeMapArrayStatus (string name)|
+
+\item  \verb|obj.SetEdgeMapArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfFaceMapArrays ()|
+
+\item  \verb|string = obj.GetFaceMapArrayName (int index)|
+
+\item  \verb|int = obj.GetFaceMapArrayStatus (string name)|
+
+\item  \verb|obj.SetFaceMapArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfElementMapArrays ()|
+
+\item  \verb|string = obj.GetElementMapArrayName (int index)|
+
+\item  \verb|int = obj.GetElementMapArrayStatus (string name)|
+
+\item  \verb|obj.SetElementMapArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfNodeSetArrays ()|
+
+\item  \verb|string = obj.GetNodeSetArrayName (int index)|
+
+\item  \verb|int = obj.GetNodeSetArrayStatus (string name)|
+
+\item  \verb|obj.SetNodeSetArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfSideSetArrays ()|
+
+\item  \verb|string = obj.GetSideSetArrayName (int index)|
+
+\item  \verb|int = obj.GetSideSetArrayStatus (string name)|
+
+\item  \verb|obj.SetSideSetArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfEdgeSetArrays ()|
+
+\item  \verb|string = obj.GetEdgeSetArrayName (int index)|
+
+\item  \verb|int = obj.GetEdgeSetArrayStatus (string name)|
+
+\item  \verb|obj.SetEdgeSetArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfFaceSetArrays ()|
+
+\item  \verb|string = obj.GetFaceSetArrayName (int index)|
+
+\item  \verb|int = obj.GetFaceSetArrayStatus (string name)|
+
+\item  \verb|obj.SetFaceSetArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfElementSetArrays ()|
+
+\item  \verb|string = obj.GetElementSetArrayName (int index)|
+
+\item  \verb|int = obj.GetElementSetArrayStatus (string name)|
+
+\item  \verb|obj.SetElementSetArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfNodeSetResultArrays ()|
+
+\item  \verb|string = obj.GetNodeSetResultArrayName (int index)|
+
+\item  \verb|int = obj.GetNodeSetResultArrayStatus (string name)|
+
+\item  \verb|obj.SetNodeSetResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfSideSetResultArrays ()|
+
+\item  \verb|string = obj.GetSideSetResultArrayName (int index)|
+
+\item  \verb|int = obj.GetSideSetResultArrayStatus (string name)|
+
+\item  \verb|obj.SetSideSetResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfEdgeSetResultArrays ()|
+
+\item  \verb|string = obj.GetEdgeSetResultArrayName (int index)|
+
+\item  \verb|int = obj.GetEdgeSetResultArrayStatus (string name)|
+
+\item  \verb|obj.SetEdgeSetResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfFaceSetResultArrays ()|
+
+\item  \verb|string = obj.GetFaceSetResultArrayName (int index)|
+
+\item  \verb|int = obj.GetFaceSetResultArrayStatus (string name)|
+
+\item  \verb|obj.SetFaceSetResultArrayStatus (string name, int flag)|
+
+\item  \verb|int = obj.GetNumberOfElementSetResultArrays ()|
+
+\item  \verb|string = obj.GetElementSetResultArrayName (int index)|
+
+\item  \verb|int = obj.GetElementSetResultArrayStatus (string name)|
+
+\item  \verb|obj.SetElementSetResultArrayStatus (string name, int flag)| -  Set the fast-path keys. All three must be set for the fast-path
+ option to work.
+ Possible argument values: ''POINT'',''CELL'',''EDGE'',''FACE''
+
+\item  \verb|obj.SetFastPathObjectType (string type)| -  Set the fast-path keys. All three must be set for the fast-path
+ option to work.
+ Possible argument values: ''POINT'',''CELL'',''EDGE'',''FACE''
+
+\item  \verb|obj.SetFastPathIdType (string type)| -  Possible argument values: ''INDEX'',''GLOBAL''
+ ''GLOBAL'' means the id refers to a global id
+ ''INDEX'' means the id refers to an index into the VTK array
+
+\item  \verb|obj.SetFastPathObjectId (vtkIdType id)| -  Possible argument values: ''INDEX'',''GLOBAL''
+ ''GLOBAL'' means the id refers to a global id
+ ''INDEX'' means the id refers to an index into the VTK array
+
+\item  \verb|obj.Reset ()| -  Reset the user-specified parameters and flush internal arrays
+ so that the reader state is just as it was after the reader was
+ instantiated.
+
+ It doesn't make sense to let users reset only the internal state;
+ both the settings and the state are changed by this call.
+
+\item  \verb|obj.ResetSettings ()| -  Reset the user-specified parameters to their default values.
+ The only settings not affected are the filename and/or pattern
+ because these have no default.
+
+ Resetting the settings but not the state allows users to
+ keep the active cache but return to initial array selections, etc.
+
+\item  \verb|obj.ResetCache ()| -  Clears out the cache entries.
+
+\item  \verb|obj.UpdateTimeInformation ()| -  Re-reads time information from the exodus file and updates
+ TimeStepRange accordingly.
+
+\item  \verb|obj.Dump ()|
+
+\item  \verb|vtkGraph = obj.GetSIL ()| -  SIL describes organization of/relationships between classifications 
+ eg. blocks/materials/hierarchies.
+
+\item  \verb|int = obj.GetSILUpdateStamp ()| -  Every time the SIL is updated a this will return a different value.
+
+\item  \verb|bool = obj.GetProducedFastPathOutput ()| -  HACK: Used by vtkPExodusIIReader to tell is the reader produced a valid
+ fast path output.
+
+\end{itemize}

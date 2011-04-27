@@ -1,10 +1,16 @@
-\section{VERTCAT Horizontal Array Concatenation}
+\section{VERTCAT Overloaded Vertical Concatenation}
 
 \subsection{Usage}
 
-This function concatenates arrays vertically (along the row
-dimension).  The syntax for its use is
+This is a method for a class that is invoked to concatenate two or more
+variables of the same class type together.  Besides being called when
+you invoke
 \begin{verbatim}
-   d = vertcat(a,b,c)
+   c = vertcat(a,b,c)
 \end{verbatim}
-which is equivalent to the statement \verb|d = [a;b;c]|.
+when \verb|a| is a class, it is also called for
+\begin{verbatim}
+   c = [a;b;c]
+\end{verbatim}
+when one of the variables is a class.  The exact meaning of 
+vertical concatenation depends on the class you have designed.

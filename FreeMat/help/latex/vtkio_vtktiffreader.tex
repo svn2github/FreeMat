@@ -1,0 +1,83 @@
+\section{vtkTIFFReader}
+
+\subsection{Usage}
+
+ vtkTIFFReader is a source object that reads TIFF files.
+ It should be able to read almost any TIFF file
+
+
+To create an instance of class vtkTIFFReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTIFFReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTIFFReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTIFFReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTIFFReader = obj.NewInstance ()|
+
+\item  \verb|vtkTIFFReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CanReadFile (string fname)| -  Is the given file name a tiff file file?
+
+\item  \verb|string = obj.GetFileExtensions ()| -  Return a descriptive name for the file format that might be useful
+ in a GUI.
+
+\item  \verb|string = obj.GetDescriptiveName ()| -  Auxilary methods used by the reader internally.
+
+\item  \verb|obj.InitializeColors ()| -  Auxilary methods used by the reader internally.
+
+\item  \verb|obj.SetOrientationType (int orientationType)| -  Set orientation type 
+ ORIENTATION\_TOPLEFT         1       (row 0 top, col 0 lhs)
+ ORIENTATION\_TOPRIGHT        2       (row 0 top, col 0 rhs)
+ ORIENTATION\_BOTRIGHT        3       (row 0 bottom, col 0 rhs)
+ ORIENTATION\_BOTLEFT         4       (row 0 bottom, col 0 lhs)
+ ORIENTATION\_LEFTTOP         5       (row 0 lhs, col 0 top)
+ ORIENTATION\_RIGHTTOP        6       (row 0 rhs, col 0 top)
+ ORIENTATION\_RIGHTBOT        7       (row 0 rhs, col 0 bottom)
+ ORIENTATION\_LEFTBOT         8       (row 0 lhs, col 0 bottom)
+ User need to explicitely include vtk\_tiff.h header to have access to those \#define
+
+\item  \verb|int = obj.GetOrientationType ()| -  Set orientation type 
+ ORIENTATION\_TOPLEFT         1       (row 0 top, col 0 lhs)
+ ORIENTATION\_TOPRIGHT        2       (row 0 top, col 0 rhs)
+ ORIENTATION\_BOTRIGHT        3       (row 0 bottom, col 0 rhs)
+ ORIENTATION\_BOTLEFT         4       (row 0 bottom, col 0 lhs)
+ ORIENTATION\_LEFTTOP         5       (row 0 lhs, col 0 top)
+ ORIENTATION\_RIGHTTOP        6       (row 0 rhs, col 0 top)
+ ORIENTATION\_RIGHTBOT        7       (row 0 rhs, col 0 bottom)
+ ORIENTATION\_LEFTBOT         8       (row 0 lhs, col 0 bottom)
+ User need to explicitely include vtk\_tiff.h header to have access to those \#define
+
+\item  \verb|bool = obj.GetOrientationTypeSpecifiedFlag ()| -  Get method to check if orientation type is specified
+
+\item  \verb|obj.SetOriginSpecifiedFlag (bool )| -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+
+\item  \verb|bool = obj.GetOriginSpecifiedFlag ()| -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+
+\item  \verb|obj.OriginSpecifiedFlagOn ()| -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+
+\item  \verb|obj.OriginSpecifiedFlagOff ()| -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+
+\item  \verb|obj.SetSpacingSpecifiedFlag (bool )| -  
+
+\item  \verb|bool = obj.GetSpacingSpecifiedFlag ()| -  
+
+\item  \verb|obj.SpacingSpecifiedFlagOn ()| -  
+
+\item  \verb|obj.SpacingSpecifiedFlagOff ()| -  
+
+\end{itemize}

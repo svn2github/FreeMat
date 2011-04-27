@@ -18,7 +18,7 @@ but binary installations (e.g., from an \verb|RPM|) may need to have the
 rootpath set.
 
 The \verb|rootpath| function has two forms.  The first form takes no arguments
-and allows you to browse to the rootpath directory
+and returns the current root path
 \begin{verbatim}
    rootpath
 \end{verbatim}
@@ -28,5 +28,11 @@ The second form will set a rootpath directly from the command line
 \end{verbatim}
 where \verb|path| is the full path to where the \verb|toolbox| and \verb|help| 
 directories are located.  For example, \verb|rootpath('/usr/share/FreeMat-4.0')|.
+The third form enables the GUI form 
+\begin{verbatim}
+   rootpath gui
+\end{verbatim}
+which activates a dialog box to pick a directory that is the root directory
+of the FreeMat installation (e.g., where \verb|help| and \verb|toolbox| are located.
 Changes to \verb|rootpath| are persistent (you do not need to run it every
 time you start FreeMat).

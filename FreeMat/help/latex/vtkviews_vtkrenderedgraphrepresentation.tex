@@ -1,0 +1,364 @@
+\section{vtkRenderedGraphRepresentation}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkRenderedGraphRepresentation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRenderedGraphRepresentation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRenderedGraphRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRenderedGraphRepresentation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRenderedGraphRepresentation = obj.NewInstance ()|
+
+\item  \verb|vtkRenderedGraphRepresentation = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetVertexLabelArrayName (string name)|
+
+\item  \verb|string = obj.GetVertexLabelArrayName ()|
+
+\item  \verb|obj.SetVertexLabelPriorityArrayName (string name)|
+
+\item  \verb|string = obj.GetVertexLabelPriorityArrayName ()|
+
+\item  \verb|obj.SetVertexLabelVisibility (bool b)|
+
+\item  \verb|bool = obj.GetVertexLabelVisibility ()|
+
+\item  \verb|obj.VertexLabelVisibilityOn ()|
+
+\item  \verb|obj.VertexLabelVisibilityOff ()|
+
+\item  \verb|obj.SetVertexLabelTextProperty (vtkTextProperty p)|
+
+\item  \verb|vtkTextProperty = obj.GetVertexLabelTextProperty ()|
+
+\item  \verb|obj.SetVertexHoverArrayName (string )|
+
+\item  \verb|string = obj.GetVertexHoverArrayName ()|
+
+\item  \verb|obj.SetHideVertexLabelsOnInteraction (bool )| -  Whether to hide the display of vertex labels during mouse interaction.  Default is off.
+
+\item  \verb|bool = obj.GetHideVertexLabelsOnInteraction ()| -  Whether to hide the display of vertex labels during mouse interaction.  Default is off.
+
+\item  \verb|obj.HideVertexLabelsOnInteractionOn ()| -  Whether to hide the display of vertex labels during mouse interaction.  Default is off.
+
+\item  \verb|obj.HideVertexLabelsOnInteractionOff ()| -  Whether to hide the display of vertex labels during mouse interaction.  Default is off.
+
+\item  \verb|obj.SetEdgeLabelArrayName (string name)|
+
+\item  \verb|string = obj.GetEdgeLabelArrayName ()|
+
+\item  \verb|obj.SetEdgeLabelPriorityArrayName (string name)|
+
+\item  \verb|string = obj.GetEdgeLabelPriorityArrayName ()|
+
+\item  \verb|obj.SetEdgeLabelVisibility (bool b)|
+
+\item  \verb|bool = obj.GetEdgeLabelVisibility ()|
+
+\item  \verb|obj.EdgeLabelVisibilityOn ()|
+
+\item  \verb|obj.EdgeLabelVisibilityOff ()|
+
+\item  \verb|obj.SetEdgeLabelTextProperty (vtkTextProperty p)|
+
+\item  \verb|vtkTextProperty = obj.GetEdgeLabelTextProperty ()|
+
+\item  \verb|obj.SetEdgeHoverArrayName (string )|
+
+\item  \verb|string = obj.GetEdgeHoverArrayName ()|
+
+\item  \verb|obj.SetHideEdgeLabelsOnInteraction (bool )| -  Whether to hide the display of edge labels during mouse interaction.  Default is off.
+
+\item  \verb|bool = obj.GetHideEdgeLabelsOnInteraction ()| -  Whether to hide the display of edge labels during mouse interaction.  Default is off.
+
+\item  \verb|obj.HideEdgeLabelsOnInteractionOn ()| -  Whether to hide the display of edge labels during mouse interaction.  Default is off.
+
+\item  \verb|obj.HideEdgeLabelsOnInteractionOff ()| -  Whether to hide the display of edge labels during mouse interaction.  Default is off.
+
+\item  \verb|obj.SetVertexIconArrayName (string name)|
+
+\item  \verb|string = obj.GetVertexIconArrayName ()|
+
+\item  \verb|obj.SetVertexIconPriorityArrayName (string name)|
+
+\item  \verb|string = obj.GetVertexIconPriorityArrayName ()|
+
+\item  \verb|obj.SetVertexIconVisibility (bool b)|
+
+\item  \verb|bool = obj.GetVertexIconVisibility ()|
+
+\item  \verb|obj.VertexIconVisibilityOn ()|
+
+\item  \verb|obj.VertexIconVisibilityOff ()|
+
+\item  \verb|obj.AddVertexIconType (string name, int type)|
+
+\item  \verb|obj.ClearVertexIconTypes ()|
+
+\item  \verb|obj.SetUseVertexIconTypeMap (bool b)|
+
+\item  \verb|bool = obj.GetUseVertexIconTypeMap ()|
+
+\item  \verb|obj.UseVertexIconTypeMapOn ()|
+
+\item  \verb|obj.UseVertexIconTypeMapOff ()|
+
+\item  \verb|obj.SetVertexIconAlignment (int align)|
+
+\item  \verb|int = obj.GetVertexIconAlignment ()|
+
+\item  \verb|obj.SetVertexSelectedIcon (int icon)|
+
+\item  \verb|int = obj.GetVertexSelectedIcon ()|
+
+\item  \verb|obj.SetVertexIconSelectionMode (int mode)| -  Set the mode to one of
+ <ul>
+ <li>vtkApplyIcons::SELECTED\_ICON - use VertexSelectedIcon
+ <li>vtkApplyIcons::SELECTED\_OFFSET - use VertexSelectedIcon as offset
+ <li>vtkApplyIcons::ANNOTATION\_ICON - use current annotation icon
+ <li>vtkApplyIcons::IGNORE\_SELECTION - ignore selected elements
+ </ul>
+ The default is IGNORE\_SELECTION.
+
+\item  \verb|int = obj.GetVertexIconSelectionMode ()| -  Set the mode to one of
+ <ul>
+ <li>vtkApplyIcons::SELECTED\_ICON - use VertexSelectedIcon
+ <li>vtkApplyIcons::SELECTED\_OFFSET - use VertexSelectedIcon as offset
+ <li>vtkApplyIcons::ANNOTATION\_ICON - use current annotation icon
+ <li>vtkApplyIcons::IGNORE\_SELECTION - ignore selected elements
+ </ul>
+ The default is IGNORE\_SELECTION.
+
+\item  \verb|obj.SetVertexIconSelectionModeToSelectedIcon ()| -  Set the mode to one of
+ <ul>
+ <li>vtkApplyIcons::SELECTED\_ICON - use VertexSelectedIcon
+ <li>vtkApplyIcons::SELECTED\_OFFSET - use VertexSelectedIcon as offset
+ <li>vtkApplyIcons::ANNOTATION\_ICON - use current annotation icon
+ <li>vtkApplyIcons::IGNORE\_SELECTION - ignore selected elements
+ </ul>
+ The default is IGNORE\_SELECTION.
+
+\item  \verb|obj.SetVertexIconSelectionModeToSelectedOffset ()| -  Set the mode to one of
+ <ul>
+ <li>vtkApplyIcons::SELECTED\_ICON - use VertexSelectedIcon
+ <li>vtkApplyIcons::SELECTED\_OFFSET - use VertexSelectedIcon as offset
+ <li>vtkApplyIcons::ANNOTATION\_ICON - use current annotation icon
+ <li>vtkApplyIcons::IGNORE\_SELECTION - ignore selected elements
+ </ul>
+ The default is IGNORE\_SELECTION.
+
+\item  \verb|obj.SetVertexIconSelectionModeToAnnotationIcon ()| -  Set the mode to one of
+ <ul>
+ <li>vtkApplyIcons::SELECTED\_ICON - use VertexSelectedIcon
+ <li>vtkApplyIcons::SELECTED\_OFFSET - use VertexSelectedIcon as offset
+ <li>vtkApplyIcons::ANNOTATION\_ICON - use current annotation icon
+ <li>vtkApplyIcons::IGNORE\_SELECTION - ignore selected elements
+ </ul>
+ The default is IGNORE\_SELECTION.
+
+\item  \verb|obj.SetVertexIconSelectionModeToIgnoreSelection ()|
+
+\item  \verb|obj.SetEdgeIconArrayName (string name)|
+
+\item  \verb|string = obj.GetEdgeIconArrayName ()|
+
+\item  \verb|obj.SetEdgeIconPriorityArrayName (string name)|
+
+\item  \verb|string = obj.GetEdgeIconPriorityArrayName ()|
+
+\item  \verb|obj.SetEdgeIconVisibility (bool b)|
+
+\item  \verb|bool = obj.GetEdgeIconVisibility ()|
+
+\item  \verb|obj.EdgeIconVisibilityOn ()|
+
+\item  \verb|obj.EdgeIconVisibilityOff ()|
+
+\item  \verb|obj.AddEdgeIconType (string name, int type)|
+
+\item  \verb|obj.ClearEdgeIconTypes ()|
+
+\item  \verb|obj.SetUseEdgeIconTypeMap (bool b)|
+
+\item  \verb|bool = obj.GetUseEdgeIconTypeMap ()|
+
+\item  \verb|obj.UseEdgeIconTypeMapOn ()|
+
+\item  \verb|obj.UseEdgeIconTypeMapOff ()|
+
+\item  \verb|obj.SetEdgeIconAlignment (int align)|
+
+\item  \verb|int = obj.GetEdgeIconAlignment ()|
+
+\item  \verb|obj.SetColorVerticesByArray (bool b)|
+
+\item  \verb|bool = obj.GetColorVerticesByArray ()|
+
+\item  \verb|obj.ColorVerticesByArrayOn ()|
+
+\item  \verb|obj.ColorVerticesByArrayOff ()|
+
+\item  \verb|obj.SetVertexColorArrayName (string name)|
+
+\item  \verb|string = obj.GetVertexColorArrayName ()|
+
+\item  \verb|obj.SetColorEdgesByArray (bool b)|
+
+\item  \verb|bool = obj.GetColorEdgesByArray ()|
+
+\item  \verb|obj.ColorEdgesByArrayOn ()|
+
+\item  \verb|obj.ColorEdgesByArrayOff ()|
+
+\item  \verb|obj.SetEdgeColorArrayName (string name)|
+
+\item  \verb|string = obj.GetEdgeColorArrayName ()|
+
+\item  \verb|obj.SetEnableVerticesByArray (bool b)|
+
+\item  \verb|bool = obj.GetEnableVerticesByArray ()|
+
+\item  \verb|obj.EnableVerticesByArrayOn ()|
+
+\item  \verb|obj.EnableVerticesByArrayOff ()|
+
+\item  \verb|obj.SetEnabledVerticesArrayName (string name)|
+
+\item  \verb|string = obj.GetEnabledVerticesArrayName ()|
+
+\item  \verb|obj.SetEnableEdgesByArray (bool b)|
+
+\item  \verb|bool = obj.GetEnableEdgesByArray ()|
+
+\item  \verb|obj.EnableEdgesByArrayOn ()|
+
+\item  \verb|obj.EnableEdgesByArrayOff ()|
+
+\item  \verb|obj.SetEnabledEdgesArrayName (string name)|
+
+\item  \verb|string = obj.GetEnabledEdgesArrayName ()|
+
+\item  \verb|obj.SetEdgeVisibility (bool b)|
+
+\item  \verb|bool = obj.GetEdgeVisibility ()|
+
+\item  \verb|obj.EdgeVisibilityOn ()|
+
+\item  \verb|obj.EdgeVisibilityOff ()|
+
+\item  \verb|obj.SetLayoutStrategy (vtkGraphLayoutStrategy strategy)| -  Set/get the graph layout strategy.
+
+\item  \verb|vtkGraphLayoutStrategy = obj.GetLayoutStrategy ()| -  Set/get the graph layout strategy.
+
+\item  \verb|obj.SetLayoutStrategy (string name)| -  Get/set the layout strategy by name.
+
+\item  \verb|string = obj.GetLayoutStrategyName ()| -  Get/set the layout strategy by name.
+
+\item  \verb|obj.SetLayoutStrategyToRandom ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToForceDirected ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToSimple2D ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToClustering2D ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToCommunity2D ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToFast2D ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToPassThrough ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToCircular ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToTree ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToCosmicTree ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToCone ()| -  Set predefined layout strategies.
+
+\item  \verb|obj.SetLayoutStrategyToSpanTree ()| -  Set the layout strategy to use coordinates from arrays.
+ The x array must be specified. The y and z arrays are optional.
+
+\item  \verb|obj.SetLayoutStrategyToAssignCoordinates (string xarr, string yarr, string zarr)| -  Set the layout strategy to use coordinates from arrays.
+ The x array must be specified. The y and z arrays are optional.
+
+\item  \verb|obj.SetLayoutStrategyToTree (bool radial, double angle, double leafSpacing, double logSpacing)| -  Set the layout strategy to a tree layout. Radial indicates whether to
+ do a radial or standard top-down tree layout. The angle parameter is the
+ angular distance spanned by the tree. Leaf spacing is a
+ value from 0 to 1 indicating how much of the radial layout should be
+ allocated to leaf nodes (as opposed to between tree branches). The log spacing value is a
+ non-negative value where > 1 will create expanding levels, < 1 will create
+ contracting levels, and = 1 makes all levels the same size. See
+ vtkTreeLayoutStrategy for more information.
+
+\item  \verb|obj.SetLayoutStrategyToCosmicTree (string nodeSizeArrayName, bool sizeLeafNodesOnlytrue, int layoutDepth, vtkIdType layoutRoot)| -  Set the layout strategy to a cosmic tree layout. nodeSizeArrayName is
+ the array used to size the circles (default is NULL, which makes leaf
+ nodes the same size). sizeLeafNodesOnly only uses the leaf node sizes,
+ and computes the parent size as the sum of the child sizes (default true).
+ layoutDepth stops layout at a certain depth (default is 0, which does the
+ entire tree). layoutRoot is the vertex that will be considered the root
+ node of the layout (default is -1, which will use the tree's root).
+ See vtkCosmicTreeLayoutStrategy for more information.
+
+\item  \verb|obj.SetEdgeLayoutStrategy (vtkEdgeLayoutStrategy strategy)| -  Set/get the graph layout strategy.
+
+\item  \verb|vtkEdgeLayoutStrategy = obj.GetEdgeLayoutStrategy ()| -  Set/get the graph layout strategy.
+
+\item  \verb|obj.SetEdgeLayoutStrategyToArcParallel ()| -  Set/get the graph layout strategy.
+
+\item  \verb|obj.SetEdgeLayoutStrategyToPassThrough ()| -  Set the edge layout strategy to a geospatial arced strategy
+ appropriate for vtkGeoView.
+
+\item  \verb|obj.SetEdgeLayoutStrategyToGeo (double explodeFactor)| -  Set the edge layout strategy to a geospatial arced strategy
+ appropriate for vtkGeoView.
+
+\item  \verb|obj.SetEdgeLayoutStrategy (string name)| -  Set the edge layout strategy by name.
+
+\item  \verb|string = obj.GetEdgeLayoutStrategyName ()| -  Set the edge layout strategy by name.
+
+\item  \verb|obj.ApplyViewTheme (vtkViewTheme theme)| -  Apply a theme to this representation.
+
+\item  \verb|obj.SetGlyphType (int type)| -  Set the graph vertex glyph type.
+
+\item  \verb|int = obj.GetGlyphType ()| -  Set the graph vertex glyph type.
+
+\item  \verb|obj.SetScaling (bool b)| -  Set whether to scale vertex glyphs.
+
+\item  \verb|bool = obj.GetScaling ()| -  Set whether to scale vertex glyphs.
+
+\item  \verb|obj.ScalingOn ()| -  Set whether to scale vertex glyphs.
+
+\item  \verb|obj.ScalingOff ()| -  Set whether to scale vertex glyphs.
+
+\item  \verb|obj.SetScalingArrayName (string name)| -  Set the glyph scaling array name.
+
+\item  \verb|string = obj.GetScalingArrayName ()| -  Set the glyph scaling array name.
+
+\item  \verb|obj.SetVertexScalarBarVisibility (bool b)| -  Vertex/edge scalar bar visibility.
+
+\item  \verb|bool = obj.GetVertexScalarBarVisibility ()| -  Vertex/edge scalar bar visibility.
+
+\item  \verb|obj.SetEdgeScalarBarVisibility (bool b)| -  Vertex/edge scalar bar visibility.
+
+\item  \verb|bool = obj.GetEdgeScalarBarVisibility ()| -  Vertex/edge scalar bar visibility.
+
+\item  \verb|bool = obj.IsLayoutComplete ()| -  Whether the current graph layout is complete.
+
+\item  \verb|obj.UpdateLayout ()| -  Performs another iteration on the graph layout.
+
+\item  \verb|obj.ComputeSelectedGraphBounds (double bounds[6])| -  Compute the bounding box of the selected subgraph.
+
+\end{itemize}

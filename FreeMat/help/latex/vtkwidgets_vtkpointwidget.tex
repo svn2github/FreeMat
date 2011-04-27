@@ -1,0 +1,164 @@
+\section{vtkPointWidget}
+
+\subsection{Usage}
+
+ This 3D widget allows the user to position a point in 3D space using a 3D
+ cursor. The cursor has an outline bounding box, axes-aligned cross-hairs,
+ and axes shadows. (The outline and shadows can be turned off.) Any of
+ these can be turned off. A nice feature of the object is that the
+ vtkPointWidget, like any 3D widget, will work with the current interactor
+ style. That is, if vtkPointWidget does not handle an event, then all other
+ registered observers (including the interactor style) have an opportunity
+ to process the event. Otherwise, the vtkPointWidget will terminate the
+ processing of the event that it handles.
+
+ To use this object, just invoke SetInteractor() with the argument of the
+ method a vtkRenderWindowInteractor.  You may also wish to invoke
+ ''PlaceWidget()'' to initially position the widget. The interactor will act
+ normally until the ''i'' key (for ''interactor'') is pressed, at which point
+ the vtkPointWidget will appear. (See superclass documentation for
+ information about changing this behavior.) To move the point, the user can
+ grab (left mouse) on any widget line and ''slide'' the point into
+ position. Scaling is achieved by using the right mouse button ''up'' the
+ render window (makes the widget bigger) or ''down'' the render window (makes
+ the widget smaller). To translate the widget use the middle mouse button.
+ (Note: all of the translation interactions can be constrained to one of
+ the x-y-z axes by using the ''shift'' key.) The vtkPointWidget produces as
+ output a polydata with a single point and a vertex cell.
+
+ Some additional features of this class include the ability to control the
+ rendered properties of the widget. You can set the properties of the
+ selected and unselected representations of the parts of the widget. For
+ example, you can set the property of the 3D cursor in its normal and
+ selected states.
+
+To create an instance of class vtkPointWidget, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPointWidget
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPointWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPointWidget class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPointWidget = obj.NewInstance ()|
+
+\item  \verb|vtkPointWidget = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetEnabled (int )| -  Methods that satisfy the superclass' API.
+
+\item  \verb|obj.PlaceWidget (double bounds[6])| -  Methods that satisfy the superclass' API.
+
+\item  \verb|obj.PlaceWidget ()| -  Methods that satisfy the superclass' API.
+
+\item  \verb|obj.PlaceWidget (double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)| -  Grab the polydata (including points) that defines the point. A
+ single point and a vertex compose the vtkPolyData.
+
+\item  \verb|obj.GetPolyData (vtkPolyData pd)| -  Grab the polydata (including points) that defines the point. A
+ single point and a vertex compose the vtkPolyData.
+
+\item  \verb|obj.SetPosition (double x, double y, double z)| -  Set/Get the position of the point. Note that if the position is set
+ outside of the bounding box, it will be clamped to the boundary of
+ the bounding box.
+
+\item  \verb|obj.SetPosition (double x[3])| -  Set/Get the position of the point. Note that if the position is set
+ outside of the bounding box, it will be clamped to the boundary of
+ the bounding box.
+
+\item  \verb|double = obj.GetPosition ()| -  Set/Get the position of the point. Note that if the position is set
+ outside of the bounding box, it will be clamped to the boundary of
+ the bounding box.
+
+\item  \verb|obj.GetPosition (double xyz[3])| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|obj.SetOutline (int o)| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|int = obj.GetOutline ()| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|obj.OutlineOn ()| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|obj.OutlineOff ()| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|obj.SetXShadows (int o)| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|int = obj.GetXShadows ()| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|obj.XShadowsOn ()| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|obj.XShadowsOff ()| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|obj.SetYShadows (int o)| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|int = obj.GetYShadows ()| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|obj.YShadowsOn ()| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|obj.YShadowsOff ()| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|obj.SetZShadows (int o)| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|int = obj.GetZShadows ()| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|obj.ZShadowsOn ()| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|obj.ZShadowsOff ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated simultaneously as the point
+ moves.
+
+\item  \verb|obj.SetTranslationMode (int mode)| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated simultaneously as the point
+ moves.
+
+\item  \verb|int = obj.GetTranslationMode ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated simultaneously as the point
+ moves.
+
+\item  \verb|obj.TranslationModeOn ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated simultaneously as the point
+ moves.
+
+\item  \verb|obj.TranslationModeOff ()| -  Convenience methods to turn outline and shadows on and off.
+
+\item  \verb|obj.AllOn ()| -  Convenience methods to turn outline and shadows on and off.
+
+\item  \verb|obj.AllOff ()| -  Get the handle properties (the little balls are the handles). The 
+ properties of the handles when selected and normal can be 
+ set.
+
+\item  \verb|vtkProperty = obj.GetProperty ()| -  Get the handle properties (the little balls are the handles). The 
+ properties of the handles when selected and normal can be 
+ set.
+
+\item  \verb|vtkProperty = obj.GetSelectedProperty ()| -  Get the handle properties (the little balls are the handles). The 
+ properties of the handles when selected and normal can be 
+ set.
+
+\item  \verb|obj.SetHotSpotSize (double )| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|double = obj.GetHotSpotSizeMinValue ()| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|double = obj.GetHotSpotSizeMaxValue ()| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|double = obj.GetHotSpotSize ()| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\end{itemize}

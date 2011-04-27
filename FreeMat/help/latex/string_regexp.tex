@@ -64,13 +64,13 @@ where acceptable \verb|mode| flags are:
 
 \item  \verb|'dotexceptnewline'| - the \verb|'.'| operator does not match the newline character
 
-\item  \verb|'stringanchors'| - the \verb|^| and \verb|$| operators match at the beginning and 
+\item  \verb|'stringanchors'| - the \verb|\^| and \verb|$| operators match at the beginning and 
 end (respectively) of a string.
 
-\item  \verb|'lineanchors'| - the \verb|^| and \verb|$| operators match at the beginning and
+\item  \verb|'lineanchors'| - the \verb|\^| and \verb|$| operators match at the beginning and
 end (respectively) of a line.
 
-\item  \verb|'literalspacing'| - the space characters and comment characters \verb|#| are matched
+\item  \verb|'literalspacing'| - the space characters and comment characters \verb|\#| are matched
 as literals, just like any other ordinary character (default).
 
 \item  \verb|'freespacing'| - all spaces and comments are ignored in the regular expression.
@@ -103,13 +103,13 @@ stop =
  10 15 
 
 tokenExtents = 
- [1 2 double array] [1 2 double array] 
+ [1x2 double array] [1x2 double array] 
 
 match = 
  [down] [town] 
 
 tokens = 
- [1 1 cell array] [1 1 cell array] 
+ [1x1 cell array] [1x1 cell array] 
 
 named = 
   []

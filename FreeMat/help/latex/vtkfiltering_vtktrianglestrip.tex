@@ -1,0 +1,65 @@
+\section{vtkTriangleStrip}
+
+\subsection{Usage}
+
+ vtkTriangleStrip is a concrete implementation of vtkCell to represent a 2D
+ triangle strip. A triangle strip is a compact representation of triangles
+ connected edge to edge in strip fashion. The connectivity of a triangle
+ strip is three points defining an initial triangle, then for each
+ additional triangle, a single point that, combined with the previous two
+ points, defines the next triangle.
+
+To create an instance of class vtkTriangleStrip, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTriangleStrip
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTriangleStrip has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTriangleStrip class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTriangleStrip = obj.NewInstance ()|
+
+\item  \verb|vtkTriangleStrip = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetCellType ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetCellDimension ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetNumberOfEdges ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetNumberOfFaces ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|vtkCell = obj.GetEdge (int edgeId)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|vtkCell = obj.GetFace (int )| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)|
+
+\item  \verb|obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)|
+
+\item  \verb|int = obj.IsPrimaryCell ()| -  Return the center of the point cloud in parametric coordinates.
+
+\item  \verb|int = obj.GetParametricCenter (double pcoords[3])| -  Return the center of the point cloud in parametric coordinates.
+
+\item  \verb|obj.InterpolateFunctions (double pcoords[3], double weights)| -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+
+\item  \verb|obj.InterpolateDerivs (double pcoords[3], double derivs)| -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+
+\end{itemize}

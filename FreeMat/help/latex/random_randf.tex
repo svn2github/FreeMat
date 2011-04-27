@@ -12,7 +12,7 @@ in the numerator and denominator of the chi-square random variables
 whose ratio defines the statistic.
 \subsection{Function Internals}
 
-The statistic \verb|F_{n,m}| is defined as the ratio of two chi-square
+The statistic \verb|F\_{n,m}| is defined as the ratio of two chi-square
 random variables:
 \[
   F_{n,m} = \frac{\chi_n^2/n}{\chi_m^2/m}
@@ -30,24 +30,10 @@ and then again using the \verb|randchi| function:
 --> randf(5*ones(1,9),7)
 
 ans = 
-
- Columns 1 to 8
-
-    1.1944    0.9069    0.7558    1.5029    0.0621    1.3860    1.8161    0.3755 
-
- Columns 9 to 9
-
-    3.5794 
+    0.5241    0.8414    0.4859    1.1266    0.4792    2.3743    2.9095    0.5825    0.4244 
 
 --> randchi(5*ones(1,9))./randchi(7*ones(1,9))
 
 ans = 
-
- Columns 1 to 8
-
-    1.3085    1.2693    1.0684    0.4377    1.1158    0.7171    0.4151    1.8022 
-
- Columns 9 to 9
-
-    1.4606 
+    0.3737    0.2363    1.5733    0.7003    1.1385    0.6337    0.4597    0.2691    0.5190 
 \end{verbatim}

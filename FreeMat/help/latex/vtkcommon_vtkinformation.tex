@@ -1,0 +1,274 @@
+\section{vtkInformation}
+
+\subsection{Usage}
+
+ vtkInformation represents information and/or data for one input or
+ one output of a vtkAlgorithm.  It maps from keys to values of
+ several data types.  Instances of this class are collected in
+ vtkInformationVector instances and passed to
+ vtkAlgorithm::ProcessRequest calls.  The information and
+ data referenced by the instance on a particular input or output
+ define the request made to the vtkAlgorithm instance.
+
+To create an instance of class vtkInformation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformation = obj.NewInstance ()|
+
+\item  \verb|vtkInformation = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Modified ()| -  Modified signature with no arguments that calls Modified
+ on vtkObject superclass.
+
+\item  \verb|obj.Modified (vtkInformationKey key)| -  Modified signature that takes an information key as an argument.
+ Sets the new MTime and invokes a modified event with the
+ information key as call data.
+
+\item  \verb|obj.Clear ()| -  Clear all information entries.
+
+\item  \verb|int = obj.GetNumberOfKeys ()| -  Return the number of keys in this information object (as would be returned
+ by iterating over the keys).
+
+\item  \verb|obj.Copy (vtkInformation from, int deep)| -  Copy all information entries from the given vtkInformation
+ instance.  Any previously existing entries are removed.  If
+ deep==1, a deep copy of the information structure is performed (new
+ instances of any contained vtkInformation and vtkInformationVector
+ objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationDataObjectKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationDoubleVectorKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationInformationKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationInformationVectorKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationIntegerKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationIntegerVectorKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationRequestKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationStringKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationStringVectorKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntry (vtkInformation from, vtkInformationUnsignedLongKey key, int deep)| -  Copy the key/value pair associated with the given key in the
+ given information object.  If deep=1, a deep copy of the information
+ structure is performed (new instances of any contained vtkInformation and
+ vtkInformationVector objects are created).
+
+\item  \verb|obj.CopyEntries (vtkInformation from, vtkInformationKeyVectorKey key, int deep)| -  Use the given key to lookup a list of other keys in the given
+ information object.  The key/value pairs associated with these
+ other keys will be copied.  If deep==1, a deep copy of the
+ information structure is performed.
+
+\item  \verb|int = obj.Has (vtkInformationKey key)| -  Check whether the given key appears in this information object.
+
+\item  \verb|obj.Remove (vtkInformationKey key)| -  Remove the given key and its data from this information object.
+
+\item  \verb|obj.Set (vtkInformationRequestKey key)| -  Get/Set a request-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationRequestKey key)| -  Get/Set a request-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationRequestKey key)| -  Get/Set a request-valued entry.
+
+\item  \verb|obj.Set (vtkInformationIntegerKey key, int value)| -  Get/Set an integer-valued entry.
+
+\item  \verb|int = obj.Get (vtkInformationIntegerKey key)| -  Get/Set an integer-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationIntegerKey key)| -  Get/Set an integer-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationIntegerKey key)| -  Get/Set an integer-valued entry.
+
+\item  \verb|obj.Set (vtkInformationIdTypeKey key, vtkIdType value)| -  Get/Set a vtkIdType-valued entry.
+
+\item  \verb|vtkIdType = obj.Get (vtkInformationIdTypeKey key)| -  Get/Set a vtkIdType-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationIdTypeKey key)| -  Get/Set a vtkIdType-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationIdTypeKey key)| -  Get/Set a vtkIdType-valued entry.
+
+\item  \verb|obj.Set (vtkInformationDoubleKey key, double value)| -  Get/Set an double-valued entry.
+
+\item  \verb|double = obj.Get (vtkInformationDoubleKey key)| -  Get/Set an double-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationDoubleKey key)| -  Get/Set an double-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationDoubleKey key)| -  Get/Set an double-valued entry.
+
+\item  \verb|obj.Append (vtkInformationIntegerVectorKey key, int value)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationIntegerVectorKey key, int value, int length)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationIntegerVectorKey key, int value1, int value2, int value3)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationIntegerVectorKey key, int value1, int value2, int value3, int value4, int value5, int value6)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|int = obj.Get (vtkInformationIntegerVectorKey key, int idx)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|obj.Get (vtkInformationIntegerVectorKey key, int value)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|int = obj.Length (vtkInformationIntegerVectorKey key)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationIntegerVectorKey key)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationIntegerVectorKey key)| -  Get/Set an integer-vector-valued entry.
+
+\item  \verb|obj.Append (vtkInformationStringVectorKey key, string value)| -  Get/Set a string-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationStringVectorKey key, string value, int idx)| -  Get/Set a string-vector-valued entry.
+
+\item  \verb|string = obj.Get (vtkInformationStringVectorKey key, int idx)| -  Get/Set a string-vector-valued entry.
+
+\item  \verb|int = obj.Length (vtkInformationStringVectorKey key)| -  Get/Set a string-vector-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationStringVectorKey key)| -  Get/Set a string-vector-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationStringVectorKey key)| -  Get/Set a string-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationIntegerPointerKey key, int value, int length)| -  Get/Set an integer-pointer-valued entry.
+
+\item  \verb|obj.Get (vtkInformationIntegerPointerKey key, int value)| -  Get/Set an integer-pointer-valued entry.
+
+\item  \verb|int = obj.Length (vtkInformationIntegerPointerKey key)| -  Get/Set an integer-pointer-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationIntegerPointerKey key)| -  Get/Set an integer-pointer-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationIntegerPointerKey key)| -  Get/Set an integer-pointer-valued entry.
+
+\item  \verb|obj.Set (vtkInformationUnsignedLongKey key, long value)| -  Get/Set an unsigned-long-valued entry.
+
+\item  \verb|long = obj.Get (vtkInformationUnsignedLongKey key)| -  Get/Set an unsigned-long-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationUnsignedLongKey key)| -  Get/Set an unsigned-long-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationUnsignedLongKey key)| -  Get/Set an unsigned-long-valued entry.
+
+\item  \verb|obj.Append (vtkInformationDoubleVectorKey key, double value)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationDoubleVectorKey key, double value, int length)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationDoubleVectorKey key, double value1, double value2, double value3)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationDoubleVectorKey key, double value1, double value2, double value3, double value4, double value5, double value6)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|double = obj.Get (vtkInformationDoubleVectorKey key, int idx)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|obj.Get (vtkInformationDoubleVectorKey key, double value)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|int = obj.Length (vtkInformationDoubleVectorKey key)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationDoubleVectorKey key)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationDoubleVectorKey key)| -  Get/Set an double-vector-valued entry.
+
+\item  \verb|obj.Append (vtkInformationKeyVectorKey key, vtkInformationKey value)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|obj.AppendUnique (vtkInformationKeyVectorKey key, vtkInformationKey value)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationKeyVectorKey key, vtkInformationKey value)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|vtkInformationKey = obj.Get (vtkInformationKeyVectorKey key, int idx)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|int = obj.Length (vtkInformationKeyVectorKey key)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationKeyVectorKey key)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationKeyVectorKey key)| -  Get/Set an InformationKey-vector-valued entry.
+
+\item  \verb|obj.Set (vtkInformationStringKey key, string )| -  Get/Set a string-valued entry.
+
+\item  \verb|string = obj.Get (vtkInformationStringKey key)| -  Get/Set a string-valued entry.
+
+\item  \verb|obj.Remove (vtkInformationStringKey key)| -  Get/Set a string-valued entry.
+
+\item  \verb|int = obj.Has (vtkInformationStringKey key)| -  Get/Set a string-valued entry.
+
+\item  \verb|obj.Set (vtkInformationInformationKey key, vtkInformation )| -  Get/Set an entry storing another vtkInformation instance.
+
+\item  \verb|vtkInformation = obj.Get (vtkInformationInformationKey key)| -  Get/Set an entry storing another vtkInformation instance.
+
+\item  \verb|obj.Remove (vtkInformationInformationKey key)| -  Get/Set an entry storing another vtkInformation instance.
+
+\item  \verb|int = obj.Has (vtkInformationInformationKey key)| -  Get/Set an entry storing another vtkInformation instance.
+
+\item  \verb|obj.Set (vtkInformationInformationVectorKey key, vtkInformationVector )| -  Get/Set an entry storing a vtkInformationVector instance.
+
+\item  \verb|vtkInformationVector = obj.Get (vtkInformationInformationVectorKey key)| -  Get/Set an entry storing a vtkInformationVector instance.
+
+\item  \verb|obj.Remove (vtkInformationInformationVectorKey key)| -  Get/Set an entry storing a vtkInformationVector instance.
+
+\item  \verb|int = obj.Has (vtkInformationInformationVectorKey key)| -  Get/Set an entry storing a vtkInformationVector instance.
+
+\item  \verb|obj.Set (vtkInformationObjectBaseKey key, vtkObjectBase )| -  Get/Set an entry storing a vtkObjectBase instance.
+
+\item  \verb|vtkObjectBase = obj.Get (vtkInformationObjectBaseKey key)| -  Get/Set an entry storing a vtkObjectBase instance.
+
+\item  \verb|obj.Remove (vtkInformationObjectBaseKey key)| -  Get/Set an entry storing a vtkObjectBase instance.
+
+\item  \verb|int = obj.Has (vtkInformationObjectBaseKey key)| -  Get/Set an entry storing a vtkObjectBase instance.
+
+\item  \verb|obj.Set (vtkInformationDataObjectKey key, vtkDataObject )| -  Get/Set an entry storing a vtkDataObject instance.
+
+\item  \verb|vtkDataObject = obj.Get (vtkInformationDataObjectKey key)| -  Get/Set an entry storing a vtkDataObject instance.
+
+\item  \verb|obj.Remove (vtkInformationDataObjectKey key)| -  Get/Set an entry storing a vtkDataObject instance.
+
+\item  \verb|int = obj.Has (vtkInformationDataObjectKey key)| -  Get/Set an entry storing a vtkDataObject instance.
+
+\item  \verb|obj.Register (vtkObjectBase o)| -  Initiate garbage collection when a reference is removed.
+
+\item  \verb|obj.UnRegister (vtkObjectBase o)| -  Initiate garbage collection when a reference is removed.
+
+\item  \verb|obj.SetRequest (vtkInformationRequestKey request)| -  Get/Set the Request ivar
+
+\item  \verb|vtkInformationRequestKey = obj.GetRequest ()| -  Get/Set the Request ivar
+
+\end{itemize}

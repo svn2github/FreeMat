@@ -1,0 +1,40 @@
+\section{vtkDensifyPolyData}
+
+\subsection{Usage}
+
+ The filter takes any polygonal data as input and will tessellate cells that 
+ are planar polygons present by fanning out triangles from its centroid. 
+ Other cells are simply passed through to the output.  PointData, if present,
+ is interpolated via linear interpolation. CellData for any tessellated cell
+ is simply copied over from its parent cell. Planar polygons are assumed to 
+ be convex. Funny things will happen if they are not.
+ 
+ The number of subdivisions can be controlled by the parameter
+ NumberOfSubdivisions.
+
+To create an instance of class vtkDensifyPolyData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDensifyPolyData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDensifyPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDensifyPolyData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDensifyPolyData = obj.NewInstance ()|
+
+\item  \verb|vtkDensifyPolyData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetNumberOfSubdivisions (int )| -  Number of recursive subdivisions. Initial value is 1.
+
+\item  \verb|int = obj.GetNumberOfSubdivisions ()| -  Number of recursive subdivisions. Initial value is 1.
+
+\end{itemize}

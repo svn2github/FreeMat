@@ -1,0 +1,434 @@
+\section{vtkExodusReader}
+
+\subsection{Usage}
+
+ vtkExodusReader is a unstructured grid source object that reads ExodusII
+ files.  Most of the meta data associated with the file is loaded when 
+ UpdateInformation is called.  This includes information like Title, number
+ of blocks, number and names of arrays. This data can be retrieved from 
+ methods in this reader. Separate arrays that are meant to be a single 
+ vector, are combined internally for convenience.  To be combined, the array 
+ names have to be identical except for a trailing X,Y and Z (or x,y,z).  By 
+ default cell and point arrays are not loaded.  However, the user can flag 
+ arrays to load with the methods ''SetPointArrayStatus'' and
+ ''SetCellArrayStatus''.  The reader DOES NOT respond to piece requests
+ 
+
+To create an instance of class vtkExodusReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkExodusReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkExodusReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkExodusReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkExodusReader = obj.NewInstance ()|
+
+\item  \verb|vtkExodusReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CanReadFile (string fname)| -  Determine if the file can be readed with this reader.
+
+\item  \verb|obj.SetFileName (string )| -  Specify file name of the Exodus file.
+
+\item  \verb|string = obj.GetFileName ()| -  Specify file name of the Exodus file.
+
+\item  \verb|obj.SetXMLFileName (string )| -  Specify file name of the xml file.
+
+\item  \verb|string = obj.GetXMLFileName ()| -  Specify file name of the xml file.
+
+\item  \verb|obj.SetTimeStep (int )| -  Which TimeStep to read.    
+
+\item  \verb|int = obj.GetTimeStep ()| -  Which TimeStep to read.    
+
+\item  \verb|obj.SetGenerateBlockIdCellArray (int )| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName()
+
+\item  \verb|int = obj.GetGenerateBlockIdCellArray ()| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName()
+
+\item  \verb|obj.GenerateBlockIdCellArrayOn ()| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName()
+
+\item  \verb|obj.GenerateBlockIdCellArrayOff ()| -  Extra cell data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id found
+ in the exodus file. The name of the array is returned by 
+ GetBlockIdArrayName()
+
+\item  \verb|string = obj.GetBlockIdArrayName ()| -  Extra cell data array that can be generated.  By default, this array
+ is off.  The value of the array is the integer global id of the cell.
+ The name of the array is returned by GetGlobalElementIdArrayName()
+
+\item  \verb|obj.SetGenerateGlobalElementIdArray (int )| -  Extra cell data array that can be generated.  By default, this array
+ is off.  The value of the array is the integer global id of the cell.
+ The name of the array is returned by GetGlobalElementIdArrayName()
+
+\item  \verb|int = obj.GetGenerateGlobalElementIdArray ()| -  Extra cell data array that can be generated.  By default, this array
+ is off.  The value of the array is the integer global id of the cell.
+ The name of the array is returned by GetGlobalElementIdArrayName()
+
+\item  \verb|obj.GenerateGlobalElementIdArrayOn ()| -  Extra cell data array that can be generated.  By default, this array
+ is off.  The value of the array is the integer global id of the cell.
+ The name of the array is returned by GetGlobalElementIdArrayName()
+
+\item  \verb|obj.GenerateGlobalElementIdArrayOff ()| -  Extra cell data array that can be generated.  By default, this array
+ is off.  The value of the array is the integer global id of the cell.
+ The name of the array is returned by GetGlobalElementIdArrayName()
+
+\item  \verb|obj.SetGenerateGlobalNodeIdArray (int )| -  Extra point data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id of the node.
+ The id is relative to the entire data set.
+ The name of the array is returned by GlobalNodeIdArrayName().
+
+\item  \verb|int = obj.GetGenerateGlobalNodeIdArray ()| -  Extra point data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id of the node.
+ The id is relative to the entire data set.
+ The name of the array is returned by GlobalNodeIdArrayName().
+
+\item  \verb|obj.GenerateGlobalNodeIdArrayOn ()| -  Extra point data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id of the node.
+ The id is relative to the entire data set.
+ The name of the array is returned by GlobalNodeIdArrayName().
+
+\item  \verb|obj.GenerateGlobalNodeIdArrayOff ()| -  Extra point data array that can be generated.  By default, this array
+ is ON.  The value of the array is the integer id of the node.
+ The id is relative to the entire data set.
+ The name of the array is returned by GlobalNodeIdArrayName().
+
+\item  \verb|obj.SetApplyDisplacements (int )| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|int = obj.GetApplyDisplacements ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.ApplyDisplacementsOn ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.ApplyDisplacementsOff ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|obj.SetDisplacementMagnitude (float )| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|float = obj.GetDisplacementMagnitude ()| -  Geometric locations can include displacements.  By default, 
+ this is ON.  The nodal positions are 'displaced' by the
+ standard exodus displacment vector. If displacements
+ are turned 'off', the user can explicitly add them by
+ applying a warp filter.
+
+\item  \verb|string = obj.GetTitle ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetDimensionality ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfTimeSteps ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfElements ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfNodeSets ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfSideSets ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfBlocks ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj. GetTimeStepRange ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|obj.SetTimeStepRange (int , int )| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|obj.SetTimeStepRange (int  a[2])| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfNodes ()| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetNumberOfElementsInBlock (int block\_idx)| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetBlockId (int block\_idx)| -  Access to meta data generated by UpdateInformation.
+
+\item  \verb|int = obj.GetTotalNumberOfNodes ()|
+
+\item  \verb|int = obj.GetNumberOfPointArrays ()|
+
+\item  \verb|string = obj.GetPointArrayName (int index)|
+
+\item  \verb|int = obj.GetPointArrayID (string name)|
+
+\item  \verb|int = obj.GetPointArrayNumberOfComponents (int index)|
+
+\item  \verb|obj.SetPointArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetPointArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetPointArrayStatus (int index)|
+
+\item  \verb|int = obj.GetPointArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfCellArrays ()|
+
+\item  \verb|string = obj.GetCellArrayName (int index)|
+
+\item  \verb|int = obj.GetCellArrayID (string name)|
+
+\item  \verb|int = obj.GetCellArrayNumberOfComponents (int index)|
+
+\item  \verb|obj.SetCellArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetCellArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetCellArrayStatus (int index)|
+
+\item  \verb|int = obj.GetCellArrayStatus (string )|
+
+\item  \verb|int = obj.GetTotalNumberOfElements ()|
+
+\item  \verb|int = obj.GetNumberOfBlockArrays ()|
+
+\item  \verb|string = obj.GetBlockArrayName (int index)|
+
+\item  \verb|int = obj.GetBlockArrayID (string name)|
+
+\item  \verb|obj.SetBlockArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetBlockArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetBlockArrayStatus (int index)|
+
+\item  \verb|int = obj.GetBlockArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfNodeSetArrays ()| -  By default Node/Side sets are not loaded, These methods allow the user to
+ select which Node/Side sets they want to load. NumberOfNodeSets and
+ NumberOfSideSets (set by vtk macros) are stored in vtkExodusReader 
+ but other Node/Side set metadata are stored in vtkExodusMetaData
+ Note: GetNumberOfNodeSetArrays and GetNumberOfSideSetArrays are
+ just syntatic sugar for paraview server xml
+
+\item  \verb|int = obj.GetNodeSetArrayStatus (int index)| -  By default Node/Side sets are not loaded, These methods allow the user to
+ select which Node/Side sets they want to load. NumberOfNodeSets and
+ NumberOfSideSets (set by vtk macros) are stored in vtkExodusReader 
+ but other Node/Side set metadata are stored in vtkExodusMetaData
+ Note: GetNumberOfNodeSetArrays and GetNumberOfSideSetArrays are
+ just syntatic sugar for paraview server xml
+
+\item  \verb|int = obj.GetNodeSetArrayStatus (string name)| -  By default Node/Side sets are not loaded, These methods allow the user to
+ select which Node/Side sets they want to load. NumberOfNodeSets and
+ NumberOfSideSets (set by vtk macros) are stored in vtkExodusReader 
+ but other Node/Side set metadata are stored in vtkExodusMetaData
+ Note: GetNumberOfNodeSetArrays and GetNumberOfSideSetArrays are
+ just syntatic sugar for paraview server xml
+
+\item  \verb|obj.SetNodeSetArrayStatus (int index, int flag)| -  By default Node/Side sets are not loaded, These methods allow the user to
+ select which Node/Side sets they want to load. NumberOfNodeSets and
+ NumberOfSideSets (set by vtk macros) are stored in vtkExodusReader 
+ but other Node/Side set metadata are stored in vtkExodusMetaData
+ Note: GetNumberOfNodeSetArrays and GetNumberOfSideSetArrays are
+ just syntatic sugar for paraview server xml
+
+\item  \verb|obj.SetNodeSetArrayStatus (string name, int flag)| -  By default Node/Side sets are not loaded, These methods allow the user to
+ select which Node/Side sets they want to load. NumberOfNodeSets and
+ NumberOfSideSets (set by vtk macros) are stored in vtkExodusReader 
+ but other Node/Side set metadata are stored in vtkExodusMetaData
+ Note: GetNumberOfNodeSetArrays and GetNumberOfSideSetArrays are
+ just syntatic sugar for paraview server xml
+
+\item  \verb|string = obj.GetNodeSetArrayName (int index)| -  By default Node/Side sets are not loaded, These methods allow the user to
+ select which Node/Side sets they want to load. NumberOfNodeSets and
+ NumberOfSideSets (set by vtk macros) are stored in vtkExodusReader 
+ but other Node/Side set metadata are stored in vtkExodusMetaData
+ Note: GetNumberOfNodeSetArrays and GetNumberOfSideSetArrays are
+ just syntatic sugar for paraview server xml
+
+\item  \verb|int = obj.GetNumberOfSideSetArrays ()|
+
+\item  \verb|int = obj.GetSideSetArrayStatus (int index)|
+
+\item  \verb|int = obj.GetSideSetArrayStatus (string name)|
+
+\item  \verb|obj.SetSideSetArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetSideSetArrayStatus (string name, int flag)|
+
+\item  \verb|string = obj.GetSideSetArrayName (int index)|
+
+\item  \verb|int = obj.GetNumberOfPartArrays ()|
+
+\item  \verb|string = obj.GetPartArrayName (int arrayIdx)|
+
+\item  \verb|int = obj.GetPartArrayID (string name)|
+
+\item  \verb|string = obj.GetPartBlockInfo (int arrayIdx)|
+
+\item  \verb|obj.SetPartArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetPartArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetPartArrayStatus (int index)|
+
+\item  \verb|int = obj.GetPartArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfMaterialArrays ()|
+
+\item  \verb|string = obj.GetMaterialArrayName (int arrayIdx)|
+
+\item  \verb|int = obj.GetMaterialArrayID (string name)|
+
+\item  \verb|obj.SetMaterialArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetMaterialArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetMaterialArrayStatus (int index)|
+
+\item  \verb|int = obj.GetMaterialArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfAssemblyArrays ()|
+
+\item  \verb|string = obj.GetAssemblyArrayName (int arrayIdx)|
+
+\item  \verb|int = obj.GetAssemblyArrayID (string name)|
+
+\item  \verb|obj.SetAssemblyArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetAssemblyArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetAssemblyArrayStatus (int index)|
+
+\item  \verb|int = obj.GetAssemblyArrayStatus (string )|
+
+\item  \verb|int = obj.GetNumberOfHierarchyArrays ()|
+
+\item  \verb|string = obj.GetHierarchyArrayName (int arrayIdx)|
+
+\item  \verb|obj.SetHierarchyArrayStatus (int index, int flag)|
+
+\item  \verb|obj.SetHierarchyArrayStatus (string , int flag)|
+
+\item  \verb|int = obj.GetHierarchyArrayStatus (int index)|
+
+\item  \verb|int = obj.GetHierarchyArrayStatus (string )|
+
+\item  \verb|int = obj.GetHasModeShapes ()| -  Some simulations overload the Exodus time steps to represent mode shapes.
+ In this case, it does not make sense to iterate over the ''time steps'',
+ because they are not meant to be played in order.  Rather, each represents
+ the vibration at a different ''mode.''  Setting this to 1 changes the
+ semantics of the reader to not report the time steps to downstream filters.
+ By default, this is off, which is the case for most Exodus files.
+
+\item  \verb|obj.SetHasModeShapes (int )| -  Some simulations overload the Exodus time steps to represent mode shapes.
+ In this case, it does not make sense to iterate over the ''time steps'',
+ because they are not meant to be played in order.  Rather, each represents
+ the vibration at a different ''mode.''  Setting this to 1 changes the
+ semantics of the reader to not report the time steps to downstream filters.
+ By default, this is off, which is the case for most Exodus files.
+
+\item  \verb|obj.HasModeShapesOn ()| -  Some simulations overload the Exodus time steps to represent mode shapes.
+ In this case, it does not make sense to iterate over the ''time steps'',
+ because they are not meant to be played in order.  Rather, each represents
+ the vibration at a different ''mode.''  Setting this to 1 changes the
+ semantics of the reader to not report the time steps to downstream filters.
+ By default, this is off, which is the case for most Exodus files.
+
+\item  \verb|obj.HasModeShapesOff ()| -  Some simulations overload the Exodus time steps to represent mode shapes.
+ In this case, it does not make sense to iterate over the ''time steps'',
+ because they are not meant to be played in order.  Rather, each represents
+ the vibration at a different ''mode.''  Setting this to 1 changes the
+ semantics of the reader to not report the time steps to downstream filters.
+ By default, this is off, which is the case for most Exodus files.
+
+\item  \verb|int = obj.GetDisplayType ()|
+
+\item  \verb|obj.SetDisplayType (int type)|
+
+\item  \verb|obj.ExodusModelMetadataOn ()|
+
+\item  \verb|obj.ExodusModelMetadataOff ()|
+
+\item  \verb|obj.SetExodusModelMetadata (int )|
+
+\item  \verb|int = obj.GetExodusModelMetadata ()|
+
+\item  \verb|vtkExodusModel = obj.GetExodusModel ()|
+
+\item  \verb|obj.SetPackExodusModelOntoOutput (int )|
+
+\item  \verb|int = obj.GetPackExodusModelOntoOutput ()|
+
+\item  \verb|obj.PackExodusModelOntoOutputOn ()|
+
+\item  \verb|obj.PackExodusModelOntoOutputOff ()|
+
+\item  \verb|int = obj.IsValidVariable (string type, string name)|
+
+\item  \verb|int = obj.GetVariableID (string type, string name)|
+
+\item  \verb|obj.SetAllAssemblyArrayStatus (int status)|
+
+\item  \verb|obj.SetAllBlockArrayStatus (int status)|
+
+\item  \verb|obj.SetAllCellArrayStatus (int status)|
+
+\item  \verb|obj.SetAllHierarchyArrayStatus (int status)|
+
+\item  \verb|obj.SetAllMaterialArrayStatus (int status)|
+
+\item  \verb|obj.SetAllPartArrayStatus (int status)|
+
+\item  \verb|obj.SetAllPointArrayStatus (int status)|
+
+\item  \verb|obj.SetArrayStatus (string type, string name, int flag)|
+
+\item  \verb|int = obj.GetArrayStatus (string type, string name)|
+
+\item  \verb|int = obj.GetTimeSeriesData (int ID, string vName, string vType, vtkFloatArray result)|
+
+\item  \verb|int = obj.GetNumberOfVariableArrays ()|
+
+\item  \verb|string = obj.GetVariableArrayName (int a\_which)|
+
+\item  \verb|obj.EnableDSPFiltering ()|
+
+\item  \verb|obj.AddFilter (vtkDSPFilterDefinition a\_filter)|
+
+\item  \verb|obj.StartAddingFilter ()|
+
+\item  \verb|obj.AddFilterInputVar (string name)|
+
+\item  \verb|obj.AddFilterOutputVar (string name)|
+
+\item  \verb|obj.AddFilterNumeratorWeight (double weight)|
+
+\item  \verb|obj.AddFilterForwardNumeratorWeight (double weight)|
+
+\item  \verb|obj.AddFilterDenominatorWeight (double weight)|
+
+\item  \verb|obj.FinishAddingFilter ()|
+
+\item  \verb|obj.RemoveFilter (string a\_outputVariableName)|
+
+\item  \verb|obj.GetDSPOutputArrays (int exoid, vtkUnstructuredGrid output)|
+
+\end{itemize}

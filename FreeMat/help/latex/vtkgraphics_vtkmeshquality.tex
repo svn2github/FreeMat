@@ -1,0 +1,1115 @@
+\section{vtkMeshQuality}
+
+\subsection{Usage}
+
+ vtkMeshQuality computes one or more functions of (geometric)
+ quality for each 2-D and 3-D cell (triangle, quadrilateral, tetrahedron,
+ or hexahedron) of a mesh. These functions of quality are then averaged
+ over the entire mesh. The minimum, average, maximum, and unbiased variance
+ of quality for each type of cell is stored in the output mesh's FieldData.
+ The FieldData arrays are named ''Mesh Triangle Quality,''
+ ''Mesh Quadrilateral Quality,'' ''Mesh Tetrahedron Quality,''
+ and ''Mesh Hexahedron Quality.'' Each array has a single tuple
+ with 5 components. The first 4 components are the quality statistics
+ mentioned above; the final value is the number of cells of the given type.
+ This final component makes aggregation of statistics for distributed
+ mesh data possible.
+
+ By default, the per-cell quality is added to the mesh's cell data, in
+ an array named ''Quality.'' Cell types not supported by
+ this filter will have an entry of 0. Use SaveCellQualityOff() to
+ store only the final statistics.
+
+ This version of the filter written by Philippe Pebay and David Thompson
+ overtakes an older version written by Leila Baghdadi, Hanif Ladak, and 
+ David Steinman at the Imaging Research Labs, Robarts Research Institute.
+ That version only supported tetrahedral radius ratio. See the 
+ CompatibilityModeOn() member for information on how to make this filter 
+ behave like the previous implementation.
+ For more information on the triangle quality functions of this class, cf.
+ Pebay \& Baker 2003, Analysis of triangle quality measures, Math Comp 72:244.
+ For more information on the quadrangle quality functions of this class, cf.
+ Pebay 2004, Planar Quadrangle Quality Measures, Eng Comp 20:2.
+
+
+To create an instance of class vtkMeshQuality, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMeshQuality
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMeshQuality has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMeshQuality class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMeshQuality = obj.NewInstance ()|
+
+\item  \verb|vtkMeshQuality = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetSaveCellQuality (int )| -  This variable controls whether or not cell quality is stored as
+ cell data in the resulting mesh or discarded (leaving only the
+ aggregate quality average of the entire mesh, recorded in the
+ FieldData).
+
+\item  \verb|int = obj.GetSaveCellQuality ()| -  This variable controls whether or not cell quality is stored as
+ cell data in the resulting mesh or discarded (leaving only the
+ aggregate quality average of the entire mesh, recorded in the
+ FieldData).
+
+\item  \verb|obj.SaveCellQualityOn ()| -  This variable controls whether or not cell quality is stored as
+ cell data in the resulting mesh or discarded (leaving only the
+ aggregate quality average of the entire mesh, recorded in the
+ FieldData).
+
+\item  \verb|obj.SaveCellQualityOff ()| -  This variable controls whether or not cell quality is stored as
+ cell data in the resulting mesh or discarded (leaving only the
+ aggregate quality average of the entire mesh, recorded in the
+ FieldData).
+
+\item  \verb|obj.SetTriangleQualityMeasure (int )| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|int = obj.GetTriangleQualityMeasure ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToArea ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToEdgeRatio ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToAspectRatio ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToRadiusRatio ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToAspectFrobenius ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToMinAngle ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToMaxAngle ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToCondition ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToScaledJacobian ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToRelativeSizeSquared ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToShape ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToShapeAndSize ()| -  Set/Get the particular estimator used to function the quality of triangles.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, and VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE, VTK\_QUALITY\_CONDITION,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTriangleQualityMeasureToDistortion ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasure (int )| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|int = obj.GetQuadQualityMeasure ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToEdgeRatio ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToAspectRatio ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToRadiusRatio ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToMedAspectFrobenius ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToMaxAspectFrobenius ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToMaxEdgeRatios ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToSkew ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToTaper ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToWarpage ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToArea ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToStretch ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToMinAngle ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToMaxAngle ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToOddy ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToCondition ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToJacobian ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToScaledJacobian ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToShear ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToShape ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToRelativeSizeSquared ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToShapeAndSize ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToShearAndSize ()| -  Set/Get the particular estimator used to measure the quality of quadrilaterals.
+ The default is VTK\_QUALITY\_EDGE\_RATIO and valid values also include
+ VTK\_QUALITY\_RADIUS\_RATIO, VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_MAX\_EDGE\_RATIO
+ VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_WARPAGE, VTK\_QUALITY\_AREA,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_MIN\_ANGLE, VTK\_QUALITY\_MAX\_ANGLE,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+ Scope: Except for VTK\_QUALITY\_EDGE\_RATIO, these estimators are intended for planar
+ quadrilaterals only; use at your own risk if you really want to assess non-planar
+ quadrilateral quality with those.
+
+\item  \verb|obj.SetQuadQualityMeasureToDistortion ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasure (int )| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|int = obj.GetTetQualityMeasure ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToEdgeRatio ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToAspectRatio ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToRadiusRatio ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToAspectFrobenius ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToMinAngle ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToCollapseRatio ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToAspectBeta ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToAspectGamma ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToVolume ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToCondition ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToJacobian ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToScaledJacobian ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToShape ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToRelativeSizeSquared ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToShapeAndSize ()| -  Set/Get the particular estimator used to measure the quality of tetrahedra.
+ The default is VTK\_QUALITY\_RADIUS\_RATIO (identical to Verdict's aspect
+ ratio beta) and valid values also include
+ VTK\_QUALITY\_ASPECT\_RATIO, VTK\_QUALITY\_ASPECT\_FROBENIUS, VTK\_QUALITY\_EDGE\_RATIO,
+ VTK\_QUALITY\_COLLAPSE\_RATIO, VTK\_QUALITY\_ASPECT\_BETA, VTK\_QUALITY\_ASPECT\_GAMMA, 
+ VTK\_QUALITY\_VOLUME, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN, 
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHAPE, VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED,
+ VTK\_QUALITY\_SHAPE\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetTetQualityMeasureToDistortion ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasure (int )| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|int = obj.GetHexQualityMeasure ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToEdgeRatio ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToMedAspectFrobenius ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToMaxAspectFrobenius ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToMaxEdgeRatios ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToSkew ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToTaper ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToVolume ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToStretch ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToDiagonal ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToDimension ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToOddy ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToCondition ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToJacobian ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToScaledJacobian ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToShear ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToShape ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToRelativeSizeSquared ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToShapeAndSize ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToShearAndSize ()| -  Set/Get the particular estimator used to measure the quality of hexahedra.
+ The default is VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS and valid values also include
+ VTK\_QUALITY\_EDGE\_RATIO, VTK\_QUALITY\_MAX\_ASPECT\_FROBENIUS, 
+ VTK\_QUALITY\_MAX\_EDGE\_RATIO, VTK\_QUALITY\_SKEW, VTK\_QUALITY\_TAPER, VTK\_QUALITY\_VOLUME,
+ VTK\_QUALITY\_STRETCH, VTK\_QUALITY\_DIAGONAL, VTK\_QUALITY\_DIMENSION,
+ VTK\_QUALITY\_ODDY, VTK\_QUALITY\_CONDITION, VTK\_QUALITY\_JACOBIAN,
+ VTK\_QUALITY\_SCALED\_JACOBIAN, VTK\_QUALITY\_SHEAR, VTK\_QUALITY\_SHAPE,
+ VTK\_QUALITY\_RELATIVE\_SIZE\_SQUARED, VTK\_QUALITY\_SHAPE\_AND\_SIZE,
+ VTK\_QUALITY\_SHEAR\_AND\_SIZE, and VTK\_QUALITY\_DISTORTION.
+
+\item  \verb|obj.SetHexQualityMeasureToDistortion ()| -  This is a static function used to calculate the area of a triangle.
+ It assumes that you pass the correct type of cell -- no type checking is
+ performed because this method is called from the inner loop of the Execute()
+ member function.
+
+\item  \verb|obj.SetRatio (int r)| -  These methods are deprecated. Use Get/SetSaveCellQuality() instead.
+
+ Formerly, SetRatio could be used to disable computation
+ of the tetrahedral radius ratio so that volume alone could be computed.
+ Now, cell quality is always computed, but you may decide not
+ to store the result for each cell.
+ This allows average cell quality of a mesh to be
+ calculated without requiring per-cell storage.
+
+\item  \verb|int = obj.GetRatio ()| -  These methods are deprecated. Use Get/SetSaveCellQuality() instead.
+
+ Formerly, SetRatio could be used to disable computation
+ of the tetrahedral radius ratio so that volume alone could be computed.
+ Now, cell quality is always computed, but you may decide not
+ to store the result for each cell.
+ This allows average cell quality of a mesh to be
+ calculated without requiring per-cell storage.
+
+\item  \verb|obj.RatioOn ()| -  These methods are deprecated. Use Get/SetSaveCellQuality() instead.
+
+ Formerly, SetRatio could be used to disable computation
+ of the tetrahedral radius ratio so that volume alone could be computed.
+ Now, cell quality is always computed, but you may decide not
+ to store the result for each cell.
+ This allows average cell quality of a mesh to be
+ calculated without requiring per-cell storage.
+
+\item  \verb|obj.RatioOff ()| -  These methods are deprecated. Use Get/SetSaveCellQuality() instead.
+
+ Formerly, SetRatio could be used to disable computation
+ of the tetrahedral radius ratio so that volume alone could be computed.
+ Now, cell quality is always computed, but you may decide not
+ to store the result for each cell.
+ This allows average cell quality of a mesh to be
+ calculated without requiring per-cell storage.
+
+\item  \verb|obj.SetVolume (int cv)| -  These methods are deprecated. The functionality of computing cell
+ volume is being removed until it can be computed for any 3D cell.
+ (The previous implementation only worked for tetrahedra.)
+
+ For now, turning on the volume computation will put this
+ filter into ''compatibility mode,'' where tetrahedral cell
+ volume is stored in first component of each output tuple and
+ the radius ratio is stored in the second component. You may
+ also use CompatibilityModeOn()/Off() to enter this mode.
+ In this mode, cells other than tetrahedra will have report
+ a volume of 0.0 (if volume computation is enabled).
+
+ By default, volume computation is disabled and compatibility
+ mode is off, since it does not make a lot of sense for
+ meshes with non-tetrahedral cells.
+
+\item  \verb|int = obj.GetVolume ()| -  These methods are deprecated. The functionality of computing cell
+ volume is being removed until it can be computed for any 3D cell.
+ (The previous implementation only worked for tetrahedra.)
+
+ For now, turning on the volume computation will put this
+ filter into ''compatibility mode,'' where tetrahedral cell
+ volume is stored in first component of each output tuple and
+ the radius ratio is stored in the second component. You may
+ also use CompatibilityModeOn()/Off() to enter this mode.
+ In this mode, cells other than tetrahedra will have report
+ a volume of 0.0 (if volume computation is enabled).
+
+ By default, volume computation is disabled and compatibility
+ mode is off, since it does not make a lot of sense for
+ meshes with non-tetrahedral cells.
+
+\item  \verb|obj.VolumeOn ()| -  These methods are deprecated. The functionality of computing cell
+ volume is being removed until it can be computed for any 3D cell.
+ (The previous implementation only worked for tetrahedra.)
+
+ For now, turning on the volume computation will put this
+ filter into ''compatibility mode,'' where tetrahedral cell
+ volume is stored in first component of each output tuple and
+ the radius ratio is stored in the second component. You may
+ also use CompatibilityModeOn()/Off() to enter this mode.
+ In this mode, cells other than tetrahedra will have report
+ a volume of 0.0 (if volume computation is enabled).
+
+ By default, volume computation is disabled and compatibility
+ mode is off, since it does not make a lot of sense for
+ meshes with non-tetrahedral cells.
+
+\item  \verb|obj.VolumeOff ()| -  These methods are deprecated. The functionality of computing cell
+ volume is being removed until it can be computed for any 3D cell.
+ (The previous implementation only worked for tetrahedra.)
+
+ For now, turning on the volume computation will put this
+ filter into ''compatibility mode,'' where tetrahedral cell
+ volume is stored in first component of each output tuple and
+ the radius ratio is stored in the second component. You may
+ also use CompatibilityModeOn()/Off() to enter this mode.
+ In this mode, cells other than tetrahedra will have report
+ a volume of 0.0 (if volume computation is enabled).
+
+ By default, volume computation is disabled and compatibility
+ mode is off, since it does not make a lot of sense for
+ meshes with non-tetrahedral cells.
+
+\item  \verb|obj.SetCompatibilityMode (int cm)| -  CompatibilityMode governs whether, when both a quality function
+ and cell volume are to be stored as cell data, the two values
+ are stored in a single array. When compatibility mode is off
+ (the default), two separate arrays are used -- one labeled
+ ''Quality'' and the other labeled ''Volume''.
+ When compatibility mode is on, both values are stored in a
+ single array, with volume as the first component and quality
+ as the second component.
+
+ Enabling CompatibilityMode changes the default tetrahedral
+ quality function to VTK\_QUALITY\_RADIUS\_RATIO and turns volume
+ computation on. (This matches the default behavior of the
+ initial implementation of vtkMeshQuality.) You may change
+ quality function and volume computation without leaving
+ compatibility mode.
+
+ Disabling compatibility mode does not affect the current
+ volume computation or tetrahedral quality function settings. 
+
+ The final caveat to CompatibilityMode is that regardless of
+ its setting, the resulting array will be of type vtkDoubleArray
+ rather than the original vtkFloatArray.
+ This is a safety function to keep the authors from
+ diving off of the Combinatorial Coding Cliff into
+ Certain Insanity.
+
+\item  \verb|int = obj.GetCompatibilityMode ()| -  CompatibilityMode governs whether, when both a quality function
+ and cell volume are to be stored as cell data, the two values
+ are stored in a single array. When compatibility mode is off
+ (the default), two separate arrays are used -- one labeled
+ ''Quality'' and the other labeled ''Volume''.
+ When compatibility mode is on, both values are stored in a
+ single array, with volume as the first component and quality
+ as the second component.
+
+ Enabling CompatibilityMode changes the default tetrahedral
+ quality function to VTK\_QUALITY\_RADIUS\_RATIO and turns volume
+ computation on. (This matches the default behavior of the
+ initial implementation of vtkMeshQuality.) You may change
+ quality function and volume computation without leaving
+ compatibility mode.
+
+ Disabling compatibility mode does not affect the current
+ volume computation or tetrahedral quality function settings. 
+
+ The final caveat to CompatibilityMode is that regardless of
+ its setting, the resulting array will be of type vtkDoubleArray
+ rather than the original vtkFloatArray.
+ This is a safety function to keep the authors from
+ diving off of the Combinatorial Coding Cliff into
+ Certain Insanity.
+
+\item  \verb|obj.CompatibilityModeOn ()| -  CompatibilityMode governs whether, when both a quality function
+ and cell volume are to be stored as cell data, the two values
+ are stored in a single array. When compatibility mode is off
+ (the default), two separate arrays are used -- one labeled
+ ''Quality'' and the other labeled ''Volume''.
+ When compatibility mode is on, both values are stored in a
+ single array, with volume as the first component and quality
+ as the second component.
+
+ Enabling CompatibilityMode changes the default tetrahedral
+ quality function to VTK\_QUALITY\_RADIUS\_RATIO and turns volume
+ computation on. (This matches the default behavior of the
+ initial implementation of vtkMeshQuality.) You may change
+ quality function and volume computation without leaving
+ compatibility mode.
+
+ Disabling compatibility mode does not affect the current
+ volume computation or tetrahedral quality function settings. 
+
+ The final caveat to CompatibilityMode is that regardless of
+ its setting, the resulting array will be of type vtkDoubleArray
+ rather than the original vtkFloatArray.
+ This is a safety function to keep the authors from
+ diving off of the Combinatorial Coding Cliff into
+ Certain Insanity.
+
+\item  \verb|obj.CompatibilityModeOff ()| -  CompatibilityMode governs whether, when both a quality function
+ and cell volume are to be stored as cell data, the two values
+ are stored in a single array. When compatibility mode is off
+ (the default), two separate arrays are used -- one labeled
+ ''Quality'' and the other labeled ''Volume''.
+ When compatibility mode is on, both values are stored in a
+ single array, with volume as the first component and quality
+ as the second component.
+
+ Enabling CompatibilityMode changes the default tetrahedral
+ quality function to VTK\_QUALITY\_RADIUS\_RATIO and turns volume
+ computation on. (This matches the default behavior of the
+ initial implementation of vtkMeshQuality.) You may change
+ quality function and volume computation without leaving
+ compatibility mode.
+
+ Disabling compatibility mode does not affect the current
+ volume computation or tetrahedral quality function settings. 
+
+ The final caveat to CompatibilityMode is that regardless of
+ its setting, the resulting array will be of type vtkDoubleArray
+ rather than the original vtkFloatArray.
+ This is a safety function to keep the authors from
+ diving off of the Combinatorial Coding Cliff into
+ Certain Insanity.
+
+\end{itemize}

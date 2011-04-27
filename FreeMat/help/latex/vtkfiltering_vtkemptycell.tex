@@ -1,0 +1,57 @@
+\section{vtkEmptyCell}
+
+\subsection{Usage}
+
+ vtkEmptyCell is a concrete implementation of vtkCell. It is used
+ during processing to represented a deleted element.
+
+To create an instance of class vtkEmptyCell, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkEmptyCell
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkEmptyCell has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkEmptyCell class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkEmptyCell = obj.NewInstance ()|
+
+\item  \verb|vtkEmptyCell = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetCellType ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetCellDimension ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetNumberOfEdges ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetNumberOfFaces ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|vtkCell = obj.GetEdge (int )| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|vtkCell = obj.GetFace (int )| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts1, vtkCellArray lines, vtkCellArray verts2, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray pts, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)|
+
+\item  \verb|obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)|
+
+\item  \verb|obj.InterpolateFunctions (double pcoords[3], double weights)| -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+
+\item  \verb|obj.InterpolateDerivs (double pcoords[3], double derivs)| -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+
+\end{itemize}

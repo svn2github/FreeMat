@@ -1,0 +1,36 @@
+\section{vtkMapperCollection}
+
+\subsection{Usage}
+
+ vtkMapperCollection represents and provides methods to manipulate a list of
+ mappers (i.e., vtkMapper and subclasses). The list is unsorted and duplicate
+ entries are not prevented.
+
+To create an instance of class vtkMapperCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMapperCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMapperCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMapperCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMapperCollection = obj.NewInstance ()|
+
+\item  \verb|vtkMapperCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkMapper a)| -  Add an mapper to the list.
+
+\item  \verb|vtkMapper = obj.GetNextItem ()| -  Get the next mapper in the list.
+
+\item  \verb|vtkMapper = obj.GetLastItem ()| -  Get the last mapper in the list.
+
+\end{itemize}

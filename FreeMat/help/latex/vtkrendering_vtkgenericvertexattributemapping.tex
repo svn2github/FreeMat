@@ -1,0 +1,58 @@
+\section{vtkGenericVertexAttributeMapping}
+
+\subsection{Usage}
+
+ vtkGenericVertexAttributeMapping stores mapping between data arrays and
+ generic vertex attributes. It is used by vtkPainterPolyDataMapper to pass the
+ mappings to the painter which rendering the attributes.
+ .SECTION Thanks
+ Support for generic vertex attributes in VTK was contributed in
+ collaboration with Stephane Ploix at EDF.
+
+To create an instance of class vtkGenericVertexAttributeMapping, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGenericVertexAttributeMapping
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGenericVertexAttributeMapping has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGenericVertexAttributeMapping class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGenericVertexAttributeMapping = obj.NewInstance ()|
+
+\item  \verb|vtkGenericVertexAttributeMapping = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddMapping (string attributeName, string arrayName, int fieldAssociation, int component)| -  Select a data array from the point/cell data
+ and map it to a generic vertex attribute.
+ Note that indices change when a mapping is added/removed.
+
+\item  \verb|obj.AddMapping (int unit, string arrayName, int fieldAssociation, int component)| -  Select a data array and use it as multitexture texture
+ coordinates.
+ Note the texture unit parameter should correspond to the texture
+ unit set on the texture.
+
+\item  \verb|bool = obj.RemoveMapping (string attributeName)| -  Remove a vertex attribute mapping.
+
+\item  \verb|obj.RemoveAllMappings ()| -  Remove all mappings.
+
+\item  \verb|int = obj.GetNumberOfMappings ()| -  Get number of mapppings.
+
+\item  \verb|string = obj.GetAttributeName (int index)| -  Get the attribute name at the given index.
+
+\item  \verb|string = obj.GetArrayName (int index)| -  Get the array name at the given index.
+
+\item  \verb|int = obj.GetFieldAssociation (int index)| -  Get the field association at the given index.
+
+\item  \verb|int = obj.GetComponent (int index)| -  Get the component no. at the given index.
+
+\item  \verb|int = obj.GetTextureUnit (int index)| -  Get the component no. at the given index.
+
+\end{itemize}

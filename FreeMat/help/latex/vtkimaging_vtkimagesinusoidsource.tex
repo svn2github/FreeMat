@@ -1,0 +1,52 @@
+\section{vtkImageSinusoidSource}
+
+\subsection{Usage}
+
+ vtkImageSinusoidSource just produces images with pixel values determined 
+ by a sinusoid.
+
+To create an instance of class vtkImageSinusoidSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageSinusoidSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageSinusoidSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageSinusoidSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageSinusoidSource = obj.NewInstance ()|
+
+\item  \verb|vtkImageSinusoidSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetWholeExtent (int xMinx, int xMax, int yMin, int yMax, int zMin, int zMax)| -  Set/Get the extent of the whole output image.
+
+\item  \verb|obj.SetDirection (double , double , double )| -  Set/Get the direction vector which determines the sinusoidal
+ orientation. The magnitude is ignored.
+
+\item  \verb|obj.SetDirection (double dir[3])| -  Set/Get the direction vector which determines the sinusoidal
+ orientation. The magnitude is ignored.
+
+\item  \verb|double = obj. GetDirection ()| -  Set/Get the direction vector which determines the sinusoidal
+ orientation. The magnitude is ignored.
+
+\item  \verb|obj.SetPeriod (double )| -  Set/Get the period of the sinusoid in pixels.
+
+\item  \verb|double = obj.GetPeriod ()| -  Set/Get the period of the sinusoid in pixels.
+
+\item  \verb|obj.SetPhase (double )| -  Set/Get the phase: 0->2Pi.  0 => Cosine, pi/2 => Sine.
+
+\item  \verb|double = obj.GetPhase ()| -  Set/Get the phase: 0->2Pi.  0 => Cosine, pi/2 => Sine.
+
+\item  \verb|obj.SetAmplitude (double )| -  Set/Get the magnitude of the sinusoid.
+
+\item  \verb|double = obj.GetAmplitude ()| -  Set/Get the magnitude of the sinusoid.
+
+\end{itemize}

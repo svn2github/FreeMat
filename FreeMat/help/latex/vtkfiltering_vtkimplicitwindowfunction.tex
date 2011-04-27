@@ -1,0 +1,73 @@
+\section{vtkImplicitWindowFunction}
+
+\subsection{Usage}
+
+ vtkImplicitWindowFunction is used to modify the output of another
+ implicit function to lie within a specified ''window'', or function
+ range. This can be used to add ''thickness'' to cutting or clipping
+ functions. 
+
+ This class works as follows. First, it evaluates the function value of the 
+ user-specified implicit function. Then, based on the window range specified,
+ it maps the function value into the window values specified. 
+
+
+To create an instance of class vtkImplicitWindowFunction, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImplicitWindowFunction
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImplicitWindowFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImplicitWindowFunction class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImplicitWindowFunction = obj.NewInstance ()|
+
+\item  \verb|vtkImplicitWindowFunction = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|double = obj.EvaluateFunction (double x[3])|
+
+\item  \verb|double = obj.EvaluateFunction (double x, double y, double z)|
+
+\item  \verb|obj.EvaluateGradient (double x[3], double n[3])|
+
+\item  \verb|obj.SetImplicitFunction (vtkImplicitFunction )| -  Specify an implicit function to operate on.
+
+\item  \verb|vtkImplicitFunction = obj.GetImplicitFunction ()| -  Specify an implicit function to operate on.
+
+\item  \verb|obj.SetWindowRange (double , double )| -  Specify the range of function values which are considered to lie within
+ the window. WindowRange[0] is assumed to be less than WindowRange[1].
+
+\item  \verb|obj.SetWindowRange (double  a[2])| -  Specify the range of function values which are considered to lie within
+ the window. WindowRange[0] is assumed to be less than WindowRange[1].
+
+\item  \verb|double = obj. GetWindowRange ()| -  Specify the range of function values which are considered to lie within
+ the window. WindowRange[0] is assumed to be less than WindowRange[1].
+
+\item  \verb|obj.SetWindowValues (double , double )| -  Specify the range of output values that the window range is mapped
+ into. This is effectively a scaling and shifting of the original
+ function values.
+
+\item  \verb|obj.SetWindowValues (double  a[2])| -  Specify the range of output values that the window range is mapped
+ into. This is effectively a scaling and shifting of the original
+ function values.
+
+\item  \verb|double = obj. GetWindowValues ()| -  Specify the range of output values that the window range is mapped
+ into. This is effectively a scaling and shifting of the original
+ function values.
+
+\item  \verb|long = obj.GetMTime ()| -  Override modified time retrieval because of object dependencies.
+
+\item  \verb|obj.Register (vtkObjectBase o)| -  Participate in garbage collection.
+
+\item  \verb|obj.UnRegister (vtkObjectBase o)| -  Participate in garbage collection.
+
+\end{itemize}

@@ -1,0 +1,37 @@
+\section{vtkCompositeRenderManager}
+
+\subsection{Usage}
+
+ vtkCompositeRenderManager is a subclass of vtkParallelRenderManager that
+ uses compositing to do parallel rendering.  This class has
+ replaced vtkCompositeManager.
+
+
+To create an instance of class vtkCompositeRenderManager, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCompositeRenderManager
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCompositeRenderManager has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCompositeRenderManager class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCompositeRenderManager = obj.NewInstance ()|
+
+\item  \verb|vtkCompositeRenderManager = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCompositer (vtkCompositer c)| -  Set/Get the composite algorithm.
+
+\item  \verb|vtkCompositer = obj.GetCompositer ()| -  Set/Get the composite algorithm.
+
+\item  \verb|double = obj.GetImageProcessingTime ()| -  Get rendering metrics.
+
+\end{itemize}

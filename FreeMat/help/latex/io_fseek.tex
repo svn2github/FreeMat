@@ -14,15 +14,15 @@ how the offset is treated.  Three values for the \verb|style| parameter
 are understood:
 \begin{itemize}
 \item  string \verb|'bof'| or the value -1, which indicate the seek is relative
-to the beginning of the file.  This is equivalent to \verb|SEEK_SET| in
+to the beginning of the file.  This is equivalent to \verb|SEEK\_SET| in
 ANSI C.
 
 \item  string \verb|'cof'| or the value 0, which indicates the seek is relative
 to the current position of the file.  This is equivalent to 
-\verb|SEEK_CUR| in ANSI C.
+\verb|SEEK\_CUR| in ANSI C.
 
 \item  string \verb|'eof'| or the value 1, which indicates the seek is relative
-to the end of the file.  This is equivalent to \verb|SEEK_END| in ANSI
+to the end of the file.  This is equivalent to \verb|SEEK\_END| in ANSI
 C.
 
 \end{itemize}
@@ -46,8 +46,8 @@ The next example seeks forward by 2048 bytes from the files current position, an
 --> y = fread(fp,[1,1024],'float');
 --> who x y
   Variable Name       Type   Flags             Size
-              x    double                    [1 4096]
-              y    double                    [1 1024]
+              x    double                    [1x4096]
+              y    double                    [1x1024]
 --> % Seek 2048 bytes into the file
 --> fseek(fp,2048,'cof');
 --> % Read 512 floats from the file

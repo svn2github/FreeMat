@@ -1,0 +1,33 @@
+\section{vtkExecutiveCollection}
+
+\subsection{Usage}
+
+ vtkExecutiveCollection is an object that creates and manipulates lists of
+ objects that are (inherited from) vtkExecutives.
+
+To create an instance of class vtkExecutiveCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkExecutiveCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkExecutiveCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkExecutiveCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkExecutiveCollection = obj.NewInstance ()|
+
+\item  \verb|vtkExecutiveCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkExecutive exec)| -  Get the next executive in the list.
+
+\item  \verb|vtkExecutive = obj.GetNextItem ()|
+
+\end{itemize}

@@ -1,0 +1,72 @@
+\section{vtkScenePicker}
+
+\subsection{Usage}
+
+ The Scene picker, unline conventional pickers picks an entire viewport at
+ one shot and caches the result, which can be retrieved later. 
+    The utility of the class arises during <b>Actor Selection</b>. Let's 
+ say you have a couple of polygonal objects in your scene and you wish to 
+ have a status bar that indicates the object your mouse is over. Picking
+ repeatedly every time your mouse moves would be very slow. The 
+ scene picker automatically picks your viewport every time the camera is
+ changed and caches the information. Additionally, it observes the 
+ vtkRenderWindowInteractor to avoid picking during interaction, so that
+ you still maintain your interactivity. In effect, the picker does an
+ additional pick-render of your scene every time you stop interacting with
+ your scene. As an example, see Rendering/TestScenePicker.
+ 
+
+To create an instance of class vtkScenePicker, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkScenePicker
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkScenePicker has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkScenePicker class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkScenePicker = obj.NewInstance ()|
+
+\item  \verb|vtkScenePicker = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetRenderer (vtkRenderer )| -  Set the renderer. Scene picks are restricted to the viewport.
+
+\item  \verb|vtkRenderer = obj.GetRenderer ()| -  Set the renderer. Scene picks are restricted to the viewport.
+
+\item  \verb|vtkIdType = obj.GetCellId (int displayPos[2])| -  Get cell id at the pick position. 
+ Returns -1 if no cell was picked. 
+ Makes sense only after Pick has been called.
+
+\item  \verb|vtkIdType = obj.GetVertexId (int displayPos[2])| -  Get cell id at the pick position. 
+ Returns -1 if no cell was picked. 
+ Makes sense only after Pick has been called.
+
+\item  \verb|vtkProp = obj.GetViewProp (int displayPos[2])| -  Get actor at the pick position. 
+ Returns NULL if none. 
+ Makes sense only after Pick has been called.
+
+\item  \verb|obj.SetEnableVertexPicking (int )| -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+
+\item  \verb|int = obj.GetEnableVertexPicking ()| -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+
+\item  \verb|obj.EnableVertexPickingOn ()| -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+
+\item  \verb|obj.EnableVertexPickingOff ()| -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+
+\end{itemize}

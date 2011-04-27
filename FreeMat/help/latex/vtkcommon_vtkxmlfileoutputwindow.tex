@@ -1,0 +1,65 @@
+\section{vtkXMLFileOutputWindow}
+
+\subsection{Usage}
+
+ Writes debug/warning/error output to an XML file. Uses prefined XML
+ tags for each text display method. The text is processed to replace
+ XML markup characters.
+ 
+   DisplayText - <Text>
+ 
+   DisplayErrorText - <Error>
+ 
+   DisplayWarningText - <Warning>
+ 
+   DisplayGenericWarningText - <GenericWarning>
+ 
+   DisplayDebugText - <Debug>
+ 
+ The method DisplayTag outputs the text unprocessed. To use this
+ class, instantiate it and then call SetInstance(this).
+
+To create an instance of class vtkXMLFileOutputWindow, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLFileOutputWindow
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLFileOutputWindow has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLFileOutputWindow class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLFileOutputWindow = obj.NewInstance ()|
+
+\item  \verb|vtkXMLFileOutputWindow = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.DisplayText (string )| -  Put the text into the log file. The text is processed to
+ replace \&, <, > with \&amp, \&lt, and \&gt.
+ Each display method outputs a different XML tag.
+
+\item  \verb|obj.DisplayErrorText (string )| -  Put the text into the log file. The text is processed to
+ replace \&, <, > with \&amp, \&lt, and \&gt.
+ Each display method outputs a different XML tag.
+
+\item  \verb|obj.DisplayWarningText (string )| -  Put the text into the log file. The text is processed to
+ replace \&, <, > with \&amp, \&lt, and \&gt.
+ Each display method outputs a different XML tag.
+
+\item  \verb|obj.DisplayGenericWarningText (string )| -  Put the text into the log file. The text is processed to
+ replace \&, <, > with \&amp, \&lt, and \&gt.
+ Each display method outputs a different XML tag.
+
+\item  \verb|obj.DisplayDebugText (string )| -  Put the text into the log file. The text is processed to
+ replace \&, <, > with \&amp, \&lt, and \&gt.
+ Each display method outputs a different XML tag.
+
+\item  \verb|obj.DisplayTag (string )| -  Put the text into the log file without processing it.
+
+\end{itemize}

@@ -1,0 +1,46 @@
+\section{vtkMaskPolyData}
+
+\subsection{Usage}
+
+ vtkMaskPolyData is a filter that sub-samples the cells of input polygonal
+ data. The user specifies every nth item, with an initial offset to begin
+ sampling. 
+
+To create an instance of class vtkMaskPolyData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMaskPolyData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMaskPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMaskPolyData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMaskPolyData = obj.NewInstance ()|
+
+\item  \verb|vtkMaskPolyData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetOnRatio (int )| -  Turn on every nth entity (cell).
+
+\item  \verb|int = obj.GetOnRatioMinValue ()| -  Turn on every nth entity (cell).
+
+\item  \verb|int = obj.GetOnRatioMaxValue ()| -  Turn on every nth entity (cell).
+
+\item  \verb|int = obj.GetOnRatio ()| -  Turn on every nth entity (cell).
+
+\item  \verb|obj.SetOffset (vtkIdType )| -  Start with this entity (cell).
+
+\item  \verb|vtkIdType = obj.GetOffsetMinValue ()| -  Start with this entity (cell).
+
+\item  \verb|vtkIdType = obj.GetOffsetMaxValue ()| -  Start with this entity (cell).
+
+\item  \verb|vtkIdType = obj.GetOffset ()| -  Start with this entity (cell).
+
+\end{itemize}

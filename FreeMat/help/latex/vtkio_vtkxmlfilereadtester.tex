@@ -1,0 +1,43 @@
+\section{vtkXMLFileReadTester}
+
+\subsection{Usage}
+
+ vtkXMLFileReadTester reads the smallest part of a file necessary to
+ determine whether it is a VTK XML file.  If so, it extracts the
+ file type and version number.
+
+To create an instance of class vtkXMLFileReadTester, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLFileReadTester
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLFileReadTester has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLFileReadTester class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLFileReadTester = obj.NewInstance ()|
+
+\item  \verb|vtkXMLFileReadTester = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.TestReadFile ()| -  Try to read the file given by FileName.  Returns 1 if the file is
+ a VTK XML file, and 0 otherwise.
+
+\item  \verb|obj.SetFileName (string )| -  Get/Set the name of the file tested by TestReadFile().
+
+\item  \verb|string = obj.GetFileName ()| -  Get/Set the name of the file tested by TestReadFile().
+
+\item  \verb|string = obj.GetFileDataType ()| -  Get the data type of the XML file tested.  If the file could not
+ be read, returns NULL.
+
+\item  \verb|string = obj.GetFileVersion ()| -  Get the file version of the XML file tested.  If the file could not
+ be read, returns NULL.
+
+\end{itemize}

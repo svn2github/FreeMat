@@ -1,0 +1,53 @@
+\section{vtkCameraActor}
+
+\subsection{Usage}
+
+ vtkCameraActor is an actor used to represent a camera by its wireframe
+ frustum.
+
+To create an instance of class vtkCameraActor, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCameraActor
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCameraActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCameraActor class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCameraActor = obj.NewInstance ()|
+
+\item  \verb|vtkCameraActor = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCamera (vtkCamera camera)| -  The camera to represent. Initial value is NULL.
+
+\item  \verb|vtkCamera = obj.GetCamera ()| -  The camera to represent. Initial value is NULL.
+
+\item  \verb|obj.SetWidthByHeightRatio (double )| -  Ratio between the width and the height of the frustum. Initial value is
+ 1.0 (square)
+
+\item  \verb|double = obj.GetWidthByHeightRatio ()| -  Ratio between the width and the height of the frustum. Initial value is
+ 1.0 (square)
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Does this prop have some translucent polygonal geometry? No.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|long = obj.GetMTime ()| -  Get the actors mtime plus consider its properties and texture if set.
+
+\item  \verb|vtkProperty = obj.GetProperty ()| -  Get property of the internal actor.
+
+\item  \verb|obj.SetProperty (vtkProperty p)| -  Set property of the internal actor.
+
+\end{itemize}

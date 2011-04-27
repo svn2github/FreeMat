@@ -28,9 +28,9 @@ elements
 --> A = randi(ones(3,4),10*ones(3,4))
 
 A = 
-  2  1  4  2 
-  8 10  4  7 
- 10  7  4 10 
+  2  3  2  3 
+ 10  2  4  8 
+  5 10  1  2 
 \end{verbatim}
 We can extract the elements \verb|(1,3),(2,3),(3,4)| of \verb|A| via \verb|sub2ind|.
 To calculate which elements of \verb|A| this corresponds to, we can use
@@ -44,5 +44,5 @@ n =
 --> A(n)
 
 ans = 
-  1  4 10 
+ 3 4 2 
 \end{verbatim}

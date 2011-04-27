@@ -1,0 +1,34 @@
+\section{vtkXMLRectilinearGridWriter}
+
+\subsection{Usage}
+
+ vtkXMLRectilinearGridWriter writes the VTK XML RectilinearGrid
+ file format.  One rectilinear grid input can be written into one
+ file in any number of streamed pieces.  The standard extension for
+ this writer's file format is ''vtr''.  This writer is also used to
+ write a single piece of the parallel file format.
+
+To create an instance of class vtkXMLRectilinearGridWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLRectilinearGridWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLRectilinearGridWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLRectilinearGridWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLRectilinearGridWriter = obj.NewInstance ()|
+
+\item  \verb|vtkXMLRectilinearGridWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetDefaultFileExtension ()| -  Get the default file extension for files written by this writer.
+
+\end{itemize}

@@ -8,7 +8,7 @@ following:
 \begin{verbatim}
   function [out_1,...,out_M,varargout] = fname(in_1,...,in_N,varargin)
 \end{verbatim}
-where \verb|out_i| are the output parameters, \verb|in_i| are the input
+where \verb|out\_i| are the output parameters, \verb|in\_i| are the input
 parameters, and \verb|varargout| and \verb|varargin| are special keywords
 used for functions that have variable inputs or outputs.  For 
 functions with a fixed number of input or output parameters, the 
@@ -17,7 +17,7 @@ syntax is somewhat simpler:
   function [out_1,...,out_M] = fname(in_1,...,in_N)
 \end{verbatim}
 Note that functions that have no return arguments can omit
-the return argument list (of \verb|out_i|) and the equals sign:
+the return argument list (of \verb|out\_i|) and the equals sign:
 \begin{verbatim}
   function fname(in_1,...,in_N)
 \end{verbatim}
@@ -31,18 +31,18 @@ Functions that return only a single value can omit the brackets
   function out_1 = fname(in_1,...,in_N)
 \end{verbatim}
 
-In the body of the function \verb|in_i| are initialized with the
+In the body of the function \verb|in\_i| are initialized with the
 values passed when the function is called.  Also, the function
-must assign values for \verb|out_i| to pass values to the caller.
+must assign values for \verb|out\_i| to pass values to the caller.
 Note that by default, FreeMat passes arguments by value, meaning
-that if we modify the contents of \verb|in_i| inside the function,
+that if we modify the contents of \verb|in\_i| inside the function,
 it has no effect on any variables used by the caller.  Arguments
-can be passed by reference by prepending an ampersand \verb|&|
+can be passed by reference by prepending an ampersand \verb|\&|
 before the name of the input, e.g.
 \begin{verbatim}
   function [out1,...,out_M] = fname(in_1,&in_2,in_3,...,in_N)
 \end{verbatim}
-in which case \verb|in_2| is passed by reference and not by value.
+in which case \verb|in\_2| is passed by reference and not by value.
 Also, FreeMat works like \verb|C| in that the caller does not have
 to supply the full list of arguments.  Also, when \verb|keywords|
 (see help \verb|keywords|) are used, an arbitrary subset of the 

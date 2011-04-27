@@ -1,0 +1,45 @@
+\section{vtkGPUInfoList}
+
+\subsection{Usage}
+
+ vtkGPUInfoList stores a list of vtkGPUInfo. An host can have
+ several GPUs. It creates and sets the list by probing the host with system
+ calls. This an abstract class. Concrete classes are OS specific.
+
+To create an instance of class vtkGPUInfoList, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGPUInfoList
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGPUInfoList has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGPUInfoList class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGPUInfoList = obj.NewInstance ()|
+
+\item  \verb|vtkGPUInfoList = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Probe ()| -  Build the list of vtkInfoGPU if not done yet.
+ Default implementation created an empty list. Useful if there is no
+ implementation available for a given architecture yet.
+ 
+
+\item  \verb|bool = obj.IsProbed ()| -  Tells if the operating system has been probed. Initial value is false.
+
+\item  \verb|int = obj.GetNumberOfGPUs ()| -  Return the number of GPUs.
+ 
+
+\item  \verb|vtkGPUInfo = obj.GetGPUInfo (int i)| -  Return information about GPU i.
+ 
+ 
+ 
+
+\end{itemize}

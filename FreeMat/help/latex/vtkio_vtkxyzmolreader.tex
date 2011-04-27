@@ -1,0 +1,43 @@
+\section{vtkXYZMolReader}
+
+\subsection{Usage}
+
+ vtkXYZMolReader is a source object that reads Molecule files
+ The FileName must be specified
+
+ .SECTION Thanks
+ Dr. Jean M. Favre who developed and contributed this class
+
+To create an instance of class vtkXYZMolReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXYZMolReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXYZMolReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXYZMolReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXYZMolReader = obj.NewInstance ()|
+
+\item  \verb|vtkXYZMolReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CanReadFile (string name)| -  Test whether the file with the given name can be read by this
+ reader.
+
+\item  \verb|obj.SetTimeStep (int )| -  Set the current time step. It should be greater than 0 and smaller than
+ MaxTimeStep.
+
+\item  \verb|int = obj.GetTimeStep ()| -  Set the current time step. It should be greater than 0 and smaller than
+ MaxTimeStep.
+
+\item  \verb|int = obj.GetMaxTimeStep ()| -  Get the maximum time step.
+
+\end{itemize}

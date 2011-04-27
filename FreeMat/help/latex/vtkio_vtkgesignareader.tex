@@ -1,0 +1,40 @@
+\section{vtkGESignaReader}
+
+\subsection{Usage}
+
+ vtkGESignaReader is a source object that reads some GE Signa ximg files It
+ does support reading in pixel spacing, slice spacing and it computes an
+ origin for the image in millimeters. It always produces greyscale unsigned
+ short data and it supports reading in rectangular, packed, compressed, and
+ packed\&compressed. It does not read in slice orientation, or position
+ right now. To use it you just need to specify a filename or a file prefix
+ and pattern.
+
+To create an instance of class vtkGESignaReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGESignaReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGESignaReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGESignaReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGESignaReader = obj.NewInstance ()|
+
+\item  \verb|vtkGESignaReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CanReadFile (string fname)| -  Is the given file a GESigna file?
+
+\item  \verb|string = obj.GetFileExtensions ()| -  A descriptive name for this format
+
+\item  \verb|string = obj.GetDescriptiveName ()|
+
+\end{itemize}

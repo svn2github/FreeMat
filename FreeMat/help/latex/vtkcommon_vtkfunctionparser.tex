@@ -1,0 +1,146 @@
+\section{vtkFunctionParser}
+
+\subsection{Usage}
+
+ vtkFunctionParser is a class that takes in a mathematical expression as
+ a char string, parses it, and evaluates it at the specified values of
+ the variables in the input string.
+
+ You can use the ''if'' operator to create conditional expressions
+ such as if ( test, trueresult, falseresult). These evaluate the boolean
+ valued test expression and then evaluate either the trueresult or the 
+ falseresult expression to produce a final (scalar or vector valued) value.
+ ''test'' may contain <,>,=,|,\&, and () and all three subexpressions can
+ evaluate arbitrary function operators (ln, cos, +, if, etc)
+
+ .SECTION Thanks
+ Thomas Dunne (thomas.dunne@iwr.uni-heidelberg.de) for adding code for
+ two-parameter-parsing and a few functions (sign, min, max).
+
+ Sid Sydoriak (sxs@lanl.gov) for adding boolean operations and
+ conditional expressions and for fixing a variety of bugs.
+
+To create an instance of class vtkFunctionParser, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkFunctionParser
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkFunctionParser has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkFunctionParser class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkFunctionParser = obj.NewInstance ()|
+
+\item  \verb|vtkFunctionParser = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFunction (string function)|
+
+\item  \verb|string = obj.GetFunction ()|
+
+\item  \verb|int = obj.IsScalarResult ()| -  Check whether the result is a scalar result.  If it isn't, then
+ either the result is a vector or an error has occurred.
+
+\item  \verb|int = obj.IsVectorResult ()| -  Check whether the result is a vector result.  If it isn't, then
+ either the result is scalar or an error has occurred.
+
+\item  \verb|double = obj.GetScalarResult ()| -  Get a scalar result from evaluating the input function.
+
+\item  \verb|double = obj.GetVectorResult ()| -  Get a vector result from evaluating the input function.
+
+\item  \verb|obj.GetVectorResult (double result[3])| -  Get a vector result from evaluating the input function.
+
+\item  \verb|obj.SetScalarVariableValue (string variableName, double value)| -  Set the value of a scalar variable.  If a variable with this name
+ exists, then its value will be set to the new value.  If there is not
+ already a variable with this name, variableName will be added to the
+ list of variables, and its value will be set to the new value.
+
+\item  \verb|obj.SetScalarVariableValue (int i, double value)| -  Set the value of a scalar variable.  If a variable with this name
+ exists, then its value will be set to the new value.  If there is not
+ already a variable with this name, variableName will be added to the
+ list of variables, and its value will be set to the new value.
+
+\item  \verb|double = obj.GetScalarVariableValue (string variableName)| -  Get the value of a scalar variable.
+
+\item  \verb|double = obj.GetScalarVariableValue (int i)| -  Get the value of a scalar variable.
+
+\item  \verb|obj.SetVectorVariableValue (string variableName, double xValue, double yValue, double zValue)| -  Set the value of a vector variable.  If a variable with this name
+ exists, then its value will be set to the new value.  If there is not
+ already a variable with this name, variableName will be added to the
+ list of variables, and its value will be set to the new value.
+
+\item  \verb|obj.SetVectorVariableValue (string variableName, double values[3])| -  Set the value of a vector variable.  If a variable with this name
+ exists, then its value will be set to the new value.  If there is not
+ already a variable with this name, variableName will be added to the
+ list of variables, and its value will be set to the new value.
+
+\item  \verb|obj.SetVectorVariableValue (int i, double xValue, double yValue, double zValue)| -  Set the value of a vector variable.  If a variable with this name
+ exists, then its value will be set to the new value.  If there is not
+ already a variable with this name, variableName will be added to the
+ list of variables, and its value will be set to the new value.
+
+\item  \verb|obj.SetVectorVariableValue (int i, double values[3])| -  Set the value of a vector variable.  If a variable with this name
+ exists, then its value will be set to the new value.  If there is not
+ already a variable with this name, variableName will be added to the
+ list of variables, and its value will be set to the new value.
+
+\item  \verb|double = obj.GetVectorVariableValue (string variableName)| -  Get the value of a vector variable.
+
+\item  \verb|obj.GetVectorVariableValue (string variableName, double value[3])| -  Get the value of a vector variable.
+
+\item  \verb|double = obj.GetVectorVariableValue (int i)| -  Get the value of a vector variable.
+
+\item  \verb|obj.GetVectorVariableValue (int i, double value[3])| -  Get the value of a vector variable.
+
+\item  \verb|int = obj.GetNumberOfScalarVariables ()| -  Get the number of scalar variables.
+
+\item  \verb|int = obj.GetNumberOfVectorVariables ()| -  Get the number of vector variables.
+
+\item  \verb|string = obj.GetScalarVariableName (int i)| -  Get the ith scalar variable name.
+
+\item  \verb|string = obj.GetVectorVariableName (int i)| -  Get the ith vector variable name.
+
+\item  \verb|obj.RemoveAllVariables ()| -  Remove all the current variables.
+
+\item  \verb|obj.RemoveScalarVariables ()| -  Remove all the scalar variables.
+
+\item  \verb|obj.RemoveVectorVariables ()| -  Remove all the vector variables.
+
+\item  \verb|obj.SetReplaceInvalidValues (int )| -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+
+\item  \verb|int = obj.GetReplaceInvalidValues ()| -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+
+\item  \verb|obj.ReplaceInvalidValuesOn ()| -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+
+\item  \verb|obj.ReplaceInvalidValuesOff ()| -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+
+\item  \verb|obj.SetReplacementValue (double )| -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+
+\item  \verb|double = obj.GetReplacementValue ()| -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+
+\end{itemize}

@@ -1,0 +1,70 @@
+\section{vtkQuadraticQuad}
+
+\subsection{Usage}
+
+ vtkQuadraticQuad is a concrete implementation of vtkNonLinearCell to
+ represent a two-dimensional, 8-node isoparametric parabolic quadrilateral
+ element. The interpolation is the standard finite element, quadratic
+ isoparametric shape function. The cell includes a mid-edge node for each
+ of the four edges of the cell. The ordering of the eight points defining
+ the cell are point ids (0-3,4-7) where ids 0-3 define the four corner
+ vertices of the quad; ids 4-7 define the midedge nodes (0,1), (1,2),
+ (2,3), (3,0).
+
+To create an instance of class vtkQuadraticQuad, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkQuadraticQuad
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkQuadraticQuad has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkQuadraticQuad class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkQuadraticQuad = obj.NewInstance ()|
+
+\item  \verb|vtkQuadraticQuad = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetCellType ()| -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+
+\item  \verb|int = obj.GetCellDimension ()| -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+
+\item  \verb|int = obj.GetNumberOfEdges ()| -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+
+\item  \verb|int = obj.GetNumberOfFaces ()| -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+
+\item  \verb|vtkCell = obj.GetEdge (int )| -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+
+\item  \verb|vtkCell = obj.GetFace (int )|
+
+\item  \verb|int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)|
+
+\item  \verb|obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)|
+
+\item  \verb|int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)|
+
+\item  \verb|obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)|
+
+\item  \verb|obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)| -  Clip this quadratic quad using scalar value provided. Like contouring,
+ except that it cuts the quad to produce linear triangles.
+
+\item  \verb|int = obj.GetParametricCenter (double pcoords[3])| -  Return the center of the pyramid in parametric coordinates.
+
+\item  \verb|obj.InterpolateFunctions (double pcoords[3], double weights[8])| -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+
+\item  \verb|obj.InterpolateDerivs (double pcoords[3], double derivs[16])|
+
+\end{itemize}

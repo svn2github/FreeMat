@@ -1,0 +1,60 @@
+\section{vtkPriorityQueue}
+
+\subsection{Usage}
+
+ vtkPriorityQueue is a general object for creating and manipulating lists
+ of object ids (e.g., point or cell ids). Object ids are sorted according
+ to a user-specified priority, where entries at the top of the queue have
+ the smallest values.
+
+ This implementation provides a feature beyond the usual ability to insert
+ and retrieve (or pop) values from the queue. It is also possible to
+ pop any item in the queue given its id number. This allows you to delete
+ entries in the queue which can useful for reinserting an item into the
+ queue. 
+
+
+To create an instance of class vtkPriorityQueue, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPriorityQueue
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPriorityQueue has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPriorityQueue class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPriorityQueue = obj.NewInstance ()|
+
+\item  \verb|vtkPriorityQueue = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Allocate (vtkIdType sz, vtkIdType ext)| -  Allocate initial space for priority queue.
+
+\item  \verb|obj.Insert (double priority, vtkIdType id)| -  Insert id with priority specified. The id is generally an
+ index like a point id or cell id.
+
+\item  \verb|vtkIdType = obj.Pop (vtkIdType location)| -  Same as above but simplified for easier wrapping into interpreted
+ languages.
+
+\item  \verb|vtkIdType = obj.Peek (vtkIdType location)| -  Peek into the queue without actually removing anything. Returns the
+ id.
+
+\item  \verb|double = obj.DeleteId (vtkIdType id)| -  Delete entry in queue with specified id. Returns priority value
+ associated with that id; or VTK\_DOUBLE\_MAX if not in queue.
+
+\item  \verb|double = obj.GetPriority (vtkIdType id)| -  Get the priority of an entry in the queue with specified id. Returns
+ priority value of that id or VTK\_DOUBLE\_MAX if not in queue.
+
+\item  \verb|vtkIdType = obj.GetNumberOfItems ()| -  Return the number of items in this queue.
+
+\item  \verb|obj.Reset ()| -  Empty the queue but without releasing memory. This avoids the
+ overhead of memory allocation/deletion.
+
+\end{itemize}

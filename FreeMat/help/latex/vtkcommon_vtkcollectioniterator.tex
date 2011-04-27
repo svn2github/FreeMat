@@ -1,0 +1,53 @@
+\section{vtkCollectionIterator}
+
+\subsection{Usage}
+
+ vtkCollectionIterator provides an alternative way to traverse
+ through the objects in a vtkCollection.  Unlike the collection's
+ built in interface, this allows multiple iterators to
+ simultaneously traverse the collection.  If items are removed from
+ the collection, only the iterators currently pointing to those
+ items are invalidated.  Other iterators will still continue to
+ function normally.
+
+To create an instance of class vtkCollectionIterator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCollectionIterator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCollectionIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCollectionIterator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCollectionIterator = obj.NewInstance ()|
+
+\item  \verb|vtkCollectionIterator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCollection (vtkCollection )| -  Set/Get the collection over which to iterate.
+
+\item  \verb|vtkCollection = obj.GetCollection ()| -  Set/Get the collection over which to iterate.
+
+\item  \verb|obj.InitTraversal ()| -  Position the iterator at the first item in the collection.
+
+\item  \verb|obj.GoToFirstItem ()| -  Position the iterator at the first item in the collection.
+
+\item  \verb|obj.GoToNextItem ()| -  Move the iterator to the next item in the collection.
+
+\item  \verb|int = obj.IsDoneWithTraversal ()| -  Test whether the iterator is currently positioned at a valid item.
+ Returns 1 for yes, 0 for no.
+
+\item  \verb|vtkObject = obj.GetCurrentObject ()| -  Get the item at the current iterator position.  Valid only when
+ IsDoneWithTraversal() returns 1.
+
+\item  \verb|vtkObject = obj.GetObject ()| -  @deprecated Replaced by vtkCollectionIterator::GetCurrentObject() as
+ of VTK 5.0.
+
+\end{itemize}

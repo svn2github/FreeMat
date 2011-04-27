@@ -1,0 +1,39 @@
+\section{vtkMergePoints}
+
+\subsection{Usage}
+
+ vtkMergePoints is a locator object to quickly locate points in 3D.
+ The primary difference between vtkMergePoints and its superclass
+ vtkPointLocator is that vtkMergePoints merges precisely coincident points
+ and is therefore much faster.
+
+To create an instance of class vtkMergePoints, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMergePoints
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMergePoints has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMergePoints class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMergePoints = obj.NewInstance ()|
+
+\item  \verb|vtkMergePoints = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkIdType = obj.IsInsertedPoint (double x[3])| -  Determine whether point given by x[3] has been inserted into points list.
+ Return id of previously inserted point if this is true, otherwise return
+ -1.
+
+\item  \verb|vtkIdType = obj.IsInsertedPoint (double x, double y, double z)| -  Determine whether point given by x[3] has been inserted into points list.
+ Return id of previously inserted point if this is true, otherwise return
+ -1.
+
+\end{itemize}

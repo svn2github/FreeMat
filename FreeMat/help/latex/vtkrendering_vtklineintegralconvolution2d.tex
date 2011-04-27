@@ -1,0 +1,244 @@
+\section{vtkLineIntegralConvolution2D}
+
+\subsection{Usage}
+
+  This class resorts to GLSL to implement GPU-based Line Integral Convolution 
+  (LIC) for visualizing a 2D vector field that may be obtained by projecting
+  an original 3D vector field onto a surface (such that the resulting 2D 
+  vector at each grid point on the surface is tangential to the local normal,
+  as done in vtkSurfaceLICPainter). 
+  
+  As an image-based technique, 2D LIC works by (1) integrating a bidirectional
+  streamline from the center of each pixel (of the LIC output image), (2)
+  locating the pixels along / hit by this streamline as the correlated pixels
+  of the starting pixel (seed point / pixel), (3) indexing a (usually white) 
+  noise texture (another input to LIC, in addition to the 2D vector field, 
+  usually with the same size as that of the 2D vetor field) to determine the
+  values (colors) of these pixels (the starting and the correlated pixels), 
+  typically through bi-linear interpolation, and (4) performing convolution
+  (weighted averaging) on these values, by adopting a low-pass filter (such 
+  as box, ramp, and Hanning kernels), to obtain the result value (color) that
+  is then assigned to the seed pixel.
+
+  The GLSL-based GPU implementation herein maps the aforementioned pipeline to
+  fragment shaders and a box kernel is employed. Both the white noise and the
+  vector field are provided to the GPU as texture objects (supported by the 
+  multi-texturing capability). In addition, there are four texture objects 
+  (color buffers) allocated to constitute two pairs that work in a ping-pong
+  fashion, with one as the read buffers and the other as the write / render 
+  targets. Maintained by a frame buffer object (GL\_EXT\_framebuffer\_object),
+  each pair employs one buffer to store the current (dynamically updated)
+  position (by means of the texture coordinate that keeps being warped by the
+  underlying vector) of the (virtual) particle initially released from each 
+  fragment while using the bother buffer to store the current (dynamically
+  updated too) accumulated texture value that each seed fragment (before the
+  'mesh' is warped) collects. Given NumberOfSteps integration steps in each
+  direction, there are a total of (2 * NumberOfSteps + 1) fragments (including
+  the seed fragment) are convolved and each contributes 1 / (2 * NumberOfSteps
+  + 1) of the associated texture value to fulfill the box filter.
+  
+  One pass of LIC (basic LIC) tends to produce low-contrast / blurred images and
+  vtkLineIntegralConvolution2D provides an option for creating enhanced LIC
+  images. Enhanced LIC improves image quality by increasing inter-streamline
+  contrast while suppressing artifacts. It performs two passes of LIC, with a
+  3x3 Laplacian high-pass filter in between that processes the output of pass
+  \#1 LIC and forwards the result as the input 'noise' to pass \#2 LIC. Enhanced
+  LIC automatically degenerates to basic LIC during user interaction.
+
+  vtkLineIntegralConvolution2D applies masking to zero-vector fragments so
+  that un-filtered white noise areas are made totally transparent by class
+  vtkSurfaceLICPainter to show the underlying geometry surface.
+
+ .SECTION Required OpenGL Extensins
+  GL\_ARB\_texture\_non\_power\_of\_two
+  GL\_VERSION\_2\_0
+  GL\_ARB\_texture\_float
+  GL\_ARB\_draw\_buffers
+  GL\_EXT\_framebuffer\_object
+
+
+To create an instance of class vtkLineIntegralConvolution2D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkLineIntegralConvolution2D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkLineIntegralConvolution2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkLineIntegralConvolution2D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkLineIntegralConvolution2D = obj.NewInstance ()|
+
+\item  \verb|vtkLineIntegralConvolution2D = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetEnhancedLIC (int )| -  Enable/Disable enhanced LIC that improves image quality by increasing
+ inter-streamline contrast while suppressing artifacts. Enhanced LIC
+ performs two passes of LIC, with a 3x3 Laplacian high-pass filter in
+ between that processes the output of pass \#1 LIC and forwards the result
+ as the input 'noise' to pass \#2 LIC. This flag is automatically turned
+ off during user interaction.
+
+\item  \verb|int = obj.GetEnhancedLIC ()| -  Enable/Disable enhanced LIC that improves image quality by increasing
+ inter-streamline contrast while suppressing artifacts. Enhanced LIC
+ performs two passes of LIC, with a 3x3 Laplacian high-pass filter in
+ between that processes the output of pass \#1 LIC and forwards the result
+ as the input 'noise' to pass \#2 LIC. This flag is automatically turned
+ off during user interaction.
+
+\item  \verb|obj.EnhancedLICOn ()| -  Enable/Disable enhanced LIC that improves image quality by increasing
+ inter-streamline contrast while suppressing artifacts. Enhanced LIC
+ performs two passes of LIC, with a 3x3 Laplacian high-pass filter in
+ between that processes the output of pass \#1 LIC and forwards the result
+ as the input 'noise' to pass \#2 LIC. This flag is automatically turned
+ off during user interaction.
+
+\item  \verb|obj.EnhancedLICOff ()| -  Enable/Disable enhanced LIC that improves image quality by increasing
+ inter-streamline contrast while suppressing artifacts. Enhanced LIC
+ performs two passes of LIC, with a 3x3 Laplacian high-pass filter in
+ between that processes the output of pass \#1 LIC and forwards the result
+ as the input 'noise' to pass \#2 LIC. This flag is automatically turned
+ off during user interaction.
+
+\item  \verb|obj.SetLICForSurface (int )|
+
+\item  \verb|int = obj.GetLICForSurface ()|
+
+\item  \verb|obj.LICForSurfaceOn ()|
+
+\item  \verb|obj.LICForSurfaceOff ()|
+
+\item  \verb|obj.SetNumberOfSteps (int )| -  Number of streamline integration steps (initial value is 1).
+ In term of visual quality, the greater (within some range) the better.
+
+\item  \verb|int = obj.GetNumberOfSteps ()| -  Number of streamline integration steps (initial value is 1).
+ In term of visual quality, the greater (within some range) the better.
+
+\item  \verb|obj.SetLICStepSize (double )| -  Get/Set the streamline integration step size (0.01 by default). This is 
+ the length of each step in normalized image space i.e. in range [0, 1].
+ In term of visual quality, the smaller the better. The type for the 
+ interface is double as VTK interface is, but GPU only supports float.
+ Thus it will be converted to float in the execution of the algorithm.
+
+\item  \verb|double = obj.GetLICStepSizeMinValue ()| -  Get/Set the streamline integration step size (0.01 by default). This is 
+ the length of each step in normalized image space i.e. in range [0, 1].
+ In term of visual quality, the smaller the better. The type for the 
+ interface is double as VTK interface is, but GPU only supports float.
+ Thus it will be converted to float in the execution of the algorithm.
+
+\item  \verb|double = obj.GetLICStepSizeMaxValue ()| -  Get/Set the streamline integration step size (0.01 by default). This is 
+ the length of each step in normalized image space i.e. in range [0, 1].
+ In term of visual quality, the smaller the better. The type for the 
+ interface is double as VTK interface is, but GPU only supports float.
+ Thus it will be converted to float in the execution of the algorithm.
+
+\item  \verb|double = obj.GetLICStepSize ()| -  Get/Set the streamline integration step size (0.01 by default). This is 
+ the length of each step in normalized image space i.e. in range [0, 1].
+ In term of visual quality, the smaller the better. The type for the 
+ interface is double as VTK interface is, but GPU only supports float.
+ Thus it will be converted to float in the execution of the algorithm.
+
+\item  \verb|obj.SetNoise (vtkTextureObject noise)| -  Set/Get the input white noise texture (initial value is NULL).
+
+\item  \verb|vtkTextureObject = obj.GetNoise ()| -  Set/Get the input white noise texture (initial value is NULL).
+
+\item  \verb|obj.SetVectorField (vtkTextureObject vectorField)| -  Set/Get the vector field (initial value is NULL).
+
+\item  \verb|vtkTextureObject = obj.GetVectorField ()| -  Set/Get the vector field (initial value is NULL).
+
+\item  \verb|obj.SetComponentIds (int , int )| -  If VectorField has >= 3 components, we must choose which 2 components 
+ form the (X, Y) components for the vector field. Must be in the range 
+ [0, 3].
+
+\item  \verb|obj.SetComponentIds (int  a[2])| -  If VectorField has >= 3 components, we must choose which 2 components 
+ form the (X, Y) components for the vector field. Must be in the range 
+ [0, 3].
+
+\item  \verb|int = obj. GetComponentIds ()| -  If VectorField has >= 3 components, we must choose which 2 components 
+ form the (X, Y) components for the vector field. Must be in the range 
+ [0, 3].
+
+\item  \verb|obj.SetGridSpacings (double , double )| -  Set/Get the spacing in each dimension of the plane on which the vector 
+ field is defined. This class performs LIC in the normalized image space
+ and hence generally it needs to transform the input vector field (given 
+ in physical space) to the normalized image space. The Spacing is needed
+ to determine the tranform. Default is (1.0, 1.0). It is possible to 
+ disable vector transformation by setting TransformVectors to 0.
+
+\item  \verb|obj.SetGridSpacings (double  a[2])| -  Set/Get the spacing in each dimension of the plane on which the vector 
+ field is defined. This class performs LIC in the normalized image space
+ and hence generally it needs to transform the input vector field (given 
+ in physical space) to the normalized image space. The Spacing is needed
+ to determine the tranform. Default is (1.0, 1.0). It is possible to 
+ disable vector transformation by setting TransformVectors to 0.
+
+\item  \verb|double = obj. GetGridSpacings ()| -  Set/Get the spacing in each dimension of the plane on which the vector 
+ field is defined. This class performs LIC in the normalized image space
+ and hence generally it needs to transform the input vector field (given 
+ in physical space) to the normalized image space. The Spacing is needed
+ to determine the tranform. Default is (1.0, 1.0). It is possible to 
+ disable vector transformation by setting TransformVectors to 0.
+
+\item  \verb|obj.SetTransformVectors (int )| -  This class performs LIC in the normalized image space. Hence, by default
+ it transforms the input vectors to the normalized image space (using the
+ GridSpacings and input vector field dimensions). Set this to 0 to disable
+ tranformation if the vectors are already tranformed.
+
+\item  \verb|int = obj.GetTransformVectorsMinValue ()| -  This class performs LIC in the normalized image space. Hence, by default
+ it transforms the input vectors to the normalized image space (using the
+ GridSpacings and input vector field dimensions). Set this to 0 to disable
+ tranformation if the vectors are already tranformed.
+
+\item  \verb|int = obj.GetTransformVectorsMaxValue ()| -  This class performs LIC in the normalized image space. Hence, by default
+ it transforms the input vectors to the normalized image space (using the
+ GridSpacings and input vector field dimensions). Set this to 0 to disable
+ tranformation if the vectors are already tranformed.
+
+\item  \verb|obj.TransformVectorsOn ()| -  This class performs LIC in the normalized image space. Hence, by default
+ it transforms the input vectors to the normalized image space (using the
+ GridSpacings and input vector field dimensions). Set this to 0 to disable
+ tranformation if the vectors are already tranformed.
+
+\item  \verb|obj.TransformVectorsOff ()| -  This class performs LIC in the normalized image space. Hence, by default
+ it transforms the input vectors to the normalized image space (using the
+ GridSpacings and input vector field dimensions). Set this to 0 to disable
+ tranformation if the vectors are already tranformed.
+
+\item  \verb|int = obj.GetTransformVectors ()| -  This class performs LIC in the normalized image space. Hence, by default
+ it transforms the input vectors to the normalized image space (using the
+ GridSpacings and input vector field dimensions). Set this to 0 to disable
+ tranformation if the vectors are already tranformed.
+
+\item  \verb|obj.SetMagnification (int )| -  The the magnification factor (default is 1.0).
+
+\item  \verb|int = obj.GetMagnificationMinValue ()| -  The the magnification factor (default is 1.0).
+
+\item  \verb|int = obj.GetMagnificationMaxValue ()| -  The the magnification factor (default is 1.0).
+
+\item  \verb|int = obj.GetMagnification ()| -  The the magnification factor (default is 1.0).
+
+\item  \verb|obj.SetVectorShiftScale (double shift, double scale)| -  Returns if the context supports the required extensions.
+
+\item  \verb|int = obj.Execute ()| -  Perform the LIC and obtain the LIC texture. Return 1 if no error.
+
+\item  \verb|int = obj.Execute (int extent[4])| -  Same as Execute() except that the LIC operation is performed only on a
+ window (given by the \c extent) in the input VectorField. The \c extent
+ is relative to the input VectorField. The output LIC image will be of 
+ the size specified by extent.
+
+\item  \verb|int = obj.Execute (int extent[4])| -  Same as Execute() except that the LIC operation is performed only on a
+ window (given by the \c extent) in the input VectorField. The \c extent
+ is relative to the input VectorField. The output LIC image will be of 
+ the size specified by extent.
+
+\item  \verb|obj.SetLIC (vtkTextureObject lic)| -  LIC texture (initial value is NULL) set by Execute().
+
+\item  \verb|vtkTextureObject = obj.GetLIC ()| -  LIC texture (initial value is NULL) set by Execute().
+
+\end{itemize}

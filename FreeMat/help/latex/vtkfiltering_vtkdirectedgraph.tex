@@ -1,0 +1,38 @@
+\section{vtkDirectedGraph}
+
+\subsection{Usage}
+
+ vtkDirectedGraph is a collection of vertices along with a collection of
+ directed edges (edges that have a source and target). ShallowCopy()
+ and DeepCopy() (and CheckedShallowCopy(), CheckedDeepCopy())
+ accept instances of vtkTree and vtkMutableDirectedGraph.
+
+ vtkDirectedGraph is read-only. To create an undirected graph,
+ use an instance of vtkMutableDirectedGraph, then you may set the
+ structure to a vtkDirectedGraph using ShallowCopy().
+
+
+To create an instance of class vtkDirectedGraph, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDirectedGraph
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDirectedGraph has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDirectedGraph class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDirectedGraph = obj.NewInstance ()|
+
+\item  \verb|vtkDirectedGraph = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetDataObjectType ()|
+
+\end{itemize}

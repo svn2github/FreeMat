@@ -1,0 +1,69 @@
+\section{vtkWindBladeReader}
+
+\subsection{Usage}
+
+ vtkWindBladeReader is a source object that reads WindBlade files
+ which are block binary files with tags before and after each block
+ giving the number of bytes within the block.  The number of data 
+ variables dumped varies.  The data is 3D rectilinear with irregular
+ spacing on the Z dimension.
+
+
+To create an instance of class vtkWindBladeReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkWindBladeReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkWindBladeReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkWindBladeReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkWindBladeReader = obj.NewInstance ()|
+
+\item  \verb|vtkWindBladeReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFilename (string )|
+
+\item  \verb|string = obj.GetFilename ()|
+
+\item  \verb|obj.SetWholeExtent (int , int , int , int , int , int )|
+
+\item  \verb|obj.SetWholeExtent (int  a[6])|
+
+\item  \verb|int = obj. GetWholeExtent ()|
+
+\item  \verb|obj.SetSubExtent (int , int , int , int , int , int )|
+
+\item  \verb|obj.SetSubExtent (int  a[6])|
+
+\item  \verb|int = obj. GetSubExtent ()|
+
+\item  \verb|vtkStructuredGrid = obj.GetFieldOutput ()| -  Get the reader's output
+
+\item  \verb|vtkUnstructuredGrid = obj.GetBladeOutput ()| -  Get the reader's output
+
+\item  \verb|int = obj.GetNumberOfPointArrays ()| -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+
+\item  \verb|string = obj.GetPointArrayName (int index)| -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+
+\item  \verb|int = obj.GetPointArrayStatus (string name)|
+
+\item  \verb|obj.SetPointArrayStatus (string name, int status)|
+
+\item  \verb|obj.DisableAllPointArrays ()|
+
+\item  \verb|obj.EnableAllPointArrays ()|
+
+\end{itemize}

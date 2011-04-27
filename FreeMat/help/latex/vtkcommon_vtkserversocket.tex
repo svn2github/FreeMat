@@ -1,0 +1,37 @@
+\section{vtkServerSocket}
+
+\subsection{Usage}
+
+
+
+To create an instance of class vtkServerSocket, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkServerSocket
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkServerSocket has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkServerSocket class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkServerSocket = obj.NewInstance ()|
+
+\item  \verb|vtkServerSocket = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CreateServer (int port)| -  Creates a server socket at a given port and binds to it.
+ Returns -1 on error. 0 on success.
+
+\item  \verb|vtkClientSocket = obj.WaitForConnection (long msec)| -  Waits for a connection. When a connection is received
+ a new vtkClientSocket object is created and returned.
+ Returns NULL on timeout. 
+
+\item  \verb|int = obj.GetServerPort ()| -  Returns the port on which the server is running.
+
+\end{itemize}

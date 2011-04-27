@@ -1,0 +1,37 @@
+\section{vtkVolumeTextureMapper}
+
+\subsection{Usage}
+
+ vtkVolumeTextureMapper is the abstract definition of a volume mapper
+ that uses a texture mapping approach.
+
+To create an instance of class vtkVolumeTextureMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVolumeTextureMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVolumeTextureMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVolumeTextureMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVolumeTextureMapper = obj.NewInstance ()|
+
+\item  \verb|vtkVolumeTextureMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Update ()| -  Update the volume rendering pipeline by updating the scalar input
+
+\item  \verb|obj.SetGradientEstimator (vtkEncodedGradientEstimator gradest)| -  Set / Get the gradient estimator used to estimate normals
+
+\item  \verb|vtkEncodedGradientEstimator = obj.GetGradientEstimator ()| -  Set / Get the gradient estimator used to estimate normals
+
+\item  \verb|vtkEncodedGradientShader = obj.GetGradientShader ()| -  Get the gradient shader.
+
+\end{itemize}

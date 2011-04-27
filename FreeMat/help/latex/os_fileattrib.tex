@@ -1,0 +1,82 @@
+\section{FILEATTRIB Get and Set File or Directory Attributes}
+
+\subsection{Usage}
+
+Retrieves information about a file or directory. The first version
+uses the syntax
+\begin{verbatim}
+   y = fileattrib(filename)
+\end{verbatim}
+where \verb|filename| is the name of a file or directory.  The returned
+structure contains several entries, corresponding to the attributes
+of the file.  Here is a list of the entries, and their meaning:
+\begin{itemize}
+\item  \verb|Name| - the full pathname for the file
+
+\item  \verb|archive| - not used, set to \verb|0|
+
+\item  \verb|system| - not used, set to \verb|0|
+
+\item  \verb|hidden| - set to \verb|1| for a hidden file, and \verb|0| else.
+
+\item  \verb|directory| - set to \verb|1| for a directory, and \verb|0| for a file.
+
+\item  \verb|UserRead| - set to \verb|1| if the user has read permission, \verb|0| otherwise.
+
+\item  \verb|UserWrite| - set to \verb|1| if the user has write permission, \verb|0| otherwise.
+
+\item  \verb|UserExecute| - set to \verb|1| if the user has execute permission, \verb|0| otherwise.
+
+\item  \verb|GroupRead| - set to \verb|1| if the group has read permission, \verb|0| otherwise.
+
+\item  \verb|GroupWrite| - set to \verb|1| if the group has write permission, \verb|0| otherwise.
+
+\item  \verb|GroupExecute| - set to \verb|1| if the group has execute permission, \verb|0| otherwise.
+
+\item  \verb|OtherRead| - set to \verb|1| if the world has read permission, \verb|0| otherwise.
+
+\item  \verb|OtherWrite| - set to \verb|1| if the world has write permission, \verb|0| otherwise.
+
+\item  \verb|OtherExecute| - set to \verb|1| if the world has execute permission, \verb|0| otherwise.
+
+\end{itemize}
+You can also provide a wildcard filename to get the attributes for a set of files
+e.g.,
+\begin{verbatim}
+   y = fileattrib('foo*')
+\end{verbatim}
+
+You can also use \verb|fileattrib| to change the attributes of a file and/or directories.
+To change attributes, use one of the following syntaxes
+\begin{verbatim}
+   y = fileattrib(filename,attributelist)
+   y = fileattrib(filename,attributelist,userlist)
+   y = fileattrib(filename,attributelist,userlist,'s')
+\end{verbatim}
+where \verb|attributelist| is a string that consists of a list of attributes, each preceeded by 
+a \verb|+| to enable the attribute, and \verb|-| to disable the attribute. The valid list of
+attributes that can be changed are
+\begin{itemize}
+\item  \verb|'w'| - change write permissions
+
+\item  \verb|'r'| - change read permissions
+
+\item  \verb|'x'| - change execute permissions
+
+\end{itemize}
+for example, \verb|'-w +r'| would indicate removal of write permissions and addition of read
+permissions.  The \verb|userlist| is a string that lists the realm of the permission changes.
+If it is not specified, it defaults to \verb|'u'|.
+\begin{itemize}
+\item  \verb|'u'| - user or owner permissions
+
+\item  \verb|'g'| - group permissions
+
+\item  \verb|'o'| - other permissions (''world'' in normal Unix terminology)
+
+\item  \verb|'a'| - equivalent to 'ugo'.
+
+\end{itemize}
+Finally, if you specify a \verb|'s'| for the last argument, the attribute change is applied
+recursively, so that setting the attributes for a directory will apply to all the entries
+within the directory.

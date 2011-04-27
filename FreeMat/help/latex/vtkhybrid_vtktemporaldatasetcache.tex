@@ -1,0 +1,43 @@
+\section{vtkTemporalDataSetCache}
+
+\subsection{Usage}
+
+ vtkTemporalDataSetCache cache time step requests of a temporal dataset,
+ when cached data is requested it is returned using a shallow copy.
+ .SECTION Thanks
+ Ken Martin (Kitware) and John Bidiscombe of 
+ CSCS - Swiss National Supercomputing Centre
+ for creating and contributing this class.
+ For related material, please refer to : 
+ John Biddiscombe, Berk Geveci, Ken Martin, Kenneth Moreland, David Thompson,
+ ''Time Dependent Processing in a Parallel Pipeline Architecture'', 
+ IEEE Visualization 2007. 
+
+To create an instance of class vtkTemporalDataSetCache, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTemporalDataSetCache
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTemporalDataSetCache has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTemporalDataSetCache class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTemporalDataSetCache = obj.NewInstance ()|
+
+\item  \verb|vtkTemporalDataSetCache = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCacheSize (int size)| -  This is the maximum number of time steps that can be retained in memory.
+ it defaults to 10.
+
+\item  \verb|int = obj.GetCacheSize ()| -  This is the maximum number of time steps that can be retained in memory.
+ it defaults to 10.
+
+\end{itemize}

@@ -1,0 +1,92 @@
+\section{vtkImageShiftScale}
+
+\subsection{Usage}
+
+ With vtkImageShiftScale Pixels are shifted (a constant value added)
+ and then scaled (multiplied by a scalar. As a convenience, this class 
+ allows you to set the output scalar type similar to vtkImageCast. 
+ This is because shift scale operations frequently convert data types.
+
+To create an instance of class vtkImageShiftScale, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageShiftScale
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageShiftScale has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageShiftScale class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageShiftScale = obj.NewInstance ()|
+
+\item  \verb|vtkImageShiftScale = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetShift (double )| -  Set/Get the shift value. This value is added to each pixel
+
+\item  \verb|double = obj.GetShift ()| -  Set/Get the shift value. This value is added to each pixel
+
+\item  \verb|obj.SetScale (double )| -  Set/Get the scale value. Each pixel is multiplied by this value.
+
+\item  \verb|double = obj.GetScale ()| -  Set/Get the scale value. Each pixel is multiplied by this value.
+
+\item  \verb|obj.SetOutputScalarType (int )| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|int = obj.GetOutputScalarType ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToDouble ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToFloat ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToLong ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedLong ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToInt ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedInt ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToShort ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedShort ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToChar ()| -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedChar ()| -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+
+\item  \verb|obj.SetClampOverflow (int )| -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+
+\item  \verb|int = obj.GetClampOverflow ()| -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+
+\item  \verb|obj.ClampOverflowOn ()| -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+
+\item  \verb|obj.ClampOverflowOff ()| -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+
+\end{itemize}

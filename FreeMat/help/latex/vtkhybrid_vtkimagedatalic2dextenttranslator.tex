@@ -1,0 +1,45 @@
+\section{vtkImageDataLIC2DExtentTranslator}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkImageDataLIC2DExtentTranslator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageDataLIC2DExtentTranslator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageDataLIC2DExtentTranslator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageDataLIC2DExtentTranslator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageDataLIC2DExtentTranslator = obj.NewInstance ()|
+
+\item  \verb|vtkImageDataLIC2DExtentTranslator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetAlgorithm (vtkImageDataLIC2D )| -  Set the vtkImageDataLIC2D algorithm for which this extent translator is
+ being used.
+
+\item  \verb|vtkImageDataLIC2D = obj.GetAlgorithm ()| -  Set the vtkImageDataLIC2D algorithm for which this extent translator is
+ being used.
+
+\item  \verb|obj.SetInputExtentTranslator (vtkExtentTranslator )|
+
+\item  \verb|vtkExtentTranslator = obj.GetInputExtentTranslator ()|
+
+\item  \verb|obj.SetInputWholeExtent (int , int , int , int , int , int )|
+
+\item  \verb|obj.SetInputWholeExtent (int  a[6])|
+
+\item  \verb|int = obj. GetInputWholeExtent ()|
+
+\item  \verb|int = obj.PieceToExtentThreadSafe (int piece, int numPieces, int ghostLevel, int wholeExtent, int resultExtent, int splitMode, int byPoints)|
+
+\end{itemize}

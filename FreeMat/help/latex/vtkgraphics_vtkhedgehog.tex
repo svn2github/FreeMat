@@ -1,0 +1,45 @@
+\section{vtkHedgeHog}
+
+\subsection{Usage}
+
+ vtkHedgeHog creates oriented lines from the input data set. Line
+ length is controlled by vector (or normal) magnitude times scale
+ factor. If VectorMode is UseNormal, normals determine the orientation
+ of the lines. Lines are colored by scalar data, if available.
+
+To create an instance of class vtkHedgeHog, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHedgeHog
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHedgeHog has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHedgeHog class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHedgeHog = obj.NewInstance ()|
+
+\item  \verb|vtkHedgeHog = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetScaleFactor (double )| -  Set scale factor to control size of oriented lines.
+
+\item  \verb|double = obj.GetScaleFactor ()| -  Set scale factor to control size of oriented lines.
+
+\item  \verb|obj.SetVectorMode (int )| -  Specify whether to use vector or normal to perform vector operations.
+
+\item  \verb|int = obj.GetVectorMode ()| -  Specify whether to use vector or normal to perform vector operations.
+
+\item  \verb|obj.SetVectorModeToUseVector ()| -  Specify whether to use vector or normal to perform vector operations.
+
+\item  \verb|obj.SetVectorModeToUseNormal ()| -  Specify whether to use vector or normal to perform vector operations.
+
+\item  \verb|string = obj.GetVectorModeAsString ()| -  Specify whether to use vector or normal to perform vector operations.
+
+\end{itemize}

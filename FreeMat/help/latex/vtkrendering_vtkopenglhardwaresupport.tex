@@ -1,0 +1,45 @@
+\section{vtkOpenGLHardwareSupport}
+
+\subsection{Usage}
+
+ vtkOpenGLHardwareSupport is an implementation of methods used
+ to query OpenGL and the hardware of what kind of graphics support
+ is available. When VTK supports more than one Graphics API an
+ abstract super class vtkHardwareSupport should be implemented
+ for this class to derive from.
+
+To create an instance of class vtkOpenGLHardwareSupport, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkOpenGLHardwareSupport
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkOpenGLHardwareSupport has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkOpenGLHardwareSupport class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkOpenGLHardwareSupport = obj.NewInstance ()|
+
+\item  \verb|vtkOpenGLHardwareSupport = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetNumberOfFixedTextureUnits ()| -  Return the number of fixed-function texture units.
+
+\item  \verb|int = obj.GetNumberOfTextureUnits ()| -  Return the total number of texture image units accessible by a shader
+ program.
+
+\item  \verb|bool = obj.GetSupportsMultiTexturing ()| -  Test if MultiTexturing is supported.
+
+\item  \verb|vtkOpenGLExtensionManager = obj.GetExtensionManager ()| -  Set/Get a reference to a vtkRenderWindow which is Required
+ for most methods of this class to work.
+
+\item  \verb|obj.SetExtensionManager (vtkOpenGLExtensionManager extensionManager)| -  Set/Get a reference to a vtkRenderWindow which is Required
+ for most methods of this class to work.
+
+\end{itemize}

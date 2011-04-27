@@ -1,0 +1,66 @@
+\section{vtkKochanekSpline}
+
+\subsection{Usage}
+
+ Implements the Kochenek interpolating spline described in: Kochanek, D.,
+ Bartels, R., ''Interpolating Splines with Local Tension, Continuity, and
+ Bias Control,'' Computer Graphics, vol. 18, no. 3, pp. 33-41, July 1984.
+ These splines give the user more control over the shape of the curve than
+ the cardinal splines implemented in vtkCardinalSpline. Three parameters
+ can be specified. All have a range from -1 to 1.
+ 
+ Tension controls how sharply the curve bends at an input point. A
+ value of -1 produces more slack in the curve. A value of 1 tightens
+ the curve.
+ 
+ Continuity controls the continuity of the first derivative at input
+ points. 
+ 
+ Bias controls the direction of the curve at it passes through an input
+ point. A value of -1 undershoots the point while a value of 1
+ overshoots the point.
+ 
+ These three parameters give the user broad control over the shape of
+ the interpolating spline. The original Kochanek paper describes the
+ effects nicely and is recommended reading.
+
+To create an instance of class vtkKochanekSpline, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkKochanekSpline
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkKochanekSpline has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkKochanekSpline class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkKochanekSpline = obj.NewInstance ()|
+
+\item  \verb|vtkKochanekSpline = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Compute ()| -  Compute Kochanek Spline coefficients.
+
+\item  \verb|double = obj.Evaluate (double t)| -  Evaluate a 1D Kochanek spline.
+
+\item  \verb|obj.SetDefaultBias (double )| -  Set the bias for all points. Default is 0.
+
+\item  \verb|double = obj.GetDefaultBias ()| -  Set the bias for all points. Default is 0.
+
+\item  \verb|obj.SetDefaultTension (double )| -  Set the tension for all points. Default is 0.
+
+\item  \verb|double = obj.GetDefaultTension ()| -  Set the tension for all points. Default is 0.
+
+\item  \verb|obj.SetDefaultContinuity (double )| -  Set the continuity for all points. Default is 0.
+
+\item  \verb|double = obj.GetDefaultContinuity ()| -  Set the continuity for all points. Default is 0.
+
+\item  \verb|obj.DeepCopy (vtkSpline s)| -  Deep copy of cardinal spline data.
+
+\end{itemize}

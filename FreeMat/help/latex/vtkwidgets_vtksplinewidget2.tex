@@ -1,0 +1,36 @@
+\section{vtkSplineWidget2}
+
+\subsection{Usage}
+
+ vtkSplineWidget2 is the vtkAbstractWidget subclass for
+ vtkSplineRepresentation which manages the interactions with
+ vtkSplineRepresentation. This is based on vtkSplineWidget.
+
+To create an instance of class vtkSplineWidget2, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSplineWidget2
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSplineWidget2 has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSplineWidget2 class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSplineWidget2 = obj.NewInstance ()|
+
+\item  \verb|vtkSplineWidget2 = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetRepresentation (vtkSplineRepresentation r)| -  Create the default widget representation if one is not set. By default,
+ this is an instance of the vtkSplineRepresentation class.
+
+\item  \verb|obj.CreateDefaultRepresentation ()| -  Create the default widget representation if one is not set. By default,
+ this is an instance of the vtkSplineRepresentation class.
+
+\end{itemize}

@@ -1,0 +1,86 @@
+\section{vtkHierarchicalGraphView}
+
+\subsection{Usage}
+
+ Takes a graph and a hierarchy (currently a tree) and lays out the graph 
+ vertices based on their categorization within the hierarchy.
+
+ .SEE ALSO
+ vtkGraphLayoutView
+
+ .SECTION Thanks
+ Thanks to the turtle with jets for feet, without you this class wouldn't 
+ have been possible.
+
+To create an instance of class vtkHierarchicalGraphView, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHierarchicalGraphView
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHierarchicalGraphView has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHierarchicalGraphView class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHierarchicalGraphView = obj.NewInstance ()|
+
+\item  \verb|vtkHierarchicalGraphView = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkDataRepresentation = obj.SetHierarchyFromInputConnection (vtkAlgorithmOutput conn)| -  Set the tree and graph representations to the appropriate input ports.
+
+\item  \verb|vtkDataRepresentation = obj.SetHierarchyFromInput (vtkDataObject input)| -  Set the tree and graph representations to the appropriate input ports.
+
+\item  \verb|vtkDataRepresentation = obj.SetGraphFromInputConnection (vtkAlgorithmOutput conn)| -  Set the tree and graph representations to the appropriate input ports.
+
+\item  \verb|vtkDataRepresentation = obj.SetGraphFromInput (vtkDataObject input)| -  Set the tree and graph representations to the appropriate input ports.
+
+\item  \verb|obj.SetGraphEdgeLabelArrayName (string name)| -  The array to use for edge labeling.  Default is ''label''.
+
+\item  \verb|string = obj.GetGraphEdgeLabelArrayName ()| -  The array to use for edge labeling.  Default is ''label''.
+
+\item  \verb|obj.SetGraphEdgeLabelVisibility (bool vis)| -  Whether to show edge labels.  Default is off.
+
+\item  \verb|bool = obj.GetGraphEdgeLabelVisibility ()| -  Whether to show edge labels.  Default is off.
+
+\item  \verb|obj.GraphEdgeLabelVisibilityOn ()| -  Whether to show edge labels.  Default is off.
+
+\item  \verb|obj.GraphEdgeLabelVisibilityOff ()| -  Whether to show edge labels.  Default is off.
+
+\item  \verb|obj.SetGraphEdgeColorArrayName (string name)| -  The array to use for coloring edges.  Default is ''color''.
+
+\item  \verb|string = obj.GetGraphEdgeColorArrayName ()| -  The array to use for coloring edges.  Default is ''color''.
+
+\item  \verb|obj.SetGraphEdgeColorToSplineFraction ()| -  Set the color to be the spline fraction
+
+\item  \verb|obj.SetColorGraphEdgesByArray (bool vis)| -  Whether to color edges.  Default is off.
+
+\item  \verb|bool = obj.GetColorGraphEdgesByArray ()| -  Whether to color edges.  Default is off.
+
+\item  \verb|obj.ColorGraphEdgesByArrayOn ()| -  Whether to color edges.  Default is off.
+
+\item  \verb|obj.ColorGraphEdgesByArrayOff ()| -  Whether to color edges.  Default is off.
+
+\item  \verb|obj.SetBundlingStrength (double strength)| -  Set the bundling strength.
+
+\item  \verb|double = obj.GetBundlingStrength ()| -  Set the bundling strength.
+
+\item  \verb|obj.SetGraphVisibility (bool b)| -  Whether the graph edges are visible (default off).
+
+\item  \verb|bool = obj.GetGraphVisibility ()| -  Whether the graph edges are visible (default off).
+
+\item  \verb|obj.GraphVisibilityOn ()| -  Whether the graph edges are visible (default off).
+
+\item  \verb|obj.GraphVisibilityOff ()| -  Whether the graph edges are visible (default off).
+
+\item  \verb|obj.SetGraphEdgeLabelFontSize (int size)| -  The size of the font used for edge labeling
+
+\item  \verb|int = obj.GetGraphEdgeLabelFontSize ()| -  The size of the font used for edge labeling
+
+\end{itemize}

@@ -1,0 +1,32 @@
+\section{vtkHyperOctreeToUniformGridFilter}
+
+\subsection{Usage}
+
+ vtkHyperOctreeToUniformGridFilter creates a uniform grid with a resolution
+ based on the number of levels of the hyperoctree. Then, it copies celldata
+ in each cell of the uniform grid that belongs to an actual leaf of the
+ hyperoctree.
+
+
+To create an instance of class vtkHyperOctreeToUniformGridFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHyperOctreeToUniformGridFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHyperOctreeToUniformGridFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHyperOctreeToUniformGridFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHyperOctreeToUniformGridFilter = obj.NewInstance ()|
+
+\item  \verb|vtkHyperOctreeToUniformGridFilter = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

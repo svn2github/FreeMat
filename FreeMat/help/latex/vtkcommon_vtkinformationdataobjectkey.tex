@@ -1,0 +1,39 @@
+\section{vtkInformationDataObjectKey}
+
+\subsection{Usage}
+
+ vtkInformationDataObjectKey is used to represent keys in
+ vtkInformation for values that are vtkDataObject instances.
+
+To create an instance of class vtkInformationDataObjectKey, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformationDataObjectKey
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformationDataObjectKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformationDataObjectKey class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformationDataObjectKey = obj.NewInstance ()|
+
+\item  \verb|vtkInformationDataObjectKey = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkInformationDataObjectKey = obj.(string name, string location)|
+
+\item  \verb|~vtkInformationDataObjectKey = obj.()|
+
+\item  \verb|obj.ShallowCopy (vtkInformation from, vtkInformation to)| -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+
+\item  \verb|obj.Report (vtkInformation info, vtkGarbageCollector collector)| -  Report a reference this key has in the given information object.
+
+\end{itemize}

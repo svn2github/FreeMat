@@ -1,0 +1,113 @@
+\section{vtkBoxClipDataSet}
+
+\subsection{Usage}
+
+ Clipping means that is actually 'cuts' through the cells of the dataset,
+ returning tetrahedral cells inside of the box.
+ The output of this filter is an unstructured grid.
+
+ This filter can be configured to compute a second output. The
+ second output is the part of the cell that is clipped away. Set the
+ GenerateClippedData boolean on if you wish to access this output data.
+
+ The vtkBoxClipDataSet will triangulate all types of 3D cells (i.e, create tetrahedra).
+ This is necessary to preserve compatibility across face neighbors.
+
+ To use this filter,you can decide if you will be clipping with a box or a hexahedral box.
+ 1) Set orientation 
+    if(SetOrientation(0)): box (parallel with coordinate axis)
+       SetBoxClip(xmin,xmax,ymin,ymax,zmin,zmax)  
+    if(SetOrientation(1)): hexahedral box (Default)
+       SetBoxClip(n[0],o[0],n[1],o[1],n[2],o[2],n[3],o[3],n[4],o[4],n[5],o[5])  
+       PlaneNormal[] normal of each plane
+       PlanePoint[] point on the plane 
+ 2) Apply the GenerateClipScalarsOn() 
+ 3) Execute clipping  Update();
+
+To create an instance of class vtkBoxClipDataSet, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkBoxClipDataSet
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkBoxClipDataSet has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkBoxClipDataSet class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkBoxClipDataSet = obj.NewInstance ()|
+
+\item  \verb|vtkBoxClipDataSet = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetBoxClip (double xmin, double xmax, double ymin, double ymax, double zmin, double zmax)|
+
+\item  \verb|obj.SetBoxClip (double n0, double o0, double n1, double o1, double n2, double o2, double n3, double o3, double n4, double o4, double n5, double o5)|
+
+\item  \verb|obj.SetGenerateClipScalars (int )| -  If this flag is enabled, then the output scalar values will be 
+ interpolated, and not the input scalar data.
+
+\item  \verb|int = obj.GetGenerateClipScalars ()| -  If this flag is enabled, then the output scalar values will be 
+ interpolated, and not the input scalar data.
+
+\item  \verb|obj.GenerateClipScalarsOn ()| -  If this flag is enabled, then the output scalar values will be 
+ interpolated, and not the input scalar data.
+
+\item  \verb|obj.GenerateClipScalarsOff ()| -  If this flag is enabled, then the output scalar values will be 
+ interpolated, and not the input scalar data.
+
+\item  \verb|obj.SetGenerateClippedOutput (int )| -  Control whether a second output is generated. The second output
+ contains the polygonal data that's been clipped away.
+
+\item  \verb|int = obj.GetGenerateClippedOutput ()| -  Control whether a second output is generated. The second output
+ contains the polygonal data that's been clipped away.
+
+\item  \verb|obj.GenerateClippedOutputOn ()| -  Control whether a second output is generated. The second output
+ contains the polygonal data that's been clipped away.
+
+\item  \verb|obj.GenerateClippedOutputOff ()| -  Control whether a second output is generated. The second output
+ contains the polygonal data that's been clipped away.
+
+\item  \verb|vtkUnstructuredGrid = obj.GetClippedOutput ()| -  Return the Clipped output.
+
+\item  \verb|int = obj.GetNumberOfOutputs ()| -  Return the Clipped output.
+
+\item  \verb|obj.SetLocator (vtkIncrementalPointLocator locator)| -  Specify a spatial locator for merging points. By default, an
+ instance of vtkMergePoints is used.
+
+\item  \verb|vtkIncrementalPointLocator = obj.GetLocator ()| -  Specify a spatial locator for merging points. By default, an
+ instance of vtkMergePoints is used.
+
+\item  \verb|obj.CreateDefaultLocator ()| -  Create default locator. Used to create one when none is specified. The 
+ locator is used to merge coincident points.
+
+\item  \verb|long = obj.GetMTime ()| -  Return the mtime also considering the locator.
+
+\item  \verb|int = obj.GetOrientation ()| -  Tells if clipping happens with a box parallel with coordinate axis
+ (0) or with an hexahedral box (1). Initial value is 1.
+
+\item  \verb|obj.SetOrientation (int )| -  Tells if clipping happens with a box parallel with coordinate axis
+ (0) or with an hexahedral box (1). Initial value is 1.
+
+\item  \verb|obj.ClipBox (vtkPoints newPoints, vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray tets, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipHexahedron (vtkPoints newPoints, vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray tets, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipBox2D (vtkPoints newPoints, vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray tets, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipHexahedron2D (vtkPoints newPoints, vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray tets, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipBox1D (vtkPoints newPoints, vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray lines, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipHexahedron1D (vtkPoints newPoints, vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray lines, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipBox0D (vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\item  \verb|obj.ClipHexahedron0D (vtkGenericCell cell, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkPointData inPD, vtkPointData outPD, vtkCellData inCD, vtkIdType cellId, vtkCellData outCD)|
+
+\end{itemize}

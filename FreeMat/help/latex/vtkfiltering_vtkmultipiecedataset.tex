@@ -1,0 +1,65 @@
+\section{vtkMultiPieceDataSet}
+
+\subsection{Usage}
+
+ A vtkMultiPieceDataSet dataset groups multiple data pieces together. 
+ For example, say that a simulation broke a volume into 16 piece so that 
+ each piece can be processed with 1 process in parallel. We want to load 
+ this volume in a visualization cluster of 4 nodes. Each node will get 4 
+ pieces, not necessarily forming a whole rectangular piece. In this case, 
+ it is not possible to append the 4 pieces together into a vtkImageData. 
+ In this case, these 4 pieces can be collected together using a 
+ vtkMultiPieceDataSet. 
+ Note that vtkMultiPieceDataSet is intended to be included in other composite
+ datasets eg. vtkMultiBlockDataSet, vtkHierarchicalBoxDataSet. Hence the lack
+ of algorithms producting vtkMultiPieceDataSet.
+
+To create an instance of class vtkMultiPieceDataSet, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMultiPieceDataSet
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMultiPieceDataSet has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMultiPieceDataSet class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMultiPieceDataSet = obj.NewInstance ()|
+
+\item  \verb|vtkMultiPieceDataSet = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetDataObjectType ()| -  Set the number of pieces. This will cause allocation if the new number of
+ pieces is greater than the current size. All new pieces are initialized to
+ null.
+
+\item  \verb|obj.SetNumberOfPieces (int numpieces)| -  Set the number of pieces. This will cause allocation if the new number of
+ pieces is greater than the current size. All new pieces are initialized to
+ null.
+
+\item  \verb|int = obj.GetNumberOfPieces ()| -  Returns the number of pieces.
+
+\item  \verb|vtkDataSet = obj.GetPiece (int pieceno)| -  Returns the piece at the given index. 
+
+\item  \verb|vtkDataObject = obj.GetPieceAsDataObject (int pieceno)| -  Returns the piece at the given index. 
+
+\item  \verb|obj.SetPiece (int pieceno, vtkDataObject piece)| -  Sets the data object as the given piece. The total number of pieces will 
+ be resized to fit the requested piece no.
+
+\item  \verb|int = obj.HasMetaData (int piece)| -  Returns the meta-data for the piece. If none is already present, a new
+ vtkInformation object will be allocated. Use HasMetaData to avoid
+ allocating vtkInformation objects.
+
+\item  \verb|vtkInformation = obj.GetMetaData (int pieceno)| -  Unhiding superclass method.
+
+\item  \verb|vtkInformation = obj.GetMetaData (vtkCompositeDataIterator iter)| -  Unhiding superclass method.
+
+\item  \verb|int = obj.HasMetaData (vtkCompositeDataIterator iter)|
+
+\end{itemize}

@@ -1,0 +1,124 @@
+\section{vtkSampleFunction}
+
+\subsection{Usage}
+
+ vtkSampleFunction is a source object that evaluates an implicit function
+ and normals at each point in a vtkStructuredPoints. The user can specify
+ the sample dimensions and location in space to perform the sampling. To
+ create closed surfaces (in conjunction with the vtkContourFilter), capping
+ can be turned on to set a particular value on the boundaries of the sample
+ space.
+
+To create an instance of class vtkSampleFunction, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSampleFunction
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSampleFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSampleFunction class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSampleFunction = obj.NewInstance ()|
+
+\item  \verb|vtkSampleFunction = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetImplicitFunction (vtkImplicitFunction )| -  Specify the implicit function to use to generate data.
+
+\item  \verb|vtkImplicitFunction = obj.GetImplicitFunction ()| -  Specify the implicit function to use to generate data.
+
+\item  \verb|obj.SetOutputScalarType (int )| -  Set what type of scalar data this source should generate.
+
+\item  \verb|int = obj.GetOutputScalarType ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToDouble ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToFloat ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToLong ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedLong ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToInt ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedInt ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToShort ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedShort ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToChar ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedChar ()| -  Control the type of the scalars object by explicitly providing a scalar
+ object.  THIS IS DEPRECATED, although it still works!!! Please use
+ SetOutputScalarType instead.
+
+\item  \verb|obj.SetScalars (vtkDataArray da)| -  Control the type of the scalars object by explicitly providing a scalar
+ object.  THIS IS DEPRECATED, although it still works!!! Please use
+ SetOutputScalarType instead.
+
+\item  \verb|obj.SetSampleDimensions (int i, int j, int k)| -  Specify the dimensions of the data on which to sample.
+
+\item  \verb|obj.SetSampleDimensions (int dim[3])| -  Specify the dimensions of the data on which to sample.
+
+\item  \verb|int = obj. GetSampleDimensions ()| -  Specify the dimensions of the data on which to sample.
+
+\item  \verb|obj.SetModelBounds (double , double , double , double , double , double )| -  Specify the region in space over which the sampling occurs. The
+ bounds is specified as (xMin,xMax, yMin,yMax, zMin,zMax).
+
+\item  \verb|obj.SetModelBounds (double  a[6])| -  Specify the region in space over which the sampling occurs. The
+ bounds is specified as (xMin,xMax, yMin,yMax, zMin,zMax).
+
+\item  \verb|double = obj. GetModelBounds ()| -  Specify the region in space over which the sampling occurs. The
+ bounds is specified as (xMin,xMax, yMin,yMax, zMin,zMax).
+
+\item  \verb|obj.SetCapping (int )| -  Turn on/off capping. If capping is on, then the outer boundaries of the
+ structured point set are set to cap value. This can be used to insure
+ surfaces are closed.
+
+\item  \verb|int = obj.GetCapping ()| -  Turn on/off capping. If capping is on, then the outer boundaries of the
+ structured point set are set to cap value. This can be used to insure
+ surfaces are closed.
+
+\item  \verb|obj.CappingOn ()| -  Turn on/off capping. If capping is on, then the outer boundaries of the
+ structured point set are set to cap value. This can be used to insure
+ surfaces are closed.
+
+\item  \verb|obj.CappingOff ()| -  Turn on/off capping. If capping is on, then the outer boundaries of the
+ structured point set are set to cap value. This can be used to insure
+ surfaces are closed.
+
+\item  \verb|obj.SetCapValue (double )| -  Set the cap value.
+
+\item  \verb|double = obj.GetCapValue ()| -  Set the cap value.
+
+\item  \verb|obj.SetComputeNormals (int )| -  Turn on/off the computation of normals (normals are float values).
+
+\item  \verb|int = obj.GetComputeNormals ()| -  Turn on/off the computation of normals (normals are float values).
+
+\item  \verb|obj.ComputeNormalsOn ()| -  Turn on/off the computation of normals (normals are float values).
+
+\item  \verb|obj.ComputeNormalsOff ()| -  Turn on/off the computation of normals (normals are float values).
+
+\item  \verb|obj.SetScalarArrayName (string )| -  Set/get the scalar array name for this data set. Initial value is
+ ''scalars''.
+
+\item  \verb|string = obj.GetScalarArrayName ()| -  Set/get the scalar array name for this data set. Initial value is
+ ''scalars''.
+
+\item  \verb|obj.SetNormalArrayName (string )| -  Set/get the normal array name for this data set. Initial value is
+ ''normals''.
+
+\item  \verb|string = obj.GetNormalArrayName ()| -  Set/get the normal array name for this data set. Initial value is
+ ''normals''.
+
+\item  \verb|long = obj.GetMTime ()| -  Return the MTime also considering the implicit function.
+
+\end{itemize}

@@ -1,0 +1,22 @@
+\section{GETENV Get the Value of an Environment Variable}
+
+\subsection{Usage}
+
+The \verb|getenv| function returns the value for an environment
+variable from the underlying OS.  The syntax for the \verb|getenv|
+function is 
+\begin{verbatim}
+   y = getenv(environment_variable)
+\end{verbatim}
+where \verb|environment\_variable| is the name of the environment
+variable to return.  The return is a string.
+\subsection{Example}
+
+Here is an example of using the \verb|getenv| function to
+get the value for the \verb|HOME| variable
+\begin{verbatim}
+--> getenv('HOME')
+
+ans = 
+/home/sbasu
+\end{verbatim}

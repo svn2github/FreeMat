@@ -1,0 +1,108 @@
+\section{vtkGraphLayoutFilter}
+
+\subsection{Usage}
+
+ vtkGraphLayoutFilter will reposition a network of nodes, connected by
+ lines or polylines, into a more pleasing arrangement. The class 
+ implements a simple force-directed placement algorithm 
+ (Fruchterman \& Reingold ''Graph Drawing by Force-directed Placement'' 
+ Software-Practice and Experience 21(11) 1991).
+
+ The input to the filter is a vtkPolyData representing the undirected 
+ graphs. A graph is represented by a set of polylines and/or lines. 
+ The output is also a vtkPolyData, where the point positions have been 
+ modified. To use the filter, specify whether you wish the layout to 
+ occur in 2D or 3D; the bounds in which the graph should lie (note that you
+ can just use automatic bounds computation); and modify the cool down
+ rate (controls the final process of simulated annealing).
+
+To create an instance of class vtkGraphLayoutFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGraphLayoutFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGraphLayoutFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGraphLayoutFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGraphLayoutFilter = obj.NewInstance ()|
+
+\item  \verb|vtkGraphLayoutFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGraphBounds (double , double , double , double , double , double )| -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+
+\item  \verb|obj.SetGraphBounds (double  a[6])| -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+
+\item  \verb|double = obj. GetGraphBounds ()| -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+
+\item  \verb|obj.SetAutomaticBoundsComputation (int )| -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+
+\item  \verb|int = obj.GetAutomaticBoundsComputation ()| -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+
+\item  \verb|obj.AutomaticBoundsComputationOn ()| -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+
+\item  \verb|obj.AutomaticBoundsComputationOff ()| -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+
+\item  \verb|obj.SetMaxNumberOfIterations (int )| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+
+\item  \verb|int = obj.GetMaxNumberOfIterationsMinValue ()| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+
+\item  \verb|int = obj.GetMaxNumberOfIterationsMaxValue ()| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+
+\item  \verb|int = obj.GetMaxNumberOfIterations ()| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+
+\item  \verb|obj.SetCoolDownRate (double )| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified.
+
+\item  \verb|double = obj.GetCoolDownRateMinValue ()| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified.
+
+\item  \verb|double = obj.GetCoolDownRateMaxValue ()| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified.
+
+\item  \verb|double = obj.GetCoolDownRate ()| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified.
+
+\item  \verb|obj.SetThreeDimensionalLayout (int )|
+
+\item  \verb|int = obj.GetThreeDimensionalLayout ()|
+
+\item  \verb|obj.ThreeDimensionalLayoutOn ()|
+
+\item  \verb|obj.ThreeDimensionalLayoutOff ()|
+
+\end{itemize}

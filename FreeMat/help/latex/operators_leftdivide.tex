@@ -11,14 +11,12 @@ where \verb|A| and \verb|B| are arrays of numerical type.  The result \verb|Y| d
 on which of the following three situations applies to the arguments
 \verb|A| and \verb|B|:
 \begin{enumerate}
-\item  \verb|A| is a scalar, \verb|B| is an arbitrary \verb|n|-dimensional numerical array, in which case the output is each element of \verb|B| divided by the scalar \verb|A|.
-
-\item  \verb|A,B| are matrices with the same number of rows, i.e., \verb|A| is of size \verb|M x K|, and \verb|B| is of size \verb|M x L|, in which case the output is of size \verb|K x L|.
-
+  \item \verb|A| is a scalar, \verb|B| is an arbitrary \verb|n|-dimensional numerical array, in which case the output is each element of \verb|B| divided by the scalar \verb|A|.
+  \item \verb|A,B| are matrices with the same number of rows, i.e., \verb|A| is of size \verb|M x K|, and \verb|B| is of size \verb|M x L|, in which case the output is of size \verb|K x L|.
 \end{enumerate}
 The output follows the standard type promotion rules, although in the first two cases, if \verb|A| and \verb|B| are integers, the output is an integer also, while in the third case if \verb|A| and \verb|B| are integers, the output is of type \verb|double|.
 
-A few additional words about the third version, in which \verb|A| and \verb|B| are matrices.  Very loosely speaking, \verb|Y| is the matrix that satisfies \verb|A * Y = B|.  In cases where such a matrix exists.  If such a matrix does not exist, then a matrix \verb|Y| is returned that approximates \verb|A * Y \approx B|.
+A few additional words about the third version, in which \verb|A| and \verb|B| are matrices.  Very loosely speaking, \verb|Y| is the matrix that satisfies \verb|A * Y = B|.  In cases where such a matrix exists.  If such a matrix does not exist, then a matrix \verb|Y| is returned that approximates \verb|A * Y pprox B|.
 \subsection{Function Internals}
 
 There are three formulae for the times operator.  For the first form
@@ -29,17 +27,17 @@ In the second form, the calculation of the output depends on the size of \verb|A
 \[
   A [y_1, y_2,\ldots, y_l] = [b_1, b_2, \ldots, b_l]
 \]
-where \verb|y_i| are the columns of \verb|Y|, and \verb|b_i| are the columns of the matrix \verb|B|. If \verb|A| is a square matrix, then the LAPACK routine \verb|*gesvx| (where the \verb|*| is replaced with \verb|sdcz| depending on the type of the arguments) is used, which uses an LU decomposition of \verb|A| to solve the sequence of equations sequentially.  If \verb|A| is singular, then a warning is emitted. 
+where \verb|y\_i| are the columns of \verb|Y|, and \verb|b\_i| are the columns of the matrix \verb|B|. If \verb|A| is a square matrix, then the LAPACK routine \verb|*gesvx| (where the \verb|*| is replaced with \verb|sdcz| depending on the type of the arguments) is used, which uses an LU decomposition of \verb|A| to solve the sequence of equations sequentially.  If \verb|A| is singular, then a warning is emitted. 
 
-On the other hand, if \verb|A| is rectangular, then the LAPACK routine \verb|*gelsy| is used.  Note that these routines are designed to work with matrices \verb|A| that are full rank - either full column rank or full row rank.  If \verb|A| fails to satisfy this assumption, a warning is emitted.  If \verb|A| has full column rank (and thus necessarily has more rows than columns), then theoretically, this operator finds the columns \verb|y_i| that satisfy:
+On the other hand, if \verb|A| is rectangular, then the LAPACK routine \verb|*gelsy| is used.  Note that these routines are designed to work with matrices \verb|A| that are full rank - either full column rank or full row rank.  If \verb|A| fails to satisfy this assumption, a warning is emitted.  If \verb|A| has full column rank (and thus necessarily has more rows than columns), then theoretically, this operator finds the columns \verb|y\_i| that satisfy:
 \[
   y_i = \arg \min_y \| A y - b_i \|_2
 \]
-and each column is thus the Least Squares solution of \verb|A y = b_i|.  On the other hand, if \verb|A| has full row rank (and thus necessarily has more columns than rows), then theoretically, this operator finds the columns \verb|y_i| that satisfy
+and each column is thus the Least Squares solution of \verb|A y = b\_i|.  On the other hand, if \verb|A| has full row rank (and thus necessarily has more columns than rows), then theoretically, this operator finds the columns \verb|y\_i| that satisfy
 \[
   y_i = \arg \min_{A y = b_i} \| y \|_2
 \]
-and each column is thus the Minimum Norm vector \verb|y_i| that satisfies \verb|A y_i = b_i|.  
+and each column is thus the Minimum Norm vector \verb|y\_i| that satisfies \verb|A y\_i = b\_i|.  
 In the event that the matrix \verb|A| is neither full row rank nor full column rank, a solution is returned, that is the minimum norm least squares solution.  The solution is computed using an orthogonal factorization technique that is documented in the LAPACK User's Guide (see the References section for details).
 \subsection{Examples}
 
@@ -58,7 +56,7 @@ Suppose we wish to solve
  = 
   \begin{bmatrix} 3 \\ 2 \end{bmatrix}
 \]
-(which by inspection has the solution \verb|y_1 = 1|, \verb|y_2 = 2|).  Thus we compute:
+(which by inspection has the solution \verb|y\_1 = 1|, \verb|y\_2 = 2|).  Thus we compute:
 \begin{verbatim}
 --> B = [3;2]
 

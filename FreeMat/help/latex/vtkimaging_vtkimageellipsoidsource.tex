@@ -1,0 +1,82 @@
+\section{vtkImageEllipsoidSource}
+
+\subsection{Usage}
+
+ vtkImageEllipsoidSource creates a binary image of a ellipsoid.  It was created
+ as an example of a simple source, and to test the mask filter.
+ It is also used internally in vtkImageDilateErode3D.
+
+To create an instance of class vtkImageEllipsoidSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageEllipsoidSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageEllipsoidSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageEllipsoidSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageEllipsoidSource = obj.NewInstance ()|
+
+\item  \verb|vtkImageEllipsoidSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetWholeExtent (int extent[6])| -  Set/Get the extent of the whole output image.
+
+\item  \verb|obj.SetWholeExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ)| -  Set/Get the extent of the whole output image.
+
+\item  \verb|obj.GetWholeExtent (int extent[6])| -  Set/Get the extent of the whole output image.
+
+\item  \verb|int = obj.GetWholeExtent ()| -  Set/Get the center of the ellipsoid.
+
+\item  \verb|obj.SetCenter (double , double , double )| -  Set/Get the center of the ellipsoid.
+
+\item  \verb|obj.SetCenter (double  a[3])| -  Set/Get the center of the ellipsoid.
+
+\item  \verb|double = obj. GetCenter ()| -  Set/Get the center of the ellipsoid.
+
+\item  \verb|obj.SetRadius (double , double , double )| -  Set/Get the radius of the ellipsoid.
+
+\item  \verb|obj.SetRadius (double  a[3])| -  Set/Get the radius of the ellipsoid.
+
+\item  \verb|double = obj. GetRadius ()| -  Set/Get the radius of the ellipsoid.
+
+\item  \verb|obj.SetInValue (double )| -  Set/Get the inside pixel values.
+
+\item  \verb|double = obj.GetInValue ()| -  Set/Get the inside pixel values.
+
+\item  \verb|obj.SetOutValue (double )| -  Set/Get the outside pixel values.
+
+\item  \verb|double = obj.GetOutValue ()| -  Set/Get the outside pixel values.
+
+\item  \verb|obj.SetOutputScalarType (int )| -  Set what type of scalar data this source should generate.
+
+\item  \verb|int = obj.GetOutputScalarType ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToFloat ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToDouble ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToLong ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedLong ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToInt ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedInt ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToShort ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedShort ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToChar ()| -  Set what type of scalar data this source should generate.
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedChar ()|
+
+\end{itemize}

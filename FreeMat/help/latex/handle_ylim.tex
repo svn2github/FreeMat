@@ -19,6 +19,11 @@ respectively.  In \verb|auto| mode, FreeMat chooses the range for the axis
 automatically.  The \verb|ylim('mode')| form returns the current mode for the axis
 (either \verb|'auto'| or \verb|'manual'|).  Finally, you can specify the handle of an
 axis to manipulate instead of using the current one.
+
+As an additional feature, you can now specify \verb|inf| for a limit, and
+FreeMat will take that limit from the automatic set.  So, for example 
+\verb|ylim([10,inf])| will set the minimum for the y axis, but use the
+automatic value for the maximum.
 \subsection{Example}
 
 \begin{verbatim}
@@ -44,4 +49,14 @@ which results in
 
 
 \centerline{\includegraphics[width=8cm]{ylim2}}
+
+To demonstrate the infinite limits feature.  Consider the following
+\begin{verbatim}
+--> plot(x,y,'r-');
+--> ylim([0,inf])
+\end{verbatim}
+which results in 
+
+
+\centerline{\includegraphics[width=8cm]{ylim3}}
 

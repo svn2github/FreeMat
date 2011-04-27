@@ -12,6 +12,14 @@ FreeMat allows for
 fewer arguments to be passed to a function than were declared,
 and \verb|nargin|, along with \verb|isset| can be used to determine
 exactly what subset of the arguments were defined.
+
+You can also use \verb|nargin| on a function handle to return the
+number of input arguments expected by the function
+\begin{verbatim}
+  y = nargin(fun)
+\end{verbatim}
+where \verb|fun| is the name of the function (e.g. \verb|'sin'|) or 
+a function handle.
 \subsection{Example}
 
 Here is a function that is declared to take five 
@@ -31,4 +39,17 @@ nargin = 2
 nargin = 3
 --> nargintest(3,'h',1.34,pi,e);
 nargin = 5
+--> nargin('sin')
+
+ans = 
+ 1 
+
+--> y = @sin
+
+y = 
+ @sin
+--> nargin(y)
+
+ans = 
+ 1 
 \end{verbatim}

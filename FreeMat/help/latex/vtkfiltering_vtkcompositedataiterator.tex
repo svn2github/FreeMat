@@ -1,0 +1,127 @@
+\section{vtkCompositeDataIterator}
+
+\subsection{Usage}
+
+ vtkCompositeDataIterator provides an interface for accessing datasets
+ in a collection (vtkCompositeDataIterator). 
+
+To create an instance of class vtkCompositeDataIterator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCompositeDataIterator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCompositeDataIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCompositeDataIterator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCompositeDataIterator = obj.NewInstance ()|
+
+\item  \verb|vtkCompositeDataIterator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetDataSet (vtkCompositeDataSet ds)| -  Set the composite dataset this iterator is iterating over. 
+ Must be set before traversal begins.
+
+\item  \verb|vtkCompositeDataSet = obj.GetDataSet ()| -  Set the composite dataset this iterator is iterating over. 
+ Must be set before traversal begins.
+
+\item  \verb|obj.InitTraversal ()| -  Begin iterating over the composite dataset structure.
+
+\item  \verb|obj.InitReverseTraversal ()| -  Begin iterating over the composite dataset structure in reverse order.
+
+\item  \verb|obj.GoToFirstItem ()| -  Move the iterator to the beginning of the collection.
+
+\item  \verb|obj.GoToNextItem ()| -  Move the iterator to the next item in the collection.
+
+\item  \verb|int = obj.IsDoneWithTraversal ()| -  Test whether the iterator is finished with the traversal.
+ Returns 1 for yes, and 0 for no. 
+ It is safe to call any of the GetCurrent...() methods only when
+ IsDoneWithTraversal() returns 0.
+
+\item  \verb|vtkDataObject = obj.GetCurrentDataObject ()| -  Returns the current item. Valid only when IsDoneWithTraversal() returns 0.
+
+\item  \verb|vtkInformation = obj.GetCurrentMetaData ()| -  Returns the meta-data associated with the current item. This will allocate
+ a new vtkInformation object is none is already present. Use
+ HasCurrentMetaData to avoid unnecessary creation of vtkInformation objects.
+
+\item  \verb|int = obj.HasCurrentMetaData ()| -  Returns if the a meta-data information object is present for the current
+ item. Return 1 on success, 0 otherwise.
+
+\item  \verb|obj.SetVisitOnlyLeaves (int )| -  If VisitOnlyLeaves is true, the iterator will only visit nodes
+ (sub-datasets) that are not composite. If it encounters a composite
+ data set, it will automatically traverse that composite dataset until
+ it finds non-composite datasets. With this options, it is possible to
+ visit all non-composite datasets in tree of composite datasets
+ (composite of composite of composite for example :-) ) If
+ VisitOnlyLeaves is false, GetCurrentDataObject() may return
+ vtkCompositeDataSet. By default, VisitOnlyLeaves is 1.
+
+\item  \verb|int = obj.GetVisitOnlyLeaves ()| -  If VisitOnlyLeaves is true, the iterator will only visit nodes
+ (sub-datasets) that are not composite. If it encounters a composite
+ data set, it will automatically traverse that composite dataset until
+ it finds non-composite datasets. With this options, it is possible to
+ visit all non-composite datasets in tree of composite datasets
+ (composite of composite of composite for example :-) ) If
+ VisitOnlyLeaves is false, GetCurrentDataObject() may return
+ vtkCompositeDataSet. By default, VisitOnlyLeaves is 1.
+
+\item  \verb|obj.VisitOnlyLeavesOn ()| -  If VisitOnlyLeaves is true, the iterator will only visit nodes
+ (sub-datasets) that are not composite. If it encounters a composite
+ data set, it will automatically traverse that composite dataset until
+ it finds non-composite datasets. With this options, it is possible to
+ visit all non-composite datasets in tree of composite datasets
+ (composite of composite of composite for example :-) ) If
+ VisitOnlyLeaves is false, GetCurrentDataObject() may return
+ vtkCompositeDataSet. By default, VisitOnlyLeaves is 1.
+
+\item  \verb|obj.VisitOnlyLeavesOff ()| -  If VisitOnlyLeaves is true, the iterator will only visit nodes
+ (sub-datasets) that are not composite. If it encounters a composite
+ data set, it will automatically traverse that composite dataset until
+ it finds non-composite datasets. With this options, it is possible to
+ visit all non-composite datasets in tree of composite datasets
+ (composite of composite of composite for example :-) ) If
+ VisitOnlyLeaves is false, GetCurrentDataObject() may return
+ vtkCompositeDataSet. By default, VisitOnlyLeaves is 1.
+
+\item  \verb|obj.SetTraverseSubTree (int )| -  If TraverseSubTree is set to true, the iterator will visit the entire tree
+ structure, otherwise it only visits the first level children. Set to 1 by
+ default.
+
+\item  \verb|int = obj.GetTraverseSubTree ()| -  If TraverseSubTree is set to true, the iterator will visit the entire tree
+ structure, otherwise it only visits the first level children. Set to 1 by
+ default.
+
+\item  \verb|obj.TraverseSubTreeOn ()| -  If TraverseSubTree is set to true, the iterator will visit the entire tree
+ structure, otherwise it only visits the first level children. Set to 1 by
+ default.
+
+\item  \verb|obj.TraverseSubTreeOff ()| -  If TraverseSubTree is set to true, the iterator will visit the entire tree
+ structure, otherwise it only visits the first level children. Set to 1 by
+ default.
+
+\item  \verb|obj.SetSkipEmptyNodes (int )| -  If SkipEmptyNodes is true, then NULL datasets will be skipped. Default is
+ true.
+
+\item  \verb|int = obj.GetSkipEmptyNodes ()| -  If SkipEmptyNodes is true, then NULL datasets will be skipped. Default is
+ true.
+
+\item  \verb|obj.SkipEmptyNodesOn ()| -  If SkipEmptyNodes is true, then NULL datasets will be skipped. Default is
+ true.
+
+\item  \verb|obj.SkipEmptyNodesOff ()| -  If SkipEmptyNodes is true, then NULL datasets will be skipped. Default is
+ true.
+
+\item  \verb|int = obj.GetCurrentFlatIndex ()| -  Flat index is an index obtained by traversing the tree in preorder.
+ This can be used to uniquely identify nodes in the tree.
+ Not valid if IsDoneWithTraversal() returns true.
+
+\item  \verb|int = obj.GetReverse ()| -  Returns if the iteration is in reverse order.
+
+\end{itemize}

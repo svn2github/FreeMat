@@ -1,0 +1,40 @@
+\section{vtkImageOrthoPlanes}
+
+\subsection{Usage}
+
+ vtkImageOrthoPlanes is an event observer class that listens to the
+ events from three vtkImagePlaneWidgets and keeps their orientations
+ and scales synchronized.
+
+To create an instance of class vtkImageOrthoPlanes, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageOrthoPlanes
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageOrthoPlanes has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageOrthoPlanes class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageOrthoPlanes = obj.NewInstance ()|
+
+\item  \verb|vtkImageOrthoPlanes = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetPlane (int i, vtkImagePlaneWidget imagePlaneWidget)| -  You must set three planes for the widget.
+
+\item  \verb|vtkImagePlaneWidget = obj.GetPlane (int i)| -  You must set three planes for the widget.
+
+\item  \verb|obj.ResetPlanes ()| -  Reset the planes to original scale, rotation, and location.
+
+\item  \verb|vtkTransform = obj.GetTransform ()| -  Get the transform for the planes.
+
+\item  \verb|obj.HandlePlaneEvent (vtkImagePlaneWidget imagePlaneWidget)| -  A public method to be used only by the event callback.
+
+\end{itemize}

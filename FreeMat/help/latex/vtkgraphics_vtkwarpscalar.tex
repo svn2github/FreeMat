@@ -1,0 +1,85 @@
+\section{vtkWarpScalar}
+
+\subsection{Usage}
+
+ vtkWarpScalar is a filter that modifies point coordinates by moving
+ points along point normals by the scalar amount times the scale factor.
+ Useful for creating carpet or x-y-z plots.
+
+ If normals are not present in data, the Normal instance variable will
+ be used as the direction along which to warp the geometry. If normals are
+ present but you would like to use the Normal instance variable, set the 
+ UseNormal boolean to true.
+
+ If XYPlane boolean is set true, then the z-value is considered to be 
+ a scalar value (still scaled by scale factor), and the displacement is
+ along the z-axis. If scalars are also present, these are copied through
+ and can be used to color the surface.
+
+ Note that the filter passes both its point data and cell data to
+ its output, except for normals, since these are distorted by the
+ warping.
+
+To create an instance of class vtkWarpScalar, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkWarpScalar
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkWarpScalar has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkWarpScalar class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkWarpScalar = obj.NewInstance ()|
+
+\item  \verb|vtkWarpScalar = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetScaleFactor (double )| -  Specify value to scale displacement.
+
+\item  \verb|double = obj.GetScaleFactor ()| -  Specify value to scale displacement.
+
+\item  \verb|obj.SetUseNormal (int )| -  Turn on/off use of user specified normal. If on, data normals
+ will be ignored and instance variable Normal will be used instead.
+
+\item  \verb|int = obj.GetUseNormal ()| -  Turn on/off use of user specified normal. If on, data normals
+ will be ignored and instance variable Normal will be used instead.
+
+\item  \verb|obj.UseNormalOn ()| -  Turn on/off use of user specified normal. If on, data normals
+ will be ignored and instance variable Normal will be used instead.
+
+\item  \verb|obj.UseNormalOff ()| -  Turn on/off use of user specified normal. If on, data normals
+ will be ignored and instance variable Normal will be used instead.
+
+\item  \verb|obj.SetNormal (double , double , double )| -  Normal (i.e., direction) along which to warp geometry. Only used
+ if UseNormal boolean set to true or no normals available in data.
+
+\item  \verb|obj.SetNormal (double  a[3])| -  Normal (i.e., direction) along which to warp geometry. Only used
+ if UseNormal boolean set to true or no normals available in data.
+
+\item  \verb|double = obj. GetNormal ()| -  Normal (i.e., direction) along which to warp geometry. Only used
+ if UseNormal boolean set to true or no normals available in data.
+
+\item  \verb|obj.SetXYPlane (int )| -  Turn on/off flag specifying that input data is x-y plane. If x-y plane,
+ then the z value is used to warp the surface in the z-axis direction 
+ (times the scale factor) and scalars are used to color the surface.
+
+\item  \verb|int = obj.GetXYPlane ()| -  Turn on/off flag specifying that input data is x-y plane. If x-y plane,
+ then the z value is used to warp the surface in the z-axis direction 
+ (times the scale factor) and scalars are used to color the surface.
+
+\item  \verb|obj.XYPlaneOn ()| -  Turn on/off flag specifying that input data is x-y plane. If x-y plane,
+ then the z value is used to warp the surface in the z-axis direction 
+ (times the scale factor) and scalars are used to color the surface.
+
+\item  \verb|obj.XYPlaneOff ()| -  Turn on/off flag specifying that input data is x-y plane. If x-y plane,
+ then the z value is used to warp the surface in the z-axis direction 
+ (times the scale factor) and scalars are used to color the surface.
+
+\end{itemize}

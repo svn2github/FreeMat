@@ -8,7 +8,7 @@ use is
   syms = symvar(expr)
 \end{verbatim}
 where \verb|expr| is a string containing an expression, such as
-\verb|'x^2 + cos(t+alpha)'|.  The result is a cell array of strings
+\verb|'x\^2 + cos(t+alpha)'|.  The result is a cell array of strings
 containing the non-function identifiers in the expression.  Because
 they are usually not used as identifiers in expressions, the strings
  \verb|'pi','inf','nan','eps','i','j'| are ignored.
@@ -24,7 +24,7 @@ ans =
 --> symvar('pi+3')         % No identifiers here
 
 ans = 
-  Empty array 0 1
+  Empty array 0x1
 --> symvar('x + t*alpha')  % x, t and alpha
 
 ans = 

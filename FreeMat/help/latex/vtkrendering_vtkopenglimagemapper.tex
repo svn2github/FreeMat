@@ -1,0 +1,35 @@
+\section{vtkOpenGLImageMapper}
+
+\subsection{Usage}
+
+ vtkOpenGLImageMapper is a concrete subclass of vtkImageMapper that
+ renders images under OpenGL
+
+To create an instance of class vtkOpenGLImageMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkOpenGLImageMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkOpenGLImageMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkOpenGLImageMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkOpenGLImageMapper = obj.NewInstance ()|
+
+\item  \verb|vtkOpenGLImageMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.RenderOverlay (vtkViewport viewport, vtkActor2D actor)| -  Called by the Render function in vtkImageMapper.  Actually draws
+ the image to the screen.
+
+\item  \verb|obj.RenderData (vtkViewport viewport, vtkImageData data, vtkActor2D actor)| -  Called by the Render function in vtkImageMapper.  Actually draws
+ the image to the screen.
+
+\end{itemize}

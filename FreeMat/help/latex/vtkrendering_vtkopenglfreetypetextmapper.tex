@@ -1,0 +1,39 @@
+\section{vtkOpenGLFreeTypeTextMapper}
+
+\subsection{Usage}
+
+ vtkOpenGLFreeTypeTextMapper provides 2D text annotation support for VTK
+ using the FreeType and FTGL libraries. Normally the user should use 
+ vtktextMapper which in turn will use this class.
+
+To create an instance of class vtkOpenGLFreeTypeTextMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkOpenGLFreeTypeTextMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkOpenGLFreeTypeTextMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkOpenGLFreeTypeTextMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkOpenGLFreeTypeTextMapper = obj.NewInstance ()|
+
+\item  \verb|vtkOpenGLFreeTypeTextMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.RenderOverlay (vtkViewport viewport, vtkActor2D actor)| -  Actally draw the text.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|obj.GetSize (vtkViewport viewport, int size[2])| -  What is the size of the rectangle required to draw this
+ mapper ?
+
+\end{itemize}

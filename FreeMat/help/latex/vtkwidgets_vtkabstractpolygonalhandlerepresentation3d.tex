@@ -1,0 +1,110 @@
+\section{vtkAbstractPolygonalHandleRepresentation3D}
+
+\subsection{Usage}
+
+ This class serves as the geometrical representation of a vtkHandleWidget. 
+ The handle can be represented by an arbitrary polygonal data (vtkPolyData),
+ set via SetHandle(vtkPolyData *). The actual position of the handle 
+ will be initially assumed to be (0,0,0). You can specify an offset from
+ this position if desired. This class differs from 
+ vtkPolygonalHandleRepresentation3D in that the handle will always remain
+ front facing, ie it maintains a fixed orientation with respect to the 
+ camera. This is done by using vtkFollowers internally to render the actors.
+
+To create an instance of class vtkAbstractPolygonalHandleRepresentation3D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAbstractPolygonalHandleRepresentation3D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAbstractPolygonalHandleRepresentation3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAbstractPolygonalHandleRepresentation3D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methods for instances of this class.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methods for instances of this class.
+
+\item  \verb|vtkAbstractPolygonalHandleRepresentation3D = obj.NewInstance ()| -  Standard methods for instances of this class.
+
+\item  \verb|vtkAbstractPolygonalHandleRepresentation3D = obj.SafeDownCast (vtkObject o)| -  Standard methods for instances of this class.
+
+\item  \verb|obj.SetWorldPosition (double p[3])| -  Set the position of the point in world and display coordinates.
+
+\item  \verb|obj.SetDisplayPosition (double p[3])| -  Set the position of the point in world and display coordinates.
+
+\item  \verb|obj.SetHandle (vtkPolyData )| -  Set/get the handle polydata.
+
+\item  \verb|vtkPolyData = obj.GetHandle ()| -  Set/get the handle polydata.
+
+\item  \verb|obj.SetProperty (vtkProperty )| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|obj.SetSelectedProperty (vtkProperty )| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|vtkProperty = obj.GetProperty ()| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|vtkProperty = obj.GetSelectedProperty ()| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|vtkAbstractTransform = obj.GetTransform ()| -  Get the transform used to transform the generic handle polydata before
+ placing it in the render window
+
+\item  \verb|obj.BuildRepresentation ()| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.StartWidgetInteraction (double eventPos[2])| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.WidgetInteraction (double eventPos[2])| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|int = obj.ComputeInteractionState (int X, int Y, int modify)| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.ShallowCopy (vtkProp prop)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|obj.DeepCopy (vtkProp prop)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|obj.GetActors (vtkPropCollection )| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|obj.SetLabelVisibility (int )| -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+
+\item  \verb|int = obj.GetLabelVisibility ()| -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+
+\item  \verb|obj.LabelVisibilityOn ()| -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+
+\item  \verb|obj.LabelVisibilityOff ()| -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+
+\item  \verb|obj.SetLabelText (string label)| -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+
+\item  \verb|string = obj.GetLabelText ()| -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+
+\item  \verb|obj.SetLabelTextScale (double scale[3])| -  Scale text (font size along each dimension).
+
+\item  \verb|vtkFollower = obj.GetLabelTextActor ()| -  Get the label text actor
+
+\item  \verb|obj.SetUniformScale (double scale)| -  The handle may be scaled uniformly in all three dimensions using this 
+ API. The handle can also be scaled interactively using the right 
+ mouse button.
+
+\item  \verb|obj.SetHandleVisibility (int )| -  Toogle the visibility of the handle on and off
+
+\item  \verb|int = obj.GetHandleVisibility ()| -  Toogle the visibility of the handle on and off
+
+\item  \verb|obj.HandleVisibilityOn ()| -  Toogle the visibility of the handle on and off
+
+\item  \verb|obj.HandleVisibilityOff ()| -  Toogle the visibility of the handle on and off
+
+\end{itemize}

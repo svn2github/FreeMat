@@ -1,0 +1,46 @@
+\section{vtkTriangleFilter}
+
+\subsection{Usage}
+
+ vtkTriangleFilter generates triangles from input polygons and triangle 
+ strips. The filter also will pass through vertices and lines, if
+ requested.
+
+To create an instance of class vtkTriangleFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTriangleFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTriangleFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTriangleFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTriangleFilter = obj.NewInstance ()|
+
+\item  \verb|vtkTriangleFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.PassVertsOn ()| -  Turn on/off passing vertices through filter.
+
+\item  \verb|obj.PassVertsOff ()| -  Turn on/off passing vertices through filter.
+
+\item  \verb|obj.SetPassVerts (int )| -  Turn on/off passing vertices through filter.
+
+\item  \verb|int = obj.GetPassVerts ()| -  Turn on/off passing vertices through filter.
+
+\item  \verb|obj.PassLinesOn ()| -  Turn on/off passing lines through filter.
+
+\item  \verb|obj.PassLinesOff ()| -  Turn on/off passing lines through filter.
+
+\item  \verb|obj.SetPassLines (int )| -  Turn on/off passing lines through filter.
+
+\item  \verb|int = obj.GetPassLines ()| -  Turn on/off passing lines through filter.
+
+\end{itemize}

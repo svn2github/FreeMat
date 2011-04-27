@@ -1,0 +1,85 @@
+\section{vtkDescriptiveStatistics}
+
+\subsection{Usage}
+
+ Given a selection of columns of interest in an input data table, this 
+ class provides the following functionalities, depending on the
+ execution mode it is executed in:
+ * Learn: calculate extremal values, arithmetic mean, unbiased variance 
+   estimator, skewness estimator, and both sample and G2 estimation of the 
+   kurtosis excess. More precisely, Learn calculates the sums; if
+    finalize is set to true (default), the final statistics are calculated
+   with CalculateFromSums. Otherwise, only raw sums are output; this 
+   option is made for efficient parallel calculations.
+   Note that CalculateFromSums is a static function, so that it can be used
+   directly with no need to instantiate a vtkDescriptiveStatistics object.
+ * Assess: given an input data set in port INPUT\_DATA, and a reference value x along
+   with an acceptable deviation d>0, assess all entries in the data set which
+   are outside of [x-d,x+d].
+
+ .SECTION Thanks
+ Thanks to Philippe Pebay and David Thompson from Sandia National Laboratories 
+ for implementing this class.
+
+To create an instance of class vtkDescriptiveStatistics, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDescriptiveStatistics
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDescriptiveStatistics has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDescriptiveStatistics class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDescriptiveStatistics = obj.NewInstance ()|
+
+\item  \verb|vtkDescriptiveStatistics = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetUnbiasedVariance (int )| -  Set/get whether the unbiased estimator for the variance should be used, or if
+ the population variance will be calculated.
+ The default is that the unbiased estimator will be used.
+
+\item  \verb|int = obj.GetUnbiasedVariance ()| -  Set/get whether the unbiased estimator for the variance should be used, or if
+ the population variance will be calculated.
+ The default is that the unbiased estimator will be used.
+
+\item  \verb|obj.UnbiasedVarianceOn ()| -  Set/get whether the unbiased estimator for the variance should be used, or if
+ the population variance will be calculated.
+ The default is that the unbiased estimator will be used.
+
+\item  \verb|obj.UnbiasedVarianceOff ()| -  Set/get whether the unbiased estimator for the variance should be used, or if
+ the population variance will be calculated.
+ The default is that the unbiased estimator will be used.
+
+\item  \verb|obj.SetSignedDeviations (int )| -  Set/get whether the deviations returned should be signed, or should
+ only have their magnitude reported.
+ The default is that signed deviations will be computed.
+
+\item  \verb|int = obj.GetSignedDeviations ()| -  Set/get whether the deviations returned should be signed, or should
+ only have their magnitude reported.
+ The default is that signed deviations will be computed.
+
+\item  \verb|obj.SignedDeviationsOn ()| -  Set/get whether the deviations returned should be signed, or should
+ only have their magnitude reported.
+ The default is that signed deviations will be computed.
+
+\item  \verb|obj.SignedDeviationsOff ()| -  Set/get whether the deviations returned should be signed, or should
+ only have their magnitude reported.
+ The default is that signed deviations will be computed.
+
+\item  \verb|obj.SetNominalParameter (string name)| -  A convenience method (in particular for UI wrapping) to set the name of the
+ column that contains the nominal value for the Assess option.
+
+\item  \verb|obj.SetDeviationParameter (string name)| -  A convenience method (in particular for UI wrapping) to set the name of the
+ column that contains the deviation for the Assess option.
+
+\item  \verb|obj.Aggregate (vtkDataObjectCollection , vtkDataObject )| -  Given a collection of models, calculate aggregate model
+
+\end{itemize}

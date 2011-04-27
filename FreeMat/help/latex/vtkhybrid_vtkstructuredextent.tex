@@ -1,0 +1,30 @@
+\section{vtkStructuredExtent}
+
+\subsection{Usage}
+
+  vtkStructuredExtent is an helper class that helps in arithmetic with
+  structured extents. It defines a bunch of static methods (most of which are
+  inlined) to aid in dealing with extents.
+
+To create an instance of class vtkStructuredExtent, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkStructuredExtent
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkStructuredExtent has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkStructuredExtent class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkStructuredExtent = obj.NewInstance ()|
+
+\item  \verb|vtkStructuredExtent = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

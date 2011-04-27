@@ -1,0 +1,65 @@
+\section{vtkX3DExporter}
+
+\subsection{Usage}
+
+ vtkX3DExporter is a render window exporter which writes out the renderered
+ scene into an X3D file. X3D is an XML-based format for representation 
+ 3D scenes (similar to VRML). Check out http://www.web3d.org/x3d/ for more
+ details.
+ .SECTION Thanks
+ X3DExporter is contributed by Christophe Mouton at EDF.
+
+To create an instance of class vtkX3DExporter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkX3DExporter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkX3DExporter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkX3DExporter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkX3DExporter = obj.NewInstance ()|
+
+\item  \verb|vtkX3DExporter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFileName (string )| -  Set/Get the output file name.
+
+\item  \verb|string = obj.GetFileName ()| -  Set/Get the output file name.
+
+\item  \verb|obj.SetSpeed (double )| -  Specify the Speed of navigation. Default is 4.
+
+\item  \verb|double = obj.GetSpeed ()| -  Specify the Speed of navigation. Default is 4.
+
+\item  \verb|obj.SetBinary (int )| -  Turn on binary mode
+
+\item  \verb|int = obj.GetBinaryMinValue ()| -  Turn on binary mode
+
+\item  \verb|int = obj.GetBinaryMaxValue ()| -  Turn on binary mode
+
+\item  \verb|obj.BinaryOn ()| -  Turn on binary mode
+
+\item  \verb|obj.BinaryOff ()| -  Turn on binary mode
+
+\item  \verb|int = obj.GetBinary ()| -  Turn on binary mode
+
+\item  \verb|obj.SetFastest (int )| -  In binary mode use fastest instead of best compression
+
+\item  \verb|int = obj.GetFastestMinValue ()| -  In binary mode use fastest instead of best compression
+
+\item  \verb|int = obj.GetFastestMaxValue ()| -  In binary mode use fastest instead of best compression
+
+\item  \verb|obj.FastestOn ()| -  In binary mode use fastest instead of best compression
+
+\item  \verb|obj.FastestOff ()| -  In binary mode use fastest instead of best compression
+
+\item  \verb|int = obj.GetFastest ()| -  In binary mode use fastest instead of best compression
+
+\end{itemize}

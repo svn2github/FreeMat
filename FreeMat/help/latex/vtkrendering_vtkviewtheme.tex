@@ -1,0 +1,226 @@
+\section{vtkViewTheme}
+
+\subsection{Usage}
+
+ This may be set on any subclass of vtkView.  The view class will attempt
+ to use the values set in the theme to customize the view.  Views will not
+ generally use every aspect of the theme.
+ NOTICE: This class will be deprecated in favor of a more robust
+ solution based on style sheets.  Do not become overly-dependent on the
+ functionality of themes.
+
+To create an instance of class vtkViewTheme, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkViewTheme
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkViewTheme has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkViewTheme class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkViewTheme = obj.NewInstance ()|
+
+\item  \verb|vtkViewTheme = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetPointSize (double )| -  The size of points or vertices
+
+\item  \verb|double = obj.GetPointSize ()| -  The size of points or vertices
+
+\item  \verb|obj.SetLineWidth (double )| -  The width of lines or edges
+
+\item  \verb|double = obj.GetLineWidth ()| -  The width of lines or edges
+
+\item  \verb|obj.SetPointColor (double , double , double )| -  The color and opacity of points or vertices when not mapped through
+ a lookup table.
+
+\item  \verb|obj.SetPointColor (double  a[3])| -  The color and opacity of points or vertices when not mapped through
+ a lookup table.
+
+\item  \verb|double = obj. GetPointColor ()| -  The color and opacity of points or vertices when not mapped through
+ a lookup table.
+
+\item  \verb|obj.SetPointOpacity (double )| -  The color and opacity of points or vertices when not mapped through
+ a lookup table.
+
+\item  \verb|double = obj.GetPointOpacity ()| -  The color and opacity of points or vertices when not mapped through
+ a lookup table.
+
+\item  \verb|obj.SetPointHueRange (double mn, double mx)| -  The ranges to use in the point lookup table.
+ You may also do this by accessing the point lookup table directly
+ with GetPointLookupTable() and calling these methods.
+
+\item  \verb|obj.SetPointHueRange (double rng[2])| -  The ranges to use in the point lookup table.
+ You may also do this by accessing the point lookup table directly
+ with GetPointLookupTable() and calling these methods.
+
+\item  \verb|obj.GetPointHueRange (double rng[2])| -  The ranges to use in the point lookup table.
+ You may also do this by accessing the point lookup table directly
+ with GetPointLookupTable() and calling these methods.
+
+\item  \verb|obj.SetPointSaturationRange (double mn, double mx)|
+
+\item  \verb|obj.SetPointSaturationRange (double rng[2])|
+
+\item  \verb|obj.GetPointSaturationRange (double rng[2])|
+
+\item  \verb|obj.SetPointValueRange (double mn, double mx)|
+
+\item  \verb|obj.SetPointValueRange (double rng[2])|
+
+\item  \verb|obj.GetPointValueRange (double rng[2])|
+
+\item  \verb|obj.SetPointAlphaRange (double mn, double mx)|
+
+\item  \verb|obj.SetPointAlphaRange (double rng[2])|
+
+\item  \verb|obj.GetPointAlphaRange (double rng[2])|
+
+\item  \verb|vtkScalarsToColors = obj.GetPointLookupTable ()| -  Set/Get the point lookup table.
+
+\item  \verb|obj.SetPointLookupTable (vtkScalarsToColors lut)| -  Set/Get the point lookup table.
+
+\item  \verb|obj.SetScalePointLookupTable (bool )| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|bool = obj.GetScalePointLookupTable ()| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|obj.ScalePointLookupTableOn ()| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|obj.ScalePointLookupTableOff ()| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|obj.SetCellColor (double , double , double )| -  The color and opacity of cells or edges when not mapped through
+ a lookup table.
+
+\item  \verb|obj.SetCellColor (double  a[3])| -  The color and opacity of cells or edges when not mapped through
+ a lookup table.
+
+\item  \verb|double = obj. GetCellColor ()| -  The color and opacity of cells or edges when not mapped through
+ a lookup table.
+
+\item  \verb|obj.SetCellOpacity (double )| -  The color and opacity of cells or edges when not mapped through
+ a lookup table.
+
+\item  \verb|double = obj.GetCellOpacity ()| -  The color and opacity of cells or edges when not mapped through
+ a lookup table.
+
+\item  \verb|obj.SetCellHueRange (double mn, double mx)| -  The ranges to use in the cell lookup table.
+ You may also do this by accessing the cell lookup table directly
+ with GetCellLookupTable() and calling these methods.
+
+\item  \verb|obj.SetCellHueRange (double rng[2])| -  The ranges to use in the cell lookup table.
+ You may also do this by accessing the cell lookup table directly
+ with GetCellLookupTable() and calling these methods.
+
+\item  \verb|obj.GetCellHueRange (double rng[2])| -  The ranges to use in the cell lookup table.
+ You may also do this by accessing the cell lookup table directly
+ with GetCellLookupTable() and calling these methods.
+
+\item  \verb|obj.SetCellSaturationRange (double mn, double mx)|
+
+\item  \verb|obj.SetCellSaturationRange (double rng[2])|
+
+\item  \verb|obj.GetCellSaturationRange (double rng[2])|
+
+\item  \verb|obj.SetCellValueRange (double mn, double mx)|
+
+\item  \verb|obj.SetCellValueRange (double rng[2])|
+
+\item  \verb|obj.GetCellValueRange (double rng[2])|
+
+\item  \verb|obj.SetCellAlphaRange (double mn, double mx)|
+
+\item  \verb|obj.SetCellAlphaRange (double rng[2])|
+
+\item  \verb|obj.GetCellAlphaRange (double rng[2])|
+
+\item  \verb|vtkScalarsToColors = obj.GetCellLookupTable ()| -  Set/Get the cell lookup table.
+
+\item  \verb|obj.SetCellLookupTable (vtkScalarsToColors lut)| -  Set/Get the cell lookup table.
+
+\item  \verb|obj.SetScaleCellLookupTable (bool )| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|bool = obj.GetScaleCellLookupTable ()| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|obj.ScaleCellLookupTableOn ()| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|obj.ScaleCellLookupTableOff ()| -  Whether to scale the lookup table to fit the range of the data.
+
+\item  \verb|obj.SetOutlineColor (double , double , double )| -  The color of any outlines in the view.
+
+\item  \verb|obj.SetOutlineColor (double  a[3])| -  The color of any outlines in the view.
+
+\item  \verb|double = obj. GetOutlineColor ()| -  The color of any outlines in the view.
+
+\item  \verb|obj.SetSelectedPointColor (double , double , double )| -  The color of selected points or vertices.
+
+\item  \verb|obj.SetSelectedPointColor (double  a[3])| -  The color of selected points or vertices.
+
+\item  \verb|double = obj. GetSelectedPointColor ()| -  The color of selected points or vertices.
+
+\item  \verb|obj.SetSelectedPointOpacity (double )| -  The color of selected points or vertices.
+
+\item  \verb|double = obj.GetSelectedPointOpacity ()| -  The color of selected points or vertices.
+
+\item  \verb|obj.SetSelectedCellColor (double , double , double )| -  The color of selected cells or edges.
+
+\item  \verb|obj.SetSelectedCellColor (double  a[3])| -  The color of selected cells or edges.
+
+\item  \verb|double = obj. GetSelectedCellColor ()| -  The color of selected cells or edges.
+
+\item  \verb|obj.SetSelectedCellOpacity (double )| -  The color of selected cells or edges.
+
+\item  \verb|double = obj.GetSelectedCellOpacity ()| -  The color of selected cells or edges.
+
+\item  \verb|obj.SetBackgroundColor (double , double , double )| -  The view background color.
+
+\item  \verb|obj.SetBackgroundColor (double  a[3])| -  The view background color.
+
+\item  \verb|double = obj. GetBackgroundColor ()| -  The view background color.
+
+\item  \verb|obj.SetBackgroundColor2 (double , double , double )| -  The second background color (for gradients).
+
+\item  \verb|obj.SetBackgroundColor2 (double  a[3])| -  The second background color (for gradients).
+
+\item  \verb|double = obj. GetBackgroundColor2 ()| -  The second background color (for gradients).
+
+\item  \verb|obj.SetPointTextProperty (vtkTextProperty tprop)| -  The text property to use for labelling points/vertices.
+
+\item  \verb|vtkTextProperty = obj.GetPointTextProperty ()| -  The text property to use for labelling points/vertices.
+
+\item  \verb|obj.SetCellTextProperty (vtkTextProperty tprop)| -  The text property to use for labelling edges/cells.
+
+\item  \verb|vtkTextProperty = obj.GetCellTextProperty ()| -  The text property to use for labelling edges/cells.
+
+\item  \verb|obj.SetVertexLabelColor (double r, double g, double b)| -  The color to use for labelling graph vertices.
+ This is deprecated. Use GetPointTextProperty()->SetColor() instead.
+
+\item  \verb|obj.SetVertexLabelColor (double c[3])| -  The color to use for labelling graph vertices.
+ This is deprecated. Use GetPointTextProperty()->SetColor() instead.
+
+\item  \verb|obj.GetVertexLabelColor (double c[3])| -  The color to use for labelling graph edges.
+ This is deprecated. Use GetCellTextProperty()->SetColor() instead.
+
+\item  \verb|obj.SetEdgeLabelColor (double r, double g, double b)| -  The color to use for labelling graph edges.
+ This is deprecated. Use GetCellTextProperty()->SetColor() instead.
+
+\item  \verb|obj.SetEdgeLabelColor (double c[3])| -  The color to use for labelling graph edges.
+ This is deprecated. Use GetCellTextProperty()->SetColor() instead.
+
+\item  \verb|obj.GetEdgeLabelColor (double c[3])| -  Convenience methods for creating some default view themes.
+ The return reference is reference-counted, so you will have to call
+ Delete() on the reference when you are finished with it.
+
+\item  \verb|bool = obj.LookupMatchesPointTheme (vtkScalarsToColors s2c)| -  Whether a given lookup table matches the point or cell theme of this
+ theme.
+
+\item  \verb|bool = obj.LookupMatchesCellTheme (vtkScalarsToColors s2c)| -  Whether a given lookup table matches the point or cell theme of this
+ theme.
+
+\end{itemize}

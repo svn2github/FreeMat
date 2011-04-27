@@ -1,0 +1,33 @@
+\section{vtkPolyDataCollection}
+
+\subsection{Usage}
+
+ vtkPolyDataCollection is an object that creates and manipulates lists of
+ datasets of type vtkPolyData. 
+
+To create an instance of class vtkPolyDataCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPolyDataCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPolyDataCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPolyDataCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPolyDataCollection = obj.NewInstance ()|
+
+\item  \verb|vtkPolyDataCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkPolyData pd)| -  Get the next poly data in the list.
+
+\item  \verb|vtkPolyData = obj.GetNextItem ()| -  Get the next poly data in the list.
+
+\end{itemize}

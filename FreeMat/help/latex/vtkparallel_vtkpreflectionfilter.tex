@@ -1,0 +1,33 @@
+\section{vtkPReflectionFilter}
+
+\subsection{Usage}
+
+ vtkPReflectionFilter is a parallel version of vtkReflectionFilter which takes
+ into consideration the full dataset bounds for performing the reflection.
+
+To create an instance of class vtkPReflectionFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPReflectionFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPReflectionFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPReflectionFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPReflectionFilter = obj.NewInstance ()|
+
+\item  \verb|vtkPReflectionFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetController (vtkMultiProcessController )| -  Get/Set the parallel controller.
+
+\item  \verb|vtkMultiProcessController = obj.GetController ()| -  Get/Set the parallel controller.
+
+\end{itemize}

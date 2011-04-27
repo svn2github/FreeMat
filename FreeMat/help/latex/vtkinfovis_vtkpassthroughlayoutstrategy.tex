@@ -1,0 +1,41 @@
+\section{vtkPassThroughLayoutStrategy}
+
+\subsection{Usage}
+
+ Yes, this incredible strategy does absoluted nothing to the data
+ so in affect passes through the graph untouched. This strategy
+ is useful in the cases where the graph is already laid out.
+
+To create an instance of class vtkPassThroughLayoutStrategy, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPassThroughLayoutStrategy
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPassThroughLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPassThroughLayoutStrategy class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPassThroughLayoutStrategy = obj.NewInstance ()|
+
+\item  \verb|vtkPassThroughLayoutStrategy = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Initialize ()| -  This strategy sets up some data structures
+ for faster processing of each Layout() call
+
+\item  \verb|obj.Layout ()| -  This is the layout method where the graph that was
+ set in SetGraph() is laid out. The method can either
+ entirely layout the graph or iteratively lay out the
+ graph. If you have an iterative layout please implement
+ the IsLayoutComplete() method.
+
+\item  \verb|int = obj.IsLayoutComplete ()|
+
+\end{itemize}

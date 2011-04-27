@@ -1,0 +1,38 @@
+\section{vtkCachedStreamingDemandDrivenPipeline}
+
+\subsection{Usage}
+
+ vtkCachedStreamingDemandDrivenPipeline
+
+To create an instance of class vtkCachedStreamingDemandDrivenPipeline, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCachedStreamingDemandDrivenPipeline
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCachedStreamingDemandDrivenPipeline has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCachedStreamingDemandDrivenPipeline class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCachedStreamingDemandDrivenPipeline = obj.NewInstance ()|
+
+\item  \verb|vtkCachedStreamingDemandDrivenPipeline = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.Update ()| -  Bring the algorithm's outputs up-to-date.
+
+\item  \verb|int = obj.Update (int port)| -  Bring the algorithm's outputs up-to-date.
+
+\item  \verb|obj.SetCacheSize (int size)| -  This is the maximum number of images that can be retained in memory.
+ it defaults to 10.
+
+\item  \verb|int = obj.GetCacheSize ()| -  This is the maximum number of images that can be retained in memory.
+ it defaults to 10.
+
+\end{itemize}

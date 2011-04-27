@@ -1,0 +1,44 @@
+\section{vtkShrinkPolyData}
+
+\subsection{Usage}
+
+ vtkShrinkPolyData shrinks cells composing a polygonal dataset (e.g., 
+ vertices, lines, polygons, and triangle strips) towards their centroid. 
+ The centroid of a cell is computed as the average position of the
+ cell points. Shrinking results in disconnecting the cells from
+ one another. The output dataset type of this filter is polygonal data.
+
+ During execution the filter passes its input cell data to its
+ output. Point data attributes are copied to the points created during the
+ shrinking process.
+
+To create an instance of class vtkShrinkPolyData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkShrinkPolyData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkShrinkPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkShrinkPolyData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkShrinkPolyData = obj.NewInstance ()|
+
+\item  \verb|vtkShrinkPolyData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetShrinkFactor (double )| -  Set the fraction of shrink for each cell.
+
+\item  \verb|double = obj.GetShrinkFactorMinValue ()| -  Set the fraction of shrink for each cell.
+
+\item  \verb|double = obj.GetShrinkFactorMaxValue ()| -  Set the fraction of shrink for each cell.
+
+\item  \verb|double = obj.GetShrinkFactor ()| -  Get the fraction of shrink for each cell.
+
+\end{itemize}

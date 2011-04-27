@@ -1,0 +1,43 @@
+\section{vtkIdentColoredPainter}
+
+\subsection{Usage}
+
+ DEPRECATED. Refer to vtkHardwareSelectionPolyDataPainter instead.
+ This painter will color each polygon in a color that encodes an integer.
+ Doing so allows us to determine what polygon is behind each pixel on the 
+ screen.
+
+To create an instance of class vtkIdentColoredPainter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkIdentColoredPainter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkIdentColoredPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkIdentColoredPainter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkIdentColoredPainter = obj.NewInstance ()|
+
+\item  \verb|vtkIdentColoredPainter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.ResetCurrentId ()|
+
+\item  \verb|obj.ColorByConstant (int constant)|
+
+\item  \verb|obj.ColorByIncreasingIdent (int plane)|
+
+\item  \verb|obj.ColorByActorId (vtkProp ActorId)|
+
+\item  \verb|obj.ColorByVertex ()|
+
+\item  \verb|vtkProp = obj.GetActorFromId (vtkIdType id)|
+
+\end{itemize}

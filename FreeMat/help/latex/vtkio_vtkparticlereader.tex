@@ -1,0 +1,201 @@
+\section{vtkParticleReader}
+
+\subsection{Usage}
+
+ vtkParticleReader reads either a binary or a text file of 
+  particles. Each particle can have associated with it an optional
+  scalar value. So the format is: x, y, z, scalar 
+  (all floats or doubles). The text file can consist of a comma 
+  delimited set of values. In most cases vtkParticleReader can 
+  automatically determine whether the file is text or binary. 
+  The data can be either float or double. 
+  Progress updates are provided. 
+  With respect to binary files, random access into the file to read 
+  pieces is supported.
+  
+
+To create an instance of class vtkParticleReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkParticleReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkParticleReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkParticleReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkParticleReader = obj.NewInstance ()|
+
+\item  \verb|vtkParticleReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFileName (string )| -  Specify file name.
+
+\item  \verb|string = obj.GetFileName ()| -  Specify file name.
+
+\item  \verb|obj.SetDataByteOrderToBigEndian ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|obj.SetDataByteOrderToLittleEndian ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|int = obj.GetDataByteOrder ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|obj.SetDataByteOrder (int )| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|string = obj.GetDataByteOrderAsString ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|obj.SetSwapBytes (int )| -  Set/Get the byte swapping to explicitly swap the bytes of a file.
+ Not used when reading text files.
+
+\item  \verb|int = obj.GetSwapBytes ()| -  Set/Get the byte swapping to explicitly swap the bytes of a file.
+ Not used when reading text files.
+
+\item  \verb|obj.SwapBytesOn ()| -  Set/Get the byte swapping to explicitly swap the bytes of a file.
+ Not used when reading text files.
+
+\item  \verb|obj.SwapBytesOff ()| -  Set/Get the byte swapping to explicitly swap the bytes of a file.
+ Not used when reading text files.
+
+\item  \verb|obj.SetHasScalar (int )| -  Default: 1. If 1 then each particle has a value associated with it.
+
+\item  \verb|int = obj.GetHasScalar ()| -  Default: 1. If 1 then each particle has a value associated with it.
+
+\item  \verb|obj.HasScalarOn ()| -  Default: 1. If 1 then each particle has a value associated with it.
+
+\item  \verb|obj.HasScalarOff ()| -  Default: 1. If 1 then each particle has a value associated with it.
+
+\item  \verb|obj.SetFileType (int )| -  Get/Set the file type.  The options are:
+ - FILE\_TYPE\_IS\_UNKNOWN (default) the class 
+     will attempt to determine the file type.
+     If this fails then you should set the file type
+     yourself.
+ - FILE\_TYPE\_IS\_TEXT the file type is text.
+ - FILE\_TYPE\_IS\_BINARY the file type is binary.
+
+\item  \verb|int = obj.GetFileTypeMinValue ()| -  Get/Set the file type.  The options are:
+ - FILE\_TYPE\_IS\_UNKNOWN (default) the class 
+     will attempt to determine the file type.
+     If this fails then you should set the file type
+     yourself.
+ - FILE\_TYPE\_IS\_TEXT the file type is text.
+ - FILE\_TYPE\_IS\_BINARY the file type is binary.
+
+\item  \verb|int = obj.GetFileTypeMaxValue ()| -  Get/Set the file type.  The options are:
+ - FILE\_TYPE\_IS\_UNKNOWN (default) the class 
+     will attempt to determine the file type.
+     If this fails then you should set the file type
+     yourself.
+ - FILE\_TYPE\_IS\_TEXT the file type is text.
+ - FILE\_TYPE\_IS\_BINARY the file type is binary.
+
+\item  \verb|int = obj.GetFileType ()| -  Get/Set the file type.  The options are:
+ - FILE\_TYPE\_IS\_UNKNOWN (default) the class 
+     will attempt to determine the file type.
+     If this fails then you should set the file type
+     yourself.
+ - FILE\_TYPE\_IS\_TEXT the file type is text.
+ - FILE\_TYPE\_IS\_BINARY the file type is binary.
+
+\item  \verb|obj.SetFileTypeToUnknown ()| -  Get/Set the file type.  The options are:
+ - FILE\_TYPE\_IS\_UNKNOWN (default) the class 
+     will attempt to determine the file type.
+     If this fails then you should set the file type
+     yourself.
+ - FILE\_TYPE\_IS\_TEXT the file type is text.
+ - FILE\_TYPE\_IS\_BINARY the file type is binary.
+
+\item  \verb|obj.SetFileTypeToText ()| -  Get/Set the file type.  The options are:
+ - FILE\_TYPE\_IS\_UNKNOWN (default) the class 
+     will attempt to determine the file type.
+     If this fails then you should set the file type
+     yourself.
+ - FILE\_TYPE\_IS\_TEXT the file type is text.
+ - FILE\_TYPE\_IS\_BINARY the file type is binary.
+
+\item  \verb|obj.SetFileTypeToBinary ()| -  Get/Set the data type.  The options are:
+ - VTK\_FLOAT (default) single precision floating point.
+ - VTK\_DOUBLE double precision floating point.
+
+\item  \verb|obj.SetDataType (int )| -  Get/Set the data type.  The options are:
+ - VTK\_FLOAT (default) single precision floating point.
+ - VTK\_DOUBLE double precision floating point.
+
+\item  \verb|int = obj.GetDataTypeMinValue ()| -  Get/Set the data type.  The options are:
+ - VTK\_FLOAT (default) single precision floating point.
+ - VTK\_DOUBLE double precision floating point.
+
+\item  \verb|int = obj.GetDataTypeMaxValue ()| -  Get/Set the data type.  The options are:
+ - VTK\_FLOAT (default) single precision floating point.
+ - VTK\_DOUBLE double precision floating point.
+
+\item  \verb|int = obj.GetDataType ()| -  Get/Set the data type.  The options are:
+ - VTK\_FLOAT (default) single precision floating point.
+ - VTK\_DOUBLE double precision floating point.
+
+\item  \verb|obj.SetDataTypeToFloat ()| -  Get/Set the data type.  The options are:
+ - VTK\_FLOAT (default) single precision floating point.
+ - VTK\_DOUBLE double precision floating point.
+
+\item  \verb|obj.SetDataTypeToDouble ()|
+
+\end{itemize}

@@ -1,0 +1,55 @@
+\section{vtkHomogeneousTransform}
+
+\subsection{Usage}
+
+ vtkHomogeneousTransform provides a generic interface for homogeneous 
+ transformations, i.e. transformations which can be represented by 
+ multiplying a 4x4 matrix with a homogeneous coordinate. 
+
+To create an instance of class vtkHomogeneousTransform, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHomogeneousTransform
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHomogeneousTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHomogeneousTransform class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHomogeneousTransform = obj.NewInstance ()|
+
+\item  \verb|vtkHomogeneousTransform = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.TransformPoints (vtkPoints inPts, vtkPoints outPts)| -  Apply the transformation to a series of points, and append the
+ results to outPts.  
+
+\item  \verb|obj.TransformPointsNormalsVectors (vtkPoints inPts, vtkPoints outPts, vtkDataArray inNms, vtkDataArray outNms, vtkDataArray inVrs, vtkDataArray outVrs)| -  Apply the transformation to a combination of points, normals
+ and vectors.  
+
+\item  \verb|obj.GetMatrix (vtkMatrix4x4 m)| -  Get a copy of the internal transformation matrix.  The
+ transform is Updated first, to guarantee that the matrix
+ is valid.
+
+\item  \verb|vtkMatrix4x4 = obj.GetMatrix ()| -  Get a pointer to an internal vtkMatrix4x4 that represents
+ the transformation.  An Update() is called on the transform
+ to ensure that the matrix is up-to-date when you get it.
+ You should not store the matrix pointer anywhere because it
+ might become stale.
+
+\item  \verb|vtkHomogeneousTransform = obj.GetHomogeneousInverse ()| -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+
+\item  \verb|obj.InternalTransformPoint (float in[3], float out[3])| -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+
+\item  \verb|obj.InternalTransformPoint (double in[3], double out[3])| -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+
+\end{itemize}

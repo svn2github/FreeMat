@@ -1,0 +1,43 @@
+\section{vtkImagePadFilter}
+
+\subsection{Usage}
+
+ vtkImagePadFilter Changes the image extent of an image.  If the image
+ extent is larger than the input image extent, the extra pixels are
+ filled by an algorithm determined by the subclass.
+ The image extent of the output has to be specified.
+
+To create an instance of class vtkImagePadFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImagePadFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImagePadFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImagePadFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImagePadFilter = obj.NewInstance ()|
+
+\item  \verb|vtkImagePadFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetOutputWholeExtent (int extent[6])| -  The image extent of the output has to be set explicitly.
+
+\item  \verb|obj.SetOutputWholeExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ)| -  The image extent of the output has to be set explicitly.
+
+\item  \verb|obj.GetOutputWholeExtent (int extent[6])| -  The image extent of the output has to be set explicitly.
+
+\item  \verb|int = obj.GetOutputWholeExtent ()| -  Set/Get the number of output scalar components.
+
+\item  \verb|obj.SetOutputNumberOfScalarComponents (int )| -  Set/Get the number of output scalar components.
+
+\item  \verb|int = obj.GetOutputNumberOfScalarComponents ()| -  Set/Get the number of output scalar components.
+
+\end{itemize}

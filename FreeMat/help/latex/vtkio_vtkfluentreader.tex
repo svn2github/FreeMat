@@ -1,0 +1,125 @@
+\section{vtkFLUENTReader}
+
+\subsection{Usage}
+
+ vtkFLUENTReader creates an unstructured grid dataset. It reads .cas and
+ .dat files stored in FLUENT native format.
+
+ .SECTION Thanks
+ Thanks to Brian W. Dotson \& Terry E. Jordan (Department of Energy, National
+ Energy Technology Laboratory) \& Douglas McCorkle (Iowa State University)
+ who developed this class.
+ Please address all comments to Brian Dotson (brian.dotson@netl.doe.gov) \&
+ Terry Jordan (terry.jordan@sa.netl.doe.gov)
+ \& Doug McCorkle (mccdo@iastate.edu)
+
+
+To create an instance of class vtkFLUENTReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkFLUENTReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkFLUENTReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkFLUENTReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkFLUENTReader = obj.NewInstance ()|
+
+\item  \verb|vtkFLUENTReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFileName (string )| -  Specify the file name of the Fluent case file to read.
+
+\item  \verb|string = obj.GetFileName ()| -  Specify the file name of the Fluent case file to read.
+
+\item  \verb|int = obj.GetNumberOfCells ()| -  Get the total number of cells. The number of cells is only valid after a
+ successful read of the data file is performed. Initial value is 0.
+
+\item  \verb|int = obj.GetNumberOfCellArrays (void )| -  Get the number of cell arrays available in the input.
+
+\item  \verb|string = obj.GetCellArrayName (int index)| -  Get the name of the  cell array with the given index in
+ the input.
+
+\item  \verb|int = obj.GetCellArrayStatus (string name)| -  Get/Set whether the cell array with the given name is to
+ be read.
+
+\item  \verb|obj.SetCellArrayStatus (string name, int status)| -  Get/Set whether the cell array with the given name is to
+ be read.
+
+\item  \verb|obj.DisableAllCellArrays ()| -  Turn on/off all cell arrays.
+
+\item  \verb|obj.EnableAllCellArrays ()| -  Turn on/off all cell arrays.
+
+\item  \verb|obj.SetDataByteOrderToBigEndian ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|obj.SetDataByteOrderToLittleEndian ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|int = obj.GetDataByteOrder ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|obj.SetDataByteOrder (int )| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\item  \verb|string = obj.GetDataByteOrderAsString ()| -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian 
+ otherwise SetDataByteOrderToBigEndian. Not used when reading
+ text files. 
+
+\end{itemize}

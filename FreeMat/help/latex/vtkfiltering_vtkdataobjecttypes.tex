@@ -1,0 +1,31 @@
+\section{vtkDataObjectTypes}
+
+\subsection{Usage}
+
+ vtkDataObjectTypes is a helper class that supports conversion between
+ integer types defined in vtkType.h and string names as well as creation
+ of data objects from either integer or string types. This class has
+ to be updated every time a new data type is added to VTK.
+
+To create an instance of class vtkDataObjectTypes, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDataObjectTypes
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDataObjectTypes has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDataObjectTypes class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDataObjectTypes = obj.NewInstance ()|
+
+\item  \verb|vtkDataObjectTypes = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

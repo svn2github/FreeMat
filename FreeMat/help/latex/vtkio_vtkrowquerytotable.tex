@@ -1,0 +1,42 @@
+\section{vtkRowQueryToTable}
+
+\subsection{Usage}
+
+ vtkRowQueryToTable creates a vtkTable with the results of an arbitrary SQL
+ query.  To use this filter, you first need an instance of a vtkSQLDatabase
+ subclass.  You may use the database class to obtain a vtkRowQuery instance.
+ Set that query on this filter to extract the query as a table.
+
+ .SECTION Thanks
+ Thanks to Andrew Wilson from Sandia National Laboratories for his work
+ on the database classes.
+
+
+To create an instance of class vtkRowQueryToTable, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRowQueryToTable
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRowQueryToTable has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRowQueryToTable class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRowQueryToTable = obj.NewInstance ()|
+
+\item  \verb|vtkRowQueryToTable = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetQuery (vtkRowQuery query)| -  The query to execute.
+
+\item  \verb|vtkRowQuery = obj.GetQuery ()| -  The query to execute.
+
+\item  \verb|long = obj.GetMTime ()| -  Update the modified time based on the query.
+
+\end{itemize}

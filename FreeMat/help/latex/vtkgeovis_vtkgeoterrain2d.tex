@@ -1,0 +1,47 @@
+\section{vtkGeoTerrain2D}
+
+\subsection{Usage}
+
+ vtkGeoTerrain2D contains a multi-resolution tree of geometry representing
+ the globe. It uses a vtkGeoSource subclass to generate the terrain, such
+ as vtkGeoProjectionSource. This source must be set before using the
+ terrain in a vtkGeoView2D. The terrain also contains an AddActors()
+ method which updates the set of actors representing the globe given the
+ current camera position.
+
+To create an instance of class vtkGeoTerrain2D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGeoTerrain2D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGeoTerrain2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGeoTerrain2D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGeoTerrain2D = obj.NewInstance ()|
+
+\item  \verb|vtkGeoTerrain2D = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetTextureTolerance (double )| -  The maximum size of a single texel in pixels.
+ Images will be refined if a texel becomes larger than the tolerance.
+
+\item  \verb|double = obj.GetTextureTolerance ()| -  The maximum size of a single texel in pixels.
+ Images will be refined if a texel becomes larger than the tolerance.
+
+\item  \verb|obj.SetLocationTolerance (double )| -  The maximum allowed deviation of geometry in pixels.
+ Geometry will be refined if the deviation is larger than the tolerance.
+
+\item  \verb|double = obj.GetLocationTolerance ()| -  The maximum allowed deviation of geometry in pixels.
+ Geometry will be refined if the deviation is larger than the tolerance.
+
+\item  \verb|vtkAbstractTransform = obj.GetTransform ()| -  Return the projection transformation used by this 2D terrain.
+
+\end{itemize}

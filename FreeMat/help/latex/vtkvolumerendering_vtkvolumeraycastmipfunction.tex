@@ -1,0 +1,51 @@
+\section{vtkVolumeRayCastMIPFunction}
+
+\subsection{Usage}
+
+ vtkVolumeRayCastMIPFunction is a volume ray cast function that
+ computes the maximum value encountered along the ray. This is
+ either the maximum scalar value, or the maximum opacity, as
+ defined by the MaximizeMethod. The color and opacity returned
+ by this function is based on the color, scalar opacity, and
+ gradient opacity transfer functions defined in the vtkVolumeProperty
+ of the vtkVolume.
+
+
+To create an instance of class vtkVolumeRayCastMIPFunction, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVolumeRayCastMIPFunction
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVolumeRayCastMIPFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVolumeRayCastMIPFunction class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVolumeRayCastMIPFunction = obj.NewInstance ()|
+
+\item  \verb|vtkVolumeRayCastMIPFunction = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|float = obj.GetZeroOpacityThreshold (vtkVolume vol)| -  Get the scalar value below which all scalar values have zero opacity.
+
+\item  \verb|obj.SetMaximizeMethod (int )| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\item  \verb|int = obj.GetMaximizeMethodMinValue ()| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\item  \verb|int = obj.GetMaximizeMethodMaxValue ()| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\item  \verb|int = obj.GetMaximizeMethod ()| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\item  \verb|obj.SetMaximizeMethodToScalarValue ()| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\item  \verb|obj.SetMaximizeMethodToOpacity ()| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\item  \verb|string = obj.GetMaximizeMethodAsString (void )| -  Set the MaximizeMethod to either ScalarValue or Opacity.
+
+\end{itemize}

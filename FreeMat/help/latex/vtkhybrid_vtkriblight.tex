@@ -1,0 +1,40 @@
+\section{vtkRIBLight}
+
+\subsection{Usage}
+
+ vtkRIBLight is a subclass of vtkLight that allows the user to
+ specify light source shaders and shadow casting lights for use with RenderMan.
+
+
+To create an instance of class vtkRIBLight, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRIBLight
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRIBLight has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRIBLight class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRIBLight = obj.NewInstance ()|
+
+\item  \verb|vtkRIBLight = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.ShadowsOn ()|
+
+\item  \verb|obj.ShadowsOff ()|
+
+\item  \verb|obj.SetShadows (int )|
+
+\item  \verb|int = obj.GetShadows ()|
+
+\item  \verb|obj.Render (vtkRenderer ren, int index)|
+
+\end{itemize}

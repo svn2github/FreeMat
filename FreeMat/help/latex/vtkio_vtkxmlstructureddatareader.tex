@@ -1,0 +1,56 @@
+\section{vtkXMLStructuredDataReader}
+
+\subsection{Usage}
+
+ vtkXMLStructuredDataReader provides functionality common to all
+ structured data format readers.
+
+To create an instance of class vtkXMLStructuredDataReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLStructuredDataReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLStructuredDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLStructuredDataReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLStructuredDataReader = obj.NewInstance ()|
+
+\item  \verb|vtkXMLStructuredDataReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkIdType = obj.GetNumberOfPoints ()| -  Get the number of points in the output.
+
+\item  \verb|vtkIdType = obj.GetNumberOfCells ()| -  Get the number of cells in the output.
+
+\item  \verb|obj.SetWholeSlices (int )| -  Get/Set whether the reader gets a whole slice from disk when only
+ a rectangle inside it is needed.  This mode reads more data than
+ necessary, but prevents many short reads from interacting poorly
+ with the compression and encoding schemes.
+
+\item  \verb|int = obj.GetWholeSlices ()| -  Get/Set whether the reader gets a whole slice from disk when only
+ a rectangle inside it is needed.  This mode reads more data than
+ necessary, but prevents many short reads from interacting poorly
+ with the compression and encoding schemes.
+
+\item  \verb|obj.WholeSlicesOn ()| -  Get/Set whether the reader gets a whole slice from disk when only
+ a rectangle inside it is needed.  This mode reads more data than
+ necessary, but prevents many short reads from interacting poorly
+ with the compression and encoding schemes.
+
+\item  \verb|obj.WholeSlicesOff ()| -  Get/Set whether the reader gets a whole slice from disk when only
+ a rectangle inside it is needed.  This mode reads more data than
+ necessary, but prevents many short reads from interacting poorly
+ with the compression and encoding schemes.
+
+\item  \verb|obj.CopyOutputInformation (vtkInformation outInfo, int port)| -  For the specified port, copy the information this reader sets up in
+ SetupOutputInformation to outInfo
+
+\end{itemize}

@@ -1,0 +1,132 @@
+\section{vtkCornerAnnotation}
+
+\subsection{Usage}
+
+ This is an annotation object that manages four text actors / mappers
+ to provide annotation in the four corners of a viewport
+
+
+To create an instance of class vtkCornerAnnotation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCornerAnnotation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCornerAnnotation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCornerAnnotation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCornerAnnotation = obj.NewInstance ()|
+
+\item  \verb|vtkCornerAnnotation = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Draw the scalar bar and annotation text to the screen.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )| -  Draw the scalar bar and annotation text to the screen.
+
+\item  \verb|int = obj.RenderOverlay (vtkViewport viewport)| -  Draw the scalar bar and annotation text to the screen.
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Does this prop have some translucent polygonal geometry?
+
+\item  \verb|obj.SetMaximumLineHeight (double )| -  Set/Get the maximum height of a line of text as a 
+ percentage of the vertical area allocated to this
+ scaled text actor. Defaults to 1.0
+
+\item  \verb|double = obj.GetMaximumLineHeight ()| -  Set/Get the maximum height of a line of text as a 
+ percentage of the vertical area allocated to this
+ scaled text actor. Defaults to 1.0
+
+\item  \verb|obj.SetMinimumFontSize (int )| -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+
+\item  \verb|int = obj.GetMinimumFontSize ()| -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+
+\item  \verb|obj.SetMaximumFontSize (int )| -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+
+\item  \verb|int = obj.GetMaximumFontSize ()| -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+
+\item  \verb|obj.SetLinearFontScaleFactor (double )| -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+
+\item  \verb|double = obj.GetLinearFontScaleFactor ()| -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+
+\item  \verb|obj.SetNonlinearFontScaleFactor (double )| -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+
+\item  \verb|double = obj.GetNonlinearFontScaleFactor ()| -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|obj.SetText (int i, string text)| -  Set/Get the text to be displayed for each corner
+
+\item  \verb|string = obj.GetText (int i)| -  Set/Get the text to be displayed for each corner
+
+\item  \verb|obj.ClearAllTexts ()| -  Set/Get the text to be displayed for each corner
+
+\item  \verb|obj.CopyAllTextsFrom (vtkCornerAnnotation ca)| -  Set/Get the text to be displayed for each corner
+
+\item  \verb|obj.SetImageActor (vtkImageActor )| -  Set an image actor to look at for slice information
+
+\item  \verb|vtkImageActor = obj.GetImageActor ()| -  Set an image actor to look at for slice information
+
+\item  \verb|obj.SetWindowLevel (vtkImageMapToWindowLevelColors )| -  Set an instance of vtkImageMapToWindowLevelColors to use for
+ looking at window level changes
+
+\item  \verb|vtkImageMapToWindowLevelColors = obj.GetWindowLevel ()| -  Set an instance of vtkImageMapToWindowLevelColors to use for
+ looking at window level changes
+
+\item  \verb|obj.SetLevelShift (double )| -  Set the value to shift the level by.
+
+\item  \verb|double = obj.GetLevelShift ()| -  Set the value to shift the level by.
+
+\item  \verb|obj.SetLevelScale (double )| -  Set the value to scale the level by.
+
+\item  \verb|double = obj.GetLevelScale ()| -  Set the value to scale the level by.
+
+\item  \verb|obj.SetTextProperty (vtkTextProperty p)| -  Set/Get the text property of all corners.
+
+\item  \verb|vtkTextProperty = obj.GetTextProperty ()| -  Set/Get the text property of all corners.
+
+\item  \verb|obj.ShowSliceAndImageOn ()| -  Even if there is an image actor, should `slice' and `image' be displayed?
+
+\item  \verb|obj.ShowSliceAndImageOff ()| -  Even if there is an image actor, should `slice' and `image' be displayed?
+
+\item  \verb|obj.SetShowSliceAndImage (int )| -  Even if there is an image actor, should `slice' and `image' be displayed?
+
+\item  \verb|int = obj.GetShowSliceAndImage ()| -  Even if there is an image actor, should `slice' and `image' be displayed?
+
+\end{itemize}

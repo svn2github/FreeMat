@@ -1,0 +1,40 @@
+\section{vtkTemporalSnapToTimeStep}
+
+\subsection{Usage}
+
+ vtkTemporalSnapToTimeStep  modify the time range or time steps of
+ the data without changing the data itself. The data is not resampled
+ by this filter, only the information accompanying the data is modified.
+
+To create an instance of class vtkTemporalSnapToTimeStep, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTemporalSnapToTimeStep
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTemporalSnapToTimeStep has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTemporalSnapToTimeStep class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTemporalSnapToTimeStep = obj.NewInstance ()|
+
+\item  \verb|vtkTemporalSnapToTimeStep = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetSnapMode (int )|
+
+\item  \verb|int = obj.GetSnapMode ()|
+
+\item  \verb|obj.SetSnapModeToNearest ()|
+
+\item  \verb|obj.SetSnapModeToNextBelowOrEqual ()|
+
+\item  \verb|obj.SetSnapModeToNextAboveOrEqual ()|
+
+\end{itemize}

@@ -1,0 +1,97 @@
+\section{vtkImageGridSource}
+
+\subsection{Usage}
+
+ vtkImageGridSource produces an image of a grid.  The
+ default output type is double.
+
+To create an instance of class vtkImageGridSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageGridSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageGridSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageGridSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageGridSource = obj.NewInstance ()|
+
+\item  \verb|vtkImageGridSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGridSpacing (int , int , int )| -  Set/Get the grid spacing in pixel units.  Default (10,10,0).
+ A value of zero means no grid.
+
+\item  \verb|obj.SetGridSpacing (int  a[3])| -  Set/Get the grid spacing in pixel units.  Default (10,10,0).
+ A value of zero means no grid.
+
+\item  \verb|int = obj. GetGridSpacing ()| -  Set/Get the grid spacing in pixel units.  Default (10,10,0).
+ A value of zero means no grid.
+
+\item  \verb|obj.SetGridOrigin (int , int , int )| -  Set/Get the grid origin, in ijk integer values.  Default (0,0,0).
+
+\item  \verb|obj.SetGridOrigin (int  a[3])| -  Set/Get the grid origin, in ijk integer values.  Default (0,0,0).
+
+\item  \verb|int = obj. GetGridOrigin ()| -  Set/Get the grid origin, in ijk integer values.  Default (0,0,0).
+
+\item  \verb|obj.SetLineValue (double )| -  Set the grey level of the lines. Default 1.0.
+
+\item  \verb|double = obj.GetLineValue ()| -  Set the grey level of the lines. Default 1.0.
+
+\item  \verb|obj.SetFillValue (double )| -  Set the grey level of the fill. Default 0.0.
+
+\item  \verb|double = obj.GetFillValue ()| -  Set the grey level of the fill. Default 0.0.
+
+\item  \verb|obj.SetDataScalarType (int )| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|obj.SetDataScalarTypeToDouble ()| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|obj.SetDataScalarTypeToInt ()| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|obj.SetDataScalarTypeToShort ()| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|obj.SetDataScalarTypeToUnsignedShort ()| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|obj.SetDataScalarTypeToUnsignedChar ()| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|int = obj.GetDataScalarType ()| -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+
+\item  \verb|string = obj.GetDataScalarTypeAsString ()| -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+
+\item  \verb|obj.SetDataExtent (int , int , int , int , int , int )| -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+
+\item  \verb|obj.SetDataExtent (int  a[6])| -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+
+\item  \verb|int = obj. GetDataExtent ()| -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+
+\item  \verb|obj.SetDataSpacing (double , double , double )| -  Set/Get the pixel spacing.
+
+\item  \verb|obj.SetDataSpacing (double  a[3])| -  Set/Get the pixel spacing.
+
+\item  \verb|double = obj. GetDataSpacing ()| -  Set/Get the pixel spacing.
+
+\item  \verb|obj.SetDataOrigin (double , double , double )| -  Set/Get the origin of the data.
+
+\item  \verb|obj.SetDataOrigin (double  a[3])| -  Set/Get the origin of the data.
+
+\item  \verb|double = obj. GetDataOrigin ()| -  Set/Get the origin of the data.
+
+\end{itemize}

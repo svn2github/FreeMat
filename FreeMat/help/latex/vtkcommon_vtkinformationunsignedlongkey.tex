@@ -1,0 +1,43 @@
+\section{vtkInformationUnsignedLongKey}
+
+\subsection{Usage}
+
+ vtkInformationUnsignedLongKey is used to represent keys for unsigned long values
+ in vtkInformation.
+
+To create an instance of class vtkInformationUnsignedLongKey, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformationUnsignedLongKey
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformationUnsignedLongKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformationUnsignedLongKey class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformationUnsignedLongKey = obj.NewInstance ()|
+
+\item  \verb|vtkInformationUnsignedLongKey = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkInformationUnsignedLongKey = obj.(string name, string location)|
+
+\item  \verb|~vtkInformationUnsignedLongKey = obj.()|
+
+\item  \verb|obj.Set (vtkInformation info, long )| -  Get/Set the value associated with this key in the given
+ information object.
+
+\item  \verb|long = obj.Get (vtkInformation info)| -  Get/Set the value associated with this key in the given
+ information object.
+
+\item  \verb|obj.ShallowCopy (vtkInformation from, vtkInformation to)| -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+
+\end{itemize}

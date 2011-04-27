@@ -1,0 +1,58 @@
+\section{vtkHexagonalPrism}
+
+\subsection{Usage}
+
+ vtkHexagonalPrism is a concrete implementation of vtkCell to represent a
+ linear 3D prism with hexagonal base. Such prism is defined by the twelve points 
+ (0-12) where (0,1,2,3,4,5) is the base of the prism which, using the right
+ hand rule, forms a hexagon whose normal points is in the direction of the
+ opposite face (6,7,8,9,10,11).
+
+To create an instance of class vtkHexagonalPrism, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHexagonalPrism
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHexagonalPrism has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHexagonalPrism class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHexagonalPrism = obj.NewInstance ()|
+
+\item  \verb|vtkHexagonalPrism = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetCellType ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetCellDimension ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetNumberOfEdges ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.GetNumberOfFaces ()| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|vtkCell = obj.GetEdge (int edgeId)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|vtkCell = obj.GetFace (int faceId)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)| -  See the vtkCell API for descriptions of these methods.
+
+\item  \verb|int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)|
+
+\item  \verb|obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)|
+
+\item  \verb|int = obj.GetParametricCenter (double pcoords[3])| -  Return the center of the wedge in parametric coordinates.
+
+\item  \verb|obj.InterpolateFunctions (double pcoords[3], double weights[12])| -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+
+\item  \verb|obj.InterpolateDerivs (double pcoords[3], double derivs[36])| -  Return the ids of the vertices defining edge/face (`edgeId`/`faceId').
+ Ids are related to the cell, not to the dataset.
+
+\end{itemize}

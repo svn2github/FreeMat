@@ -1,0 +1,53 @@
+\section{vtkFillHolesFilter}
+
+\subsection{Usage}
+
+ vtkFillHolesFilter is a filter that identifies and fills holes in
+ input vtkPolyData meshes. Holes are identified by locating
+ boundary edges, linking them together into loops, and then 
+ triangulating the resulting loops. Note that you can specify 
+ an approximate limit to the size of the hole that can be filled.
+ 
+
+To create an instance of class vtkFillHolesFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkFillHolesFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkFillHolesFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkFillHolesFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methods for instantiation, type information and printing.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methods for instantiation, type information and printing.
+
+\item  \verb|vtkFillHolesFilter = obj.NewInstance ()| -  Standard methods for instantiation, type information and printing.
+
+\item  \verb|vtkFillHolesFilter = obj.SafeDownCast (vtkObject o)| -  Standard methods for instantiation, type information and printing.
+
+\item  \verb|obj.SetHoleSize (double )| -  Specify the maximum hole size to fill. This is represented as a radius
+ to the bounding circumsphere containing the hole.  Note that this is an
+ approximate area; the actual area cannot be computed without first
+ triangulating the hole.
+
+\item  \verb|double = obj.GetHoleSizeMinValue ()| -  Specify the maximum hole size to fill. This is represented as a radius
+ to the bounding circumsphere containing the hole.  Note that this is an
+ approximate area; the actual area cannot be computed without first
+ triangulating the hole.
+
+\item  \verb|double = obj.GetHoleSizeMaxValue ()| -  Specify the maximum hole size to fill. This is represented as a radius
+ to the bounding circumsphere containing the hole.  Note that this is an
+ approximate area; the actual area cannot be computed without first
+ triangulating the hole.
+
+\item  \verb|double = obj.GetHoleSize ()| -  Specify the maximum hole size to fill. This is represented as a radius
+ to the bounding circumsphere containing the hole.  Note that this is an
+ approximate area; the actual area cannot be computed without first
+ triangulating the hole.
+
+\end{itemize}

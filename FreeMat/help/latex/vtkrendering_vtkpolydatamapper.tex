@@ -1,0 +1,81 @@
+\section{vtkPolyDataMapper}
+
+\subsection{Usage}
+
+ vtkPolyDataMapper is a class that maps polygonal data (i.e., vtkPolyData)
+ to graphics primitives. vtkPolyDataMapper serves as a superclass for
+ device-specific poly data mappers, that actually do the mapping to the
+ rendering/graphics hardware/software.
+
+To create an instance of class vtkPolyDataMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPolyDataMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPolyDataMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPolyDataMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPolyDataMapper = obj.NewInstance ()|
+
+\item  \verb|vtkPolyDataMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.RenderPiece (vtkRenderer ren, vtkActor act)| -  Implemented by sub classes. Actual rendering is done here.
+
+\item  \verb|obj.Render (vtkRenderer ren, vtkActor act)| -  This calls RenderPiece (in a for loop is streaming is necessary).
+
+\item  \verb|obj.SetInput (vtkPolyData in)| -  Specify the input data to map.
+
+\item  \verb|vtkPolyData = obj.GetInput ()| -  Specify the input data to map.
+
+\item  \verb|obj.Update ()| -  Update that sets the update piece first.
+
+\item  \verb|obj.SetPiece (int )| -  If you want only a part of the data, specify by setting the piece.
+
+\item  \verb|int = obj.GetPiece ()| -  If you want only a part of the data, specify by setting the piece.
+
+\item  \verb|obj.SetNumberOfPieces (int )| -  If you want only a part of the data, specify by setting the piece.
+
+\item  \verb|int = obj.GetNumberOfPieces ()| -  If you want only a part of the data, specify by setting the piece.
+
+\item  \verb|obj.SetNumberOfSubPieces (int )| -  If you want only a part of the data, specify by setting the piece.
+
+\item  \verb|int = obj.GetNumberOfSubPieces ()| -  If you want only a part of the data, specify by setting the piece.
+
+\item  \verb|obj.SetGhostLevel (int )| -  Set the number of ghost cells to return.
+
+\item  \verb|int = obj.GetGhostLevel ()| -  Set the number of ghost cells to return.
+
+\item  \verb|double = obj.GetBounds ()| -  Return bounding box (array of six doubles) of data expressed as
+ (xmin,xmax, ymin,ymax, zmin,zmax).
+
+\item  \verb|obj.GetBounds (double bounds[6])| -  Return bounding box (array of six doubles) of data expressed as
+ (xmin,xmax, ymin,ymax, zmin,zmax).
+
+\item  \verb|obj.ShallowCopy (vtkAbstractMapper m)| -  Make a shallow copy of this mapper.
+
+\item  \verb|obj.MapDataArrayToVertexAttribute (string vertexAttributeName, string dataArrayName, int fieldAssociation, int componentno)| -  Select a data array from the point/cell data
+ and map it to a generic vertex attribute. 
+ vertexAttributeName is the name of the vertex attribute.
+ dataArrayName is the name of the data array.
+ fieldAssociation indicates when the data array is a point data array or
+ cell data array (vtkDataObject::FIELD\_ASSOCIATION\_POINTS or
+ (vtkDataObject::FIELD\_ASSOCIATION\_CELLS).
+ componentno indicates which component from the data array must be passed as
+ the attribute. If -1, then all components are passed.
+
+\item  \verb|obj.MapDataArrayToMultiTextureAttribute (int unit, string dataArrayName, int fieldAssociation, int componentno)|
+
+\item  \verb|obj.RemoveVertexAttributeMapping (string vertexAttributeName)| -  Remove a vertex attribute mapping.
+
+\item  \verb|obj.RemoveAllVertexAttributeMappings ()| -  Remove all vertex attributes.
+
+\end{itemize}

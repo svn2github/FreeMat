@@ -1,0 +1,127 @@
+\section{vtkSliderRepresentation3D}
+
+\subsection{Usage}
+
+ This class is used to represent and render a vtkSliderWidget. To use this
+ class, you must at a minimum specify the end points of the
+ slider. Optional instance variable can be used to modify the appearance of
+ the widget.
+
+
+To create an instance of class vtkSliderRepresentation3D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSliderRepresentation3D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSliderRepresentation3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSliderRepresentation3D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methods for the class.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methods for the class.
+
+\item  \verb|vtkSliderRepresentation3D = obj.NewInstance ()| -  Standard methods for the class.
+
+\item  \verb|vtkSliderRepresentation3D = obj.SafeDownCast (vtkObject o)| -  Standard methods for the class.
+
+\item  \verb|vtkCoordinate = obj.GetPoint1Coordinate ()| -  Position the first end point of the slider. Note that this point is an
+ instance of vtkCoordinate, meaning that Point 1 can be specified in a
+ variety of coordinate systems, and can even be relative to another
+ point. To set the point, you'll want to get the Point1Coordinate and
+ then invoke the necessary methods to put it into the correct coordinate
+ system and set the correct initial value.
+
+\item  \verb|obj.SetPoint1InWorldCoordinates (double x, double y, double z)| -  Position the first end point of the slider. Note that this point is an
+ instance of vtkCoordinate, meaning that Point 1 can be specified in a
+ variety of coordinate systems, and can even be relative to another
+ point. To set the point, you'll want to get the Point1Coordinate and
+ then invoke the necessary methods to put it into the correct coordinate
+ system and set the correct initial value.
+
+\item  \verb|vtkCoordinate = obj.GetPoint2Coordinate ()| -  Position the second end point of the slider. Note that this point is an
+ instance of vtkCoordinate, meaning that Point 1 can be specified in a
+ variety of coordinate systems, and can even be relative to another
+ point. To set the point, you'll want to get the Point2Coordinate and
+ then invoke the necessary methods to put it into the correct coordinate
+ system and set the correct initial value.
+
+\item  \verb|obj.SetPoint2InWorldCoordinates (double x, double y, double z)| -  Position the second end point of the slider. Note that this point is an
+ instance of vtkCoordinate, meaning that Point 1 can be specified in a
+ variety of coordinate systems, and can even be relative to another
+ point. To set the point, you'll want to get the Point2Coordinate and
+ then invoke the necessary methods to put it into the correct coordinate
+ system and set the correct initial value.
+
+\item  \verb|obj.SetTitleText (string )| -  Specify the title text for this widget. If the value is not set, or set
+ to the empty string '''', then the title text is not displayed.
+
+\item  \verb|string = obj.GetTitleText ()| -  Specify the title text for this widget. If the value is not set, or set
+ to the empty string '''', then the title text is not displayed.
+
+\item  \verb|obj.SetSliderShape (int )| -  Specify whether to use a sphere or cylinder slider shape. By default, a
+ sphere shape is used.
+
+\item  \verb|int = obj.GetSliderShapeMinValue ()| -  Specify whether to use a sphere or cylinder slider shape. By default, a
+ sphere shape is used.
+
+\item  \verb|int = obj.GetSliderShapeMaxValue ()| -  Specify whether to use a sphere or cylinder slider shape. By default, a
+ sphere shape is used.
+
+\item  \verb|int = obj.GetSliderShape ()| -  Specify whether to use a sphere or cylinder slider shape. By default, a
+ sphere shape is used.
+
+\item  \verb|obj.SetSliderShapeToSphere ()| -  Specify whether to use a sphere or cylinder slider shape. By default, a
+ sphere shape is used.
+
+\item  \verb|obj.SetSliderShapeToCylinder ()| -  Set the rotation of the slider widget around the axis of the widget. This is
+ used to control which way the widget is initially oriented. (This is especially
+ important for the label and title.)
+
+\item  \verb|obj.SetRotation (double )| -  Set the rotation of the slider widget around the axis of the widget. This is
+ used to control which way the widget is initially oriented. (This is especially
+ important for the label and title.)
+
+\item  \verb|double = obj.GetRotation ()| -  Set the rotation of the slider widget around the axis of the widget. This is
+ used to control which way the widget is initially oriented. (This is especially
+ important for the label and title.)
+
+\item  \verb|vtkProperty = obj.GetSliderProperty ()| -  Get the slider properties. The properties of the slider when selected 
+ and unselected can be manipulated.
+
+\item  \verb|vtkProperty = obj.GetTubeProperty ()| -  Get the properties for the tube and end caps. 
+
+\item  \verb|vtkProperty = obj.GetCapProperty ()| -  Get the properties for the tube and end caps. 
+
+\item  \verb|vtkProperty = obj.GetSelectedProperty ()| -  Get the selection property. This property is used to modify the appearance of
+ selected objects (e.g., the slider).
+
+\item  \verb|obj.PlaceWidget (double bounds[6])| -  Methods to interface with the vtkSliderWidget.
+
+\item  \verb|obj.BuildRepresentation ()| -  Methods to interface with the vtkSliderWidget.
+
+\item  \verb|obj.StartWidgetInteraction (double eventPos[2])| -  Methods to interface with the vtkSliderWidget.
+
+\item  \verb|obj.WidgetInteraction (double newEventPos[2])| -  Methods to interface with the vtkSliderWidget.
+
+\item  \verb|obj.Highlight (int )| -  Methods to interface with the vtkSliderWidget.
+
+\item  \verb|double = obj.GetBounds ()|
+
+\item  \verb|obj.GetActors (vtkPropCollection )|
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )|
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport )|
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )|
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()|
+
+\item  \verb|long = obj.GetMTime ()| -  Override GetMTime to include point coordinates
+
+\end{itemize}

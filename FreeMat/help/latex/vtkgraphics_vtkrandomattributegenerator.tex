@@ -1,0 +1,322 @@
+\section{vtkRandomAttributeGenerator}
+
+\subsection{Usage}
+
+ vtkRandomAttributeGenerator is a filter that creates random attributes
+ including scalars, vectors, normals, tensors, texture coordinates and/or
+ general data arrays. These attributes can be generated as point data, cell
+ data or general field data. The generation of each component is normalized
+ between a user-specified minimum and maximum value.
+
+ This filter provides that capability to specify the data type of the
+ attributes, the range for each of the components, and the number of
+ components. Note, however, that this flexibility only goes so far because
+ some attributes (e.g., normals, vectors and tensors) are fixed in the
+ number of components, and in the case of normals and tensors, are
+ constrained in the values that some of the components can take (i.e., 
+ normals have magnitude one, and tensors are symmetric).
+
+To create an instance of class vtkRandomAttributeGenerator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRandomAttributeGenerator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRandomAttributeGenerator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRandomAttributeGenerator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRandomAttributeGenerator = obj.NewInstance ()|
+
+\item  \verb|vtkRandomAttributeGenerator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetDataType (int )| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToBit ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToChar ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToUnsignedChar ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToShort ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToUnsignedShort ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToInt ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToUnsignedInt ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToLong ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToUnsignedLong ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToFloat ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetDataTypeToDouble ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|int = obj.GetDataType ()| -  Specify the type of array to create (all components of this array are of this
+ type). This holds true for all arrays that are created.
+
+\item  \verb|obj.SetNumberOfComponents (int )| -  Specify the number of components to generate. This value only applies to those
+ attribute types that take a variable number of components. For example, a vector
+ is only three components so the number of components is not applicable; whereas
+ a scalar may support multiple, varying number of components.
+
+\item  \verb|int = obj.GetNumberOfComponentsMinValue ()| -  Specify the number of components to generate. This value only applies to those
+ attribute types that take a variable number of components. For example, a vector
+ is only three components so the number of components is not applicable; whereas
+ a scalar may support multiple, varying number of components.
+
+\item  \verb|int = obj.GetNumberOfComponentsMaxValue ()| -  Specify the number of components to generate. This value only applies to those
+ attribute types that take a variable number of components. For example, a vector
+ is only three components so the number of components is not applicable; whereas
+ a scalar may support multiple, varying number of components.
+
+\item  \verb|int = obj.GetNumberOfComponents ()| -  Specify the number of components to generate. This value only applies to those
+ attribute types that take a variable number of components. For example, a vector
+ is only three components so the number of components is not applicable; whereas
+ a scalar may support multiple, varying number of components.
+
+\item  \verb|obj.SetMinimumComponentValue (double )| -  Set the minimum component value. This applies to all data that is generated, 
+ although normals and tensors have internal constraints that must be 
+ observed.
+
+\item  \verb|double = obj.GetMinimumComponentValue ()| -  Set the minimum component value. This applies to all data that is generated, 
+ although normals and tensors have internal constraints that must be 
+ observed.
+
+\item  \verb|obj.SetMaximumComponentValue (double )| -  Set the maximum component value. This applies to all data that is generated, 
+ although normals and tensors have internal constraints that must be 
+ observed.
+
+\item  \verb|double = obj.GetMaximumComponentValue ()| -  Set the maximum component value. This applies to all data that is generated, 
+ although normals and tensors have internal constraints that must be 
+ observed.
+
+\item  \verb|obj.SetNumberOfTuples (vtkIdType )| -  Specify the number of tuples to generate. This value only applies when creating
+ general field data. In all other cases (i.e., point data or cell data), the number
+ of tuples is controlled by the number of points and cells, respectively.
+
+\item  \verb|vtkIdType = obj.GetNumberOfTuplesMinValue ()| -  Specify the number of tuples to generate. This value only applies when creating
+ general field data. In all other cases (i.e., point data or cell data), the number
+ of tuples is controlled by the number of points and cells, respectively.
+
+\item  \verb|vtkIdType = obj.GetNumberOfTuplesMaxValue ()| -  Specify the number of tuples to generate. This value only applies when creating
+ general field data. In all other cases (i.e., point data or cell data), the number
+ of tuples is controlled by the number of points and cells, respectively.
+
+\item  \verb|vtkIdType = obj.GetNumberOfTuples ()| -  Specify the number of tuples to generate. This value only applies when creating
+ general field data. In all other cases (i.e., point data or cell data), the number
+ of tuples is controlled by the number of points and cells, respectively.
+
+\item  \verb|obj.SetGeneratePointScalars (int )| -  Indicate that point scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|int = obj.GetGeneratePointScalars ()| -  Indicate that point scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|obj.GeneratePointScalarsOn ()| -  Indicate that point scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|obj.GeneratePointScalarsOff ()| -  Indicate that point scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|obj.SetGeneratePointVectors (int )| -  Indicate that point vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|int = obj.GetGeneratePointVectors ()| -  Indicate that point vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|obj.GeneratePointVectorsOn ()| -  Indicate that point vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|obj.GeneratePointVectorsOff ()| -  Indicate that point vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|obj.SetGeneratePointNormals (int )| -  Indicate that point normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|int = obj.GetGeneratePointNormals ()| -  Indicate that point normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|obj.GeneratePointNormalsOn ()| -  Indicate that point normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|obj.GeneratePointNormalsOff ()| -  Indicate that point normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|obj.SetGeneratePointTensors (int )| -  Indicate that point tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|int = obj.GetGeneratePointTensors ()| -  Indicate that point tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|obj.GeneratePointTensorsOn ()| -  Indicate that point tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|obj.GeneratePointTensorsOff ()| -  Indicate that point tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|obj.SetGeneratePointTCoords (int )| -  Indicate that point texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|int = obj.GetGeneratePointTCoords ()| -  Indicate that point texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|obj.GeneratePointTCoordsOn ()| -  Indicate that point texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|obj.GeneratePointTCoordsOff ()| -  Indicate that point texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|obj.SetGeneratePointArray (int )| -  Indicate that an arbitrary point array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|int = obj.GetGeneratePointArray ()| -  Indicate that an arbitrary point array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|obj.GeneratePointArrayOn ()| -  Indicate that an arbitrary point array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|obj.GeneratePointArrayOff ()| -  Indicate that an arbitrary point array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|obj.SetGenerateCellScalars (int )| -  Indicate that cell scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|int = obj.GetGenerateCellScalars ()| -  Indicate that cell scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|obj.GenerateCellScalarsOn ()| -  Indicate that cell scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|obj.GenerateCellScalarsOff ()| -  Indicate that cell scalars are to be generated. Note that the specified
+ number of components is used to create the scalar.
+
+\item  \verb|obj.SetGenerateCellVectors (int )| -  Indicate that cell vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|int = obj.GetGenerateCellVectors ()| -  Indicate that cell vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|obj.GenerateCellVectorsOn ()| -  Indicate that cell vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|obj.GenerateCellVectorsOff ()| -  Indicate that cell vectors are to be generated. Note that the 
+ number of components is always equal to three.
+
+\item  \verb|obj.SetGenerateCellNormals (int )| -  Indicate that cell normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|int = obj.GetGenerateCellNormals ()| -  Indicate that cell normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|obj.GenerateCellNormalsOn ()| -  Indicate that cell normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|obj.GenerateCellNormalsOff ()| -  Indicate that cell normals are to be generated. Note that the
+ number of components is always equal to three.
+
+\item  \verb|obj.SetGenerateCellTensors (int )| -  Indicate that cell tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|int = obj.GetGenerateCellTensors ()| -  Indicate that cell tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|obj.GenerateCellTensorsOn ()| -  Indicate that cell tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|obj.GenerateCellTensorsOff ()| -  Indicate that cell tensors are to be generated. Note that the
+ number of components is always equal to nine.
+
+\item  \verb|obj.SetGenerateCellTCoords (int )| -  Indicate that cell texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|int = obj.GetGenerateCellTCoords ()| -  Indicate that cell texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|obj.GenerateCellTCoordsOn ()| -  Indicate that cell texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|obj.GenerateCellTCoordsOff ()| -  Indicate that cell texture coordinates are to be generated. Note that
+ the specified number of components is used to create the texture
+ coordinates (but must range between one and three).
+
+\item  \verb|obj.SetGenerateCellArray (int )| -  Indicate that an arbitrary cell array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|int = obj.GetGenerateCellArray ()| -  Indicate that an arbitrary cell array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|obj.GenerateCellArrayOn ()| -  Indicate that an arbitrary cell array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|obj.GenerateCellArrayOff ()| -  Indicate that an arbitrary cell array is to be generated. Note that the
+ specified number of components is used to create the array.
+
+\item  \verb|obj.SetGenerateFieldArray (int )| -  Indicate that an arbitrary field data array is to be generated. Note
+ that the specified number of components is used to create the scalar.
+
+\item  \verb|int = obj.GetGenerateFieldArray ()| -  Indicate that an arbitrary field data array is to be generated. Note
+ that the specified number of components is used to create the scalar.
+
+\item  \verb|obj.GenerateFieldArrayOn ()| -  Indicate that an arbitrary field data array is to be generated. Note
+ that the specified number of components is used to create the scalar.
+
+\item  \verb|obj.GenerateFieldArrayOff ()| -  Indicate that an arbitrary field data array is to be generated. Note
+ that the specified number of components is used to create the scalar.
+
+\item  \verb|obj.GenerateAllPointDataOn ()| -  Convenience methods for generating data: all data, all point data, or all cell data.
+ For example, if all data is enabled, then all point, cell and field data is generated.
+ If all point data is enabled, then point scalars, vectors, normals, tensors, tcoords,
+ and a data array are produced.
+
+\item  \verb|obj.GenerateAllPointDataOff ()| -  Convenience methods for generating data: all data, all point data, or all cell data.
+ For example, if all data is enabled, then all point, cell and field data is generated.
+ If all point data is enabled, then point scalars, vectors, normals, tensors, tcoords,
+ and a data array are produced.
+
+\item  \verb|obj.GenerateAllCellDataOn ()| -  Convenience methods for generating data: all data, all point data, or all cell data.
+ For example, if all data is enabled, then all point, cell and field data is generated.
+ If all point data is enabled, then point scalars, vectors, normals, tensors, tcoords,
+ and a data array are produced.
+
+\item  \verb|obj.GenerateAllCellDataOff ()| -  Convenience methods for generating data: all data, all point data, or all cell data.
+ For example, if all data is enabled, then all point, cell and field data is generated.
+ If all point data is enabled, then point scalars, vectors, normals, tensors, tcoords,
+ and a data array are produced.
+
+\item  \verb|obj.GenerateAllDataOn ()| -  Convenience methods for generating data: all data, all point data, or all cell data.
+ For example, if all data is enabled, then all point, cell and field data is generated.
+ If all point data is enabled, then point scalars, vectors, normals, tensors, tcoords,
+ and a data array are produced.
+
+\item  \verb|obj.GenerateAllDataOff ()|
+
+\end{itemize}

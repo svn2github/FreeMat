@@ -62,14 +62,12 @@ for some n.  The reason is that the roundoff in the calculations may
 be different depending on the nature of the sum.  FreeMat uses the
 following strategy to compute the double-colon vector:
 \begin{enumerate}
-\item  The value \verb|n| is computed by taking the floor of the larger 
+\item The value \verb|n| is computed by taking the floor of the larger 
  value in the interval defined above.
-
-\item  If \verb|n| falls inside the interval defined above, then it is 
+\item If \verb|n| falls inside the interval defined above, then it is 
 assumed that the user intended \verb|c = a + n*b|, and the symmetric 
 algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
-
-\item  The symmetric algorithm computes the vector via
+\item The symmetric algorithm computes the vector via
 \[
   [a, a+b, a+2b,\ldots,c-2b,c-b,c]
 \]
@@ -80,12 +78,10 @@ working symmetrically from both ends of the vector
 \]
 In practice, the entries are computed by repeated accumulation instead 
 of multiplying the step size by an integer.
-
-\item  The real interval calculation is modified so that we get the
+\item The real interval calculation is modified so that we get the
 exact same result with \verb|a:b:c| and \verb|c:-b:a| (which basically means
 that instead of moving towards infinity, we move towards the signed 
 infinity where the sign is inherited from \verb|b|).
-
 \end{enumerate}
 If you think this is all very obscure, it is.  But without it, you will
 be confronted by mysterious vectors where the last entry is dropped,
@@ -126,5 +122,5 @@ If the endpoints define an empty interval, the output is an empty matrix:
 --> y = 5:4
 
 y = 
-  Empty array 1 0
+  Empty array 1x0
 \end{verbatim}

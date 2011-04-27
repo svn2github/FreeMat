@@ -1,0 +1,46 @@
+\section{vtkCellCenters}
+
+\subsection{Usage}
+
+ vtkCellCenters is a filter that takes as input any dataset and 
+ generates on output points at the center of the cells in the dataset.
+ These points can be used for placing glyphs (vtkGlyph3D) or labeling 
+ (vtkLabeledDataMapper). (The center is the parametric center of the
+ cell, not necessarily the geometric or bounding box center.) The cell
+ attributes will be associated with the points on output.
+ 
+
+To create an instance of class vtkCellCenters, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCellCenters
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCellCenters has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCellCenters class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCellCenters = obj.NewInstance ()|
+
+\item  \verb|vtkCellCenters = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetVertexCells (int )| -  Enable/disable the generation of vertex cells. The default
+ is Off.
+
+\item  \verb|int = obj.GetVertexCells ()| -  Enable/disable the generation of vertex cells. The default
+ is Off.
+
+\item  \verb|obj.VertexCellsOn ()| -  Enable/disable the generation of vertex cells. The default
+ is Off.
+
+\item  \verb|obj.VertexCellsOff ()| -  Enable/disable the generation of vertex cells. The default
+ is Off.
+
+\end{itemize}

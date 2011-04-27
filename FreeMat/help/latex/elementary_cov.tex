@@ -1,0 +1,77 @@
+\section{COV Covariance Matrix}
+
+\subsection{Usage}
+
+Computes the covariance of a matrix or a vector.  The general
+syntax for its use is
+\begin{verbatim}
+  y = cov(x)
+\end{verbatim}
+where \verb|x| is a matrix or a vector.  If \verb|x| is a vector then
+\verb|cov| returns the variance of \verb|x|.  If \verb|x| is a matrix then
+\verb|cov| returns the covariance matrix of the columns of \verb|x|.
+You can also call \verb|cov| with two arguments to compute the 
+matrix of cross correlations.  The syntax for this mode is
+\begin{verbatim}
+  y = cov(x,z)
+\end{verbatim}
+where \verb|x| and \verb|z| are matrices of the same size.  Finally,
+you can provide a normalization flag \verb|d| that is either \verb|0|
+or \verb|1|, which changes the normalization factor from \verb|L-1| (for \verb|d=0|) to 
+\verb|L| (for \verb|d=1|) where \verb|L| is the number of rows in the matrix \verb|x|.  In
+this case, the syntaxes are
+\begin{verbatim}
+  y = cov(x,z,d)
+\end{verbatim}
+for the two-argument case, and
+\begin{verbatim}
+  y = cov(x,d)
+\end{verbatim}
+for the one-argument case.
+\subsection{Example}
+
+The following demonstrates some uses of the \verb|cov| function
+\begin{verbatim}
+--> A = [5,1,3;3,2,1;0,3,1]
+
+A = 
+ 5 1 3 
+ 3 2 1 
+ 0 3 1 
+
+--> B = [4,-2,0;1,5,2;-2,0,1];
+\end{verbatim}
+We start with the covariance matrix for \verb|A|
+\begin{verbatim}
+--> cov(A)
+
+ans = 
+    4.2222   -1.6667    1.5556 
+   -1.6667    0.6667   -0.6667 
+    1.5556   -0.6667    0.8889 
+\end{verbatim}
+and again with the (biased) normalization
+\begin{verbatim}
+--> cov(A,1)
+
+ans = 
+    4.2222   -1.6667    1.5556 
+   -1.6667    0.6667   -0.6667 
+    1.5556   -0.6667    0.8889 
+\end{verbatim}
+Here we compute the cross covariance between \verb|A| and \verb|B|
+\begin{verbatim}
+--> cov(A,B)
+
+ans = 
+    2.0988    1.6667 
+    1.6667    5.1111 
+\end{verbatim}
+and again with biased normalization
+\begin{verbatim}
+--> cov(A,B,1)
+
+ans = 
+    2.0988    1.6667 
+    1.6667    5.1111 
+\end{verbatim}

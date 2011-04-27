@@ -1,0 +1,36 @@
+\section{vtkQuadraturePointInterpolator}
+
+\subsection{Usage}
+
+
+ Interpolates each scalar/vector field in a vtkUnstrcturedGrid
+ on its input to a specific set of quadrature points. The
+ set of quadrature points is specified per array via a 
+ dictionary (ie an instance of vtkInformationQuadratureSchemeDefinitionVectorKey). 
+ contained in the array. The interpolated fields are placed
+ in FieldData along with a set of per cell indexes, that allow 
+ random access to a given cells quadrature points.
+
+
+To create an instance of class vtkQuadraturePointInterpolator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkQuadraturePointInterpolator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkQuadraturePointInterpolator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkQuadraturePointInterpolator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkQuadraturePointInterpolator = obj.NewInstance ()|
+
+\item  \verb|vtkQuadraturePointInterpolator = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

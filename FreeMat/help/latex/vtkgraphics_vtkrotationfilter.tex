@@ -1,0 +1,79 @@
+\section{vtkRotationFilter}
+
+\subsection{Usage}
+
+ The vtkRotationFilter duplicates a data set by rotation about one of the
+ 3 axis of the dataset's reference.
+ Since it converts data sets into unstructured grids, it is not efficient
+ for structured data sets.
+
+ .SECTION Thanks
+ Theophane Foggia of The Swiss National Supercomputing Centre (CSCS)
+ for creating and contributing this filter
+
+To create an instance of class vtkRotationFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRotationFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRotationFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRotationFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRotationFilter = obj.NewInstance ()|
+
+\item  \verb|vtkRotationFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetAxis (int )| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|int = obj.GetAxisMinValue ()| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|int = obj.GetAxisMaxValue ()| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|int = obj.GetAxis ()| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|obj.SetAxisToX ()| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|obj.SetAxisToY ()| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|obj.SetAxisToZ ()| -  Set the axis of rotation to use. It is set by default to Z.
+
+\item  \verb|obj.SetAngle (double )| -  Set the rotation angle to use.
+
+\item  \verb|double = obj.GetAngle ()| -  Set the rotation angle to use.
+
+\item  \verb|obj.SetCenter (double , double , double )| -  Set the rotation center coordinates.
+
+\item  \verb|obj.SetCenter (double  a[3])| -  Set the rotation center coordinates.
+
+\item  \verb|double = obj. GetCenter ()| -  Set the rotation center coordinates.
+
+\item  \verb|obj.SetNumberOfCopies (int )| -  Set the number of copies to create. The source will be rotated N times
+ and a new polydata copy of the original created at each angular position
+ All copies will be appended to form a single output
+
+\item  \verb|int = obj.GetNumberOfCopies ()| -  Set the number of copies to create. The source will be rotated N times
+ and a new polydata copy of the original created at each angular position
+ All copies will be appended to form a single output
+
+\item  \verb|obj.SetCopyInput (int )| -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+
+\item  \verb|int = obj.GetCopyInput ()| -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+
+\item  \verb|obj.CopyInputOn ()| -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+
+\item  \verb|obj.CopyInputOff ()| -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+
+\end{itemize}

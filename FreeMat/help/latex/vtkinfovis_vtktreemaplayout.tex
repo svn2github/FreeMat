@@ -1,0 +1,63 @@
+\section{vtkTreeMapLayout}
+
+\subsection{Usage}
+
+ vtkTreeMapLayout assigns rectangular regions to each vertex in the tree,
+ creating a tree map.  The data is added as a data array with four
+ components per tuple representing the location and size of the
+ rectangle using the format (Xmin, Xmax, Ymin, Ymax).
+
+ This algorithm relies on a helper class to perform the actual layout.
+ This helper class is a subclass of vtkTreeMapLayoutStrategy.
+
+ .SECTION Thanks
+ Thanks to Brian Wylie and Ken Moreland from Sandia National Laboratories
+ for help developing this class.
+ 
+ Tree map concept comes from:
+ Shneiderman, B. 1992. Tree visualization with tree-maps: 2-d space-filling approach. 
+ ACM Trans. Graph. 11, 1 (Jan. 1992), 92-99. 
+
+To create an instance of class vtkTreeMapLayout, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTreeMapLayout
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTreeMapLayout has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTreeMapLayout class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTreeMapLayout = obj.NewInstance ()|
+
+\item  \verb|vtkTreeMapLayout = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetRectanglesFieldName ()| -  The field name to use for storing the rectangles for each vertex.
+ The rectangles are stored in a quadruple float array
+ (minX, maxX, minY, maxY).
+
+\item  \verb|obj.SetRectanglesFieldName (string )| -  The field name to use for storing the rectangles for each vertex.
+ The rectangles are stored in a quadruple float array
+ (minX, maxX, minY, maxY).
+
+\item  \verb|obj.SetSizeArrayName (string name)| -  The strategy to use when laying out the tree map.
+
+\item  \verb|vtkTreeMapLayoutStrategy = obj.GetLayoutStrategy ()| -  The strategy to use when laying out the tree map.
+
+\item  \verb|obj.SetLayoutStrategy (vtkTreeMapLayoutStrategy strategy)| -  The strategy to use when laying out the tree map.
+
+\item  \verb|vtkIdType = obj.FindVertex (float pnt[2], float binfo)| -  Returns the vertex id that contains pnt (or -1 if no one contains it)
+
+\item  \verb|obj.GetBoundingBox (vtkIdType id, float binfo)| -  Return the min and max 2D points of the
+ vertex's bounding box
+
+\item  \verb|long = obj.GetMTime ()| -  Get the modification time of the layout algorithm.
+
+\end{itemize}

@@ -1,0 +1,47 @@
+\section{vtkInformationInformationKey}
+
+\subsection{Usage}
+
+ vtkInformationInformationKey is used to represent keys in vtkInformation
+ for other information objects.
+
+To create an instance of class vtkInformationInformationKey, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformationInformationKey
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformationInformationKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformationInformationKey class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformationInformationKey = obj.NewInstance ()|
+
+\item  \verb|vtkInformationInformationKey = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkInformationInformationKey = obj.(string name, string location)|
+
+\item  \verb|~vtkInformationInformationKey = obj.()|
+
+\item  \verb|obj.Set (vtkInformation info, vtkInformation )| -  Get/Set the value associated with this key in the given
+ information object.
+
+\item  \verb|vtkInformation = obj.Get (vtkInformation info)| -  Get/Set the value associated with this key in the given
+ information object.
+
+\item  \verb|obj.ShallowCopy (vtkInformation from, vtkInformation to)| -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+
+\item  \verb|obj.DeepCopy (vtkInformation from, vtkInformation to)| -  Duplicate (new instance created) the entry associated with this key from
+ one information object to another (new instances of any contained
+ vtkInformation and vtkInformationVector objects are created).  
+
+\end{itemize}

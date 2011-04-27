@@ -91,13 +91,13 @@ of the form
 \begin{verbatim}
   int sum_onehundred_ints(int *t),
 \end{verbatim}
-where \verb|sum_onehundred_ints| assumes that \verb|t| is a length \verb|100| vector. 
+where \verb|sum\_onehundred\_ints| assumes that \verb|t| is a length \verb|100| vector. 
 Then the corresponding FreeMat argument is
 \begin{verbatim}
   'float32[100] t'.
 \end{verbatim}
 Note that because the argument is marked as not being passed by reference,
-that if \verb|sub_onehundred_ints| modifies the array \verb|t|, this
+that if \verb|sub\_onehundred\_ints| modifies the array \verb|t|, this
 will not affect the FreeMat argument.  Note that the bounds-check expression
 can be any legal scalar expression that evaluates to an integer, and can be
 a function of the arguments.  For example to pass a square $N \times N$ 
@@ -131,7 +131,7 @@ pass them by reference to the external function.
 Starting with FreeMat 4.0, it is possible for external code that is 
 called using the \verb|import| statement to send text to the FreeMat console.
 To do so, you must define in each library that wants to send text a 
-function with the name \verb|freemat_io_handler| that captures its 
+function with the name \verb|freemat\_io\_handler| that captures its 
 argument (a function pointer), and stores it
 for use by functions in the library.  That function pointer takes a 
 standard C string argument.  Here is a snippet of code to demonstrate
@@ -154,11 +154,18 @@ how this works:
   }
 \end{verbatim}
 In this case, once \verb|SomeImportedFunction| is called from within FreeMat, the
-text \verb|"I am going to double that argument"| will appear in the FreeMat console.
+text \verb|''I am going to double that argument''| will appear in the FreeMat console.
 
-Your \verb|freemat_io_handler| function is automatically called when your library is
+Your \verb|freemat\_io\_handler| function is automatically called when your library is
 loaded by FreeMat, which happens with the first \verb|import| statement that references
 it.
+
+Repeating \verb|import| calls to import the same function name will be ignored, except
+the first call. In order to refresh the function without restarting FreeMat,
+you have to first clear all imported libraries via:
+\begin{verbatim}
+   clear 'libs'
+\end{verbatim}
 
 \subsection{Example}
 

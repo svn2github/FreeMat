@@ -1,0 +1,63 @@
+\section{vtkDiskSource}
+
+\subsection{Usage}
+
+ vtkDiskSource creates a polygonal disk with a hole in the center. The 
+ disk has zero height. The user can specify the inner and outer radius
+ of the disk, and the radial and circumferential resolution of the 
+ polygonal representation. 
+
+To create an instance of class vtkDiskSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDiskSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDiskSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDiskSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDiskSource = obj.NewInstance ()|
+
+\item  \verb|vtkDiskSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInnerRadius (double )| -  Specify inner radius of hole in disc.
+
+\item  \verb|double = obj.GetInnerRadiusMinValue ()| -  Specify inner radius of hole in disc.
+
+\item  \verb|double = obj.GetInnerRadiusMaxValue ()| -  Specify inner radius of hole in disc.
+
+\item  \verb|double = obj.GetInnerRadius ()| -  Specify inner radius of hole in disc.
+
+\item  \verb|obj.SetOuterRadius (double )| -  Specify outer radius of disc.
+
+\item  \verb|double = obj.GetOuterRadiusMinValue ()| -  Specify outer radius of disc.
+
+\item  \verb|double = obj.GetOuterRadiusMaxValue ()| -  Specify outer radius of disc.
+
+\item  \verb|double = obj.GetOuterRadius ()| -  Specify outer radius of disc.
+
+\item  \verb|obj.SetRadialResolution (int )| -  Set the number of points in radius direction.
+
+\item  \verb|int = obj.GetRadialResolutionMinValue ()| -  Set the number of points in radius direction.
+
+\item  \verb|int = obj.GetRadialResolutionMaxValue ()| -  Set the number of points in radius direction.
+
+\item  \verb|int = obj.GetRadialResolution ()| -  Set the number of points in radius direction.
+
+\item  \verb|obj.SetCircumferentialResolution (int )| -  Set the number of points in circumferential direction.
+
+\item  \verb|int = obj.GetCircumferentialResolutionMinValue ()| -  Set the number of points in circumferential direction.
+
+\item  \verb|int = obj.GetCircumferentialResolutionMaxValue ()| -  Set the number of points in circumferential direction.
+
+\item  \verb|int = obj.GetCircumferentialResolution ()| -  Set the number of points in circumferential direction.
+
+\end{itemize}

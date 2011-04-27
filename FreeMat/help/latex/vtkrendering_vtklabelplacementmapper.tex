@@ -1,0 +1,188 @@
+\section{vtkLabelPlacementMapper}
+
+\subsection{Usage}
+
+ To use this mapper, first send your data through vtkPointSetToLabelHierarchy,
+ which takes a set of points, associates special arrays to the points (label,
+ priority, etc.), and produces a prioritized spatial tree of labels.
+
+ This mapper then takes that hierarchy (or hierarchies) as input, and every
+ frame will decide which labels and/or icons to place in order of priority,
+ and will render only those labels/icons. A label render strategy is used to
+ render the labels, and can use e.g. FreeType or Qt for rendering.
+
+To create an instance of class vtkLabelPlacementMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkLabelPlacementMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkLabelPlacementMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkLabelPlacementMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkLabelPlacementMapper = obj.NewInstance ()|
+
+\item  \verb|vtkLabelPlacementMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.RenderOverlay (vtkViewport viewport, vtkActor2D actor)| -  Draw non-overlapping labels to the screen.
+
+\item  \verb|obj.SetRenderStrategy (vtkLabelRenderStrategy s)| -  Set the label rendering strategy.
+
+\item  \verb|vtkLabelRenderStrategy = obj.GetRenderStrategy ()| -  Set the label rendering strategy.
+
+\item  \verb|obj.SetMaximumLabelFraction (double )| -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+
+\item  \verb|double = obj.GetMaximumLabelFractionMinValue ()| -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+
+\item  \verb|double = obj.GetMaximumLabelFractionMaxValue ()| -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+
+\item  \verb|double = obj.GetMaximumLabelFraction ()| -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+
+\item  \verb|obj.SetIteratorType (int )| -  The type of iterator used when traversing the labels.
+ May be vtkLabelHierarchy::FRUSTUM or vtkLabelHierarchy::FULL\_SORT
+
+\item  \verb|int = obj.GetIteratorType ()| -  The type of iterator used when traversing the labels.
+ May be vtkLabelHierarchy::FRUSTUM or vtkLabelHierarchy::FULL\_SORT
+
+\item  \verb|obj.SetUseUnicodeStrings (bool )| -  Set whether, or not, to use unicode strings.
+
+\item  \verb|bool = obj.GetUseUnicodeStrings ()| -  Set whether, or not, to use unicode strings.
+
+\item  \verb|obj.UseUnicodeStringsOn ()| -  Set whether, or not, to use unicode strings.
+
+\item  \verb|obj.UseUnicodeStringsOff ()| -  Set whether, or not, to use unicode strings.
+
+\item  \verb|bool = obj.GetPositionsAsNormals ()| -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+
+\item  \verb|obj.SetPositionsAsNormals (bool )| -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+
+\item  \verb|obj.PositionsAsNormalsOn ()| -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+
+\item  \verb|obj.PositionsAsNormalsOff ()| -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+
+\item  \verb|bool = obj.GetGeneratePerturbedLabelSpokes ()| -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+
+\item  \verb|obj.SetGeneratePerturbedLabelSpokes (bool )| -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+
+\item  \verb|obj.GeneratePerturbedLabelSpokesOn ()| -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+
+\item  \verb|obj.GeneratePerturbedLabelSpokesOff ()| -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+
+\item  \verb|bool = obj.GetUseDepthBuffer ()| -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+
+\item  \verb|obj.SetUseDepthBuffer (bool )| -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+
+\item  \verb|obj.UseDepthBufferOn ()| -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+
+\item  \verb|obj.UseDepthBufferOff ()| -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+
+\item  \verb|obj.SetPlaceAllLabels (bool )| -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+
+\item  \verb|bool = obj.GetPlaceAllLabels ()| -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+
+\item  \verb|obj.PlaceAllLabelsOn ()| -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+
+\item  \verb|obj.PlaceAllLabelsOff ()| -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+
+\item  \verb|obj.SetOutputTraversedBounds (bool )| -  Whether to render traversed bounds. Off by default.
+
+\item  \verb|bool = obj.GetOutputTraversedBounds ()| -  Whether to render traversed bounds. Off by default.
+
+\item  \verb|obj.OutputTraversedBoundsOn ()| -  Whether to render traversed bounds. Off by default.
+
+\item  \verb|obj.OutputTraversedBoundsOff ()| -  Whether to render traversed bounds. Off by default.
+
+\item  \verb|obj.SetShape (int )| -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+
+\item  \verb|int = obj.GetShapeMinValue ()| -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+
+\item  \verb|int = obj.GetShapeMaxValue ()| -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+
+\item  \verb|int = obj.GetShape ()| -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+
+\item  \verb|obj.SetShapeToNone ()| -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+
+\item  \verb|obj.SetShapeToRect ()| -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+
+\item  \verb|obj.SetShapeToRoundedRect ()| -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+
+\item  \verb|obj.SetStyle (int )| -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+
+\item  \verb|int = obj.GetStyleMinValue ()| -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+
+\item  \verb|int = obj.GetStyleMaxValue ()| -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+
+\item  \verb|int = obj.GetStyle ()| -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+
+\item  \verb|obj.SetStyleToFilled ()| -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+
+\item  \verb|obj.SetStyleToOutline ()| -  The size of the margin on the label background shape.
+ Default is 5.
+
+\item  \verb|obj.SetMargin (double )| -  The size of the margin on the label background shape.
+ Default is 5.
+
+\item  \verb|double = obj.GetMargin ()| -  The size of the margin on the label background shape.
+ Default is 5.
+
+\item  \verb|obj.SetBackgroundColor (double , double , double )| -  The color of the background shape.
+
+\item  \verb|obj.SetBackgroundColor (double  a[3])| -  The color of the background shape.
+
+\item  \verb|double = obj. GetBackgroundColor ()| -  The color of the background shape.
+
+\item  \verb|obj.SetBackgroundOpacity (double )| -  The opacity of the background shape.
+
+\item  \verb|double = obj.GetBackgroundOpacityMinValue ()| -  The opacity of the background shape.
+
+\item  \verb|double = obj.GetBackgroundOpacityMaxValue ()| -  The opacity of the background shape.
+
+\item  \verb|double = obj.GetBackgroundOpacity ()| -  The opacity of the background shape.
+
+\item  \verb|vtkCoordinate = obj.GetAnchorTransform ()| -  Get the transform for the anchor points.
+
+\end{itemize}

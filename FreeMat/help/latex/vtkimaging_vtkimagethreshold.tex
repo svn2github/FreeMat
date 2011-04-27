@@ -1,0 +1,90 @@
+\section{vtkImageThreshold}
+
+\subsection{Usage}
+
+ vtkImageThreshold can do binary or continuous thresholding for lower, upper
+ or a range of data.  The output data type may be different than the
+ output, but defaults to the same type.
+
+To create an instance of class vtkImageThreshold, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageThreshold
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageThreshold has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageThreshold class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageThreshold = obj.NewInstance ()|
+
+\item  \verb|vtkImageThreshold = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.ThresholdByUpper (double thresh)| -  The values greater than or equal to the value match.
+
+\item  \verb|obj.ThresholdByLower (double thresh)| -  The values less than or equal to the value match.
+
+\item  \verb|obj.ThresholdBetween (double lower, double upper)| -  The values in a range (inclusive) match
+
+\item  \verb|obj.SetReplaceIn (int )| -  Determines whether to replace the pixel in range with InValue
+
+\item  \verb|int = obj.GetReplaceIn ()| -  Determines whether to replace the pixel in range with InValue
+
+\item  \verb|obj.ReplaceInOn ()| -  Determines whether to replace the pixel in range with InValue
+
+\item  \verb|obj.ReplaceInOff ()| -  Determines whether to replace the pixel in range with InValue
+
+\item  \verb|obj.SetInValue (double val)| -  Replace the in range pixels with this value.
+
+\item  \verb|double = obj.GetInValue ()| -  Replace the in range pixels with this value.
+
+\item  \verb|obj.SetReplaceOut (int )| -  Determines whether to replace the pixel out of range with OutValue
+
+\item  \verb|int = obj.GetReplaceOut ()| -  Determines whether to replace the pixel out of range with OutValue
+
+\item  \verb|obj.ReplaceOutOn ()| -  Determines whether to replace the pixel out of range with OutValue
+
+\item  \verb|obj.ReplaceOutOff ()| -  Determines whether to replace the pixel out of range with OutValue
+
+\item  \verb|obj.SetOutValue (double val)| -  Replace the in range pixels with this value.
+
+\item  \verb|double = obj.GetOutValue ()| -  Replace the in range pixels with this value.
+
+\item  \verb|double = obj.GetUpperThreshold ()| -  Get the Upper and Lower thresholds.
+
+\item  \verb|double = obj.GetLowerThreshold ()| -  Get the Upper and Lower thresholds.
+
+\item  \verb|obj.SetOutputScalarType (int )| -  Set the desired output scalar type to cast to
+
+\item  \verb|int = obj.GetOutputScalarType ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToDouble ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToFloat ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToLong ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedLong ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToInt ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedInt ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToShort ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedShort ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToChar ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToSignedChar ()| -  Set the desired output scalar type to cast to
+
+\item  \verb|obj.SetOutputScalarTypeToUnsignedChar ()|
+
+\end{itemize}

@@ -1,0 +1,214 @@
+\section{vtkAxesActor}
+
+\subsection{Usage}
+
+ vtkAxesActor is a hybrid 2D/3D actor used to represent 3D axes in a scene.
+ The user can define the geometry to use for the shaft or the tip, and the
+ user can set the text for the three axes. The text will appear to follow the
+ camera since it is implemented by means of vtkCaptionActor2D.  All of the
+ functionality of the underlying vtkCaptionActor2D objects are accessable so
+ that, for instance, the font attributes of the axes text can be manipulated
+ through vtkTextProperty. Since this class inherits from vtkProp3D, one can
+ apply a user transform to the underlying geometry and the positioning of the
+ labels. For example, a rotation transform could be used to generate a
+ left-handed axes representation.
+
+To create an instance of class vtkAxesActor, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAxesActor
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAxesActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAxesActor class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkAxesActor = obj.NewInstance ()|
+
+\item  \verb|vtkAxesActor = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.GetActors (vtkPropCollection )| -  For some exporters and other other operations we must be
+ able to collect all the actors or volumes. These methods
+ are used in that process.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|int = obj.RenderOverlay (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Does this prop have some translucent polygonal geometry?
+
+\item  \verb|obj.ShallowCopy (vtkProp prop)| -  Shallow copy of an axes actor. Overloads the virtual vtkProp method.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|obj.GetBounds (double bounds[6])| -  Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax). (The
+ method GetBounds(double bounds[6]) is available from the superclass.)
+
+\item  \verb|double = obj.GetBounds ()| -  Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax). (The
+ method GetBounds(double bounds[6]) is available from the superclass.)
+
+\item  \verb|long = obj.GetMTime ()| -  Get the actors mtime plus consider its properties and texture if set.
+
+\item  \verb|long = obj.GetRedrawMTime ()| -  Return the mtime of anything that would cause the rendered image to 
+ appear differently. Usually this involves checking the mtime of the 
+ prop plus anything else it depends on such as properties, textures
+ etc.
+
+\item  \verb|obj.SetTotalLength (double v[3])| -  Set the total length of the axes in 3 dimensions.
+
+\item  \verb|obj.SetTotalLength (double x, double y, double z)| -  Set the total length of the axes in 3 dimensions.
+
+\item  \verb|double = obj. GetTotalLength ()| -  Set the total length of the axes in 3 dimensions.
+
+\item  \verb|obj.SetNormalizedShaftLength (double v[3])| -  Set the normalized (0-1) length of the shaft.
+
+\item  \verb|obj.SetNormalizedShaftLength (double x, double y, double z)| -  Set the normalized (0-1) length of the shaft.
+
+\item  \verb|double = obj. GetNormalizedShaftLength ()| -  Set the normalized (0-1) length of the shaft.
+
+\item  \verb|obj.SetNormalizedTipLength (double v[3])| -  Set the normalized (0-1) length of the tip.  Normally, this would be
+ 1 - the normalized length of the shaft.
+
+\item  \verb|obj.SetNormalizedTipLength (double x, double y, double z)| -  Set the normalized (0-1) length of the tip.  Normally, this would be
+ 1 - the normalized length of the shaft.
+
+\item  \verb|double = obj. GetNormalizedTipLength ()| -  Set the normalized (0-1) length of the tip.  Normally, this would be
+ 1 - the normalized length of the shaft.
+
+\item  \verb|obj.SetNormalizedLabelPosition (double v[3])| -  Set the normalized (0-1) position of the label along the length of
+ the shaft.  A value > 1 is permissible.
+
+\item  \verb|obj.SetNormalizedLabelPosition (double x, double y, double z)| -  Set the normalized (0-1) position of the label along the length of
+ the shaft.  A value > 1 is permissible.
+
+\item  \verb|double = obj. GetNormalizedLabelPosition ()| -  Set the normalized (0-1) position of the label along the length of
+ the shaft.  A value > 1 is permissible.
+
+\item  \verb|obj.SetConeResolution (int )| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetConeResolutionMinValue ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetConeResolutionMaxValue ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetConeResolution ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|obj.SetSphereResolution (int )| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetSphereResolutionMinValue ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetSphereResolutionMaxValue ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetSphereResolution ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|obj.SetCylinderResolution (int )| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetCylinderResolutionMinValue ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetCylinderResolutionMaxValue ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|int = obj.GetCylinderResolution ()| -  Set/get the resolution of the pieces of the axes actor.
+
+\item  \verb|obj.SetConeRadius (double )| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetConeRadiusMinValue ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetConeRadiusMaxValue ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetConeRadius ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|obj.SetSphereRadius (double )| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetSphereRadiusMinValue ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetSphereRadiusMaxValue ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetSphereRadius ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|obj.SetCylinderRadius (double )| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetCylinderRadiusMinValue ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetCylinderRadiusMaxValue ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|double = obj.GetCylinderRadius ()| -  Set/get the radius of the pieces of the axes actor.
+
+\item  \verb|obj.SetShaftType (int type)| -  Set the type of the shaft to a cylinder, line, or user defined geometry.
+
+\item  \verb|obj.SetShaftTypeToCylinder ()| -  Set the type of the shaft to a cylinder, line, or user defined geometry.
+
+\item  \verb|obj.SetShaftTypeToLine ()| -  Set the type of the shaft to a cylinder, line, or user defined geometry.
+
+\item  \verb|obj.SetShaftTypeToUserDefined ()| -  Set the type of the shaft to a cylinder, line, or user defined geometry.
+
+\item  \verb|int = obj.GetShaftType ()| -  Set the type of the shaft to a cylinder, line, or user defined geometry.
+
+\item  \verb|obj.SetTipType (int type)| -  Set the type of the tip to a cone, sphere, or user defined geometry.
+
+\item  \verb|obj.SetTipTypeToCone ()| -  Set the type of the tip to a cone, sphere, or user defined geometry.
+
+\item  \verb|obj.SetTipTypeToSphere ()| -  Set the type of the tip to a cone, sphere, or user defined geometry.
+
+\item  \verb|obj.SetTipTypeToUserDefined ()| -  Set the type of the tip to a cone, sphere, or user defined geometry.
+
+\item  \verb|int = obj.GetTipType ()| -  Set the type of the tip to a cone, sphere, or user defined geometry.
+
+\item  \verb|obj.SetUserDefinedTip (vtkPolyData )| -  Set the user defined tip polydata.
+
+\item  \verb|vtkPolyData = obj.GetUserDefinedTip ()| -  Set the user defined tip polydata.
+
+\item  \verb|obj.SetUserDefinedShaft (vtkPolyData )| -  Set the user defined shaft polydata.
+
+\item  \verb|vtkPolyData = obj.GetUserDefinedShaft ()| -  Set the user defined shaft polydata.
+
+\item  \verb|vtkProperty = obj.GetXAxisTipProperty ()| -  Get the tip properties.
+
+\item  \verb|vtkProperty = obj.GetYAxisTipProperty ()| -  Get the tip properties.
+
+\item  \verb|vtkProperty = obj.GetZAxisTipProperty ()| -  Get the tip properties.
+
+\item  \verb|vtkProperty = obj.GetXAxisShaftProperty ()| -  Get the shaft properties.
+
+\item  \verb|vtkProperty = obj.GetYAxisShaftProperty ()| -  Get the shaft properties.
+
+\item  \verb|vtkProperty = obj.GetZAxisShaftProperty ()| -  Get the shaft properties.
+
+\item  \verb|vtkCaptionActor2D = obj.GetXAxisCaptionActor2D ()| -  Retrieve handles to the X, Y and Z axis (so that you can set their text
+ properties for example)
+
+\item  \verb|vtkCaptionActor2D = obj.GetYAxisCaptionActor2D ()| -  Retrieve handles to the X, Y and Z axis (so that you can set their text
+ properties for example)
+
+\item  \verb|vtkCaptionActor2D = obj.GetZAxisCaptionActor2D ()| -  Set/get the label text.
+
+\item  \verb|obj.SetXAxisLabelText (string )| -  Set/get the label text.
+
+\item  \verb|string = obj.GetXAxisLabelText ()| -  Set/get the label text.
+
+\item  \verb|obj.SetYAxisLabelText (string )| -  Set/get the label text.
+
+\item  \verb|string = obj.GetYAxisLabelText ()| -  Set/get the label text.
+
+\item  \verb|obj.SetZAxisLabelText (string )| -  Set/get the label text.
+
+\item  \verb|string = obj.GetZAxisLabelText ()| -  Set/get the label text.
+
+\item  \verb|obj.SetAxisLabels (int )| -  Enable/disable drawing the axis labels.
+
+\item  \verb|int = obj.GetAxisLabels ()| -  Enable/disable drawing the axis labels.
+
+\item  \verb|obj.AxisLabelsOn ()| -  Enable/disable drawing the axis labels.
+
+\item  \verb|obj.AxisLabelsOff ()| -  Enable/disable drawing the axis labels.
+
+\end{itemize}

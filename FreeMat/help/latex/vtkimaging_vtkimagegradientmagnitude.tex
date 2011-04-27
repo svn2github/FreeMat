@@ -1,0 +1,50 @@
+\section{vtkImageGradientMagnitude}
+
+\subsection{Usage}
+
+ vtkImageGradientMagnitude computes the gradient magnitude of an image.
+ Setting the dimensionality determines whether the gradient is computed on
+ 2D images, or 3D volumes.  The default is two dimensional XY images.
+
+To create an instance of class vtkImageGradientMagnitude, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageGradientMagnitude
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageGradientMagnitude has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageGradientMagnitude class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageGradientMagnitude = obj.NewInstance ()|
+
+\item  \verb|vtkImageGradientMagnitude = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetHandleBoundaries (int )| -  If ''HandleBoundariesOn'' then boundary pixels are duplicated
+ So central differences can get values.
+
+\item  \verb|int = obj.GetHandleBoundaries ()| -  If ''HandleBoundariesOn'' then boundary pixels are duplicated
+ So central differences can get values.
+
+\item  \verb|obj.HandleBoundariesOn ()| -  If ''HandleBoundariesOn'' then boundary pixels are duplicated
+ So central differences can get values.
+
+\item  \verb|obj.HandleBoundariesOff ()| -  If ''HandleBoundariesOn'' then boundary pixels are duplicated
+ So central differences can get values.
+
+\item  \verb|obj.SetDimensionality (int )| -  Determines how the input is interpreted (set of 2d slices ...)
+
+\item  \verb|int = obj.GetDimensionalityMinValue ()| -  Determines how the input is interpreted (set of 2d slices ...)
+
+\item  \verb|int = obj.GetDimensionalityMaxValue ()| -  Determines how the input is interpreted (set of 2d slices ...)
+
+\item  \verb|int = obj.GetDimensionality ()| -  Determines how the input is interpreted (set of 2d slices ...)
+
+\end{itemize}

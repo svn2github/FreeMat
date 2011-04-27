@@ -1,0 +1,66 @@
+\section{vtkImageStencil}
+
+\subsection{Usage}
+
+ vtkImageStencil will combine two images together using a stencil.
+ The stencil should be provided in the form of a vtkImageStencilData,
+
+To create an instance of class vtkImageStencil, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageStencil
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageStencil has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageStencil class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageStencil = obj.NewInstance ()|
+
+\item  \verb|vtkImageStencil = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetStencil (vtkImageStencilData stencil)| -  Specify the stencil to use.  The stencil can be created
+ from a vtkImplicitFunction or a vtkPolyData.
+
+\item  \verb|vtkImageStencilData = obj.GetStencil ()| -  Specify the stencil to use.  The stencil can be created
+ from a vtkImplicitFunction or a vtkPolyData.
+
+\item  \verb|obj.SetReverseStencil (int )| -  Reverse the stencil.
+
+\item  \verb|obj.ReverseStencilOn ()| -  Reverse the stencil.
+
+\item  \verb|obj.ReverseStencilOff ()| -  Reverse the stencil.
+
+\item  \verb|int = obj.GetReverseStencil ()| -  Reverse the stencil.
+
+\item  \verb|obj.SetBackgroundInput (vtkImageData input)| -  NOTE: Not yet implemented, use SetBackgroundValue instead.
+ Set the second input.  This image will be used for the 'outside' of the
+ stencil.  If not set, the output voxels will be filled with
+ BackgroundValue instead.
+
+\item  \verb|vtkImageData = obj.GetBackgroundInput ()| -  NOTE: Not yet implemented, use SetBackgroundValue instead.
+ Set the second input.  This image will be used for the 'outside' of the
+ stencil.  If not set, the output voxels will be filled with
+ BackgroundValue instead.
+
+\item  \verb|obj.SetBackgroundValue (double val)| -  Set the default output value to use when the second input is not set.
+
+\item  \verb|double = obj.GetBackgroundValue ()| -  Set the default output value to use when the second input is not set.
+
+\item  \verb|obj.SetBackgroundColor (double , double , double , double )| -  Set the default color to use when the second input is not set.
+ This is like SetBackgroundValue, but for multi-component images.
+
+\item  \verb|obj.SetBackgroundColor (double  a[4])| -  Set the default color to use when the second input is not set.
+ This is like SetBackgroundValue, but for multi-component images.
+
+\item  \verb|double = obj. GetBackgroundColor ()| -  Set the default color to use when the second input is not set.
+ This is like SetBackgroundValue, but for multi-component images.
+
+\end{itemize}

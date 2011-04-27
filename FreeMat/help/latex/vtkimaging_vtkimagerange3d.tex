@@ -1,0 +1,33 @@
+\section{vtkImageRange3D}
+
+\subsection{Usage}
+
+ vtkImageRange3D replaces a pixel with the maximum minus minimum over
+ an ellipsoidal neighborhood.  If KernelSize of an axis is 1, no processing
+ is done on that axis.
+
+To create an instance of class vtkImageRange3D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageRange3D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageRange3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageRange3D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageRange3D = obj.NewInstance ()|
+
+\item  \verb|vtkImageRange3D = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetKernelSize (int size0, int size1, int size2)| -  This method sets the size of the neighborhood.  It also sets the 
+ default middle of the neighborhood and computes the elliptical foot print.
+
+\end{itemize}

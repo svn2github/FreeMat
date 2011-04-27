@@ -1,0 +1,78 @@
+\section{vtkRTAnalyticSource}
+
+\subsection{Usage}
+
+ vtkRTAnalyticSource just produces images with pixel values determined 
+ by a Maximum*Gaussian*XMag*sin(XFreq*x)*sin(YFreq*y)*cos(ZFreq*z)
+ Values are float scalars on point data with name ''RTData''.
+
+To create an instance of class vtkRTAnalyticSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRTAnalyticSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRTAnalyticSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRTAnalyticSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRTAnalyticSource = obj.NewInstance ()|
+
+\item  \verb|vtkRTAnalyticSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetWholeExtent (int xMinx, int xMax, int yMin, int yMax, int zMin, int zMax)| -  Set/Get the extent of the whole output image. Initial value is
+ {-10,10,-10,10,-10,10}
+
+\item  \verb|int = obj. GetWholeExtent ()| -  Set/Get the extent of the whole output image. Initial value is
+ {-10,10,-10,10,-10,10}
+
+\item  \verb|obj.SetCenter (double , double , double )| -  Set/Get the center of function. Initial value is {0.0,0.0,0.0}
+
+\item  \verb|obj.SetCenter (double  a[3])| -  Set/Get the center of function. Initial value is {0.0,0.0,0.0}
+
+\item  \verb|double = obj. GetCenter ()| -  Set/Get the center of function. Initial value is {0.0,0.0,0.0}
+
+\item  \verb|obj.SetMaximum (double )| -  Set/Get the Maximum value of the function. Initial value is 255.0.
+
+\item  \verb|double = obj.GetMaximum ()| -  Set/Get the Maximum value of the function. Initial value is 255.0.
+
+\item  \verb|obj.SetStandardDeviation (double )| -  Set/Get the standard deviation of the function. Initial value is 0.5.
+
+\item  \verb|double = obj.GetStandardDeviation ()| -  Set/Get the standard deviation of the function. Initial value is 0.5.
+
+\item  \verb|obj.SetXFreq (double )| -  Set/Get the natural frequency in x. Initial value is 60.
+
+\item  \verb|double = obj.GetXFreq ()| -  Set/Get the natural frequency in x. Initial value is 60.
+
+\item  \verb|obj.SetYFreq (double )| -  Set/Get the natural frequency in y. Initial value is 30.
+
+\item  \verb|double = obj.GetYFreq ()| -  Set/Get the natural frequency in y. Initial value is 30.
+
+\item  \verb|obj.SetZFreq (double )| -  Set/Get the natural frequency in z. Initial value is 40.
+
+\item  \verb|double = obj.GetZFreq ()| -  Set/Get the natural frequency in z. Initial value is 40.
+
+\item  \verb|obj.SetXMag (double )| -  Set/Get the magnitude in x. Initial value is 10.
+
+\item  \verb|double = obj.GetXMag ()| -  Set/Get the magnitude in x. Initial value is 10.
+
+\item  \verb|obj.SetYMag (double )| -  Set/Get the magnitude in y. Initial value is 18.
+
+\item  \verb|double = obj.GetYMag ()| -  Set/Get the magnitude in y. Initial value is 18.
+
+\item  \verb|obj.SetZMag (double )| -  Set/Get the magnitude in z. Initial value is 5.
+
+\item  \verb|double = obj.GetZMag ()| -  Set/Get the magnitude in z. Initial value is 5.
+
+\item  \verb|obj.SetSubsampleRate (int )| -  Set/Get the sub-sample rate. Initial value is 1.
+
+\item  \verb|int = obj.GetSubsampleRate ()| -  Set/Get the sub-sample rate. Initial value is 1.
+
+\end{itemize}

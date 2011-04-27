@@ -1,0 +1,71 @@
+\section{vtkPointLoad}
+
+\subsection{Usage}
+
+ vtkPointLoad is a source object that computes stress tensors on a volume. 
+ The tensors are computed from the application of a point load on a 
+ semi-infinite domain. (The analytical results are adapted from Saada - see 
+ text.) It also is possible to compute effective stress scalars if desired.
+ This object serves as a specialized data generator for some of the examples
+ in the text.
+
+To create an instance of class vtkPointLoad, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPointLoad
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPointLoad has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPointLoad class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPointLoad = obj.NewInstance ()|
+
+\item  \verb|vtkPointLoad = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetLoadValue (double )| -  Set/Get value of applied load.
+
+\item  \verb|double = obj.GetLoadValue ()| -  Set/Get value of applied load.
+
+\item  \verb|obj.SetSampleDimensions (int i, int j, int k)| -  Specify the dimensions of the volume. A stress tensor will be computed for
+ each point in the volume.
+
+\item  \verb|obj.SetSampleDimensions (int dim[3])| -  Specify the dimensions of the volume. A stress tensor will be computed for
+ each point in the volume.
+
+\item  \verb|int = obj. GetSampleDimensions ()| -  Specify the dimensions of the volume. A stress tensor will be computed for
+ each point in the volume.
+
+\item  \verb|obj.SetModelBounds (double , double , double , double , double , double )| -  Specify the region in space over which the tensors are computed. The point
+ load is assumed to be applied at top center of the volume.
+
+\item  \verb|obj.SetModelBounds (double  a[6])| -  Specify the region in space over which the tensors are computed. The point
+ load is assumed to be applied at top center of the volume.
+
+\item  \verb|double = obj. GetModelBounds ()| -  Specify the region in space over which the tensors are computed. The point
+ load is assumed to be applied at top center of the volume.
+
+\item  \verb|obj.SetPoissonsRatio (double )| -  Set/Get Poisson's ratio.
+
+\item  \verb|double = obj.GetPoissonsRatio ()| -  Set/Get Poisson's ratio.
+
+\item  \verb|obj.SetComputeEffectiveStress (int )| -  Turn on/off computation of effective stress scalar. These methods do 
+ nothing. The effective stress is always computed.
+
+\item  \verb|int = obj.GetComputeEffectiveStress ()| -  Turn on/off computation of effective stress scalar. These methods do 
+ nothing. The effective stress is always computed.
+
+\item  \verb|obj.ComputeEffectiveStressOn ()| -  Turn on/off computation of effective stress scalar. These methods do 
+ nothing. The effective stress is always computed.
+
+\item  \verb|obj.ComputeEffectiveStressOff ()| -  Turn on/off computation of effective stress scalar. These methods do 
+ nothing. The effective stress is always computed.
+
+\end{itemize}

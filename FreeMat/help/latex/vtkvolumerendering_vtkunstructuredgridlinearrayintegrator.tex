@@ -1,0 +1,39 @@
+\section{vtkUnstructuredGridLinearRayIntegrator}
+
+\subsection{Usage}
+
+
+ vtkUnstructuredGridLinearRayIntegrator performs piecewise linear ray
+ integration.  Considering that transfer functions in VTK are piecewise
+ linear, this class should give the ''correct'' integration under most
+ circumstances.  However, the computations performed are fairly hefty and
+ should, for the most part, only be used as a benchmark for other, faster
+ methods.
+
+
+To create an instance of class vtkUnstructuredGridLinearRayIntegrator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkUnstructuredGridLinearRayIntegrator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkUnstructuredGridLinearRayIntegrator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkUnstructuredGridLinearRayIntegrator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkUnstructuredGridLinearRayIntegrator = obj.NewInstance ()|
+
+\item  \verb|vtkUnstructuredGridLinearRayIntegrator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Initialize (vtkVolume volume, vtkDataArray scalars)|
+
+\item  \verb|obj.Integrate (vtkDoubleArray intersectionLengths, vtkDataArray nearIntersections, vtkDataArray farIntersections, float color[4])|
+
+\end{itemize}

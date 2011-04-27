@@ -1,0 +1,41 @@
+\section{vtkUnstructuredGridPartialPreIntegration}
+
+\subsection{Usage}
+
+
+ vtkUnstructuredGridPartialPreIntegration performs piecewise linear ray
+ integration.  This will give the same results as
+ vtkUnstructuredGridLinearRayIntegration (with potentially a error due to
+ table lookup quantization), but should be notably faster.  The algorithm
+ used is given by Moreland and Angel, ''A Fast High Accuracy Volume
+ Renderer for Unstructured Data.''
+
+ This class is thread safe only after the first instance is created.
+
+
+To create an instance of class vtkUnstructuredGridPartialPreIntegration, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkUnstructuredGridPartialPreIntegration
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkUnstructuredGridPartialPreIntegration has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkUnstructuredGridPartialPreIntegration class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkUnstructuredGridPartialPreIntegration = obj.NewInstance ()|
+
+\item  \verb|vtkUnstructuredGridPartialPreIntegration = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Initialize (vtkVolume volume, vtkDataArray scalars)|
+
+\item  \verb|obj.Integrate (vtkDoubleArray intersectionLengths, vtkDataArray nearIntersections, vtkDataArray farIntersections, float color[4])|
+
+\end{itemize}

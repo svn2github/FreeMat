@@ -1,0 +1,55 @@
+\section{vtkDummyController}
+
+\subsection{Usage}
+
+ This is a dummy controller which can be used by applications which always
+ require a controller but are also compile on systems without threads
+ or mpi.
+
+To create an instance of class vtkDummyController, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDummyController
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDummyController has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDummyController class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDummyController = obj.NewInstance ()|
+
+\item  \verb|vtkDummyController = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Finalize ()| -  This method is for setting up the processes.
+
+\item  \verb|obj.Finalize (int )| -  This method always returns 0.
+
+\item  \verb|int = obj.GetLocalProcessId ()| -  Directly calls the single method.
+
+\item  \verb|obj.SingleMethodExecute ()| -  Directly calls the single method.
+
+\item  \verb|obj.MultipleMethodExecute ()| -  Directly calls multiple method 0.
+
+\item  \verb|obj.CreateOutputWindow ()| -  If you don't need any special functionality from the controller, you
+ can swap out the dummy communicator for another one.
+
+\item  \verb|vtkCommunicator = obj.GetCommunicator ()| -  If you don't need any special functionality from the controller, you
+ can swap out the dummy communicator for another one.
+
+\item  \verb|vtkCommunicator = obj.GetRMICommunicator ()| -  If you don't need any special functionality from the controller, you
+ can swap out the dummy communicator for another one.
+
+\item  \verb|obj.SetCommunicator (vtkCommunicator )| -  If you don't need any special functionality from the controller, you
+ can swap out the dummy communicator for another one.
+
+\item  \verb|obj.SetRMICommunicator (vtkCommunicator )| -  If you don't need any special functionality from the controller, you
+ can swap out the dummy communicator for another one.
+
+\end{itemize}

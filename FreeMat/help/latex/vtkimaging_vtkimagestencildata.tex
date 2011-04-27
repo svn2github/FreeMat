@@ -1,0 +1,122 @@
+\section{vtkImageStencilData}
+
+\subsection{Usage}
+
+ vtkImageStencilData describes an image stencil in a manner which is
+ efficient both in terms of speed and storage space.  The stencil extents
+ are stored for each x-row across the image (multiple extents per row if
+ necessary) and can be retrieved via the GetNextExtent() method.
+
+To create an instance of class vtkImageStencilData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageStencilData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageStencilData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageStencilData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageStencilData = obj.NewInstance ()|
+
+\item  \verb|vtkImageStencilData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Initialize ()|
+
+\item  \verb|obj.DeepCopy (vtkDataObject o)|
+
+\item  \verb|obj.ShallowCopy (vtkDataObject f)|
+
+\item  \verb|obj.InternalImageStencilDataCopy (vtkImageStencilData s)|
+
+\item  \verb|int = obj.GetDataObjectType ()| -  The extent type is 3D, just like vtkImageData.
+
+\item  \verb|int = obj.GetExtentType ()| -  The extent type is 3D, just like vtkImageData.
+
+\item  \verb|obj.InsertNextExtent (int r1, int r2, int yIdx, int zIdx)| -  This method is used by vtkImageStencilDataSource to add an x 
+ sub extent [r1,r2] for the x row (yIdx,zIdx).  The specified sub
+ extent must not intersect any other sub extents along the same x row.
+ As well, r1 and r2 must both be within the total x extent
+ [Extent[0],Extent[1]].
+
+\item  \verb|obj.InsertAndMergeExtent (int r1, int r2, int yIdx, int zIdx)| -  Similar to InsertNextExtent, except that the extent (r1,r2) at yIdx, 
+ zIdx is merged with other extents, (if any) on that row. So a 
+ unique extent may not necessarily be added. For instance, if an extent 
+ [5,11] already exists adding an extent, [7,9] will not affect the 
+ stencil. Likewise adding [10, 13] will replace the existing extent 
+ with [5,13].
+
+\item  \verb|obj.RemoveExtent (int r1, int r2, int yIdx, int zIdx)| -  Remove the extent from (r1,r2) at yIdx, zIdx
+
+\item  \verb|obj.SetSpacing (double , double , double )| -  Set the desired spacing for the stencil.
+ This must be called before the stencil is Updated, ideally 
+ in the ExecuteInformation method of the imaging filter that
+ is using the stencil.
+
+\item  \verb|obj.SetSpacing (double  a[3])| -  Set the desired spacing for the stencil.
+ This must be called before the stencil is Updated, ideally 
+ in the ExecuteInformation method of the imaging filter that
+ is using the stencil.
+
+\item  \verb|double = obj. GetSpacing ()| -  Set the desired spacing for the stencil.
+ This must be called before the stencil is Updated, ideally 
+ in the ExecuteInformation method of the imaging filter that
+ is using the stencil.
+
+\item  \verb|obj.SetOrigin (double , double , double )| -  Set the desired origin for the stencil.
+ This must be called before the stencil is Updated, ideally 
+ in the ExecuteInformation method of the imaging filter that
+ is using the stencil.
+
+\item  \verb|obj.SetOrigin (double  a[3])| -  Set the desired origin for the stencil.
+ This must be called before the stencil is Updated, ideally 
+ in the ExecuteInformation method of the imaging filter that
+ is using the stencil.
+
+\item  \verb|double = obj. GetOrigin ()| -  Set the desired origin for the stencil.
+ This must be called before the stencil is Updated, ideally 
+ in the ExecuteInformation method of the imaging filter that
+ is using the stencil.
+
+\item  \verb|obj.SetExtent (int extent[6])| -  Set the extent of the data.  This is should be called only 
+ by vtkImageStencilSource, as it is part of the basic pipeline
+ functionality.
+
+\item  \verb|obj.SetExtent (int x1, int x2, int y1, int y2, int z1, int z2)| -  Set the extent of the data.  This is should be called only 
+ by vtkImageStencilSource, as it is part of the basic pipeline
+ functionality.
+
+\item  \verb|int = obj. GetExtent ()| -  Set the extent of the data.  This is should be called only 
+ by vtkImageStencilSource, as it is part of the basic pipeline
+ functionality.
+
+\item  \verb|obj.AllocateExtents ()| -  Allocate space for the sub-extents.  This is called by
+ vtkImageStencilSource.
+
+\item  \verb|obj.Fill ()| -  Fill the sub-extents.
+
+\item  \verb|obj.CopyInformationToPipeline (vtkInformation request, vtkInformation input, vtkInformation output, int forceCopy)| -  Override these to handle origin, spacing, scalar type, and scalar
+ number of components.  See vtkDataObject for details.
+
+\item  \verb|obj.CopyInformationFromPipeline (vtkInformation request)| -  Override these to handle origin, spacing, scalar type, and scalar
+ number of components.  See vtkDataObject for details.
+
+\item  \verb|obj.Add (vtkImageStencilData )| -  Add merges the stencil supplied as argument into Self.
+
+\item  \verb|obj.Subtract (vtkImageStencilData )| -  Subtract removes the portion of the stencil, supplied as argument, 
+ that lies within Self from Self.   
+
+\item  \verb|obj.Replace (vtkImageStencilData )| -  Replaces the portion of the stencil, supplied as argument, 
+ that lies within Self from Self.   
+
+\item  \verb|int = obj.Clip (int extent[6])| -  Clip the stencil with the supplied extents. In other words, discard data
+ outside the specified extents. Return 1 if something changed.
+
+\end{itemize}

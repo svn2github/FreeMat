@@ -1,0 +1,54 @@
+\section{vtkOpenGLProperty}
+
+\subsection{Usage}
+
+ vtkOpenGLProperty is a concrete implementation of the abstract class 
+ vtkProperty. vtkOpenGLProperty interfaces to the OpenGL rendering library.
+
+To create an instance of class vtkOpenGLProperty, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkOpenGLProperty
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkOpenGLProperty has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkOpenGLProperty class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkOpenGLProperty = obj.NewInstance ()|
+
+\item  \verb|vtkOpenGLProperty = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Render (vtkActor a, vtkRenderer ren)| -  Implement base class method.
+
+\item  \verb|obj.BackfaceRender (vtkActor a, vtkRenderer ren)| -  Implement base class method.
+
+\item  \verb|obj.AddShaderVariable (string name, int numVars, int x)| -  Provide values to initialize shader variables.
+ Useful to initialize shader variables that change over time
+ (animation, GUI widgets inputs, etc. )
+ -  name - hardware name of the uniform variable
+ -  numVars - number of variables being set
+ -  x - values
+
+\item  \verb|obj.AddShaderVariable (string name, int numVars, float x)| -  Provide values to initialize shader variables.
+ Useful to initialize shader variables that change over time
+ (animation, GUI widgets inputs, etc. )
+ -  name - hardware name of the uniform variable
+ -  numVars - number of variables being set
+ -  x - values
+
+\item  \verb|obj.AddShaderVariable (string name, int numVars, double x)| -  Provide values to initialize shader variables.
+ Useful to initialize shader variables that change over time
+ (animation, GUI widgets inputs, etc. )
+ -  name - hardware name of the uniform variable
+ -  numVars - number of variables being set
+ -  x - values
+
+\end{itemize}

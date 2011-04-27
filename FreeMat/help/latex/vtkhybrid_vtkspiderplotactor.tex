@@ -1,0 +1,166 @@
+\section{vtkSpiderPlotActor}
+
+\subsection{Usage}
+
+ vtkSpiderPlotActor generates a spider plot from an input field (i.e.,
+ vtkDataObject). A spider plot represents N-dimensional data by using a set
+ of N axes that originate from the center of a circle, and form the spokes
+ of a wheel (like a spider web).  Each N-dimensional point is plotted as a
+ polyline that forms a closed polygon; the vertices of the polygon
+ are plotted against the radial axes.
+
+ To use this class, you must specify an input data object. You'll probably
+ also want to specify the position of the plot be setting the Position and
+ Position2 instance variables, which define a rectangle in which the plot
+ lies. Another important parameter is the IndependentVariables ivar, which
+ tells the instance how to interpret the field data (independent variables
+ as the rows or columns of the field). There are also many other instance
+ variables that control the look of the plot includes its title and legend.
+
+ Set the text property/attributes of the title and the labels through the 
+ vtkTextProperty objects associated with these components.
+
+To create an instance of class vtkSpiderPlotActor, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSpiderPlotActor
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSpiderPlotActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSpiderPlotActor class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methods for type information and printing.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methods for type information and printing.
+
+\item  \verb|vtkSpiderPlotActor = obj.NewInstance ()| -  Standard methods for type information and printing.
+
+\item  \verb|vtkSpiderPlotActor = obj.SafeDownCast (vtkObject o)| -  Standard methods for type information and printing.
+
+\item  \verb|obj.SetInput (vtkDataObject )| -  Set the input to the spider plot actor.
+
+\item  \verb|vtkDataObject = obj.GetInput ()| -  Get the input data object to this actor.
+
+\item  \verb|obj.SetIndependentVariables (int )| -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+
+\item  \verb|int = obj.GetIndependentVariablesMinValue ()| -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+
+\item  \verb|int = obj.GetIndependentVariablesMaxValue ()| -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+
+\item  \verb|int = obj.GetIndependentVariables ()| -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+
+\item  \verb|obj.SetIndependentVariablesToColumns ()| -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+
+\item  \verb|obj.SetIndependentVariablesToRows ()| -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+
+\item  \verb|obj.SetTitleVisibility (int )| -  Enable/Disable the display of a plot title.
+
+\item  \verb|int = obj.GetTitleVisibility ()| -  Enable/Disable the display of a plot title.
+
+\item  \verb|obj.TitleVisibilityOn ()| -  Enable/Disable the display of a plot title.
+
+\item  \verb|obj.TitleVisibilityOff ()| -  Enable/Disable the display of a plot title.
+
+\item  \verb|obj.SetTitle (string )| -  Set/Get the title of the spider plot.
+
+\item  \verb|string = obj.GetTitle ()| -  Set/Get the title of the spider plot.
+
+\item  \verb|obj.SetTitleTextProperty (vtkTextProperty p)| -  Set/Get the title text property.
+
+\item  \verb|vtkTextProperty = obj.GetTitleTextProperty ()| -  Set/Get the title text property.
+
+\item  \verb|obj.SetLabelVisibility (int )|
+
+\item  \verb|int = obj.GetLabelVisibility ()|
+
+\item  \verb|obj.LabelVisibilityOn ()|
+
+\item  \verb|obj.LabelVisibilityOff ()|
+
+\item  \verb|obj.SetLabelTextProperty (vtkTextProperty p)| -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+
+\item  \verb|vtkTextProperty = obj.GetLabelTextProperty ()| -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+
+\item  \verb|obj.SetNumberOfRings (int )| -  Specify the number of circumferential rings. If set to zero, then
+ none will be shown; othewise the specified number will be shown.
+
+\item  \verb|int = obj.GetNumberOfRingsMinValue ()| -  Specify the number of circumferential rings. If set to zero, then
+ none will be shown; othewise the specified number will be shown.
+
+\item  \verb|int = obj.GetNumberOfRingsMaxValue ()| -  Specify the number of circumferential rings. If set to zero, then
+ none will be shown; othewise the specified number will be shown.
+
+\item  \verb|int = obj.GetNumberOfRings ()| -  Specify the number of circumferential rings. If set to zero, then
+ none will be shown; othewise the specified number will be shown.
+
+\item  \verb|obj.SetAxisLabel (int i, string )| -  Specify the names of the radial spokes (i.e., the radial axes). If
+ not specified, then an integer number is automatically generated.
+
+\item  \verb|string = obj.GetAxisLabel (int i)| -  Specify the names of the radial spokes (i.e., the radial axes). If
+ not specified, then an integer number is automatically generated.
+
+\item  \verb|obj.SetAxisRange (int i, double min, double max)| -  Specify the range of data on each radial axis. If not specified,
+ then the range is computed automatically. 
+
+\item  \verb|obj.SetAxisRange (int i, double range[2])| -  Specify the range of data on each radial axis. If not specified,
+ then the range is computed automatically. 
+
+\item  \verb|obj.GetAxisRange (int i, double range[2])| -  Specify the range of data on each radial axis. If not specified,
+ then the range is computed automatically. 
+
+\item  \verb|obj.SetPlotColor (int i, double r, double g, double b)| -  Specify colors for each plot. If not specified, they are automatically generated.
+
+\item  \verb|obj.SetPlotColor (int i, double color[3])| -  Specify colors for each plot. If not specified, they are automatically generated.
+
+\item  \verb|obj.SetLegendVisibility (int )| -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+
+\item  \verb|int = obj.GetLegendVisibility ()| -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+
+\item  \verb|obj.LegendVisibilityOn ()| -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+
+\item  \verb|obj.LegendVisibilityOff ()| -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+
+\item  \verb|vtkLegendBoxActor = obj.GetLegendActor ()| -  Retrieve handles to the legend box. This is useful if you would like 
+ to manually control the legend appearance.
+
+\item  \verb|int = obj.RenderOverlay (vtkViewport )| -  Draw the spider plot.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport )| -  Draw the spider plot.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )| -  Does this prop have some translucent polygonal geometry?
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Does this prop have some translucent polygonal geometry?
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\end{itemize}

@@ -1,0 +1,144 @@
+\section{vtkRibbonFilter}
+
+\subsection{Usage}
+
+ vtkRibbonFilter is a filter to create oriented ribbons from lines defined
+ in polygonal dataset. The orientation of the ribbon is along the line 
+ segments and perpendicular to ''projected'' line normals. Projected line 
+ normals are the original line normals projected to be perpendicular to 
+ the local line segment. An offset angle can be specified to rotate the 
+ ribbon with respect to the normal.
+
+
+To create an instance of class vtkRibbonFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRibbonFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRibbonFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRibbonFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRibbonFilter = obj.NewInstance ()|
+
+\item  \verb|vtkRibbonFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetWidth (double )| -  Set the ''half'' width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+
+\item  \verb|double = obj.GetWidthMinValue ()| -  Set the ''half'' width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+
+\item  \verb|double = obj.GetWidthMaxValue ()| -  Set the ''half'' width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+
+\item  \verb|double = obj.GetWidth ()| -  Set the ''half'' width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+
+\item  \verb|obj.SetAngle (double )| -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+
+\item  \verb|double = obj.GetAngleMinValue ()| -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+
+\item  \verb|double = obj.GetAngleMaxValue ()| -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+
+\item  \verb|double = obj.GetAngle ()| -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+
+\item  \verb|obj.SetVaryWidth (int )| -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+
+\item  \verb|int = obj.GetVaryWidth ()| -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+
+\item  \verb|obj.VaryWidthOn ()| -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+
+\item  \verb|obj.VaryWidthOff ()| -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+
+\item  \verb|obj.SetWidthFactor (double )| -  Set the maximum ribbon width in terms of a multiple of the minimum width.
+ The default is 2.0
+
+\item  \verb|double = obj.GetWidthFactor ()| -  Set the maximum ribbon width in terms of a multiple of the minimum width.
+ The default is 2.0
+
+\item  \verb|obj.SetDefaultNormal (double , double , double )| -  Set the default normal to use if no normals are supplied, and
+ DefaultNormalOn is set. The default is (0,0,1)
+
+\item  \verb|obj.SetDefaultNormal (double  a[3])| -  Set the default normal to use if no normals are supplied, and
+ DefaultNormalOn is set. The default is (0,0,1)
+
+\item  \verb|double = obj. GetDefaultNormal ()| -  Set the default normal to use if no normals are supplied, and
+ DefaultNormalOn is set. The default is (0,0,1)
+
+\item  \verb|obj.SetUseDefaultNormal (int )| -  Set a boolean to control whether to use default normals.
+ The default is Off
+
+\item  \verb|int = obj.GetUseDefaultNormal ()| -  Set a boolean to control whether to use default normals.
+ The default is Off
+
+\item  \verb|obj.UseDefaultNormalOn ()| -  Set a boolean to control whether to use default normals.
+ The default is Off
+
+\item  \verb|obj.UseDefaultNormalOff ()| -  Set a boolean to control whether to use default normals.
+ The default is Off
+
+\item  \verb|obj.SetGenerateTCoords (int )| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|int = obj.GetGenerateTCoordsMinValue ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|int = obj.GetGenerateTCoordsMaxValue ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|int = obj.GetGenerateTCoords ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|obj.SetGenerateTCoordsToOff ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|obj.SetGenerateTCoordsToNormalizedLength ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|obj.SetGenerateTCoordsToUseLength ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|obj.SetGenerateTCoordsToUseScalars ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|string = obj.GetGenerateTCoordsAsString ()| -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+
+\item  \verb|obj.SetTextureLength (double )| -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+
+\item  \verb|double = obj.GetTextureLengthMinValue ()| -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+
+\item  \verb|double = obj.GetTextureLengthMaxValue ()| -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+
+\item  \verb|double = obj.GetTextureLength ()| -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+
+\end{itemize}

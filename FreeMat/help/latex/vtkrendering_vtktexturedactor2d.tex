@@ -1,0 +1,52 @@
+\section{vtkTexturedActor2D}
+
+\subsection{Usage}
+
+ vtkTexturedActor2D is an Actor2D which has additional support for
+ textures, just like vtkActor. To use textures, the geometry must have
+ texture coordinates, and the texture must be set with SetTexture().
+
+To create an instance of class vtkTexturedActor2D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTexturedActor2D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTexturedActor2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTexturedActor2D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTexturedActor2D = obj.NewInstance ()|
+
+\item  \verb|vtkTexturedActor2D = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetTexture (vtkTexture texture)| -  Set/Get the texture object to control rendering texture maps.  This will
+ be a vtkTexture object. An actor does not need to have an associated
+ texture map and multiple actors can share one texture.
+
+\item  \verb|vtkTexture = obj.GetTexture ()| -  Set/Get the texture object to control rendering texture maps.  This will
+ be a vtkTexture object. An actor does not need to have an associated
+ texture map and multiple actors can share one texture.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow win)| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|int = obj.RenderOverlay (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)| -  Support the standard render methods.
+
+\item  \verb|long = obj.GetMTime ()| -  Return this object's modified time.
+
+\item  \verb|obj.ShallowCopy (vtkProp prop)| -  Shallow copy of this vtkTexturedActor2D. Overrides vtkActor2D method.
+
+\end{itemize}

@@ -1,0 +1,33 @@
+\section{vtkApproximatingSubdivisionFilter}
+
+\subsection{Usage}
+
+ vtkApproximatingSubdivisionFilter is an abstract class that defines
+ the protocol for Approximating subdivision surface filters.
+
+To create an instance of class vtkApproximatingSubdivisionFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkApproximatingSubdivisionFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkApproximatingSubdivisionFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkApproximatingSubdivisionFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkApproximatingSubdivisionFilter = obj.NewInstance ()|
+
+\item  \verb|vtkApproximatingSubdivisionFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetNumberOfSubdivisions (int )| -  Set/get the number of subdivisions.
+
+\item  \verb|int = obj.GetNumberOfSubdivisions ()| -  Set/get the number of subdivisions.
+
+\end{itemize}

@@ -1,0 +1,38 @@
+\section{vtkGraphGeodesicPath}
+
+\subsection{Usage}
+
+ Serves as a base class for algorithms that trace a geodesic on a 
+ polygonal dataset treating it as a graph. ie points connecting the 
+ vertices of the graph
+
+To create an instance of class vtkGraphGeodesicPath, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGraphGeodesicPath
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGraphGeodesicPath has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGraphGeodesicPath class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methids for printing and determining type information.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methids for printing and determining type information.
+
+\item  \verb|vtkGraphGeodesicPath = obj.NewInstance ()| -  Standard methids for printing and determining type information.
+
+\item  \verb|vtkGraphGeodesicPath = obj.SafeDownCast (vtkObject o)| -  Standard methids for printing and determining type information.
+
+\item  \verb|vtkIdType = obj.GetStartVertex ()| -  The vertex at the start of the shortest path
+
+\item  \verb|obj.SetStartVertex (vtkIdType )| -  The vertex at the start of the shortest path
+
+\item  \verb|vtkIdType = obj.GetEndVertex ()| -  The vertex at the end of the shortest path
+
+\item  \verb|obj.SetEndVertex (vtkIdType )| -  The vertex at the end of the shortest path
+
+\end{itemize}

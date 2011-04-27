@@ -1,0 +1,40 @@
+\section{vtkPLYReader}
+
+\subsection{Usage}
+
+ vtkPLYReader is a source object that reads polygonal data in
+ Stanford University PLY file format (see 
+ http://graphics.stanford.edu/data/3Dscanrep). It requires that
+ the elements ''vertex'' and ''face'' are defined. The ''vertex'' element
+ must have the properties ''x'', ''y'', and ''z''. The ''face'' element must
+ have the property ''vertex\_indices'' defined. Optionally, if the ''face''
+ element has the properties ''intensity'' and/or the triplet ''red'',
+ ''green'', and ''blue''; these are read and added as scalars to the
+ output data.
+
+To create an instance of class vtkPLYReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPLYReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPLYReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPLYReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPLYReader = obj.NewInstance ()|
+
+\item  \verb|vtkPLYReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFileName (string )| -  Specify file name of stereo lithography file.
+
+\item  \verb|string = obj.GetFileName ()| -  Specify file name of stereo lithography file.
+
+\end{itemize}

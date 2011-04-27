@@ -1,0 +1,41 @@
+\section{vtkRendererCollection}
+
+\subsection{Usage}
+
+ vtkRendererCollection represents and provides methods to manipulate a list 
+ of renderers (i.e., vtkRenderer and subclasses). The list is unsorted and 
+ duplicate entries are not prevented.
+
+To create an instance of class vtkRendererCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRendererCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRendererCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRendererCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRendererCollection = obj.NewInstance ()|
+
+\item  \verb|vtkRendererCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkRenderer a)| -  Get the next Renderer in the list. Return NULL when at the end of the 
+ list.
+
+\item  \verb|vtkRenderer = obj.GetNextItem ()| -  Get the next Renderer in the list. Return NULL when at the end of the 
+ list.
+
+\item  \verb|obj.Render ()| -  Forward the Render() method to each renderer in the list.
+
+\item  \verb|vtkRenderer = obj.GetFirstRenderer ()| -  Get the first Renderer in the list. Return NULL when at the end of the 
+ list.
+
+\end{itemize}

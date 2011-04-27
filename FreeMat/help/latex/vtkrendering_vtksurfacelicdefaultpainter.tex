@@ -1,0 +1,35 @@
+\section{vtkSurfaceLICDefaultPainter}
+
+\subsection{Usage}
+
+  vtkSurfaceLICDefaultPainter is a vtkDefaultPainter replacement
+  that inserts the vtkSurfaceLICPainter at the correct position in the painter
+  chain.
+
+
+To create an instance of class vtkSurfaceLICDefaultPainter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSurfaceLICDefaultPainter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSurfaceLICDefaultPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSurfaceLICDefaultPainter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSurfaceLICDefaultPainter = obj.NewInstance ()|
+
+\item  \verb|vtkSurfaceLICDefaultPainter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetSurfaceLICPainter (vtkSurfaceLICPainter )| -  Get/Set the Surface LIC painter.
+
+\item  \verb|vtkSurfaceLICPainter = obj.GetSurfaceLICPainter ()| -  Get/Set the Surface LIC painter.
+
+\end{itemize}

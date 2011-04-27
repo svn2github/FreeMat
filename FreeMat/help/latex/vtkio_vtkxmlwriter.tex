@@ -1,0 +1,164 @@
+\section{vtkXMLWriter}
+
+\subsection{Usage}
+
+ vtkXMLWriter provides methods implementing most of the
+ functionality needed to write VTK XML file formats.  Concrete
+ subclasses provide actual writer implementations calling upon this
+ functionality.
+
+To create an instance of class vtkXMLWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLWriter = obj.NewInstance ()|
+
+\item  \verb|vtkXMLWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetByteOrder (int )| -  Get/Set the byte order of data written to the file.  The default
+ is the machine's hardware byte order.
+
+\item  \verb|int = obj.GetByteOrder ()| -  Get/Set the byte order of data written to the file.  The default
+ is the machine's hardware byte order.
+
+\item  \verb|obj.SetByteOrderToBigEndian ()| -  Get/Set the byte order of data written to the file.  The default
+ is the machine's hardware byte order.
+
+\item  \verb|obj.SetByteOrderToLittleEndian ()| -  Get/Set the byte order of data written to the file.  The default
+ is the machine's hardware byte order.
+
+\item  \verb|obj.SetIdType (int )| -  Get/Set the size of the vtkIdType values stored in the file.  The
+ default is the real size of vtkIdType.
+
+\item  \verb|int = obj.GetIdType ()| -  Get/Set the size of the vtkIdType values stored in the file.  The
+ default is the real size of vtkIdType.
+
+\item  \verb|obj.SetIdTypeToInt32 ()| -  Get/Set the size of the vtkIdType values stored in the file.  The
+ default is the real size of vtkIdType.
+
+\item  \verb|obj.SetIdTypeToInt64 ()| -  Get/Set the size of the vtkIdType values stored in the file.  The
+ default is the real size of vtkIdType.
+
+\item  \verb|obj.SetFileName (string )| -  Get/Set the name of the output file.
+
+\item  \verb|string = obj.GetFileName ()| -  Get/Set the name of the output file.
+
+\item  \verb|obj.SetCompressor (vtkDataCompressor )| -  Get/Set the compressor used to compress binary and appended data
+ before writing to the file.  Default is a vtkZLibDataCompressor.
+
+\item  \verb|vtkDataCompressor = obj.GetCompressor ()| -  Get/Set the compressor used to compress binary and appended data
+ before writing to the file.  Default is a vtkZLibDataCompressor.
+
+\item  \verb|obj.SetCompressorType (int compressorType)| -  Convenience functions to set the compressor to certain known types.
+
+\item  \verb|obj.SetCompressorTypeToNone ()| -  Convenience functions to set the compressor to certain known types.
+
+\item  \verb|obj.SetCompressorTypeToZLib ()| -  Get/Set the block size used in compression.  When reading, this
+ controls the granularity of how much extra information must be
+ read when only part of the data are requested.  The value should
+ be a multiple of the largest scalar data type.
+
+\item  \verb|obj.SetBlockSize (int blockSize)| -  Get/Set the block size used in compression.  When reading, this
+ controls the granularity of how much extra information must be
+ read when only part of the data are requested.  The value should
+ be a multiple of the largest scalar data type.
+
+\item  \verb|int = obj.GetBlockSize ()| -  Get/Set the block size used in compression.  When reading, this
+ controls the granularity of how much extra information must be
+ read when only part of the data are requested.  The value should
+ be a multiple of the largest scalar data type.
+
+\item  \verb|obj.SetDataMode (int )| -  Get/Set the data mode used for the file's data.  The options are
+ vtkXMLWriter::Ascii, vtkXMLWriter::Binary, and
+ vtkXMLWriter::Appended.
+
+\item  \verb|int = obj.GetDataMode ()| -  Get/Set the data mode used for the file's data.  The options are
+ vtkXMLWriter::Ascii, vtkXMLWriter::Binary, and
+ vtkXMLWriter::Appended.
+
+\item  \verb|obj.SetDataModeToAscii ()| -  Get/Set the data mode used for the file's data.  The options are
+ vtkXMLWriter::Ascii, vtkXMLWriter::Binary, and
+ vtkXMLWriter::Appended.
+
+\item  \verb|obj.SetDataModeToBinary ()| -  Get/Set the data mode used for the file's data.  The options are
+ vtkXMLWriter::Ascii, vtkXMLWriter::Binary, and
+ vtkXMLWriter::Appended.
+
+\item  \verb|obj.SetDataModeToAppended ()| -  Get/Set the data mode used for the file's data.  The options are
+ vtkXMLWriter::Ascii, vtkXMLWriter::Binary, and
+ vtkXMLWriter::Appended.
+
+\item  \verb|obj.SetEncodeAppendedData (int )| -  Get/Set whether the appended data section is base64 encoded.  If
+ encoded, reading and writing will be slower, but the file will be
+ fully valid XML and text-only.  If not encoded, the XML
+ specification will be violated, but reading and writing will be
+ fast.  The default is to do the encoding.
+
+\item  \verb|int = obj.GetEncodeAppendedData ()| -  Get/Set whether the appended data section is base64 encoded.  If
+ encoded, reading and writing will be slower, but the file will be
+ fully valid XML and text-only.  If not encoded, the XML
+ specification will be violated, but reading and writing will be
+ fast.  The default is to do the encoding.
+
+\item  \verb|obj.EncodeAppendedDataOn ()| -  Get/Set whether the appended data section is base64 encoded.  If
+ encoded, reading and writing will be slower, but the file will be
+ fully valid XML and text-only.  If not encoded, the XML
+ specification will be violated, but reading and writing will be
+ fast.  The default is to do the encoding.
+
+\item  \verb|obj.EncodeAppendedDataOff ()| -  Get/Set whether the appended data section is base64 encoded.  If
+ encoded, reading and writing will be slower, but the file will be
+ fully valid XML and text-only.  If not encoded, the XML
+ specification will be violated, but reading and writing will be
+ fast.  The default is to do the encoding.
+
+\item  \verb|obj.SetInput (vtkDataObject )| -  Set/Get an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline
+
+\item  \verb|obj.SetInput (int , vtkDataObject )| -  Set/Get an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline
+
+\item  \verb|vtkDataObject = obj.GetInput (int port)| -  Set/Get an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline
+
+\item  \verb|vtkDataObject = obj.GetInput ()| -  Set/Get an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline
+
+\item  \verb|string = obj.GetDefaultFileExtension ()| -  Get the default file extension for files written by this writer.
+
+\item  \verb|int = obj.Write ()| -  Invoke the writer.  Returns 1 for success, 0 for failure.
+
+\item  \verb|obj.SetTimeStep (int )| -  Which TimeStep to write.
+
+\item  \verb|int = obj.GetTimeStep ()| -  Which TimeStep to write.
+
+\item  \verb|int = obj. GetTimeStepRange ()| -  Which TimeStepRange to write.
+
+\item  \verb|obj.SetTimeStepRange (int , int )| -  Which TimeStepRange to write.
+
+\item  \verb|obj.SetTimeStepRange (int  a[2])| -  Which TimeStepRange to write.
+
+\item  \verb|int = obj.GetNumberOfTimeSteps ()| -  Set the number of time steps
+
+\item  \verb|obj.SetNumberOfTimeSteps (int )| -  Set the number of time steps
+
+\item  \verb|obj.Start ()| -  API to interface an outside the VTK pipeline control
+
+\item  \verb|obj.Stop ()| -  API to interface an outside the VTK pipeline control
+
+\item  \verb|obj.WriteNextTime (double time)| -  API to interface an outside the VTK pipeline control
+
+\end{itemize}

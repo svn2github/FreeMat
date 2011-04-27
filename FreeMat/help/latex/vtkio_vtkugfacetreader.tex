@@ -1,0 +1,67 @@
+\section{vtkUGFacetReader}
+
+\subsection{Usage}
+
+ vtkUGFacetReader is a source object that reads Unigraphics facet files.
+ Unigraphics is a solid modeling system; facet files are the polygonal
+ plot files it uses to create 3D plots.
+
+To create an instance of class vtkUGFacetReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkUGFacetReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkUGFacetReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkUGFacetReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkUGFacetReader = obj.NewInstance ()|
+
+\item  \verb|vtkUGFacetReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|long = obj.GetMTime ()| -  Overload standard modified time function. If locator is modified,
+ then this object is modified as well.
+
+\item  \verb|obj.SetFileName (string )| -  Specify Unigraphics file name.
+
+\item  \verb|string = obj.GetFileName ()| -  Specify Unigraphics file name.
+
+\item  \verb|int = obj.GetNumberOfParts ()| -  Special methods for interrogating the data file.
+
+\item  \verb|short = obj.GetPartColorIndex (int partId)| -  Retrieve color index for the parts in the file.
+
+\item  \verb|obj.SetPartNumber (int )| -  Specify the desired part to extract. The part number must range between
+ [0,NumberOfParts-1]. If the value is =(-1), then all parts will be 
+ extracted. If the value is <(-1), then no parts will be  extracted but 
+ the part colors will be updated.
+
+\item  \verb|int = obj.GetPartNumber ()| -  Specify the desired part to extract. The part number must range between
+ [0,NumberOfParts-1]. If the value is =(-1), then all parts will be 
+ extracted. If the value is <(-1), then no parts will be  extracted but 
+ the part colors will be updated.
+
+\item  \verb|obj.SetMerging (int )| -  Turn on/off merging of points/triangles.
+
+\item  \verb|int = obj.GetMerging ()| -  Turn on/off merging of points/triangles.
+
+\item  \verb|obj.MergingOn ()| -  Turn on/off merging of points/triangles.
+
+\item  \verb|obj.MergingOff ()| -  Turn on/off merging of points/triangles.
+
+\item  \verb|obj.SetLocator (vtkIncrementalPointLocator locator)| -  Specify a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+
+\item  \verb|vtkIncrementalPointLocator = obj.GetLocator ()| -  Specify a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+
+\item  \verb|obj.CreateDefaultLocator ()| -  Create default locator. Used to create one when none is specified.
+
+\end{itemize}

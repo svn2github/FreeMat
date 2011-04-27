@@ -1,0 +1,29 @@
+\section{vtkVersion}
+
+\subsection{Usage}
+
+ Holds methods for defining/determining the current vtk version
+ (major, minor, build).
+
+To create an instance of class vtkVersion, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVersion
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVersion has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVersion class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVersion = obj.NewInstance ()|
+
+\item  \verb|vtkVersion = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

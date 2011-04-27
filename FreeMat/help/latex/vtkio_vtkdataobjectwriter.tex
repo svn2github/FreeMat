@@ -1,0 +1,50 @@
+\section{vtkDataObjectWriter}
+
+\subsection{Usage}
+
+ vtkDataObjectWriter is a source object that writes ASCII or binary 
+ field data files in vtk format. Field data is a general form of data in
+ matrix form.
+
+To create an instance of class vtkDataObjectWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDataObjectWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDataObjectWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDataObjectWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDataObjectWriter = obj.NewInstance ()|
+
+\item  \verb|vtkDataObjectWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFileName (string filename)| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|string = obj.GetFileName ()| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|obj.SetHeader (string header)| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|string = obj.GetHeader ()| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|obj.SetFileType (int type)| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|int = obj.GetFileType ()| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|obj.SetFileTypeToASCII ()| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|obj.SetFileTypeToBinary ()| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|obj.SetFieldDataName (string fieldname)| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\item  \verb|string = obj.GetFieldDataName ()| -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+
+\end{itemize}

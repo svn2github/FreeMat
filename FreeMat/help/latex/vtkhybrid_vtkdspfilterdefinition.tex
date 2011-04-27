@@ -1,0 +1,61 @@
+\section{vtkDSPFilterDefinition}
+
+\subsection{Usage}
+
+ vtkDSPFilterDefinition is used by vtkExodusReader, vtkExodusIIReader and
+ vtkPExodusReader to do temporal smoothing of data
+
+To create an instance of class vtkDSPFilterDefinition, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDSPFilterDefinition
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDSPFilterDefinition has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDSPFilterDefinition class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDSPFilterDefinition = obj.NewInstance ()|
+
+\item  \verb|vtkDSPFilterDefinition = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Copy (vtkDSPFilterDefinition other)|
+
+\item  \verb|obj.Clear ()|
+
+\item  \verb|bool = obj.IsThisInputVariableInstanceNeeded (int a\_timestep, int a\_outputTimestep)|
+
+\item  \verb|obj.PushBackNumeratorWeight (double a\_value)|
+
+\item  \verb|obj.PushBackDenominatorWeight (double a\_value)|
+
+\item  \verb|obj.PushBackForwardNumeratorWeight (double a\_value)|
+
+\item  \verb|obj.SetInputVariableName (string a\_value)|
+
+\item  \verb|obj.SetOutputVariableName (string a\_value)|
+
+\item  \verb|string = obj.GetInputVariableName ()|
+
+\item  \verb|string = obj.GetOutputVariableName ()|
+
+\item  \verb|int = obj.GetNumNumeratorWeights ()|
+
+\item  \verb|int = obj.GetNumDenominatorWeights ()|
+
+\item  \verb|int = obj.GetNumForwardNumeratorWeights ()|
+
+\item  \verb|double = obj.GetNumeratorWeight (int a\_which)|
+
+\item  \verb|double = obj.GetDenominatorWeight (int a\_which)|
+
+\item  \verb|double = obj.GetForwardNumeratorWeight (int a\_which)|
+
+\end{itemize}

@@ -1,0 +1,31 @@
+\section{vtkPostScriptWriter}
+
+\subsection{Usage}
+
+ vtkPostScriptWriter writes an image as a PostScript file using some
+ reasonable scalings and centered on the page which is assumed to be
+ about 8.5 by 11 inches. This is based loosely off of the code from
+ pnmtops.c. Right now there aren't any real options.
+
+To create an instance of class vtkPostScriptWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPostScriptWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPostScriptWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPostScriptWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPostScriptWriter = obj.NewInstance ()|
+
+\item  \verb|vtkPostScriptWriter = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

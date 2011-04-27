@@ -1,0 +1,39 @@
+\section{vtkDataSetCollection}
+
+\subsection{Usage}
+
+ vtkDataSetCollection is an object that creates and manipulates lists of
+ datasets. See also vtkCollection and subclasses.
+
+To create an instance of class vtkDataSetCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDataSetCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDataSetCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDataSetCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDataSetCollection = obj.NewInstance ()|
+
+\item  \verb|vtkDataSetCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkDataSet ds)| -  Get the next dataset in the list.
+
+\item  \verb|vtkDataSet = obj.GetNextItem ()| -  Get the next dataset in the list.
+
+\item  \verb|vtkDataSet = obj.GetNextDataSet ()| -  Get the next dataset in the list.
+
+\item  \verb|vtkDataSet = obj.GetItem (int i)| -  Get the ith dataset in the list.
+
+\item  \verb|vtkDataSet = obj.GetDataSet (int i)| -  Get the ith dataset in the list.
+
+\end{itemize}

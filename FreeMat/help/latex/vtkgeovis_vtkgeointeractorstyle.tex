@@ -1,0 +1,84 @@
+\section{vtkGeoInteractorStyle}
+
+\subsection{Usage}
+
+ vtkGeoInteractorStyle contains interaction capabilities for a geographic
+ view including orbit, zoom, and tilt. It also includes a compass widget
+ for changing view parameters.
+
+
+To create an instance of class vtkGeoInteractorStyle, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGeoInteractorStyle
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGeoInteractorStyle has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGeoInteractorStyle class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGeoInteractorStyle = obj.NewInstance ()|
+
+\item  \verb|vtkGeoInteractorStyle = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.OnEnter ()| -  Event bindings
+
+\item  \verb|obj.OnLeave ()| -  Event bindings
+
+\item  \verb|obj.OnMouseMove ()| -  Event bindings
+
+\item  \verb|obj.OnLeftButtonUp ()| -  Event bindings
+
+\item  \verb|obj.OnMiddleButtonUp ()| -  Event bindings
+
+\item  \verb|obj.OnRightButtonUp ()| -  Event bindings
+
+\item  \verb|obj.OnLeftButtonDown ()| -  Event bindings
+
+\item  \verb|obj.OnMiddleButtonDown ()| -  Event bindings
+
+\item  \verb|obj.OnRightButtonDown ()| -  Event bindings
+
+\item  \verb|obj.OnChar ()| -  Event bindings
+
+\item  \verb|obj.RubberBandZoom ()|
+
+\item  \verb|obj.Pan ()|
+
+\item  \verb|obj.Dolly ()|
+
+\item  \verb|obj.RedrawRectangle ()|
+
+\item  \verb|obj.StartState (int newstate)|
+
+\item  \verb|vtkGeoCamera = obj.GetGeoCamera ()|
+
+\item  \verb|obj.ResetCamera ()| -  This can be used to set the camera to the standard view of the earth.
+
+\item  \verb|obj.WidgetInteraction (vtkObject caller)|
+
+\item  \verb|obj.SetInteractor (vtkRenderWindowInteractor interactor)| -  Set/Get the Interactor wrapper being controlled by this object.
+ (Satisfy superclass API.)
+
+\item  \verb|int = obj.GetRayIntersection (double origin[3], double direction[3], double intersection[3])|
+
+\item  \verb|obj.SetCurrentRenderer (vtkRenderer )| -  Override to make the renderer use this camera subclass
+
+\item  \verb|bool = obj.GetLockHeading ()|
+
+\item  \verb|obj.SetLockHeading (bool )|
+
+\item  \verb|obj.LockHeadingOn ()|
+
+\item  \verb|obj.LockHeadingOff ()|
+
+\item  \verb|obj.ResetCameraClippingRange ()|
+
+\end{itemize}

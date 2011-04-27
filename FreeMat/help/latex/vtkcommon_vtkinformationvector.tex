@@ -1,0 +1,61 @@
+\section{vtkInformationVector}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkInformationVector, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformationVector
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformationVector has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformationVector class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformationVector = obj.NewInstance ()|
+
+\item  \verb|vtkInformationVector = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetNumberOfInformationObjects ()| -  Get/Set the number of information objects in the vector.  Setting
+ the number to larger than the current number will create empty
+ vtkInformation instances.  Setting the number to smaller than the
+ current number will remove entries from higher indices.
+
+\item  \verb|obj.SetNumberOfInformationObjects (int n)| -  Get/Set the number of information objects in the vector.  Setting
+ the number to larger than the current number will create empty
+ vtkInformation instances.  Setting the number to smaller than the
+ current number will remove entries from higher indices.
+
+\item  \verb|obj.SetInformationObject (int index, vtkInformation info)| -  Get/Set the vtkInformation instance stored at the given index in
+ the vector.  The vector will automatically expand to include the
+ index given if necessary.  Missing entries in-between will be
+ filled with empty vtkInformation instances.
+
+\item  \verb|vtkInformation = obj.GetInformationObject (int index)| -  Get/Set the vtkInformation instance stored at the given index in
+ the vector.  The vector will automatically expand to include the
+ index given if necessary.  Missing entries in-between will be
+ filled with empty vtkInformation instances.
+
+\item  \verb|obj.Append (vtkInformation info)| -  Append/Remove an information object.
+
+\item  \verb|obj.Remove (vtkInformation info)| -  Append/Remove an information object.
+
+\item  \verb|obj.Register (vtkObjectBase o)| -  Initiate garbage collection when a reference is removed.
+
+\item  \verb|obj.UnRegister (vtkObjectBase o)| -  Initiate garbage collection when a reference is removed.
+
+\item  \verb|obj.Copy (vtkInformationVector from, int deep)| -  Copy all information entries from the given vtkInformation
+ instance.  Any previously existing entries are removed.  If 
+ deep==1, a deep copy of the information structure is performed (new 
+ instances of any contained vtkInformation and vtkInformationVector 
+ objects are created).
+
+\end{itemize}

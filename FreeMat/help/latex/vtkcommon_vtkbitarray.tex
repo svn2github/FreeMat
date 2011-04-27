@@ -1,0 +1,144 @@
+\section{vtkBitArray}
+
+\subsection{Usage}
+
+ vtkBitArray is an array of bits (0/1 data value). The array is packed 
+ so that each byte stores eight bits. vtkBitArray provides methods
+ for insertion and retrieval of bits, and will automatically resize 
+ itself to hold new data.
+
+To create an instance of class vtkBitArray, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkBitArray
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkBitArray has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkBitArray class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkBitArray = obj.NewInstance ()|
+
+\item  \verb|vtkBitArray = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.Allocate (vtkIdType sz, vtkIdType ext)| -  Allocate memory for this array. Delete old storage only if necessary.
+ Note that ext is no longer used.
+
+\item  \verb|obj.Initialize ()| -  Release storage and reset array to initial state.
+
+\item  \verb|int = obj.GetDataType ()|
+
+\item  \verb|int = obj.GetDataTypeSize ()| -  Set the number of n-tuples in the array.
+
+\item  \verb|obj.SetNumberOfTuples (vtkIdType number)| -  Set the number of n-tuples in the array.
+
+\item  \verb|obj.SetTuple (vtkIdType i, vtkIdType j, vtkAbstractArray source)| -  Set the tuple at the ith location using the jth tuple in the source array.
+ This method assumes that the two arrays have the same type
+ and structure. Note that range checking and memory allocation is not 
+ performed; use in conjunction with SetNumberOfTuples() to allocate space.
+
+\item  \verb|obj.InsertTuple (vtkIdType i, vtkIdType j, vtkAbstractArray source)| -  Insert the jth tuple in the source array, at ith location in this array. 
+ Note that memory allocation is performed as necessary to hold the data.
+
+\item  \verb|vtkIdType = obj.InsertNextTuple (vtkIdType j, vtkAbstractArray source)| -  Insert the jth tuple in the source array, at the end in this array. 
+ Note that memory allocation is performed as necessary to hold the data.
+ Returns the location at which the data was inserted.
+
+\item  \verb|obj.GetTuple (vtkIdType i, double tuple)| -  Copy the tuple value into a user-provided array.
+
+\item  \verb|obj.SetTuple (vtkIdType i, float tuple)| -  Set the tuple value at the ith location in the array.
+
+\item  \verb|obj.SetTuple (vtkIdType i, double tuple)| -  Set the tuple value at the ith location in the array.
+
+\item  \verb|obj.InsertTuple (vtkIdType i, float tuple)| -  Insert (memory allocation performed) the tuple into the ith location
+ in the array.
+
+\item  \verb|obj.InsertTuple (vtkIdType i, double tuple)| -  Insert (memory allocation performed) the tuple into the ith location
+ in the array.
+
+\item  \verb|vtkIdType = obj.InsertNextTuple (float tuple)| -  Insert (memory allocation performed) the tuple onto the end of the array.
+
+\item  \verb|vtkIdType = obj.InsertNextTuple (double tuple)| -  Insert (memory allocation performed) the tuple onto the end of the array.
+
+\item  \verb|obj.RemoveTuple (vtkIdType id)| -  These methods remove tuples from the data array. They shift data and
+ resize array, so the data array is still valid after this operation. Note,
+ this operation is fairly slow.
+
+\item  \verb|obj.RemoveFirstTuple ()| -  These methods remove tuples from the data array. They shift data and
+ resize array, so the data array is still valid after this operation. Note,
+ this operation is fairly slow.
+
+\item  \verb|obj.RemoveLastTuple ()| -  These methods remove tuples from the data array. They shift data and
+ resize array, so the data array is still valid after this operation. Note,
+ this operation is fairly slow.
+
+\item  \verb|obj.SetComponent (vtkIdType i, int j, double c)| -  Set the data component at the ith tuple and jth component location.
+ Note that i is less then NumberOfTuples and j is less then 
+ NumberOfComponents. Make sure enough memory has been allocated (use 
+ SetNumberOfTuples() and  SetNumberOfComponents()).
+
+\item  \verb|obj.Squeeze ()| -  Free any unneeded memory.
+
+\item  \verb|int = obj.Resize (vtkIdType numTuples)| -  Resize the array while conserving the data.
+
+\item  \verb|int = obj.GetValue (vtkIdType id)| -  Get the data at a particular index.
+
+\item  \verb|obj.SetNumberOfValues (vtkIdType number)| -  Fast method based setting of values without memory checks. First
+ use SetNumberOfValues then use SetValue to actually set them.
+ Specify the number of values for this object to hold. Does an
+ allocation as well as setting the MaxId ivar. Used in conjunction with
+ SetValue() method for fast insertion.
+
+\item  \verb|obj.SetValue (vtkIdType id, int value)| -  Set the data at a particular index. Does not do range checking. Make sure
+ you use the method SetNumberOfValues() before inserting data.
+
+\item  \verb|obj.InsertValue (vtkIdType id, int i)| -  Insets values and checks to make sure there is enough memory
+
+\item  \verb|vtkIdType = obj.InsertNextValue (int i)|
+
+\item  \verb|obj.InsertComponent (vtkIdType i, int j, double c)| -  Insert the data component at ith tuple and jth component location. 
+ Note that memory allocation is performed as necessary to hold the data.
+
+\item  \verb|obj.DeepCopy (vtkDataArray da)| -  Deep copy of another bit array.
+
+\item  \verb|obj.DeepCopy (vtkAbstractArray aa)| -  This method lets the user specify data to be held by the array.  The 
+ array argument is a pointer to the data.  size is the size of 
+ the array supplied by the user.  Set save to 1 to keep the class
+ from deleting the array when it cleans up or reallocates memory.
+ The class uses the actual array provided; it does not copy the data 
+ from the suppled array. If save 0, the array must have been allocated
+ with new[] not malloc.
+
+\item  \verb|obj.SetArray (string array, vtkIdType size, int save)| -  This method lets the user specify data to be held by the array.  The 
+ array argument is a pointer to the data.  size is the size of 
+ the array supplied by the user.  Set save to 1 to keep the class
+ from deleting the array when it cleans up or reallocates memory.
+ The class uses the actual array provided; it does not copy the data 
+ from the suppled array. If save 0, the array must have been allocated
+ with new[] not malloc.
+
+\item  \verb|vtkArrayIterator = obj.NewIterator ()| -  Returns a new vtkBitArrayIterator instance.
+
+\item  \verb|vtkIdType = obj.LookupValue (int value)|
+
+\item  \verb|obj.LookupValue (int value, vtkIdList ids)|
+
+\item  \verb|obj.DataChanged ()| -  Tell the array explicitly that the data has changed.
+ This is only necessary to call when you modify the array contents
+ without using the array's API (i.e. you retrieve a pointer to the
+ data and modify the array contents).  You need to call this so that
+ the fast lookup will know to rebuild itself.  Otherwise, the lookup
+ functions will give incorrect results.
+
+\item  \verb|obj.ClearLookup ()| -  Delete the associated fast lookup data structure on this array,
+ if it exists.  The lookup will be rebuilt on the next call to a lookup
+ function.
+
+\end{itemize}

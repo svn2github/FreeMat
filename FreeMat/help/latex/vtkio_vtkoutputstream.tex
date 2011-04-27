@@ -1,0 +1,46 @@
+\section{vtkOutputStream}
+
+\subsection{Usage}
+
+ vtkOutputStream provides a VTK-style interface wrapping around a
+ standard output stream.  The access methods are virtual so that
+ subclasses can transparently provide encoding of the output.  Data
+ lengths for Write calls refer to the length of the data in memory.
+ The actual length in the stream may differ for subclasses that
+ implement an encoding scheme.
+
+To create an instance of class vtkOutputStream, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkOutputStream
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkOutputStream has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkOutputStream class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkOutputStream = obj.NewInstance ()|
+
+\item  \verb|vtkOutputStream = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.StartWriting ()| -  Called after the stream position has been set by the caller, but
+ before any Write calls.  The stream position should not be
+ adjusted by the caller until after an EndWriting call.
+
+\item  \verb|int = obj.Write (string data, long length)| -  Write output data of the given length.
+
+\item  \verb|int = obj.Write (string data, long length)| -  Write output data of the given length.
+
+\item  \verb|int = obj.EndWriting ()| -  Called after all desired calls to Write have been made.  After
+ this call, the caller is free to change the position of the
+ stream.  Additional writes should not be done until after another
+ call to StartWriting.
+
+\end{itemize}

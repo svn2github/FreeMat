@@ -1,0 +1,34 @@
+\section{vtkMutexLock}
+
+\subsection{Usage}
+
+ vtkMutexLock allows the locking of variables which are accessed 
+ through different threads.  This header file also defines 
+ vtkSimpleMutexLock which is not a subclass of vtkObject.
+
+To create an instance of class vtkMutexLock, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMutexLock
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMutexLock has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMutexLock class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMutexLock = obj.NewInstance ()|
+
+\item  \verb|vtkMutexLock = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Lock (void )| -  Lock the vtkMutexLock
+
+\item  \verb|obj.Unlock (void )| -  Unlock the vtkMutexLock
+
+\end{itemize}

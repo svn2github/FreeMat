@@ -1,0 +1,62 @@
+\section{vtkJPEGWriter}
+
+\subsection{Usage}
+
+ vtkJPEGWriter writes JPEG files. It supports 1 and 3 component data of
+ unsigned char. It relies on the IJG's libjpeg.  Thanks to IJG for
+ supplying a public jpeg IO library.
+
+To create an instance of class vtkJPEGWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkJPEGWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkJPEGWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkJPEGWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkJPEGWriter = obj.NewInstance ()|
+
+\item  \verb|vtkJPEGWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Write ()| -  The main interface which triggers the writer to start.
+
+\item  \verb|obj.SetQuality (int )| -  Compression quality. 0 = Low quality, 100 = High quality
+
+\item  \verb|int = obj.GetQualityMinValue ()| -  Compression quality. 0 = Low quality, 100 = High quality
+
+\item  \verb|int = obj.GetQualityMaxValue ()| -  Compression quality. 0 = Low quality, 100 = High quality
+
+\item  \verb|int = obj.GetQuality ()| -  Compression quality. 0 = Low quality, 100 = High quality
+
+\item  \verb|obj.SetProgressive (int )| -  Progressive JPEG generation.
+
+\item  \verb|int = obj.GetProgressive ()| -  Progressive JPEG generation.
+
+\item  \verb|obj.ProgressiveOn ()| -  Progressive JPEG generation.
+
+\item  \verb|obj.ProgressiveOff ()| -  Progressive JPEG generation.
+
+\item  \verb|obj.SetWriteToMemory (int )| -  Write the image to memory (a vtkUnsignedCharArray)
+
+\item  \verb|int = obj.GetWriteToMemory ()| -  Write the image to memory (a vtkUnsignedCharArray)
+
+\item  \verb|obj.WriteToMemoryOn ()| -  Write the image to memory (a vtkUnsignedCharArray)
+
+\item  \verb|obj.WriteToMemoryOff ()| -  Write the image to memory (a vtkUnsignedCharArray)
+
+\item  \verb|obj.SetResult (vtkUnsignedCharArray )| -  When writing to memory this is the result, it will be NULL until the 
+ data is written the first time
+
+\item  \verb|vtkUnsignedCharArray = obj.GetResult ()| -  When writing to memory this is the result, it will be NULL until the 
+ data is written the first time
+
+\end{itemize}

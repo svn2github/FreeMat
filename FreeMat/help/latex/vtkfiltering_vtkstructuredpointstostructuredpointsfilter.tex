@@ -1,0 +1,34 @@
+\section{vtkStructuredPointsToStructuredPointsFilter}
+
+\subsection{Usage}
+
+ vtkStructuredPointsToStructuredPointsFilter is an abstract filter class 
+ whose subclasses take on input structured points and generate
+ structured points on output.
+
+To create an instance of class vtkStructuredPointsToStructuredPointsFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkStructuredPointsToStructuredPointsFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkStructuredPointsToStructuredPointsFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkStructuredPointsToStructuredPointsFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkStructuredPointsToStructuredPointsFilter = obj.NewInstance ()|
+
+\item  \verb|vtkStructuredPointsToStructuredPointsFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInput (vtkImageData input)| -  Set / get the input data or filter.
+
+\item  \verb|vtkImageData = obj.GetInput ()| -  Set / get the input data or filter.
+
+\end{itemize}

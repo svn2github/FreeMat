@@ -1,0 +1,58 @@
+\section{vtkCaptionWidget}
+
+\subsection{Usage}
+
+ This class provides support for interactively placing a caption on the 2D
+ overlay plane. A caption is defined by some text with a leader (e.g.,
+ arrow) that points from the text to a point in the scene. The caption is
+ represented by a vtkCaptionRepresentation. It uses the event bindings of
+ its superclass (vtkBorderWidget) to control the placement of the text, and
+ adds the ability to move the attachment point around. In addition, when
+ the caption text is selected, the widget emits a ActivateEvent that
+ observers can watch for. This is useful for opening GUI dialogoues to
+ adjust font characteristics, etc. (Please see the superclass for a
+ description of event bindings.)
+
+ Note that this widget extends the behavior of its superclass 
+ vtkBorderWidget. The end point of the leader can be selected and
+ moved around with an internal vtkHandleWidget.
+
+To create an instance of class vtkCaptionWidget, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCaptionWidget
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCaptionWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCaptionWidget class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard VTK class methods.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard VTK class methods.
+
+\item  \verb|vtkCaptionWidget = obj.NewInstance ()| -  Standard VTK class methods.
+
+\item  \verb|vtkCaptionWidget = obj.SafeDownCast (vtkObject o)| -  Standard VTK class methods.
+
+\item  \verb|obj.SetEnabled (int enabling)| -  Override superclasses' SetEnabled() method because the caption leader
+ has its own dedicated widget.
+
+\item  \verb|obj.SetRepresentation (vtkCaptionRepresentation r)| -  Specify a vtkCaptionActor2D to manage. This is convenient, alternative
+ method to SetRepresentation(). It internally create a vtkCaptionRepresentation
+ and then invokes vtkCaptionRepresentation::SetCaptionActor2D().
+
+\item  \verb|obj.SetCaptionActor2D (vtkCaptionActor2D capActor)| -  Specify a vtkCaptionActor2D to manage. This is convenient, alternative
+ method to SetRepresentation(). It internally create a vtkCaptionRepresentation
+ and then invokes vtkCaptionRepresentation::SetCaptionActor2D().
+
+\item  \verb|vtkCaptionActor2D = obj.GetCaptionActor2D ()| -  Specify a vtkCaptionActor2D to manage. This is convenient, alternative
+ method to SetRepresentation(). It internally create a vtkCaptionRepresentation
+ and then invokes vtkCaptionRepresentation::SetCaptionActor2D().
+
+\item  \verb|obj.CreateDefaultRepresentation ()| -  Create the default widget representation if one is not set. 
+
+\end{itemize}

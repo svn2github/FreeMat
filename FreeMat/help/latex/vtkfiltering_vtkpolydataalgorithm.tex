@@ -1,0 +1,65 @@
+\section{vtkPolyDataAlgorithm}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkPolyDataAlgorithm, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPolyDataAlgorithm
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPolyDataAlgorithm has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPolyDataAlgorithm class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPolyDataAlgorithm = obj.NewInstance ()|
+
+\item  \verb|vtkPolyDataAlgorithm = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkPolyData = obj.GetOutput ()| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkPolyData = obj.GetOutput (int )| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|obj.SetOutput (vtkDataObject d)| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkDataObject = obj.GetInput ()|
+
+\item  \verb|vtkDataObject = obj.GetInput (int port)|
+
+\item  \verb|vtkPolyData = obj.GetPolyDataInput (int port)|
+
+\item  \verb|obj.SetInput (vtkDataObject )| -  Set an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline.
+ Note that these methods support old-style pipeline connections.
+ When writing new code you should use the more general
+ vtkAlgorithm::SetInputConnection().  These methods transform the
+ input index to the input port index, not an index of a connection
+ within a single port.
+
+\item  \verb|obj.SetInput (int , vtkDataObject )| -  Set an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline.
+ Note that these methods support old-style pipeline connections.
+ When writing new code you should use the more general
+ vtkAlgorithm::SetInputConnection().  These methods transform the
+ input index to the input port index, not an index of a connection
+ within a single port.
+
+\item  \verb|obj.AddInput (vtkDataObject )| -  Add an input of this algorithm.  Note that these methods support
+ old-style pipeline connections.  When writing new code you should
+ use the more general vtkAlgorithm::AddInputConnection().  See
+ SetInput() for details.
+
+\item  \verb|obj.AddInput (int , vtkDataObject )| -  Add an input of this algorithm.  Note that these methods support
+ old-style pipeline connections.  When writing new code you should
+ use the more general vtkAlgorithm::AddInputConnection().  See
+ SetInput() for details.
+
+\end{itemize}

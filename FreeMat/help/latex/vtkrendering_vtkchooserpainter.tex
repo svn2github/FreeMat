@@ -1,0 +1,52 @@
+\section{vtkChooserPainter}
+
+\subsection{Usage}
+
+
+ This painter does not actually do any painting.  Instead, it picks other
+ painters based on the current state of itself and its poly data.  It then
+ delegates the work to these other painters.
+
+
+To create an instance of class vtkChooserPainter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkChooserPainter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkChooserPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkChooserPainter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkChooserPainter = obj.NewInstance ()|
+
+\item  \verb|vtkChooserPainter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetVertPainter (vtkPolyDataPainter )|
+
+\item  \verb|obj.SetLinePainter (vtkPolyDataPainter )|
+
+\item  \verb|obj.SetPolyPainter (vtkPolyDataPainter )|
+
+\item  \verb|obj.SetStripPainter (vtkPolyDataPainter )|
+
+\item  \verb|obj.SetUseLinesPainterForWireframes (int )| -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+
+\item  \verb|int = obj.GetUseLinesPainterForWireframes ()| -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+
+\item  \verb|obj.UseLinesPainterForWireframesOn ()| -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+
+\item  \verb|obj.UseLinesPainterForWireframesOff ()| -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+
+\end{itemize}

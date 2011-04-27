@@ -1,0 +1,32 @@
+\section{vtkDummyGPUInfoList}
+
+\subsection{Usage}
+
+ vtkDummyGPUInfoList implements Probe() by just setting the count of
+ GPUs to be zero. Useful when an OS specific implementation is not available.
+
+To create an instance of class vtkDummyGPUInfoList, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDummyGPUInfoList
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDummyGPUInfoList has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDummyGPUInfoList class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDummyGPUInfoList = obj.NewInstance ()|
+
+\item  \verb|vtkDummyGPUInfoList = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Probe ()| -  Build the list of vtkInfoGPU if not done yet.
+ 
+
+\end{itemize}

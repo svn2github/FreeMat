@@ -1,0 +1,102 @@
+\section{vtkMaskPoints}
+
+\subsection{Usage}
+
+ vtkMaskPoints is a filter that passes through points and point attributes 
+ from input dataset. (Other geometry is not passed through.) It is 
+ possible to mask every nth point, and to specify an initial offset
+ to begin masking from. A special random mode feature enables random 
+ selection of points. The filter can also generate vertices (topological
+ primitives) as well as points. This is useful because vertices are
+ rendered while points are not.
+
+To create an instance of class vtkMaskPoints, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMaskPoints
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMaskPoints has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMaskPoints class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMaskPoints = obj.NewInstance ()|
+
+\item  \verb|vtkMaskPoints = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetOnRatio (int )| -  Turn on every nth point.
+
+\item  \verb|int = obj.GetOnRatioMinValue ()| -  Turn on every nth point.
+
+\item  \verb|int = obj.GetOnRatioMaxValue ()| -  Turn on every nth point.
+
+\item  \verb|int = obj.GetOnRatio ()| -  Turn on every nth point.
+
+\item  \verb|obj.SetMaximumNumberOfPoints (vtkIdType )| -  Limit the number of points that can be passed through.
+
+\item  \verb|vtkIdType = obj.GetMaximumNumberOfPointsMinValue ()| -  Limit the number of points that can be passed through.
+
+\item  \verb|vtkIdType = obj.GetMaximumNumberOfPointsMaxValue ()| -  Limit the number of points that can be passed through.
+
+\item  \verb|vtkIdType = obj.GetMaximumNumberOfPoints ()| -  Limit the number of points that can be passed through.
+
+\item  \verb|obj.SetOffset (vtkIdType )| -  Start with this point.
+
+\item  \verb|vtkIdType = obj.GetOffsetMinValue ()| -  Start with this point.
+
+\item  \verb|vtkIdType = obj.GetOffsetMaxValue ()| -  Start with this point.
+
+\item  \verb|vtkIdType = obj.GetOffset ()| -  Start with this point.
+
+\item  \verb|obj.SetRandomMode (int )| -  Special flag causes randomization of point selection. If this mode is on,
+ statistically every nth point (i.e., OnRatio) will be displayed.
+
+\item  \verb|int = obj.GetRandomMode ()| -  Special flag causes randomization of point selection. If this mode is on,
+ statistically every nth point (i.e., OnRatio) will be displayed.
+
+\item  \verb|obj.RandomModeOn ()| -  Special flag causes randomization of point selection. If this mode is on,
+ statistically every nth point (i.e., OnRatio) will be displayed.
+
+\item  \verb|obj.RandomModeOff ()| -  Special flag causes randomization of point selection. If this mode is on,
+ statistically every nth point (i.e., OnRatio) will be displayed.
+
+\item  \verb|obj.SetGenerateVertices (int )| -  Generate output polydata vertices as well as points. A useful
+ convenience method because vertices are drawn (they are topology) while
+ points are not (they are geometry). By default this method is off.
+
+\item  \verb|int = obj.GetGenerateVertices ()| -  Generate output polydata vertices as well as points. A useful
+ convenience method because vertices are drawn (they are topology) while
+ points are not (they are geometry). By default this method is off.
+
+\item  \verb|obj.GenerateVerticesOn ()| -  Generate output polydata vertices as well as points. A useful
+ convenience method because vertices are drawn (they are topology) while
+ points are not (they are geometry). By default this method is off.
+
+\item  \verb|obj.GenerateVerticesOff ()| -  Generate output polydata vertices as well as points. A useful
+ convenience method because vertices are drawn (they are topology) while
+ points are not (they are geometry). By default this method is off.
+
+\item  \verb|obj.SetSingleVertexPerCell (int )| -  When vertex generation is enabled, by default vertices are produced
+ as multi-vertex cells (more than one per cell), if you wish to have a single
+ vertex per cell, enable this flag.
+
+\item  \verb|int = obj.GetSingleVertexPerCell ()| -  When vertex generation is enabled, by default vertices are produced
+ as multi-vertex cells (more than one per cell), if you wish to have a single
+ vertex per cell, enable this flag.
+
+\item  \verb|obj.SingleVertexPerCellOn ()| -  When vertex generation is enabled, by default vertices are produced
+ as multi-vertex cells (more than one per cell), if you wish to have a single
+ vertex per cell, enable this flag.
+
+\item  \verb|obj.SingleVertexPerCellOff ()| -  When vertex generation is enabled, by default vertices are produced
+ as multi-vertex cells (more than one per cell), if you wish to have a single
+ vertex per cell, enable this flag.
+
+\end{itemize}

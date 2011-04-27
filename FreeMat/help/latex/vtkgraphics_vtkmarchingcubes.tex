@@ -1,0 +1,113 @@
+\section{vtkMarchingCubes}
+
+\subsection{Usage}
+
+ vtkMarchingCubes is a filter that takes as input a volume (e.g., 3D
+ structured point set) and generates on output one or more isosurfaces.
+ One or more contour values must be specified to generate the isosurfaces.
+ Alternatively, you can specify a min/max scalar range and the number of
+ contours to generate a series of evenly spaced contour values.
+
+To create an instance of class vtkMarchingCubes, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMarchingCubes
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMarchingCubes has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMarchingCubes class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMarchingCubes = obj.NewInstance ()|
+
+\item  \verb|vtkMarchingCubes = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetValue (int i, double value)|
+
+\item  \verb|double = obj.GetValue (int i)|
+
+\item  \verb|obj.GetValues (double contourValues)|
+
+\item  \verb|obj.SetNumberOfContours (int number)|
+
+\item  \verb|int = obj.GetNumberOfContours ()|
+
+\item  \verb|obj.GenerateValues (int numContours, double range[2])|
+
+\item  \verb|obj.GenerateValues (int numContours, double rangeStart, double rangeEnd)|
+
+\item  \verb|long = obj.GetMTime ()|
+
+\item  \verb|obj.SetComputeNormals (int )| -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+
+\item  \verb|int = obj.GetComputeNormals ()| -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+
+\item  \verb|obj.ComputeNormalsOn ()| -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+
+\item  \verb|obj.ComputeNormalsOff ()| -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+
+\item  \verb|obj.SetComputeGradients (int )| -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+
+\item  \verb|int = obj.GetComputeGradients ()| -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+
+\item  \verb|obj.ComputeGradientsOn ()| -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+
+\item  \verb|obj.ComputeGradientsOff ()| -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+
+\item  \verb|obj.SetComputeScalars (int )| -  Set/Get the computation of scalars.
+
+\item  \verb|int = obj.GetComputeScalars ()| -  Set/Get the computation of scalars.
+
+\item  \verb|obj.ComputeScalarsOn ()| -  Set/Get the computation of scalars.
+
+\item  \verb|obj.ComputeScalarsOff ()| -  Set/Get the computation of scalars.
+
+\item  \verb|obj.SetLocator (vtkIncrementalPointLocator locator)| -  Overide the default locator.  Useful for changing the number of
+ bins for performance or specifying a more aggressive locator.
+
+\item  \verb|vtkIncrementalPointLocator = obj.GetLocator ()| -  Overide the default locator.  Useful for changing the number of
+ bins for performance or specifying a more aggressive locator.
+
+\item  \verb|obj.CreateDefaultLocator ()| -  Create default locator. Used to create one when none is
+ specified. The locator is used to merge coincident points.
+
+\end{itemize}

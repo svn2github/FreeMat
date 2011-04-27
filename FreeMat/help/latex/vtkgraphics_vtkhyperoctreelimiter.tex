@@ -1,0 +1,34 @@
+\section{vtkHyperOctreeLimiter}
+
+\subsection{Usage}
+
+ This filter returns a lower resolution copy of its input vtkHyperOctree.
+ It does a length/area/volume weighted averaging to obtain data at each
+ cut point. Above the cut level, leaf attribute data is simply copied.
+
+To create an instance of class vtkHyperOctreeLimiter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHyperOctreeLimiter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHyperOctreeLimiter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHyperOctreeLimiter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHyperOctreeLimiter = obj.NewInstance ()|
+
+\item  \verb|vtkHyperOctreeLimiter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetMaximumLevel ()| -  Return the maximum number of levels of the hyperoctree.
+
+\item  \verb|obj.SetMaximumLevel (int levels)| -  Set the maximum number of levels of the hyperoctree.
+
+\end{itemize}

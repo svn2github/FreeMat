@@ -11,12 +11,9 @@ where \verb|a| and \verb|b| are arrays of numerical type.  The result \verb|y| d
 on which of the following three situations applies to the arguments
 \verb|a| and \verb|b|:
 \begin{enumerate}
-\item  \verb|a| is a scalar, \verb|b| is an arbitrary \verb|n|-dimensional numerical array, in which case the output is the element-wise product of \verb|b| with the scalar \verb|a|.
-
-\item  \verb|b| is a scalar, \verb|a| is an arbitrary \verb|n|-dimensional numerical array, in which case the output is the element-wise product of \verb|a| with the scalar \verb|b|.
-
-\item  \verb|a,b| are conformant matrices, i.e., \verb|a| is of size \verb|M x K|, and \verb|b| is of size \verb|K x N|, in which case the output is of size \verb|M x N| and is the matrix product of \verb|a|, and \verb|b|.
-
+  \item \verb|a| is a scalar, \verb|b| is an arbitrary \verb|n|-dimensional numerical array, in which case the output is the element-wise product of \verb|b| with the scalar \verb|a|.
+  \item \verb|b| is a scalar, \verb|a| is an arbitrary \verb|n|-dimensional numerical array, in which case the output is the element-wise product of \verb|a| with the scalar \verb|b|.
+  \item \verb|a,b| are conformant matrices, i.e., \verb|a| is of size \verb|M x K|, and \verb|b| is of size \verb|K x N|, in which case the output is of size \verb|M x N| and is the matrix product of \verb|a|, and \verb|b|.
 \end{enumerate}
 Matrix multiplication is only defined for matrices of type \verb|double| 
 and \verb|single|.

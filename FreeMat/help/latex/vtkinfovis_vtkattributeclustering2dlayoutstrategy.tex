@@ -1,0 +1,172 @@
+\section{vtkAttributeClustering2DLayoutStrategy}
+
+\subsection{Usage}
+
+ This class is a density grid based force directed layout strategy.
+ Also please note that 'fast' is relative to quite slow. :)
+ The layout running time is O(V+E) with an extremely high constant.
+ .SECTION Thanks
+ Thanks to Godzilla for not eating my computer so that this class
+ could be written.
+
+To create an instance of class vtkAttributeClustering2DLayoutStrategy, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAttributeClustering2DLayoutStrategy
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAttributeClustering2DLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAttributeClustering2DLayoutStrategy class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkAttributeClustering2DLayoutStrategy = obj.NewInstance ()|
+
+\item  \verb|vtkAttributeClustering2DLayoutStrategy = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetVertexAttribute ()| -  The name of the array on the vertices, whose values will be used for
+ determining clusters.
+
+\item  \verb|obj.SetVertexAttribute (string )| -  The name of the array on the vertices, whose values will be used for
+ determining clusters.
+
+\item  \verb|obj.SetRandomSeed (int )| -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+
+\item  \verb|int = obj.GetRandomSeedMinValue ()| -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+
+\item  \verb|int = obj.GetRandomSeedMaxValue ()| -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+
+\item  \verb|int = obj.GetRandomSeed ()| -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+
+\item  \verb|obj.SetMaxNumberOfIterations (int )| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '100' for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|int = obj.GetMaxNumberOfIterationsMinValue ()| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '100' for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|int = obj.GetMaxNumberOfIterationsMaxValue ()| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '100' for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|int = obj.GetMaxNumberOfIterations ()| -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '100' for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|obj.SetIterationsPerLayout (int )| -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '100' to match the default 'MaxNumberOfIterations'
+ Note: Changing this parameter is just fine :)
+
+\item  \verb|int = obj.GetIterationsPerLayoutMinValue ()| -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '100' to match the default 'MaxNumberOfIterations'
+ Note: Changing this parameter is just fine :)
+
+\item  \verb|int = obj.GetIterationsPerLayoutMaxValue ()| -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '100' to match the default 'MaxNumberOfIterations'
+ Note: Changing this parameter is just fine :)
+
+\item  \verb|int = obj.GetIterationsPerLayout ()| -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '100' to match the default 'MaxNumberOfIterations'
+ Note: Changing this parameter is just fine :)
+
+\item  \verb|obj.SetInitialTemperature (float )| -  Set the initial temperature.  The temperature default is '5'
+ for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|float = obj.GetInitialTemperatureMinValue ()| -  Set the initial temperature.  The temperature default is '5'
+ for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|float = obj.GetInitialTemperatureMaxValue ()| -  Set the initial temperature.  The temperature default is '5'
+ for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|float = obj.GetInitialTemperature ()| -  Set the initial temperature.  The temperature default is '5'
+ for no particular reason
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|obj.SetCoolDownRate (double )| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified. The default is '10'
+ for no particular reason. 
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|double = obj.GetCoolDownRateMinValue ()| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified. The default is '10'
+ for no particular reason. 
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|double = obj.GetCoolDownRateMaxValue ()| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified. The default is '10'
+ for no particular reason. 
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|double = obj.GetCoolDownRate ()| -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to ''cool-down'',
+ and thus, the more the graph will be modified. The default is '10'
+ for no particular reason. 
+ Note: The strong recommendation is that you do not change
+ this parameter. :)
+
+\item  \verb|obj.SetRestDistance (float )| -  Manually set the resting distance. Otherwise the
+ distance is computed automatically.
+
+\item  \verb|float = obj.GetRestDistance ()| -  Manually set the resting distance. Otherwise the
+ distance is computed automatically.
+
+\item  \verb|obj.Initialize ()| -  This strategy sets up some data structures
+ for faster processing of each Layout() call
+
+\item  \verb|obj.Layout ()| -  This is the layout method where the graph that was
+ set in SetGraph() is laid out. The method can either
+ entirely layout the graph or iteratively lay out the
+ graph. If you have an iterative layout please implement
+ the IsLayoutComplete() method.
+
+\item  \verb|int = obj.IsLayoutComplete ()|
+
+\end{itemize}

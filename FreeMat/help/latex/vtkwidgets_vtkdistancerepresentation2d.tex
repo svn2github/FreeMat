@@ -1,0 +1,70 @@
+\section{vtkDistanceRepresentation2D}
+
+\subsection{Usage}
+
+ The vtkDistanceRepresentation2D is a representation for the
+ vtkDistanceWidget. This representation consists of a measuring line (axis)
+ and two vtkHandleWidgets to place the end points of the line. Note that
+ this particular widget draws its representation in the overlay plane.
+
+To create an instance of class vtkDistanceRepresentation2D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDistanceRepresentation2D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDistanceRepresentation2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDistanceRepresentation2D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard VTK methods.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard VTK methods.
+
+\item  \verb|vtkDistanceRepresentation2D = obj.NewInstance ()| -  Standard VTK methods.
+
+\item  \verb|vtkDistanceRepresentation2D = obj.SafeDownCast (vtkObject o)| -  Standard VTK methods.
+
+\item  \verb|double = obj.GetDistance ()| -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+
+\item  \verb|obj.GetPoint1WorldPosition (double pos[3])| -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+
+\item  \verb|obj.GetPoint2WorldPosition (double pos[3])| -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+
+\item  \verb|obj.SetPoint1WorldPosition (double pos[3])| -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+
+\item  \verb|obj.SetPoint2WorldPosition (double pos[3])| -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+
+\item  \verb|obj.SetPoint1DisplayPosition (double pos[3])|
+
+\item  \verb|obj.SetPoint2DisplayPosition (double pos[3])|
+
+\item  \verb|obj.GetPoint1DisplayPosition (double pos[3])|
+
+\item  \verb|obj.GetPoint2DisplayPosition (double pos[3])|
+
+\item  \verb|vtkAxisActor2D = obj.GetAxis ()| -  Retrieve the vtkAxisActor2D used to draw the measurement axis. With this
+ properties can be set and so on.
+
+\item  \verb|obj.BuildRepresentation ()| -  Method to satisfy superclasses' API.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow w)| -  Methods required by vtkProp superclass.
+
+\item  \verb|int = obj.RenderOverlay (vtkViewport viewport)| -  Methods required by vtkProp superclass.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Methods required by vtkProp superclass.
+
+\end{itemize}

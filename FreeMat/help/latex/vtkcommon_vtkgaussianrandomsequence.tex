@@ -1,0 +1,37 @@
+\section{vtkGaussianRandomSequence}
+
+\subsection{Usage}
+
+ vtkGaussianRandomSequence is a sequence of pseudo random numbers
+ distributed according to the Gaussian/normal distribution (mean=0 and
+ standard deviation=1)
+
+ This is just an interface.
+
+To create an instance of class vtkGaussianRandomSequence, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGaussianRandomSequence
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGaussianRandomSequence has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGaussianRandomSequence class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGaussianRandomSequence = obj.NewInstance ()|
+
+\item  \verb|vtkGaussianRandomSequence = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|double = obj.GetScaledValue (double mean, double standardDeviation)| -  Convenient method to return a value given the mean and standard deviation
+ of the Gaussian distribution from the the Gaussian distribution of mean=0
+ and standard deviation=1.0. There is an initial implementation that can
+ be overridden by a subclass.
+
+\end{itemize}

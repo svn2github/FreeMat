@@ -8,7 +8,7 @@ Prints values to the output.  The general syntax for its use is
 \end{verbatim}
 Here \verb|format| is the format string, which is a string that
 controls the format of the output.  The values of the variables
-\verb|a_i| are substituted into the output as required.  It is
+\verb|a\_i| are substituted into the output as required.  It is
 an error if there are not enough variables to satisfy the format
 string.  Note that this \verb|printf| command is not vectorized!  Each
 variable must be a scalar.
@@ -19,8 +19,8 @@ can lead to some confusing behavior if you do not know what to expect.
 For example, the command \verb|printf('Hello')| does not appear to
 produce any output.  In fact, it does produce the text, but it then
 gets overwritten by the prompt.  To see the text, you need 
-\verb|printf('Hello\n')|.  This seems odd, but allows you to assemble a
-line using multiple \verb|printf| commands, including the \verb|'\n'| when
+\verb|printf('Hello\\n')|.  This seems odd, but allows you to assemble a
+line using multiple \verb|printf| commands, including the \verb|'\\n'| when
 you are done with the line.  You can also use the \verb|'\r'| character
 as an explicit carriage return (with no line feed).  This allows you
 to write to the same line many times (to show a progress string, for

@@ -19,29 +19,3 @@ respectively.  In \verb|auto| mode, FreeMat chooses the range for the axis
 automatically.  The \verb|zlim('mode')| form returns the current mode for the axis
 (either \verb|'auto'| or \verb|'manual'|).  Finally, you can specify the handle of an
 axis to manipulate instead of using the current one.
-\subsection{Example}
-
-\begin{verbatim}
---> x = linspace(-1,1);
---> y = sin(2*pi*x);
---> plot(x,y,'r-');
---> zlim  % what are the current limits?
-
-ans = 
-   -0.5000    0.5000 
-\end{verbatim}
-which results in
-
-
-\centerline{\includegraphics[width=8cm]{zlim1}}
-
-Next, we zoom in on the plot using the \verb|zlim| function
-\begin{verbatim}
---> plot(x,y,'r-')
---> zlim([-0.2,0.2])
-\end{verbatim}
-which results in
-
-
-\centerline{\includegraphics[width=8cm]{zlim2}}
-

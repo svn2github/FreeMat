@@ -1,0 +1,48 @@
+\section{vtkCellDataToPointData}
+
+\subsection{Usage}
+
+ vtkCellDataToPointData is a filter that transforms cell data (i.e., data
+ specified per cell) into point data (i.e., data specified at cell
+ points). The method of transformation is based on averaging the data
+ values of all cells using a particular point. Optionally, the input cell
+ data can be passed through to the output as well.
+
+To create an instance of class vtkCellDataToPointData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCellDataToPointData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCellDataToPointData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCellDataToPointData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCellDataToPointData = obj.NewInstance ()|
+
+\item  \verb|vtkCellDataToPointData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetPassCellData (int )| -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+
+\item  \verb|int = obj.GetPassCellData ()| -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+
+\item  \verb|obj.PassCellDataOn ()| -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+
+\item  \verb|obj.PassCellDataOff ()| -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+
+\end{itemize}

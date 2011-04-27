@@ -1,0 +1,38 @@
+\section{FUNC2STR Function to String conversion}
+
+\subsection{Usage}
+
+The \verb|func2str| function converts a function pointer into a
+string.  The syntax is
+\begin{verbatim}
+    y = func2str(funcptr)
+\end{verbatim}
+where \verb|funcptr| is a function pointer.  If \verb|funcptr| is a 
+pointer to a function, then \verb|y| is the name of the function.
+On the other hand, if \verb|funcptr| is an anonymous function then
+\verb|func2str| returns the definition of the anonymous function.
+\subsection{Example}
+
+Here is a simple example of using \verb|func2str|
+\begin{verbatim}
+--> y = @sin
+
+y = 
+ @sin
+--> x = func2str(y)
+
+x = 
+sin
+\end{verbatim}
+If we use an anonymous function, then \verb|func2str|
+returns the definition of the anonymous function
+\begin{verbatim}
+--> y = @(x) x.^2
+
+y = 
+ @(x)   x.^2
+--> x = func2str(y)
+
+x = 
+ @(x)   x.^2
+\end{verbatim}

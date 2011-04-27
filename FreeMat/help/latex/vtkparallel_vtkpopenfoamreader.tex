@@ -1,0 +1,38 @@
+\section{vtkPOpenFOAMReader}
+
+\subsection{Usage}
+
+ vtkPOpenFOAMReader creates a multiblock dataset. It reads
+ parallel-decomposed mesh information and time dependent data.  The
+ polyMesh folders contain mesh information. The time folders contain
+ transient data for the cells. Each folder can contain any number of
+ data files.
+
+To create an instance of class vtkPOpenFOAMReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPOpenFOAMReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPOpenFOAMReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPOpenFOAMReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPOpenFOAMReader = obj.NewInstance ()|
+
+\item  \verb|vtkPOpenFOAMReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCaseType (int t)| -  Set and get case type. 0 = decomposed case, 1 = reconstructed case.
+
+\item  \verb|obj.SetController (vtkMultiProcessController )| -  Set and get the controller.
+
+\item  \verb|vtkMultiProcessController = obj.GetController ()| -  Set and get the controller.
+
+\end{itemize}

@@ -1,0 +1,31 @@
+\section{vtkCompositeDataGeometryFilter}
+
+\subsection{Usage}
+
+ vtkCompositeDataGeometryFilter applies vtkGeometryFilter to all
+ leaves in vtkCompositeDataSet. Place this filter at the end of a
+ pipeline before a polydata consumer such as a polydata mapper to extract
+ geometry from all blocks and append them to one polydata object.
+
+To create an instance of class vtkCompositeDataGeometryFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCompositeDataGeometryFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCompositeDataGeometryFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCompositeDataGeometryFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCompositeDataGeometryFilter = obj.NewInstance ()|
+
+\item  \verb|vtkCompositeDataGeometryFilter = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

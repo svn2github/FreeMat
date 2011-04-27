@@ -77,7 +77,7 @@ Read as many floats as possible into a row vector
 --> fclose(fp);
 --> who x
   Variable Name       Type   Flags             Size
-              x    double                    [1 262144]
+              x    double                    [1x262144]
 \end{verbatim}
 Note that \verb|x| is a \verb|double| array.  This behavior is new to FreeMat 4.
 Read the same floats into a 2-D float array.
@@ -87,7 +87,7 @@ Read the same floats into a 2-D float array.
 --> fclose(fp);
 --> who x
   Variable Name       Type   Flags             Size
-              x    double                    [512 512]
+              x    double                    [512x512]
 \end{verbatim}
 To read them as a single precision float array, we can use the
 following form:
@@ -97,6 +97,6 @@ following form:
 --> fclose(fp);
 --> who x
   Variable Name       Type   Flags             Size
-              x    single                    [512 512]
+              x    single                    [512x512]
 \end{verbatim}
 

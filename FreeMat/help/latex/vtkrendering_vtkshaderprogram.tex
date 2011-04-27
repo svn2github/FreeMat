@@ -1,0 +1,80 @@
+\section{vtkShaderProgram}
+
+\subsection{Usage}
+
+ vtkShaderProgram is a superclass for managing Hardware Shaders
+ defined in the XML Material file and interfacing VTK to those shaders.
+ It's concrete descendants are responsible for installing vertex and
+ fragment programs to the graphics hardware.
+
+ .SECTION Shader Operations are shader library operations that are performed
+ on individual shaders, that is, without consideration of the partner shader.
+
+ .SECTION Program Operations are shader library operations that treat the 
+ vertex and fragment shader as a single unit.
+
+ .SECTION Design
+ This class is a Strategy pattern for 'Program' operations, which treat
+ vertex/fragment shader pairs as a single 'Program', as required by some
+ shader libraries (GLSL). Typically, 'Shader' operations are delegated
+ to instances of vtkShader (managed by descendants of this class)
+ while 'Program' operations are handled by descendants of this class,
+ vtkCgShaderProgram, vtkGLSLShaderProgram.
+
+
+To create an instance of class vtkShaderProgram, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkShaderProgram
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkShaderProgram has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkShaderProgram class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkShaderProgram = obj.NewInstance ()|
+
+\item  \verb|vtkShaderProgram = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkXMLMaterial = obj.GetMaterial ()|
+
+\item  \verb|obj.SetMaterial (vtkXMLMaterial )|
+
+\item  \verb|int = obj.AddShader (vtkShader shader)|
+
+\item  \verb|obj.RemoveShader (int index)| -  Remove a shader at the given index.
+
+\item  \verb|obj.RemoveShader (vtkShader shader)| -  Removes the given shader.
+
+\item  \verb|vtkCollectionIterator = obj.NewShaderIterator ()| -  Returns a new iterator to iterate over the shaders.
+
+\item  \verb|int = obj.GetNumberOfShaders ()| -  Returns the number of shaders available in this
+ shader program.
+
+\item  \verb|obj.ReadMaterial ()|
+
+\item  \verb|obj.Render (vtkActor , vtkRenderer )|
+
+\item  \verb|obj.AddShaderVariable (string name, int numVars, int x)|
+
+\item  \verb|obj.AddShaderVariable (string name, int numVars, float x)|
+
+\item  \verb|obj.AddShaderVariable (string name, int numVars, double x)|
+
+\item  \verb|obj.PostRender (vtkActor , vtkRenderer )| -  Called to unload the shaders after the actor has been rendered.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+
+\item  \verb|vtkShaderDeviceAdapter = obj.GetShaderDeviceAdapter ()| -  Get the vtkShaderDeviceAdapter which can be used to execute this
+ shader program.
+
+\end{itemize}

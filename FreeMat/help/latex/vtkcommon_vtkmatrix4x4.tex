@@ -1,0 +1,66 @@
+\section{vtkMatrix4x4}
+
+\subsection{Usage}
+
+ vtkMatrix4x4 is a class to represent and manipulate 4x4 matrices. 
+ Specifically, it is designed to work on 4x4 transformation matrices
+ found in 3D rendering using homogeneous coordinates [x y z w].
+
+To create an instance of class vtkMatrix4x4, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMatrix4x4
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMatrix4x4 has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMatrix4x4 class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMatrix4x4 = obj.NewInstance ()|
+
+\item  \verb|vtkMatrix4x4 = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.DeepCopy (vtkMatrix4x4 source)| -  Non-static member function. Assigns *from* elements array
+
+\item  \verb|obj.DeepCopy (double Elements[16])| -  Set all of the elements to zero.
+
+\item  \verb|obj.Zero ()| -  Set equal to Identity matrix
+
+\item  \verb|obj.Identity ()| -  Matrix Inversion (adapted from Richard Carling in ''Graphics Gems,'' 
+ Academic Press, 1990).
+
+\item  \verb|obj.Invert ()| -  Transpose the matrix and put it into out. 
+
+\item  \verb|obj.Transpose ()| -  Multiply a homogeneous coordinate by this matrix, i.e. out = A*in.
+ The in[4] and out[4] can be the same array.
+
+\item  \verb|obj.MultiplyPoint (float in[4], float out[4])| -  Multiply a homogeneous coordinate by this matrix, i.e. out = A*in.
+ The in[4] and out[4] can be the same array.
+
+\item  \verb|obj.MultiplyPoint (double in[4], double out[4])| -  For use in Java, Python or Tcl.  The default MultiplyPoint() uses
+ a single-precision point.
+
+\item  \verb|float = obj.MultiplyPoint (float in[4])| -  For use in Java, Python or Tcl.  The default MultiplyPoint() uses
+ a single-precision point.
+
+\item  \verb|float = obj.MultiplyFloatPoint (float in[4])| -  For use in Java, Python or Tcl.  The default MultiplyPoint() uses
+ a single-precision point.
+
+\item  \verb|double = obj.MultiplyDoublePoint (double in[4])| -  Multiplies matrices a and b and stores the result in c.
+
+\item  \verb|obj.Adjoint (vtkMatrix4x4 in, vtkMatrix4x4 out)| -  Compute the determinant of the matrix and return it.
+
+\item  \verb|double = obj.Determinant ()| -  Sets the element i,j in the matrix.
+
+\item  \verb|obj.SetElement (int i, int j, double value)| -  Sets the element i,j in the matrix.
+
+\item  \verb|double = obj.GetElement (int i, int j) const|
+
+\end{itemize}

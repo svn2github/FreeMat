@@ -1,0 +1,64 @@
+\section{vtkBox}
+
+\subsection{Usage}
+
+ vtkBox computes the implicit function and/or gradient for a axis-aligned
+ bounding box. (The superclasses transform can be used to modify this
+ orientation.) Each side of the box is orthogonal to all other sides
+ meeting along shared edges and all faces are orthogonal to the x-y-z
+ coordinate axes.  (If you wish to orient this box differently, recall that
+ the superclass vtkImplicitFunction supports a transformation matrix.)
+ vtkCube is a concrete implementation of vtkImplicitFunction.
+ 
+
+To create an instance of class vtkBox, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkBox
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkBox has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkBox class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkBox = obj.NewInstance ()|
+
+\item  \verb|vtkBox = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|double = obj.EvaluateFunction (double x[3])|
+
+\item  \verb|double = obj.EvaluateFunction (double x, double y, double z)|
+
+\item  \verb|obj.EvaluateGradient (double x[3], double n[3])|
+
+\item  \verb|obj.SetXMin (double p[3])| -  Set / get the bounding box using various methods.
+
+\item  \verb|obj.SetXMin (double x, double y, double z)| -  Set / get the bounding box using various methods.
+
+\item  \verb|obj.GetXMin (double p[3])| -  Set / get the bounding box using various methods.
+
+\item  \verb|obj.SetXMax (double p[3])|
+
+\item  \verb|obj.SetXMax (double x, double y, double z)|
+
+\item  \verb|obj.GetXMax (double p[3])|
+
+\item  \verb|obj.SetBounds (double xMin, double xMax, double yMin, double yMax, double zMin, double zMax)|
+
+\item  \verb|obj.SetBounds (double bounds[6])|
+
+\item  \verb|obj.GetBounds (double bounds[6])|
+
+\item  \verb|obj.AddBounds (double bounds[6])| -  A special method that allows union set operation on bounding boxes.
+ Start with a SetBounds(). Subsequent AddBounds() methods are union set
+ operations on the original bounds. Retrieve the final bounds with a 
+ GetBounds() method.
+
+\end{itemize}

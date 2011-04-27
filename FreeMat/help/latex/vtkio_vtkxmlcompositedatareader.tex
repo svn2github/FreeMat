@@ -1,0 +1,39 @@
+\section{vtkXMLCompositeDataReader}
+
+\subsection{Usage}
+
+ vtkXMLCompositeDataReader reads the VTK XML multi-group data file
+ format. XML multi-group data files are meta-files that point to a list
+ of serial VTK XML files. When reading in parallel, it will distribute
+ sub-blocks among processor. If the number of sub-blocks is less than
+ the number of processors, some processors will not have any sub-blocks
+ for that group. If the number of sub-blocks is larger than the
+ number of processors, each processor will possibly have more than
+ 1 sub-block.
+
+To create an instance of class vtkXMLCompositeDataReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLCompositeDataReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLCompositeDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLCompositeDataReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLCompositeDataReader = obj.NewInstance ()|
+
+\item  \verb|vtkXMLCompositeDataReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkCompositeDataSet = obj.GetOutput ()| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkCompositeDataSet = obj.GetOutput (int )| -  Get the output data object for a port on this algorithm.
+
+\end{itemize}

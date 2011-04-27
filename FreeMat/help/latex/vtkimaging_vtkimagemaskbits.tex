@@ -1,0 +1,55 @@
+\section{vtkImageMaskBits}
+
+\subsection{Usage}
+
+ vtkImageMaskBits applies a bit-mask pattern to each component.  The
+ bit-mask can be applied using a variety of boolean bitwise operators.
+
+To create an instance of class vtkImageMaskBits, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageMaskBits
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageMaskBits has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageMaskBits class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageMaskBits = obj.NewInstance ()|
+
+\item  \verb|vtkImageMaskBits = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetMasks (int , int , int , int )| -  Set/Get the bit-masks. Default is 0xffffffff.
+
+\item  \verb|obj.SetMasks (int  a[4])| -  Set/Get the bit-masks. Default is 0xffffffff.
+
+\item  \verb|obj.SetMask (int mask)| -  Set/Get the bit-masks. Default is 0xffffffff.
+
+\item  \verb|obj.SetMasks (int mask1, int mask2)| -  Set/Get the bit-masks. Default is 0xffffffff.
+
+\item  \verb|obj.SetMasks (int mask1, int mask2, int mask3)| -  Set/Get the bit-masks. Default is 0xffffffff.
+
+\item  \verb|int = obj. GetMasks ()| -  Set/Get the bit-masks. Default is 0xffffffff.
+
+\item  \verb|obj.SetOperation (int )| -  Set/Get the boolean operator. Default is AND.
+
+\item  \verb|int = obj.GetOperation ()| -  Set/Get the boolean operator. Default is AND.
+
+\item  \verb|obj.SetOperationToAnd ()| -  Set/Get the boolean operator. Default is AND.
+
+\item  \verb|obj.SetOperationToOr ()| -  Set/Get the boolean operator. Default is AND.
+
+\item  \verb|obj.SetOperationToXor ()| -  Set/Get the boolean operator. Default is AND.
+
+\item  \verb|obj.SetOperationToNand ()| -  Set/Get the boolean operator. Default is AND.
+
+\item  \verb|obj.SetOperationToNor ()| -  Set/Get the boolean operator. Default is AND.
+
+\end{itemize}

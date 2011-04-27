@@ -1,0 +1,49 @@
+\section{vtkArrayData}
+
+\subsection{Usage}
+
+ Because vtkArray cannot be stored as attributes of data objects (yet), a ''carrier''
+ object is needed to pass vtkArray through the pipeline.  vtkArrayData acts as a
+ container of zero-to-many vtkArray instances, which can be retrieved via a zero-based
+ index.  Note that a collection of arrays stored in vtkArrayData may-or-may-not have related
+ types, dimensions, or extents.
+
+
+To create an instance of class vtkArrayData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkArrayData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkArrayData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkArrayData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkArrayData = obj.NewInstance ()|
+
+\item  \verb|vtkArrayData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddArray (vtkArray )| -  Adds a vtkArray to the collection
+
+\item  \verb|obj.ClearArrays ()| -  Clears the contents of the collection
+
+\item  \verb|vtkIdType = obj.GetNumberOfArrays ()| -  Returns the number of vtkArray instances in the collection
+
+\item  \verb|vtkArray = obj.GetArray (vtkIdType index)| -  Returns the n-th vtkArray in the collection
+
+\item  \verb|vtkArray = obj.GetArrayByName (string name)| -  Returns the array having called name from the collection
+
+\item  \verb|int = obj.GetDataObjectType ()|
+
+\item  \verb|obj.ShallowCopy (vtkDataObject other)|
+
+\item  \verb|obj.DeepCopy (vtkDataObject other)|
+
+\end{itemize}

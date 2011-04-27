@@ -1,0 +1,93 @@
+\section{vtkMergeFilter}
+
+\subsection{Usage}
+
+ vtkMergeFilter is a filter that extracts separate components of data from
+ different datasets and merges them into a single dataset. The output from
+ this filter is of the same type as the input (i.e., vtkDataSet.) It treats 
+ both cell and point data set attributes.
+
+To create an instance of class vtkMergeFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMergeFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMergeFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMergeFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMergeFilter = obj.NewInstance ()|
+
+\item  \verb|vtkMergeFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGeometry (vtkDataSet input)| -  Specify object from which to extract geometry information.
+ Old style. Use SetGeometryConnection() instead.
+
+\item  \verb|vtkDataSet = obj.GetGeometry ()| -  Specify object from which to extract geometry information.
+ Old style. Use SetGeometryConnection() instead.
+
+\item  \verb|obj.SetGeometryConnection (vtkAlgorithmOutput algOutput)| -  Specify object from which to extract scalar information.
+ Old style. Use SetScalarsConnection() instead.
+
+\item  \verb|obj.SetScalars (vtkDataSet )| -  Specify object from which to extract scalar information.
+ Old style. Use SetScalarsConnection() instead.
+
+\item  \verb|vtkDataSet = obj.GetScalars ()| -  Specify object from which to extract scalar information.
+ Old style. Use SetScalarsConnection() instead.
+
+\item  \verb|obj.SetScalarsConnection (vtkAlgorithmOutput algOutput)| -  Set / get the object from which to extract vector information.
+ Old style. Use SetVectorsConnection() instead.
+
+\item  \verb|obj.SetVectors (vtkDataSet )| -  Set / get the object from which to extract vector information.
+ Old style. Use SetVectorsConnection() instead.
+
+\item  \verb|vtkDataSet = obj.GetVectors ()| -  Set / get the object from which to extract vector information.
+ Old style. Use SetVectorsConnection() instead.
+
+\item  \verb|obj.SetVectorsConnection (vtkAlgorithmOutput algOutput)| -  Set / get the object from which to extract normal information.
+ Old style. Use SetNormalsConnection() instead.
+
+\item  \verb|obj.SetNormals (vtkDataSet )| -  Set / get the object from which to extract normal information.
+ Old style. Use SetNormalsConnection() instead.
+
+\item  \verb|vtkDataSet = obj.GetNormals ()| -  Set / get the object from which to extract normal information.
+ Old style. Use SetNormalsConnection() instead.
+
+\item  \verb|obj.SetNormalsConnection (vtkAlgorithmOutput algOutput)| -  Set / get the object from which to extract texture coordinates
+ information.
+ Old style. Use SetTCoordsConnection() instead.
+
+\item  \verb|obj.SetTCoords (vtkDataSet )| -  Set / get the object from which to extract texture coordinates
+ information.
+ Old style. Use SetTCoordsConnection() instead.
+
+\item  \verb|vtkDataSet = obj.GetTCoords ()| -  Set / get the object from which to extract texture coordinates
+ information.
+ Old style. Use SetTCoordsConnection() instead.
+
+\item  \verb|obj.SetTCoordsConnection (vtkAlgorithmOutput algOutput)| -  Set / get the object from which to extract tensor data.
+ Old style. Use SetTensorsConnection() instead.
+
+\item  \verb|obj.SetTensors (vtkDataSet )| -  Set / get the object from which to extract tensor data.
+ Old style. Use SetTensorsConnection() instead.
+
+\item  \verb|vtkDataSet = obj.GetTensors ()| -  Set / get the object from which to extract tensor data.
+ Old style. Use SetTensorsConnection() instead.
+
+\item  \verb|obj.SetTensorsConnection (vtkAlgorithmOutput algOutput)| -  Set the object from which to extract a field and the name
+ of the field. Note that this does not create pipeline
+ connectivity.
+
+\item  \verb|obj.AddField (string name, vtkDataSet input)| -  Set the object from which to extract a field and the name
+ of the field. Note that this does not create pipeline
+ connectivity.
+
+\end{itemize}

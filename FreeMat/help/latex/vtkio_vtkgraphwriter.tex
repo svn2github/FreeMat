@@ -1,0 +1,33 @@
+\section{vtkGraphWriter}
+
+\subsection{Usage}
+
+ vtkGraphWriter is a sink object that writes ASCII or binary 
+ vtkGraph data files in vtk format. See text for format details.
+
+To create an instance of class vtkGraphWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGraphWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGraphWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGraphWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGraphWriter = obj.NewInstance ()|
+
+\item  \verb|vtkGraphWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkGraph = obj.GetInput ()| -  Get the input to this writer.
+
+\item  \verb|vtkGraph = obj.GetInput (int port)| -  Get the input to this writer.
+
+\end{itemize}

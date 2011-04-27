@@ -1,0 +1,106 @@
+\section{vtkSocketCommunicator}
+
+\subsection{Usage}
+
+ This is a concrete implementation of vtkCommunicator which supports
+ interprocess communication using BSD style sockets. 
+ It supports byte swapping for the communication of  machines 
+ with different endianness.
+
+To create an instance of class vtkSocketCommunicator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSocketCommunicator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSocketCommunicator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSocketCommunicator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSocketCommunicator = obj.NewInstance ()|
+
+\item  \verb|vtkSocketCommunicator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.WaitForConnection (int port)| -  Wait for connection on a given port.
+ These methods return 1 on success, 0 on error.
+
+\item  \verb|int = obj.WaitForConnection (vtkServerSocket socket, long msec)| -  Wait for connection on a given port.
+ These methods return 1 on success, 0 on error.
+
+\item  \verb|obj.CloseConnection ()| -  Close a connection.
+
+\item  \verb|int = obj.ConnectTo (string hostName, int port)| -  Open a connection to host.
+
+\item  \verb|int = obj.GetSwapBytesInReceivedData ()| -  Returns 1 if bytes must be swapped in received ints, floats, etc
+
+\item  \verb|int = obj.GetIsConnected ()| -  Is the communicator connected?.
+
+\item  \verb|obj.SetNumberOfProcesses (int num)| -  Set the number of processes you will be using.
+
+\item  \verb|obj.Barrier ()| -  This class foolishly breaks the conventions of the superclass, so this
+ overload fixes the method.
+
+\item  \verb|obj.SetPerformHandshake (int )| -  Set or get the PerformHandshake ivar. If it is on, the communicator
+ will try to perform a handshake when connected.
+ It is on by default.
+
+\item  \verb|int = obj.GetPerformHandshakeMinValue ()| -  Set or get the PerformHandshake ivar. If it is on, the communicator
+ will try to perform a handshake when connected.
+ It is on by default.
+
+\item  \verb|int = obj.GetPerformHandshakeMaxValue ()| -  Set or get the PerformHandshake ivar. If it is on, the communicator
+ will try to perform a handshake when connected.
+ It is on by default.
+
+\item  \verb|obj.PerformHandshakeOn ()| -  Set or get the PerformHandshake ivar. If it is on, the communicator
+ will try to perform a handshake when connected.
+ It is on by default.
+
+\item  \verb|obj.PerformHandshakeOff ()| -  Set or get the PerformHandshake ivar. If it is on, the communicator
+ will try to perform a handshake when connected.
+ It is on by default.
+
+\item  \verb|int = obj.GetPerformHandshake ()| -  Set or get the PerformHandshake ivar. If it is on, the communicator
+ will try to perform a handshake when connected.
+ It is on by default.
+
+\item  \verb|int = obj.LogToFile (string name)| -  Log messages to the given file.  The file is truncated unless the
+ second argument is non-zero (default is to truncate).  If the
+ file name is empty or NULL, logging is disabled.  Returns 0 if
+ the file failed to open, and 1 otherwise.
+
+\item  \verb|int = obj.LogToFile (string name, int append)| -  Log messages to the given file.  The file is truncated unless the
+ second argument is non-zero (default is to truncate).  If the
+ file name is empty or NULL, logging is disabled.  Returns 0 if
+ the file failed to open, and 1 otherwise.
+
+\item  \verb|obj.SetReportErrors (int )| -  If ReportErrors if false, all vtkErrorMacros are suppressed.
+
+\item  \verb|int = obj.GetReportErrors ()| -  If ReportErrors if false, all vtkErrorMacros are suppressed.
+
+\item  \verb|vtkClientSocket = obj.GetSocket ()| -  Get/Set the actual socket used for communication.
+
+\item  \verb|obj.SetSocket (vtkClientSocket )| -  Get/Set the actual socket used for communication.
+
+\item  \verb|int = obj.Handshake ()| -  Performs handshake. This uses vtkClientSocket::ConnectingSide to decide
+ whether to perform ServerSideHandshake or ClientSideHandshake. 
+
+\item  \verb|int = obj.ServerSideHandshake ()| -  Performs ServerSide handshake.
+ One should preferably use Handshake() which calls ServerSideHandshake or
+ ClientSideHandshake as required.
+
+\item  \verb|int = obj.ClientSideHandshake ()| -  Performs ClientSide handshake.
+ One should preferably use Handshake() which calls ServerSideHandshake or
+ ClientSideHandshake as required.
+
+\item  \verb|int = obj.GetIsServer ()| -  Returns true if this side of the socket is the server.  The result
+ is invalid if the socket is not connected.
+
+\end{itemize}

@@ -1,0 +1,51 @@
+\section{vtkWarpTo}
+
+\subsection{Usage}
+
+ vtkWarpTo is a filter that modifies point coordinates by moving the
+ points towards a user specified position.
+
+To create an instance of class vtkWarpTo, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkWarpTo
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkWarpTo has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkWarpTo class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkWarpTo = obj.NewInstance ()|
+
+\item  \verb|vtkWarpTo = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetScaleFactor (double )| -  Set/Get the value to scale displacement.
+
+\item  \verb|double = obj.GetScaleFactor ()| -  Set/Get the value to scale displacement.
+
+\item  \verb|double = obj. GetPosition ()| -  Set/Get the position to warp towards.
+
+\item  \verb|obj.SetPosition (double , double , double )| -  Set/Get the position to warp towards.
+
+\item  \verb|obj.SetPosition (double  a[3])| -  Set/Get the position to warp towards.
+
+\item  \verb|obj.SetAbsolute (int )| -  Set/Get the Absolute ivar. Turning Absolute on causes scale factor
+ of the new position to be one unit away from Position.
+
+\item  \verb|int = obj.GetAbsolute ()| -  Set/Get the Absolute ivar. Turning Absolute on causes scale factor
+ of the new position to be one unit away from Position.
+
+\item  \verb|obj.AbsoluteOn ()| -  Set/Get the Absolute ivar. Turning Absolute on causes scale factor
+ of the new position to be one unit away from Position.
+
+\item  \verb|obj.AbsoluteOff ()| -  Set/Get the Absolute ivar. Turning Absolute on causes scale factor
+ of the new position to be one unit away from Position.
+
+\end{itemize}

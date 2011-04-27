@@ -1,0 +1,50 @@
+\section{vtkTemporalDataSetAlgorithm}
+
+\subsection{Usage}
+
+ Algorithms that take any type of data object (including composite dataset)
+ and produce a vtkTemporalDataSet in the output can subclass from this
+ class.
+
+To create an instance of class vtkTemporalDataSetAlgorithm, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTemporalDataSetAlgorithm
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTemporalDataSetAlgorithm has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTemporalDataSetAlgorithm class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTemporalDataSetAlgorithm = obj.NewInstance ()|
+
+\item  \verb|vtkTemporalDataSetAlgorithm = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkTemporalDataSet = obj.GetOutput ()| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkTemporalDataSet = obj.GetOutput (int )| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|obj.SetInput (vtkDataObject )| -  Set an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline.
+ Note that these methods support old-style pipeline connections.
+ When writing new code you should use the more general
+ vtkAlgorithm::SetInputConnection().  These methods transform the
+ input index to the input port index, not an index of a connection
+ within a single port.
+
+\item  \verb|obj.SetInput (int , vtkDataObject )| -  Set an input of this algorithm. You should not override these
+ methods because they are not the only way to connect a pipeline.
+ Note that these methods support old-style pipeline connections.
+ When writing new code you should use the more general
+ vtkAlgorithm::SetInputConnection().  These methods transform the
+ input index to the input port index, not an index of a connection
+ within a single port.
+
+\end{itemize}

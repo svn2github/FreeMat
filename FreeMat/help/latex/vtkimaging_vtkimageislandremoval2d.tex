@@ -1,0 +1,51 @@
+\section{vtkImageIslandRemoval2D}
+
+\subsection{Usage}
+
+ vtkImageIslandRemoval2D computes the area of separate islands in 
+ a mask image.  It removes any island that has less than AreaThreshold
+ pixels.  Output has the same ScalarType as input.  It generates
+ the whole 2D output image for any output request.
+
+To create an instance of class vtkImageIslandRemoval2D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageIslandRemoval2D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageIslandRemoval2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageIslandRemoval2D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Constructor: Sets default filter to be identity.
+
+\item  \verb|int = obj.IsA (string name)| -  Constructor: Sets default filter to be identity.
+
+\item  \verb|vtkImageIslandRemoval2D = obj.NewInstance ()| -  Constructor: Sets default filter to be identity.
+
+\item  \verb|vtkImageIslandRemoval2D = obj.SafeDownCast (vtkObject o)| -  Constructor: Sets default filter to be identity.
+
+\item  \verb|obj.SetAreaThreshold (int )| -  Set/Get the cutoff area for removal
+
+\item  \verb|int = obj.GetAreaThreshold ()| -  Set/Get the cutoff area for removal
+
+\item  \verb|obj.SetSquareNeighborhood (int )| -  Set/Get whether to use 4 or 8 neighbors
+
+\item  \verb|int = obj.GetSquareNeighborhood ()| -  Set/Get whether to use 4 or 8 neighbors
+
+\item  \verb|obj.SquareNeighborhoodOn ()| -  Set/Get whether to use 4 or 8 neighbors
+
+\item  \verb|obj.SquareNeighborhoodOff ()| -  Set/Get whether to use 4 or 8 neighbors
+
+\item  \verb|obj.SetIslandValue (double )| -  Set/Get the value to remove.
+
+\item  \verb|double = obj.GetIslandValue ()| -  Set/Get the value to remove.
+
+\item  \verb|obj.SetReplaceValue (double )| -  Set/Get the value to put in the place of removed pixels.
+
+\item  \verb|double = obj.GetReplaceValue ()| -  Set/Get the value to put in the place of removed pixels.
+
+\end{itemize}

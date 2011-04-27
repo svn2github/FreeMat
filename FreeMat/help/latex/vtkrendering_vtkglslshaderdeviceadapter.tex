@@ -1,0 +1,33 @@
+\section{vtkGLSLShaderDeviceAdapter}
+
+\subsection{Usage}
+
+ vtkShaderDeviceAdapter subclass for GLSL.
+ .SECTION Thanks
+ Support for generic vertex attributes in VTK was contributed in
+ collaboration with Stephane Ploix at EDF.
+
+To create an instance of class vtkGLSLShaderDeviceAdapter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGLSLShaderDeviceAdapter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGLSLShaderDeviceAdapter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGLSLShaderDeviceAdapter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGLSLShaderDeviceAdapter = obj.NewInstance ()|
+
+\item  \verb|vtkGLSLShaderDeviceAdapter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.PrepareForRender ()|
+
+\end{itemize}

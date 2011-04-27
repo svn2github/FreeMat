@@ -1,0 +1,180 @@
+\section{vtkPointHandleRepresentation3D}
+
+\subsection{Usage}
+
+ This class is used to represent a vtkHandleWidget. It represents a position
+ in 3D world coordinates using a x-y-z cursor. The cursor can be configured to
+ show a bounding box and/or shadows.
+
+To create an instance of class vtkPointHandleRepresentation3D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPointHandleRepresentation3D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPointHandleRepresentation3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPointHandleRepresentation3D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methods for instances of this class.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methods for instances of this class.
+
+\item  \verb|vtkPointHandleRepresentation3D = obj.NewInstance ()| -  Standard methods for instances of this class.
+
+\item  \verb|vtkPointHandleRepresentation3D = obj.SafeDownCast (vtkObject o)| -  Standard methods for instances of this class.
+
+\item  \verb|obj.SetWorldPosition (double p[3])| -  Set the position of the point in world and display coordinates. Note 
+ that if the position is set outside of the bounding box, it will be 
+ clamped to the boundary of the bounding box. This method overloads
+ the superclasses' SetWorldPosition() and SetDisplayPosition() in 
+ order to set the focal point of the cursor properly.
+
+\item  \verb|obj.SetDisplayPosition (double p[3])| -  Set the position of the point in world and display coordinates. Note 
+ that if the position is set outside of the bounding box, it will be 
+ clamped to the boundary of the bounding box. This method overloads
+ the superclasses' SetWorldPosition() and SetDisplayPosition() in 
+ order to set the focal point of the cursor properly.
+
+\item  \verb|obj.SetOutline (int o)| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|int = obj.GetOutline ()| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|obj.OutlineOn ()| -  Turn on/off the wireframe bounding box.
+
+\item  \verb|obj.OutlineOff ()| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|obj.SetXShadows (int o)| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|int = obj.GetXShadows ()| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|obj.XShadowsOn ()| -  Turn on/off the wireframe x-shadows.
+
+\item  \verb|obj.XShadowsOff ()| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|obj.SetYShadows (int o)| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|int = obj.GetYShadows ()| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|obj.YShadowsOn ()| -  Turn on/off the wireframe y-shadows.
+
+\item  \verb|obj.YShadowsOff ()| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|obj.SetZShadows (int o)| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|int = obj.GetZShadows ()| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|obj.ZShadowsOn ()| -  Turn on/off the wireframe z-shadows.
+
+\item  \verb|obj.ZShadowsOff ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated and sized simultaneously as the
+ point moves (i.e., the left and middle mouse buttons act the same). If
+ translation mode is off, the cursor does not scale itself (based on the
+ specified handle size), and the bounding box and shadows do not move or
+ size themselves as the cursor focal point moves, which is constrained by
+ the bounds of the point representation. (Note that the bounds can be
+ scaled up using the right mouse button, and the bounds can be manually
+ set with the SetBounds() method.)
+
+\item  \verb|obj.SetTranslationMode (int )| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated and sized simultaneously as the
+ point moves (i.e., the left and middle mouse buttons act the same). If
+ translation mode is off, the cursor does not scale itself (based on the
+ specified handle size), and the bounding box and shadows do not move or
+ size themselves as the cursor focal point moves, which is constrained by
+ the bounds of the point representation. (Note that the bounds can be
+ scaled up using the right mouse button, and the bounds can be manually
+ set with the SetBounds() method.)
+
+\item  \verb|int = obj.GetTranslationMode ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated and sized simultaneously as the
+ point moves (i.e., the left and middle mouse buttons act the same). If
+ translation mode is off, the cursor does not scale itself (based on the
+ specified handle size), and the bounding box and shadows do not move or
+ size themselves as the cursor focal point moves, which is constrained by
+ the bounds of the point representation. (Note that the bounds can be
+ scaled up using the right mouse button, and the bounds can be manually
+ set with the SetBounds() method.)
+
+\item  \verb|obj.TranslationModeOn ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated and sized simultaneously as the
+ point moves (i.e., the left and middle mouse buttons act the same). If
+ translation mode is off, the cursor does not scale itself (based on the
+ specified handle size), and the bounding box and shadows do not move or
+ size themselves as the cursor focal point moves, which is constrained by
+ the bounds of the point representation. (Note that the bounds can be
+ scaled up using the right mouse button, and the bounds can be manually
+ set with the SetBounds() method.)
+
+\item  \verb|obj.TranslationModeOff ()| -  If translation mode is on, as the widget is moved the bounding box,
+ shadows, and cursor are all translated and sized simultaneously as the
+ point moves (i.e., the left and middle mouse buttons act the same). If
+ translation mode is off, the cursor does not scale itself (based on the
+ specified handle size), and the bounding box and shadows do not move or
+ size themselves as the cursor focal point moves, which is constrained by
+ the bounds of the point representation. (Note that the bounds can be
+ scaled up using the right mouse button, and the bounds can be manually
+ set with the SetBounds() method.)
+
+\item  \verb|obj.AllOn ()| -  Convenience methods to turn outline and shadows on and off.
+
+\item  \verb|obj.AllOff ()| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|obj.SetProperty (vtkProperty )| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|obj.SetSelectedProperty (vtkProperty )| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|vtkProperty = obj.GetProperty ()| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|vtkProperty = obj.GetSelectedProperty ()| -  Set/Get the handle properties when unselected and selected.
+
+\item  \verb|obj.SetHotSpotSize (double )| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|double = obj.GetHotSpotSizeMinValue ()| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|double = obj.GetHotSpotSizeMaxValue ()| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|double = obj.GetHotSpotSize ()| -  Set the ''hot spot'' size; i.e., the region around the focus, in which the
+ motion vector is used to control the constrained sliding action. Note the
+ size is specified as a fraction of the length of the diagonal of the 
+ point widget's bounding box.
+
+\item  \verb|obj.SetHandleSize (double size)| -  Overload the superclasses SetHandleSize() method to update internal variables.
+
+\item  \verb|double = obj.GetBounds ()| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.BuildRepresentation ()| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.StartWidgetInteraction (double eventPos[2])| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.WidgetInteraction (double eventPos[2])| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|int = obj.ComputeInteractionState (int X, int Y, int modify)| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.PlaceWidget (double bounds[6])| -  Methods to make this class properly act like a vtkWidgetRepresentation.
+
+\item  \verb|obj.ShallowCopy (vtkProp prop)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|obj.GetActors (vtkPropCollection )| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow )| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)| -  Methods to make this class behave as a vtkProp.
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Methods to make this class behave as a vtkProp.
+
+\end{itemize}

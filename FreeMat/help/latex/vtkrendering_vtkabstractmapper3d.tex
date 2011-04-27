@@ -1,0 +1,53 @@
+\section{vtkAbstractMapper3D}
+
+\subsection{Usage}
+
+ vtkAbstractMapper3D is an abstract class to specify interface between 3D
+ data and graphics primitives or software rendering techniques. Subclasses
+ of vtkAbstractMapper3D can be used for rendering geometry or rendering
+ volumetric data.
+
+ This class also defines an API to support hardware clipping planes (at most
+ six planes can be defined). It also provides geometric data about the input
+ data it maps, such as the bounding box and center.
+
+
+To create an instance of class vtkAbstractMapper3D, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAbstractMapper3D
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAbstractMapper3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAbstractMapper3D class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkAbstractMapper3D = obj.NewInstance ()|
+
+\item  \verb|vtkAbstractMapper3D = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|double = obj.GetBounds ()| -  Return bounding box (array of six doubles) of data expressed as
+ (xmin,xmax, ymin,ymax, zmin,zmax).
+ Update this->Bounds as a side effect.
+
+\item  \verb|obj.GetBounds (double bounds[6])| -  Get the bounds for this mapper as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).
+
+\item  \verb|double = obj.GetCenter ()| -  Return the Center of this mapper's data.
+
+\item  \verb|obj.GetCenter (double center[3])| -  Return the diagonal length of this mappers bounding box.
+
+\item  \verb|double = obj.GetLength ()| -  Return the diagonal length of this mappers bounding box.
+
+\item  \verb|int = obj.IsARayCastMapper ()| -  Is this a ''render into image'' mapper? A subclass would return 1 if the
+ mapper produces an image by rendering into a software image buffer.
+
+\item  \verb|int = obj.IsARenderIntoImageMapper ()|
+
+\end{itemize}

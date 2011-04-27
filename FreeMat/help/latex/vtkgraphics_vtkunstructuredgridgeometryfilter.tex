@@ -1,0 +1,126 @@
+\section{vtkUnstructuredGridGeometryFilter}
+
+\subsection{Usage}
+
+ vtkUnstructuredGridGeometryFilter is a filter that extracts
+ geometry (and associated data) from an unstructured grid. It differs from
+ vtkGeometryFilter by not tessellating higher order faces: 2D faces of
+ quadratic 3D cells will be quadratic. A quadratic edge is extracted as a
+ quadratic edge. For that purpose, the output of this filter is an
+ unstructured grid, not a polydata.
+ Also, the face of a voxel is a pixel, not a quad.
+ Geometry is obtained as follows: all 0D, 1D, and 2D cells are extracted.
+ All 2D faces that are used by only one 3D cell (i.e., boundary faces) are
+ extracted. It also is possible to specify conditions on point ids, cell ids,
+ and on bounding box (referred to as ''Extent'') to control the extraction
+ process.
+
+
+To create an instance of class vtkUnstructuredGridGeometryFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkUnstructuredGridGeometryFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkUnstructuredGridGeometryFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkUnstructuredGridGeometryFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkUnstructuredGridGeometryFilter = obj.NewInstance ()|
+
+\item  \verb|vtkUnstructuredGridGeometryFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetPointClipping (int )| -  Turn on/off selection of geometry by point id.
+
+\item  \verb|int = obj.GetPointClipping ()| -  Turn on/off selection of geometry by point id.
+
+\item  \verb|obj.PointClippingOn ()| -  Turn on/off selection of geometry by point id.
+
+\item  \verb|obj.PointClippingOff ()| -  Turn on/off selection of geometry by point id.
+
+\item  \verb|obj.SetCellClipping (int )| -  Turn on/off selection of geometry by cell id.
+
+\item  \verb|int = obj.GetCellClipping ()| -  Turn on/off selection of geometry by cell id.
+
+\item  \verb|obj.CellClippingOn ()| -  Turn on/off selection of geometry by cell id.
+
+\item  \verb|obj.CellClippingOff ()| -  Turn on/off selection of geometry by cell id.
+
+\item  \verb|obj.SetExtentClipping (int )| -  Turn on/off selection of geometry via bounding box.
+
+\item  \verb|int = obj.GetExtentClipping ()| -  Turn on/off selection of geometry via bounding box.
+
+\item  \verb|obj.ExtentClippingOn ()| -  Turn on/off selection of geometry via bounding box.
+
+\item  \verb|obj.ExtentClippingOff ()| -  Turn on/off selection of geometry via bounding box.
+
+\item  \verb|obj.SetPointMinimum (vtkIdType )| -  Specify the minimum point id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetPointMinimumMinValue ()| -  Specify the minimum point id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetPointMinimumMaxValue ()| -  Specify the minimum point id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetPointMinimum ()| -  Specify the minimum point id for point id selection.
+
+\item  \verb|obj.SetPointMaximum (vtkIdType )| -  Specify the maximum point id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetPointMaximumMinValue ()| -  Specify the maximum point id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetPointMaximumMaxValue ()| -  Specify the maximum point id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetPointMaximum ()| -  Specify the maximum point id for point id selection.
+
+\item  \verb|obj.SetCellMinimum (vtkIdType )| -  Specify the minimum cell id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetCellMinimumMinValue ()| -  Specify the minimum cell id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetCellMinimumMaxValue ()| -  Specify the minimum cell id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetCellMinimum ()| -  Specify the minimum cell id for point id selection.
+
+\item  \verb|obj.SetCellMaximum (vtkIdType )| -  Specify the maximum cell id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetCellMaximumMinValue ()| -  Specify the maximum cell id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetCellMaximumMaxValue ()| -  Specify the maximum cell id for point id selection.
+
+\item  \verb|vtkIdType = obj.GetCellMaximum ()| -  Specify the maximum cell id for point id selection.
+
+\item  \verb|obj.SetExtent (double xMin, double xMax, double yMin, double yMax, double zMin, double zMax)| -  Specify a (xmin,xmax, ymin,ymax, zmin,zmax) bounding box to clip data.
+
+\item  \verb|obj.SetExtent (double extent[6])| -  Set / get a (xmin,xmax, ymin,ymax, zmin,zmax) bounding box to clip data.
+
+\item  \verb|obj.SetMerging (int )| -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+
+\item  \verb|int = obj.GetMerging ()| -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+
+\item  \verb|obj.MergingOn ()| -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+
+\item  \verb|obj.MergingOff ()| -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+
+\item  \verb|obj.SetLocator (vtkIncrementalPointLocator locator)| -  Set / get a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+
+\item  \verb|vtkIncrementalPointLocator = obj.GetLocator ()| -  Set / get a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+
+\item  \verb|obj.CreateDefaultLocator ()| -  Create default locator. Used to create one when none is specified.
+
+\item  \verb|long = obj.GetMTime ()| -  Return the MTime also considering the locator.
+
+\end{itemize}

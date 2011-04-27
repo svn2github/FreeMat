@@ -1,0 +1,47 @@
+\section{vtkHyperOctreeAlgorithm}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkHyperOctreeAlgorithm, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHyperOctreeAlgorithm
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHyperOctreeAlgorithm has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHyperOctreeAlgorithm class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHyperOctreeAlgorithm = obj.NewInstance ()|
+
+\item  \verb|vtkHyperOctreeAlgorithm = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkHyperOctree = obj.GetOutput ()| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkHyperOctree = obj.GetOutput (int )| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|obj.SetOutput (vtkDataObject d)| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkDataObject = obj.GetInput ()|
+
+\item  \verb|vtkDataObject = obj.GetInput (int port)|
+
+\item  \verb|vtkHyperOctree = obj.GetHyperOctreeInput (int port)|
+
+\item  \verb|obj.SetInput (vtkDataObject )| -  Set an input of this algorithm.
+
+\item  \verb|obj.SetInput (int , vtkDataObject )| -  Set an input of this algorithm.
+
+\item  \verb|obj.AddInput (vtkDataObject )| -  Add an input of this algorithm.
+
+\item  \verb|obj.AddInput (int , vtkDataObject )| -  Add an input of this algorithm.
+
+\end{itemize}

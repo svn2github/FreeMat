@@ -1,0 +1,42 @@
+\section{vtkAssignCoordinatesLayoutStrategy}
+
+\subsection{Usage}
+
+ Uses vtkAssignCoordinates to use values from arrays as the x, y, and z coordinates.
+
+To create an instance of class vtkAssignCoordinatesLayoutStrategy, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkAssignCoordinatesLayoutStrategy
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkAssignCoordinatesLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkAssignCoordinatesLayoutStrategy class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkAssignCoordinatesLayoutStrategy = obj.NewInstance ()|
+
+\item  \verb|vtkAssignCoordinatesLayoutStrategy = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetXCoordArrayName (string name)| -  The array to use for the x coordinate values.
+
+\item  \verb|string = obj.GetXCoordArrayName ()| -  The array to use for the x coordinate values.
+
+\item  \verb|obj.SetYCoordArrayName (string name)| -  The array to use for the y coordinate values.
+
+\item  \verb|string = obj.GetYCoordArrayName ()| -  The array to use for the y coordinate values.
+
+\item  \verb|obj.SetZCoordArrayName (string name)| -  The array to use for the z coordinate values.
+
+\item  \verb|string = obj.GetZCoordArrayName ()| -  The array to use for the z coordinate values.
+
+\item  \verb|obj.Layout ()| -  Perform the random layout.
+
+\end{itemize}

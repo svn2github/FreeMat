@@ -1,0 +1,50 @@
+\section{vtkBSPCuts}
+
+\subsection{Usage}
+
+    This class converts between the vtkKdTree 
+    representation of a tree of vtkKdNodes (used by vtkDistributedDataFilter)
+    and a compact array representation that might be provided by a 
+    graph partitioning library like Zoltan.  Such a representation
+    could be used in message passing.
+     
+
+To create an instance of class vtkBSPCuts, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkBSPCuts
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkBSPCuts has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkBSPCuts class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkBSPCuts = obj.NewInstance ()|
+
+\item  \verb|vtkBSPCuts = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.CreateCuts (double bounds, int ncuts, int dim, double coord, int lower, int upper, double lowerDataCoord, double upperDataCoord, int npoints)|
+
+\item  \verb|obj.CreateCuts (vtkKdNode kd)|
+
+\item  \verb|vtkKdNode = obj.GetKdNodeTree ()|
+
+\item  \verb|int = obj.GetNumberOfCuts ()|
+
+\item  \verb|int = obj.GetArrays (int len, int dim, double coord, int lower, int upper, double lowerDataCoord, double upperDataCoord, int npoints)|
+
+\item  \verb|int = obj.Equals (vtkBSPCuts other, double tolerance)| -  Compare these cuts with those of the other tree.  Returns true if
+ the two trees are the same.
+
+\item  \verb|obj.PrintTree ()|
+
+\item  \verb|obj.PrintArrays ()|
+
+\end{itemize}

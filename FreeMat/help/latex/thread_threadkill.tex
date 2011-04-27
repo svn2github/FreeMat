@@ -41,13 +41,13 @@ stop it:
 --> count                          % it is counting
 
 ans = 
- 7145 
+ 0 
 
 --> sleep(1)                       % Wait a bit
 --> count                          % it is still counting
 
 ans = 
- 485030 
+ 265571 
 
 --> threadkill(a)                  % kill the counter
 --> threadwait(a,1000)             % wait for it to finish
@@ -58,13 +58,13 @@ ans =
 --> count                          % The count will no longer increase
 
 ans = 
- 485031 
+ 265572 
 
 --> sleep(1)
 --> count
 
 ans = 
- 485031 
+ 265572 
 
 --> threadfree(a)
 \end{verbatim}

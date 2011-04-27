@@ -1,0 +1,38 @@
+\section{vtkMCubesWriter}
+
+\subsection{Usage}
+
+ vtkMCubesWriter is a polydata writer that writes binary marching cubes
+ files. (Marching cubes is an isosurfacing technique that generates many
+ triangles.) The binary format is supported by W. Lorensen's marching cubes
+ program (and the vtkSliceCubes object). Each triangle is represented by
+ three records, with each record consisting of six single precision
+ floating point numbers representing the a triangle vertex coordinate and
+ vertex normal.
+
+To create an instance of class vtkMCubesWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMCubesWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMCubesWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMCubesWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMCubesWriter = obj.NewInstance ()|
+
+\item  \verb|vtkMCubesWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetLimitsFileName (string )| -  Set/get file name of marching cubes limits file.
+
+\item  \verb|string = obj.GetLimitsFileName ()| -  Set/get file name of marching cubes limits file.
+
+\end{itemize}

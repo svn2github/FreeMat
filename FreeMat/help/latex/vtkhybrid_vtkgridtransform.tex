@@ -1,0 +1,81 @@
+\section{vtkGridTransform}
+
+\subsection{Usage}
+
+ vtkGridTransform describes a nonlinear warp transformation as a set
+ of displacement vectors sampled along a uniform 3D grid.
+
+To create an instance of class vtkGridTransform, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGridTransform
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGridTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGridTransform class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGridTransform = obj.NewInstance ()|
+
+\item  \verb|vtkGridTransform = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetDisplacementGrid (vtkImageData )| -  Set/Get the grid transform (the grid transform must have three 
+ components for displacement in x, y, and z respectively).
+ The vtkGridTransform class will never modify the data.
+
+\item  \verb|vtkImageData = obj.GetDisplacementGrid ()| -  Set/Get the grid transform (the grid transform must have three 
+ components for displacement in x, y, and z respectively).
+ The vtkGridTransform class will never modify the data.
+
+\item  \verb|obj.SetDisplacementScale (double )| -  Set scale factor to be applied to the displacements.
+ This is used primarily for grids which contain integer
+ data types.  Default: 1
+
+\item  \verb|double = obj.GetDisplacementScale ()| -  Set scale factor to be applied to the displacements.
+ This is used primarily for grids which contain integer
+ data types.  Default: 1
+
+\item  \verb|obj.SetDisplacementShift (double )| -  Set a shift to be applied to the displacements.  The shift
+ is applied after the scale, i.e. x = scale*y + shift.
+ Default: 0
+
+\item  \verb|double = obj.GetDisplacementShift ()| -  Set a shift to be applied to the displacements.  The shift
+ is applied after the scale, i.e. x = scale*y + shift.
+ Default: 0
+
+\item  \verb|obj.SetInterpolationMode (int mode)| -  Set interpolation mode for sampling the grid.  Higher-order
+ interpolation allows you to use a sparser grid.
+ Default: Linear.
+
+\item  \verb|int = obj.GetInterpolationMode ()| -  Set interpolation mode for sampling the grid.  Higher-order
+ interpolation allows you to use a sparser grid.
+ Default: Linear.
+
+\item  \verb|obj.SetInterpolationModeToNearestNeighbor ()| -  Set interpolation mode for sampling the grid.  Higher-order
+ interpolation allows you to use a sparser grid.
+ Default: Linear.
+
+\item  \verb|obj.SetInterpolationModeToLinear ()| -  Set interpolation mode for sampling the grid.  Higher-order
+ interpolation allows you to use a sparser grid.
+ Default: Linear.
+
+\item  \verb|obj.SetInterpolationModeToCubic ()| -  Set interpolation mode for sampling the grid.  Higher-order
+ interpolation allows you to use a sparser grid.
+ Default: Linear.
+
+\item  \verb|string = obj.GetInterpolationModeAsString ()| -  Set interpolation mode for sampling the grid.  Higher-order
+ interpolation allows you to use a sparser grid.
+ Default: Linear.
+
+\item  \verb|vtkAbstractTransform = obj.MakeTransform ()| -  Make another transform of the same type.
+
+\item  \verb|long = obj.GetMTime ()| -  Get the MTime.
+
+\end{itemize}

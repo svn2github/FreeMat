@@ -1,0 +1,54 @@
+\section{vtkGeoArcs}
+
+\subsection{Usage}
+
+ vtkGeoArcs produces arcs for each line in the input polydata. This is useful
+ for viewing lines on a sphere (e.g. the earth). The arcs may ''jump'' above
+ the sphere's surface using ExplodeFactor.
+
+To create an instance of class vtkGeoArcs, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGeoArcs
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGeoArcs has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGeoArcs class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGeoArcs = obj.NewInstance ()|
+
+\item  \verb|vtkGeoArcs = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGlobeRadius (double )| -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+
+\item  \verb|double = obj.GetGlobeRadius ()| -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+
+\item  \verb|obj.SetExplodeFactor (double )| -  Factor on which to ''explode'' the arcs away from the surface.
+ A value of 0.0 keeps the values on the surface.
+ Values larger than 0.0 push the arcs away from the surface by a distance
+ proportional to the distance between the points.
+ The default is 0.2.
+
+\item  \verb|double = obj.GetExplodeFactor ()| -  Factor on which to ''explode'' the arcs away from the surface.
+ A value of 0.0 keeps the values on the surface.
+ Values larger than 0.0 push the arcs away from the surface by a distance
+ proportional to the distance between the points.
+ The default is 0.2.
+
+\item  \verb|obj.SetNumberOfSubdivisions (int )| -  The number of subdivisions in the arc.
+ The default is 20.
+
+\item  \verb|int = obj.GetNumberOfSubdivisions ()| -  The number of subdivisions in the arc.
+ The default is 20.
+
+\end{itemize}

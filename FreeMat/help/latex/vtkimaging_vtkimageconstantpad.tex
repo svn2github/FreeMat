@@ -1,0 +1,34 @@
+\section{vtkImageConstantPad}
+
+\subsection{Usage}
+
+ vtkImageConstantPad changes the image extent of its input.
+ Any pixels outside of the original image extent are filled with
+ a constant value (default is 0.0).
+
+To create an instance of class vtkImageConstantPad, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageConstantPad
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageConstantPad has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageConstantPad class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageConstantPad = obj.NewInstance ()|
+
+\item  \verb|vtkImageConstantPad = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetConstant (double )| -  Set/Get the pad value.
+
+\item  \verb|double = obj.GetConstant ()| -  Set/Get the pad value.
+
+\end{itemize}

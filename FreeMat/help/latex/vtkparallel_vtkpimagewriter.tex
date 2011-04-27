@@ -1,0 +1,38 @@
+\section{vtkPImageWriter}
+
+\subsection{Usage}
+
+ vtkPImageWriter writes images to files with any data type. The data type of
+ the file is the same scalar type as the input.  The dimensionality
+ determines whether the data will be written in one or multiple files.
+ This class is used as the superclass of most image writing classes 
+ such as vtkBMPWriter etc. It supports streaming.
+
+To create an instance of class vtkPImageWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPImageWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPImageWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPImageWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPImageWriter = obj.NewInstance ()|
+
+\item  \verb|vtkPImageWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetMemoryLimit (long )| -  Set / Get the memory limit in kilobytes. The writer will
+ stream to attempt to keep the pipeline size within this limit
+
+\item  \verb|long = obj.GetMemoryLimit ()| -  Set / Get the memory limit in kilobytes. The writer will
+ stream to attempt to keep the pipeline size within this limit
+
+\end{itemize}

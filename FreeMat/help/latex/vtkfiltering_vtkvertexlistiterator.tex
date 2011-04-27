@@ -1,0 +1,40 @@
+\section{vtkVertexListIterator}
+
+\subsection{Usage}
+
+ vtkVertexListIterator iterates through all vertices in a graph.
+ Create an instance of this and call graph->GetVertices(it) to initialize
+ this iterator. You may alternately call SetGraph() to initialize the
+ iterator.
+
+
+To create an instance of class vtkVertexListIterator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVertexListIterator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVertexListIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVertexListIterator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVertexListIterator = obj.NewInstance ()|
+
+\item  \verb|vtkVertexListIterator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGraph (vtkGraph graph)| -  Setup the iterator with a graph.
+
+\item  \verb|vtkGraph = obj.GetGraph ()| -  Get the graph associated with this iterator.
+
+\item  \verb|vtkIdType = obj.Next ()| -  Whether this iterator has more edges.
+
+\item  \verb|bool = obj.HasNext ()|
+
+\end{itemize}

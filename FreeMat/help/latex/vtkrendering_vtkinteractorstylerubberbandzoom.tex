@@ -1,0 +1,37 @@
+\section{vtkInteractorStyleRubberBandZoom}
+
+\subsection{Usage}
+
+ This interactor style allows the user to draw a rectangle in the render
+ window using the left mouse button.  When the mouse button is released,
+ the current camera zooms by an amount determined from the shorter side of
+ the drawn rectangle.
+
+To create an instance of class vtkInteractorStyleRubberBandZoom, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInteractorStyleRubberBandZoom
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInteractorStyleRubberBandZoom has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInteractorStyleRubberBandZoom class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInteractorStyleRubberBandZoom = obj.NewInstance ()|
+
+\item  \verb|vtkInteractorStyleRubberBandZoom = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.OnMouseMove ()| -  Event bindings
+
+\item  \verb|obj.OnLeftButtonDown ()| -  Event bindings
+
+\item  \verb|obj.OnLeftButtonUp ()| -  Event bindings
+
+\end{itemize}

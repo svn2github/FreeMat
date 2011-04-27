@@ -1,0 +1,89 @@
+\section{vtkSLACReader}
+
+\subsection{Usage}
+
+
+ A reader for a data format used by Omega3p, Tau3p, and several other tools
+ used at the Standford Linear Accelerator Center (SLAC).  The underlying
+ format uses netCDF to store arrays, but also imposes several conventions
+ to form an unstructured grid of elements.
+
+
+To create an instance of class vtkSLACReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSLACReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSLACReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSLACReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSLACReader = obj.NewInstance ()|
+
+\item  \verb|vtkSLACReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetMeshFileName ()|
+
+\item  \verb|obj.SetMeshFileName (string )|
+
+\item  \verb|obj.AddModeFileName (string fname)| -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+
+\item  \verb|obj.RemoveAllModeFileNames ()| -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+
+\item  \verb|int = obj.GetNumberOfModeFileNames ()| -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+
+\item  \verb|string = obj.GetModeFileName (int idx)| -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+
+\item  \verb|int = obj.GetReadInternalVolume ()| -  If on, reads the internal volume of the data set.  Set to off by default.
+
+\item  \verb|obj.SetReadInternalVolume (int )| -  If on, reads the internal volume of the data set.  Set to off by default.
+
+\item  \verb|obj.ReadInternalVolumeOn ()| -  If on, reads the internal volume of the data set.  Set to off by default.
+
+\item  \verb|obj.ReadInternalVolumeOff ()| -  If on, reads the internal volume of the data set.  Set to off by default.
+
+\item  \verb|int = obj.GetReadExternalSurface ()| -  If on, reads the external surfaces of the data set.  Set to on by default.
+
+\item  \verb|obj.SetReadExternalSurface (int )| -  If on, reads the external surfaces of the data set.  Set to on by default.
+
+\item  \verb|obj.ReadExternalSurfaceOn ()| -  If on, reads the external surfaces of the data set.  Set to on by default.
+
+\item  \verb|obj.ReadExternalSurfaceOff ()| -  If on, reads the external surfaces of the data set.  Set to on by default.
+
+\item  \verb|int = obj.GetReadMidpoints ()| -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+
+\item  \verb|obj.SetReadMidpoints (int )| -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+
+\item  \verb|obj.ReadMidpointsOn ()| -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+
+\item  \verb|obj.ReadMidpointsOff ()| -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+
+\item  \verb|int = obj.GetNumberOfVariableArrays ()| -  Variable array selection.
+
+\item  \verb|string = obj.GetVariableArrayName (int idx)| -  Variable array selection.
+
+\item  \verb|int = obj.GetVariableArrayStatus (string name)| -  Variable array selection.
+
+\item  \verb|obj.SetVariableArrayStatus (string name, int status)| -  Variable array selection.
+
+\end{itemize}

@@ -1,0 +1,71 @@
+\section{vtkCollection}
+
+\subsection{Usage}
+
+ vtkCollection is a general object for creating and manipulating lists
+ of objects. The lists are unsorted and allow duplicate entries. 
+ vtkCollection also serves as a base class for lists of specific types 
+ of objects.
+
+To create an instance of class vtkCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCollection = obj.NewInstance ()|
+
+\item  \verb|vtkCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkObject )| -  Add an object to the list. Does not prevent duplicate entries.
+
+\item  \verb|obj.InsertItem (int i, vtkObject )| -  Insert item into the list after the i'th item. Does not prevent duplicate entries.
+ If i < 0 the item is placed at the top of the list.
+
+\item  \verb|obj.ReplaceItem (int i, vtkObject )| -  Replace the i'th item in the collection with a
+
+\item  \verb|obj.RemoveItem (int i)| -  Remove the i'th item in the list.
+ Be careful if using this function during traversal of the list using 
+ GetNextItemAsObject (or GetNextItem in derived class).  The list WILL
+ be shortened if a valid index is given!  If this->Current is equal to the
+ element being removed, have it point to then next element in the list.
+
+\item  \verb|obj.RemoveItem (vtkObject )| -  Remove an object from the list. Removes the first object found, not
+ all occurrences. If no object found, list is unaffected.  See warning
+ in description of RemoveItem(int).
+
+\item  \verb|obj.RemoveAllItems ()| -  Remove all objects from the list.
+
+\item  \verb|int = obj.IsItemPresent (vtkObject a)| -  Search for an object and return location in list. If the return value is
+ 0, the object was not found. If the object was found, the location is
+ the return value-1.
+
+\item  \verb|int = obj.GetNumberOfItems ()| -  Return the number of objects in the list.
+
+\item  \verb|obj.InitTraversal ()| -  Initialize the traversal of the collection. This means the data pointer
+ is set at the beginning of the list.
+
+\item  \verb|vtkObject = obj.GetNextItemAsObject ()| -  Get the next item in the collection. NULL is returned if the collection
+ is exhausted.
+
+\item  \verb|vtkObject = obj.GetItemAsObject (int i)| -  Get the i'th item in the collection. NULL is returned if i is out
+ of range
+
+\item  \verb|vtkCollectionIterator = obj.NewIterator ()| -  Get an iterator to traverse the objects in this collection.
+
+\item  \verb|obj.Register (vtkObjectBase o)| -  Participate in garbage collection.
+
+\item  \verb|obj.UnRegister (vtkObjectBase o)| -  Participate in garbage collection.
+
+\end{itemize}

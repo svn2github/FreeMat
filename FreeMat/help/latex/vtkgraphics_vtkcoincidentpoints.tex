@@ -1,0 +1,48 @@
+\section{vtkCoincidentPoints}
+
+\subsection{Usage}
+
+ This class provides a collection of points that is organized such that 
+ each coordinate is stored with a set of point id's of points that are 
+ all coincident.
+
+To create an instance of class vtkCoincidentPoints, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCoincidentPoints
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCoincidentPoints has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCoincidentPoints class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCoincidentPoints = obj.NewInstance ()|
+
+\item  \verb|vtkCoincidentPoints = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddPoint (vtkIdType Id, double point[3])| -  Accumulates a set of Ids in a map where the point coordinate
+ is the key. All Ids in a given map entry are thus coincident.
+ @param Id - a unique Id for the given  point that will be stored in an vtkIdList.
+ @param[in] point - the point coordinate that we will store in the map to test if any other points are
+ coincident with it.
+
+\item  \verb|vtkIdList = obj.GetCoincidentPointIds (double point[3])| -  Retrieve the list of point Ids that are coincident with the given  point.
+ @param[in] point - the coordinate of coincident points we want to retrieve.
+
+\item  \verb|vtkIdList = obj.GetNextCoincidentPointIds ()| -  Used to iterate the sets of coincident points within the map.
+ InitTraversal must be called first or NULL will always be returned.
+
+\item  \verb|obj.InitTraversal ()|
+
+\item  \verb|obj.RemoveNonCoincidentPoints ()|
+
+\item  \verb|obj.Clear ()|
+
+\end{itemize}

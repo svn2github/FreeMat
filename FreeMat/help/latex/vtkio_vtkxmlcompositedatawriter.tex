@@ -1,0 +1,40 @@
+\section{vtkXMLCompositeDataWriter}
+
+\subsection{Usage}
+
+ vtkXMLCompositeDataWriter writes (serially) the VTK XML multi-group,
+ multi-block hierarchical and hierarchical box files. XML multi-group
+ data files are meta-files that point to a list of serial VTK XML files.
+
+To create an instance of class vtkXMLCompositeDataWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLCompositeDataWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLCompositeDataWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLCompositeDataWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLCompositeDataWriter = obj.NewInstance ()|
+
+\item  \verb|vtkXMLCompositeDataWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetDefaultFileExtension ()| -  Get the default file extension for files written by this writer.
+
+\item  \verb|int = obj.GetGhostLevel ()| -  Get/Set the number of ghost levels to be written.
+
+\item  \verb|obj.SetGhostLevel (int )| -  Get/Set the number of ghost levels to be written.
+
+\item  \verb|int = obj.GetWriteMetaFile ()| -  Get/Set whether this instance will write the meta-file. 
+
+\item  \verb|obj.SetWriteMetaFile (int flag)| -  Get/Set whether this instance will write the meta-file. 
+
+\end{itemize}

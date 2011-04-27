@@ -1,0 +1,49 @@
+\section{vtkContinuousValueWidgetRepresentation}
+
+\subsection{Usage}
+
+ This class is used mainly as a superclass for continuous value widgets
+
+
+To create an instance of class vtkContinuousValueWidgetRepresentation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkContinuousValueWidgetRepresentation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkContinuousValueWidgetRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkContinuousValueWidgetRepresentation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard methods for the class.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard methods for the class.
+
+\item  \verb|vtkContinuousValueWidgetRepresentation = obj.NewInstance ()| -  Standard methods for the class.
+
+\item  \verb|vtkContinuousValueWidgetRepresentation = obj.SafeDownCast (vtkObject o)| -  Standard methods for the class.
+
+\item  \verb|obj.PlaceWidget (double bounds[6])| -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+
+\item  \verb|obj.BuildRepresentation ()| -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+
+\item  \verb|obj.StartWidgetInteraction (double eventPos[2])| -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+
+\item  \verb|obj.WidgetInteraction (double eventPos[2])| -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+
+\item  \verb|obj.SetValue (double value)|
+
+\item  \verb|double = obj.GetValue ()|
+
+\end{itemize}

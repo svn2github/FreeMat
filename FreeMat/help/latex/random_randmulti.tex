@@ -15,13 +15,13 @@ outcomes.
 
 A multinomial distribution describes the number of times each
 of \verb|m| possible outcomes occurs out of \verb|N| trials, where each
-outcome has a probability \verb|p_i|.  More generally, suppose that
-the probability of a Bernoulli random variable \verb|X_i| is \verb|p_i|,
+outcome has a probability \verb|p\_i|.  More generally, suppose that
+the probability of a Bernoulli random variable \verb|X\_i| is \verb|p\_i|,
 and that 
 \[
    \sum_{i=1}^{m} p_i = 1.
 \]
-Then the probability that \verb|X_i| occurs \verb|x_i| times is
+Then the probability that \verb|X\_i| occurs \verb|x\_i| times is
 \[
    P_N(x_1,x_2,\ldots,x_n) = \frac{N!}{x_1!\cdots x_n!} p_1^{x_1}\cdots p_n^{x_n}.
 \]
@@ -35,5 +35,5 @@ flips we get
 --> randmulti(10000,[0.4999,0.4999,0.0002])
 
 ans = 
- 5026 4973    1 
+ 5051    0 4948 
 \end{verbatim}

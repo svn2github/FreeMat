@@ -1,0 +1,53 @@
+\section{vtkPieceRequestFilter}
+
+\subsection{Usage}
+
+ Sends the piece and number of pieces to upstream filters; passes the input
+ to the output unmodified.
+
+To create an instance of class vtkPieceRequestFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPieceRequestFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPieceRequestFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPieceRequestFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPieceRequestFilter = obj.NewInstance ()|
+
+\item  \verb|vtkPieceRequestFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetNumberOfPieces (int )| -  The total number of pieces.
+
+\item  \verb|int = obj.GetNumberOfPiecesMinValue ()| -  The total number of pieces.
+
+\item  \verb|int = obj.GetNumberOfPiecesMaxValue ()| -  The total number of pieces.
+
+\item  \verb|int = obj.GetNumberOfPieces ()| -  The total number of pieces.
+
+\item  \verb|obj.SetPiece (int )| -  The piece to extract.
+
+\item  \verb|int = obj.GetPieceMinValue ()| -  The piece to extract.
+
+\item  \verb|int = obj.GetPieceMaxValue ()| -  The piece to extract.
+
+\item  \verb|int = obj.GetPiece ()| -  The piece to extract.
+
+\item  \verb|vtkDataObject = obj.GetOutput ()| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|vtkDataObject = obj.GetOutput (int )| -  Get the output data object for a port on this algorithm.
+
+\item  \verb|obj.SetInput (vtkDataObject )| -  Set an input of this algorithm.
+
+\item  \verb|obj.SetInput (int , vtkDataObject )| -  Set an input of this algorithm.
+
+\end{itemize}

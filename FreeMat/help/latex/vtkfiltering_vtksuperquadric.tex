@@ -1,0 +1,98 @@
+\section{vtkSuperquadric}
+
+\subsection{Usage}
+
+ vtkSuperquadric computes the implicit function and function gradient
+ for a superquadric. vtkSuperquadric is a concrete implementation of
+ vtkImplicitFunction.  The superquadric is centered at Center and axes
+ of rotation is along the y-axis. (Use the superclass'
+ vtkImplicitFunction transformation matrix if necessary to reposition.)
+ Roundness parameters (PhiRoundness and ThetaRoundness) control
+ the shape of the superquadric.  The Toroidal boolean controls whether
+ a toroidal superquadric is produced.  If so, the Thickness parameter
+ controls the thickness of the toroid:  0 is the thinnest allowable
+ toroid, and 1 has a minimum sized hole.  The Scale parameters allow 
+ the superquadric to be scaled in x, y, and z (normal vectors are correctly
+ generated in any case).  The Size parameter controls size of the 
+ superquadric.
+
+ This code is based on ''Rigid physically based superquadrics'', A. H. Barr,
+ in ''Graphics Gems III'', David Kirk, ed., Academic Press, 1992.
+
+
+To create an instance of class vtkSuperquadric, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSuperquadric
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSuperquadric has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSuperquadric class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSuperquadric = obj.NewInstance ()|
+
+\item  \verb|vtkSuperquadric = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|double = obj.EvaluateFunction (double x[3])|
+
+\item  \verb|double = obj.EvaluateFunction (double x, double y, double z)|
+
+\item  \verb|obj.EvaluateGradient (double x[3], double g[3])|
+
+\item  \verb|obj.SetCenter (double , double , double )| -  Set the center of the superquadric. Default is 0,0,0.
+
+\item  \verb|obj.SetCenter (double  a[3])| -  Set the center of the superquadric. Default is 0,0,0.
+
+\item  \verb|double = obj. GetCenter ()| -  Set the center of the superquadric. Default is 0,0,0.
+
+\item  \verb|obj.SetScale (double , double , double )| -  Set the scale factors of the superquadric. Default is 1,1,1.
+
+\item  \verb|obj.SetScale (double  a[3])| -  Set the scale factors of the superquadric. Default is 1,1,1.
+
+\item  \verb|double = obj. GetScale ()| -  Set the scale factors of the superquadric. Default is 1,1,1.
+
+\item  \verb|double = obj.GetThickness ()| -  Set/Get Superquadric ring thickness (toroids only).
+ Changing thickness maintains the outside diameter of the toroid.
+
+\item  \verb|obj.SetThickness (double )| -  Set/Get Superquadric ring thickness (toroids only).
+ Changing thickness maintains the outside diameter of the toroid.
+
+\item  \verb|double = obj.GetThicknessMinValue ()| -  Set/Get Superquadric ring thickness (toroids only).
+ Changing thickness maintains the outside diameter of the toroid.
+
+\item  \verb|double = obj.GetThicknessMaxValue ()| -  Set/Get Superquadric ring thickness (toroids only).
+ Changing thickness maintains the outside diameter of the toroid.
+
+\item  \verb|double = obj.GetPhiRoundness ()| -  Set/Get Superquadric north/south roundness. 
+ Values range from 0 (rectangular) to 1 (circular) to higher orders.
+
+\item  \verb|obj.SetPhiRoundness (double e)| -  Set/Get Superquadric north/south roundness. 
+ Values range from 0 (rectangular) to 1 (circular) to higher orders.
+
+\item  \verb|double = obj.GetThetaRoundness ()| -  Set/Get Superquadric east/west roundness.
+ Values range from 0 (rectangular) to 1 (circular) to higher orders.
+
+\item  \verb|obj.SetThetaRoundness (double e)| -  Set/Get Superquadric east/west roundness.
+ Values range from 0 (rectangular) to 1 (circular) to higher orders.
+
+\item  \verb|obj.SetSize (double )| -  Set/Get Superquadric isotropic size.
+
+\item  \verb|double = obj.GetSize ()| -  Set/Get Superquadric isotropic size.
+
+\item  \verb|obj.ToroidalOn ()| -  Set/Get whether or not the superquadric is toroidal (1) or ellipsoidal (0).
+
+\item  \verb|obj.ToroidalOff ()| -  Set/Get whether or not the superquadric is toroidal (1) or ellipsoidal (0).
+
+\item  \verb|int = obj.GetToroidal ()| -  Set/Get whether or not the superquadric is toroidal (1) or ellipsoidal (0).
+
+\item  \verb|obj.SetToroidal (int )| -  Set/Get whether or not the superquadric is toroidal (1) or ellipsoidal (0).
+
+\end{itemize}

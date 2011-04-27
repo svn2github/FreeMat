@@ -1,0 +1,39 @@
+\section{vtkUnstructuredGridReader}
+
+\subsection{Usage}
+
+ vtkUnstructuredGridReader is a source object that reads ASCII or binary 
+ unstructured grid data files in vtk format. (see text for format details).
+ The output of this reader is a single vtkUnstructuredGrid data object.
+ The superclass of this class, vtkDataReader, provides many methods for
+ controlling the reading of the data file, see vtkDataReader for more
+ information.
+
+To create an instance of class vtkUnstructuredGridReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkUnstructuredGridReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkUnstructuredGridReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkUnstructuredGridReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkUnstructuredGridReader = obj.NewInstance ()|
+
+\item  \verb|vtkUnstructuredGridReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkUnstructuredGrid = obj.GetOutput ()| -  Get the output of this reader.
+
+\item  \verb|vtkUnstructuredGrid = obj.GetOutput (int idx)| -  Get the output of this reader.
+
+\item  \verb|obj.SetOutput (vtkUnstructuredGrid output)| -  Get the output of this reader.
+
+\end{itemize}

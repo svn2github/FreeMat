@@ -1,0 +1,317 @@
+\section{vtkVolumeProMapper}
+
+\subsection{Usage}
+
+ vtkVolumeProMapper is the superclass for VolumePRO volume rendering mappers.
+ Any functionality that is general across all VolumePRO implementations is
+ placed here in this class. Subclasses of this class are for the specific
+ board implementations. Subclasses of that are for underlying graphics 
+ languages. Users should not create subclasses directly - 
+ a vtkVolumeProMapper will automatically create the object of the right 
+ type.
+
+ If you do not have the VolumePRO libraries when building this object, then
+ the New method will create a default renderer that will not render.
+ You can check the NumberOfBoards ivar to see if it is a real rendering class.
+ To build with the VolumePRO board see vtkVolumeProVP1000Mapper.h 
+ for instructions.
+
+ For more information on the VolumePRO hardware, please see:
+
+   http://www.terarecon.com/products/volumepro\_prod.html
+
+ If you encounter any problems with this class, please inform Kitware, Inc.
+ at kitware@kitware.com.
+
+
+
+To create an instance of class vtkVolumeProMapper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVolumeProMapper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVolumeProMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVolumeProMapper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVolumeProMapper = obj.NewInstance ()|
+
+\item  \verb|vtkVolumeProMapper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Render (vtkRenderer , vtkVolume )| -  Set the blend mode
+
+\item  \verb|obj.SetBlendMode (int )| -  Set the blend mode
+
+\item  \verb|int = obj.GetBlendModeMinValue ()| -  Set the blend mode
+
+\item  \verb|int = obj.GetBlendModeMaxValue ()| -  Set the blend mode
+
+\item  \verb|int = obj.GetBlendMode ()| -  Set the blend mode
+
+\item  \verb|obj.SetBlendModeToComposite ()| -  Set the blend mode
+
+\item  \verb|obj.SetBlendModeToMaximumIntensity ()| -  Set the blend mode
+
+\item  \verb|obj.SetBlendModeToMinimumIntensity ()| -  Set the blend mode
+
+\item  \verb|string = obj.GetBlendModeAsString (void )| -  Set the blend mode
+
+\item  \verb|obj.SetSubVolume (int , int , int , int , int , int )| -  Set the subvolume
+
+\item  \verb|obj.SetSubVolume (int  a[6])| -  Set the subvolume
+
+\item  \verb|int = obj. GetSubVolume ()| -  Set the subvolume
+
+\item  \verb|obj.SetCursor (int )| -  Turn the cursor on / off
+
+\item  \verb|int = obj.GetCursorMinValue ()| -  Turn the cursor on / off
+
+\item  \verb|int = obj.GetCursorMaxValue ()| -  Turn the cursor on / off
+
+\item  \verb|int = obj.GetCursor ()| -  Turn the cursor on / off
+
+\item  \verb|obj.CursorOn ()| -  Turn the cursor on / off
+
+\item  \verb|obj.CursorOff ()| -  Turn the cursor on / off
+
+\item  \verb|obj.SetCursorType (int )| -  Set the type of the cursor
+
+\item  \verb|int = obj.GetCursorTypeMinValue ()| -  Set the type of the cursor
+
+\item  \verb|int = obj.GetCursorTypeMaxValue ()| -  Set the type of the cursor
+
+\item  \verb|int = obj.GetCursorType ()| -  Set the type of the cursor
+
+\item  \verb|obj.SetCursorTypeToCrossHair ()| -  Set the type of the cursor
+
+\item  \verb|obj.SetCursorTypeToPlane ()| -  Set the type of the cursor
+
+\item  \verb|string = obj.GetCursorTypeAsString (void )| -  Set the type of the cursor
+
+\item  \verb|obj.SetCursorPosition (double , double , double )| -  Set/Get the cursor position
+
+\item  \verb|obj.SetCursorPosition (double  a[3])| -  Set/Get the cursor position
+
+\item  \verb|double = obj. GetCursorPosition ()| -  Set/Get the cursor position
+
+\item  \verb|obj.SetCursorXAxisColor (double , double , double )| -  Set/Get the cursor color
+
+\item  \verb|obj.SetCursorXAxisColor (double  a[3])| -  Set/Get the cursor color
+
+\item  \verb|double = obj. GetCursorXAxisColor ()| -  Set/Get the cursor color
+
+\item  \verb|obj.SetCursorYAxisColor (double , double , double )| -  Set/Get the cursor color
+
+\item  \verb|obj.SetCursorYAxisColor (double  a[3])| -  Set/Get the cursor color
+
+\item  \verb|double = obj. GetCursorYAxisColor ()| -  Set/Get the cursor color
+
+\item  \verb|obj.SetCursorZAxisColor (double , double , double )| -  Set/Get the cursor color
+
+\item  \verb|obj.SetCursorZAxisColor (double  a[3])| -  Set/Get the cursor color
+
+\item  \verb|double = obj. GetCursorZAxisColor ()| -  Set/Get the cursor color
+
+\item  \verb|obj.SetSuperSampling (int )| -  Turn supersampling on/off
+
+\item  \verb|int = obj.GetSuperSamplingMinValue ()| -  Turn supersampling on/off
+
+\item  \verb|int = obj.GetSuperSamplingMaxValue ()| -  Turn supersampling on/off
+
+\item  \verb|int = obj.GetSuperSampling ()| -  Turn supersampling on/off
+
+\item  \verb|obj.SuperSamplingOn ()| -  Turn supersampling on/off
+
+\item  \verb|obj.SuperSamplingOff ()| -  Turn supersampling on/off
+
+\item  \verb|obj.SetSuperSamplingFactor (double x, double y, double z)| -  Set the supersampling factors
+
+\item  \verb|obj.SetSuperSamplingFactor (double f[3])| -  Set the supersampling factors
+
+\item  \verb|double = obj. GetSuperSamplingFactor ()| -  Set the supersampling factors
+
+\item  \verb|obj.SetCutPlane (int )| -  Turn on / off the cut plane
+
+\item  \verb|int = obj.GetCutPlaneMinValue ()| -  Turn on / off the cut plane
+
+\item  \verb|int = obj.GetCutPlaneMaxValue ()| -  Turn on / off the cut plane
+
+\item  \verb|int = obj.GetCutPlane ()| -  Turn on / off the cut plane
+
+\item  \verb|obj.CutPlaneOn ()| -  Turn on / off the cut plane
+
+\item  \verb|obj.CutPlaneOff ()| -  Turn on / off the cut plane
+
+\item  \verb|obj.SetCutPlaneEquation (double , double , double , double )| -  Set/Get the cut plane equation
+
+\item  \verb|obj.SetCutPlaneEquation (double  a[4])| -  Set/Get the cut plane equation
+
+\item  \verb|double = obj. GetCutPlaneEquation ()| -  Set/Get the cut plane equation
+
+\item  \verb|obj.SetCutPlaneThickness (double )| -  Set / Get the cut plane thickness
+
+\item  \verb|double = obj.GetCutPlaneThicknessMinValue ()| -  Set / Get the cut plane thickness
+
+\item  \verb|double = obj.GetCutPlaneThicknessMaxValue ()| -  Set / Get the cut plane thickness
+
+\item  \verb|double = obj.GetCutPlaneThickness ()| -  Set / Get the cut plane thickness
+
+\item  \verb|obj.SetCutPlaneFallOffDistance (int )| -  Set / Get the cut plane falloff value for intensities
+
+\item  \verb|int = obj.GetCutPlaneFallOffDistanceMinValue ()| -  Set / Get the cut plane falloff value for intensities
+
+\item  \verb|int = obj.GetCutPlaneFallOffDistanceMaxValue ()| -  Set / Get the cut plane falloff value for intensities
+
+\item  \verb|int = obj.GetCutPlaneFallOffDistance ()| -  Set / Get the cut plane falloff value for intensities
+
+\item  \verb|obj.SetGradientOpacityModulation (int )| -  Set/Get the gradient magnitude opacity modulation 
+
+\item  \verb|int = obj.GetGradientOpacityModulationMinValue ()| -  Set/Get the gradient magnitude opacity modulation 
+
+\item  \verb|int = obj.GetGradientOpacityModulationMaxValue ()| -  Set/Get the gradient magnitude opacity modulation 
+
+\item  \verb|int = obj.GetGradientOpacityModulation ()| -  Set/Get the gradient magnitude opacity modulation 
+
+\item  \verb|obj.GradientOpacityModulationOn ()| -  Set/Get the gradient magnitude opacity modulation 
+
+\item  \verb|obj.GradientOpacityModulationOff ()| -  Set/Get the gradient magnitude opacity modulation 
+
+\item  \verb|obj.SetGradientDiffuseModulation (int )| -  Set/Get the gradient magnitude diffuse modulation 
+
+\item  \verb|int = obj.GetGradientDiffuseModulationMinValue ()| -  Set/Get the gradient magnitude diffuse modulation 
+
+\item  \verb|int = obj.GetGradientDiffuseModulationMaxValue ()| -  Set/Get the gradient magnitude diffuse modulation 
+
+\item  \verb|int = obj.GetGradientDiffuseModulation ()| -  Set/Get the gradient magnitude diffuse modulation 
+
+\item  \verb|obj.GradientDiffuseModulationOn ()| -  Set/Get the gradient magnitude diffuse modulation 
+
+\item  \verb|obj.GradientDiffuseModulationOff ()| -  Set/Get the gradient magnitude diffuse modulation 
+
+\item  \verb|obj.SetGradientSpecularModulation (int )| -  Set/Get the gradient magnitude specular modulation 
+
+\item  \verb|int = obj.GetGradientSpecularModulationMinValue ()| -  Set/Get the gradient magnitude specular modulation 
+
+\item  \verb|int = obj.GetGradientSpecularModulationMaxValue ()| -  Set/Get the gradient magnitude specular modulation 
+
+\item  \verb|int = obj.GetGradientSpecularModulation ()| -  Set/Get the gradient magnitude specular modulation 
+
+\item  \verb|obj.GradientSpecularModulationOn ()| -  Set/Get the gradient magnitude specular modulation 
+
+\item  \verb|obj.GradientSpecularModulationOff ()| -  Set/Get the gradient magnitude specular modulation 
+
+\item  \verb|int = obj.GetNoHardware ()| -  Conveniece methods for debugging
+
+\item  \verb|int = obj.GetWrongVLIVersion ()| -  Conveniece methods for debugging
+
+\item  \verb|int = obj.GetNumberOfBoards ()| -  Access methods for some board info
+
+\item  \verb|int = obj.GetMajorBoardVersion ()| -  Access methods for some board info
+
+\item  \verb|int = obj.GetMinorBoardVersion ()| -  Access methods for some board info
+
+\item  \verb|int = obj.GetAvailableBoardMemory ()| -  Access methods for some board info
+
+\item  \verb|obj.GetLockSizesForBoardMemory (int , int , int , int )| -  Access methods for some board info
+
+\item  \verb|obj.SetIntermixIntersectingGeometry (int )| -  Specify whether any geometry intersects the volume.
+
+\item  \verb|int = obj.GetIntermixIntersectingGeometryMinValue ()| -  Specify whether any geometry intersects the volume.
+
+\item  \verb|int = obj.GetIntermixIntersectingGeometryMaxValue ()| -  Specify whether any geometry intersects the volume.
+
+\item  \verb|int = obj.GetIntermixIntersectingGeometry ()| -  Specify whether any geometry intersects the volume.
+
+\item  \verb|obj.IntermixIntersectingGeometryOn ()| -  Specify whether any geometry intersects the volume.
+
+\item  \verb|obj.IntermixIntersectingGeometryOff ()| -  Specify whether any geometry intersects the volume.
+
+\item  \verb|obj.SetAutoAdjustMipmapLevels (int )| -  If set to 1, this mapper will select a mipmap level to use based
+ on the AllocatedRenderTime of the volume and the amount of time used
+ by the previous render.
+
+\item  \verb|int = obj.GetAutoAdjustMipmapLevelsMinValue ()| -  If set to 1, this mapper will select a mipmap level to use based
+ on the AllocatedRenderTime of the volume and the amount of time used
+ by the previous render.
+
+\item  \verb|int = obj.GetAutoAdjustMipmapLevelsMaxValue ()| -  If set to 1, this mapper will select a mipmap level to use based
+ on the AllocatedRenderTime of the volume and the amount of time used
+ by the previous render.
+
+\item  \verb|int = obj.GetAutoAdjustMipmapLevels ()| -  If set to 1, this mapper will select a mipmap level to use based
+ on the AllocatedRenderTime of the volume and the amount of time used
+ by the previous render.
+
+\item  \verb|obj.AutoAdjustMipmapLevelsOn ()| -  If set to 1, this mapper will select a mipmap level to use based
+ on the AllocatedRenderTime of the volume and the amount of time used
+ by the previous render.
+
+\item  \verb|obj.AutoAdjustMipmapLevelsOff ()| -  If set to 1, this mapper will select a mipmap level to use based
+ on the AllocatedRenderTime of the volume and the amount of time used
+ by the previous render.
+
+\item  \verb|obj.SetMinimumMipmapLevel (int )| -  Specify the minimum mipmap level to use -- the highest resolution.
+ Defaults to 0. This is the mipmap level that is used when interaction
+ stops.
+
+\item  \verb|int = obj.GetMinimumMipmapLevelMinValue ()| -  Specify the minimum mipmap level to use -- the highest resolution.
+ Defaults to 0. This is the mipmap level that is used when interaction
+ stops.
+
+\item  \verb|int = obj.GetMinimumMipmapLevelMaxValue ()| -  Specify the minimum mipmap level to use -- the highest resolution.
+ Defaults to 0. This is the mipmap level that is used when interaction
+ stops.
+
+\item  \verb|int = obj.GetMinimumMipmapLevel ()| -  Specify the minimum mipmap level to use -- the highest resolution.
+ Defaults to 0. This is the mipmap level that is used when interaction
+ stops.
+
+\item  \verb|obj.SetMaximumMipmapLevel (int )| -  Specify the maximum mipmap level to use -- the lowest resolution.
+ Defaults to 4. It will not help to set the level larger than
+ this unless your volume is very large because for each successive mipmap
+ level, the number of voxels along each axis is cut in half.
+
+\item  \verb|int = obj.GetMaximumMipmapLevelMinValue ()| -  Specify the maximum mipmap level to use -- the lowest resolution.
+ Defaults to 4. It will not help to set the level larger than
+ this unless your volume is very large because for each successive mipmap
+ level, the number of voxels along each axis is cut in half.
+
+\item  \verb|int = obj.GetMaximumMipmapLevelMaxValue ()| -  Specify the maximum mipmap level to use -- the lowest resolution.
+ Defaults to 4. It will not help to set the level larger than
+ this unless your volume is very large because for each successive mipmap
+ level, the number of voxels along each axis is cut in half.
+
+\item  \verb|int = obj.GetMaximumMipmapLevel ()| -  Specify the maximum mipmap level to use -- the lowest resolution.
+ Defaults to 4. It will not help to set the level larger than
+ this unless your volume is very large because for each successive mipmap
+ level, the number of voxels along each axis is cut in half.
+
+\item  \verb|obj.SetMipmapLevel (int )| -  Choose a mipmap level. If AutoAdjustMipmapLevels is off, then this
+ specifies the mipmap level to use during interaction. If
+ AutoAdjustMipmapLevels is on, then this specifies the initial mipmap
+ level to use.
+
+\item  \verb|int = obj.GetMipmapLevelMinValue ()| -  Choose a mipmap level. If AutoAdjustMipmapLevels is off, then this
+ specifies the mipmap level to use during interaction. If
+ AutoAdjustMipmapLevels is on, then this specifies the initial mipmap
+ level to use.
+
+\item  \verb|int = obj.GetMipmapLevelMaxValue ()| -  Choose a mipmap level. If AutoAdjustMipmapLevels is off, then this
+ specifies the mipmap level to use during interaction. If
+ AutoAdjustMipmapLevels is on, then this specifies the initial mipmap
+ level to use.
+
+\item  \verb|int = obj.GetMipmapLevel ()| -  Choose a mipmap level. If AutoAdjustMipmapLevels is off, then this
+ specifies the mipmap level to use during interaction. If
+ AutoAdjustMipmapLevels is on, then this specifies the initial mipmap
+ level to use.
+
+\end{itemize}

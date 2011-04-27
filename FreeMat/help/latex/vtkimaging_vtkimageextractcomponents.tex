@@ -1,0 +1,40 @@
+\section{vtkImageExtractComponents}
+
+\subsection{Usage}
+
+ vtkImageExtractComponents takes an input with any number of components
+ and outputs some of them.  It does involve a copy of the data.
+
+To create an instance of class vtkImageExtractComponents, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageExtractComponents
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageExtractComponents has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageExtractComponents class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageExtractComponents = obj.NewInstance ()|
+
+\item  \verb|vtkImageExtractComponents = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetComponents (int c1)| -  Set/Get the components to extract.
+
+\item  \verb|obj.SetComponents (int c1, int c2)| -  Set/Get the components to extract.
+
+\item  \verb|obj.SetComponents (int c1, int c2, int c3)| -  Set/Get the components to extract.
+
+\item  \verb|int = obj. GetComponents ()| -  Set/Get the components to extract.
+
+\item  \verb|int = obj.GetNumberOfComponents ()| -  Get the number of components to extract. This is set implicitly by the 
+ SetComponents() method.
+
+\end{itemize}

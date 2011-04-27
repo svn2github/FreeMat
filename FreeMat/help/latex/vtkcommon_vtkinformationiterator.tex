@@ -1,0 +1,47 @@
+\section{vtkInformationIterator}
+
+\subsection{Usage}
+
+ vtkInformationIterator can be used to iterate over the keys of an
+ information object. The corresponding values can then be directly
+ obtained from the information object using the keys.
+
+
+To create an instance of class vtkInformationIterator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformationIterator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformationIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformationIterator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformationIterator = obj.NewInstance ()|
+
+\item  \verb|vtkInformationIterator = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInformation (vtkInformation )| -  Set/Get the information to iterator over.
+
+\item  \verb|vtkInformation = obj.GetInformation ()| -  Set/Get the information to iterator over.
+
+\item  \verb|obj.InitTraversal ()| -  Move the iterator to the beginning of the collection.
+
+\item  \verb|obj.GoToFirstItem ()| -  Move the iterator to the beginning of the collection.
+
+\item  \verb|obj.GoToNextItem ()| -  Move the iterator to the next item in the collection.
+
+\item  \verb|int = obj.IsDoneWithTraversal ()| -  Test whether the iterator is currently pointing to a valid
+ item. Returns 1 for yes, 0 for no.
+
+\item  \verb|vtkInformationKey = obj.GetCurrentKey ()| -  Get the current item. Valid only when IsDoneWithTraversal()
+ returns 1.
+
+\end{itemize}

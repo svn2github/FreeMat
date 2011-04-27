@@ -1,0 +1,80 @@
+\section{vtkSQLDatabaseGraphSource}
+
+\subsection{Usage}
+
+ This class combines vtkSQLDatabase, vtkSQLQuery, and vtkQueryToGraph to
+ provide a convenience class for generating graphs from databases. 
+ Also this class can be easily wrapped and used within ParaView / OverView.
+
+To create an instance of class vtkSQLDatabaseGraphSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSQLDatabaseGraphSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSQLDatabaseGraphSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSQLDatabaseGraphSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSQLDatabaseGraphSource = obj.NewInstance ()|
+
+\item  \verb|vtkSQLDatabaseGraphSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkStdString = obj.GetURL ()|
+
+\item  \verb|obj.SetURL (vtkStdString \&url)|
+
+\item  \verb|obj.SetPassword (vtkStdString \&password)|
+
+\item  \verb|vtkStdString = obj.GetEdgeQuery ()|
+
+\item  \verb|obj.SetEdgeQuery (vtkStdString \&query)|
+
+\item  \verb|vtkStdString = obj.GetVertexQuery ()|
+
+\item  \verb|obj.SetVertexQuery (vtkStdString \&query)|
+
+\item  \verb|obj.AddLinkVertex (string column, string domain, int hidden)|
+
+\item  \verb|obj.ClearLinkVertices ()|
+
+\item  \verb|obj.AddLinkEdge (string column1, string column2)|
+
+\item  \verb|obj.ClearLinkEdges ()|
+
+\item  \verb|bool = obj.GetGenerateEdgePedigreeIds ()| -  If on (default), generate edge pedigree ids.
+ If off, assign an array to be edge pedigree ids.
+
+\item  \verb|obj.SetGenerateEdgePedigreeIds (bool )| -  If on (default), generate edge pedigree ids.
+ If off, assign an array to be edge pedigree ids.
+
+\item  \verb|obj.GenerateEdgePedigreeIdsOn ()| -  If on (default), generate edge pedigree ids.
+ If off, assign an array to be edge pedigree ids.
+
+\item  \verb|obj.GenerateEdgePedigreeIdsOff ()| -  If on (default), generate edge pedigree ids.
+ If off, assign an array to be edge pedigree ids.
+
+\item  \verb|obj.SetEdgePedigreeIdArrayName (string )| -  Use this array name for setting or generating edge pedigree ids.
+
+\item  \verb|string = obj.GetEdgePedigreeIdArrayName ()| -  Use this array name for setting or generating edge pedigree ids.
+
+\item  \verb|obj.SetDirected (bool )| -  If on (default), generate a directed output graph.
+ If off, generate an undirected output graph.
+
+\item  \verb|bool = obj.GetDirected ()| -  If on (default), generate a directed output graph.
+ If off, generate an undirected output graph.
+
+\item  \verb|obj.DirectedOn ()| -  If on (default), generate a directed output graph.
+ If off, generate an undirected output graph.
+
+\item  \verb|obj.DirectedOff ()| -  If on (default), generate a directed output graph.
+ If off, generate an undirected output graph.
+
+\end{itemize}

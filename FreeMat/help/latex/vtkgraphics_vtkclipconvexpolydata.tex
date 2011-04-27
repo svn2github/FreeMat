@@ -1,0 +1,39 @@
+\section{vtkClipConvexPolyData}
+
+\subsection{Usage}
+
+ vtkClipConvexPolyData is a filter that clips a convex polydata with a set
+ of planes. Its main usage is for clipping a bounding volume with frustum
+ planes (used later one in volume rendering).
+
+To create an instance of class vtkClipConvexPolyData, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkClipConvexPolyData
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkClipConvexPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkClipConvexPolyData class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkClipConvexPolyData = obj.NewInstance ()|
+
+\item  \verb|vtkClipConvexPolyData = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetPlanes (vtkPlaneCollection planes)| -  Set all the planes at once using a vtkPlanes implicit function.
+ This also sets the D value.
+
+\item  \verb|vtkPlaneCollection = obj.GetPlanes ()| -  Set all the planes at once using a vtkPlanes implicit function.
+ This also sets the D value.
+
+\item  \verb|long = obj.GetMTime ()| -  Redefines this method, as this filter depends on time of its components
+ (planes)
+
+\end{itemize}

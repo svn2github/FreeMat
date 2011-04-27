@@ -1,0 +1,64 @@
+\section{vtkSelection}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkSelection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSelection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSelection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSelection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSelection = obj.NewInstance ()|
+
+\item  \verb|vtkSelection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Initialize ()| -  Restore data object to initial state,
+
+\item  \verb|int = obj.GetDataObjectType ()| -  Returns the number of nodes in this selection.
+ Each node contains information about part of the selection.
+
+\item  \verb|int = obj.GetNumberOfNodes ()| -  Returns the number of nodes in this selection.
+ Each node contains information about part of the selection.
+
+\item  \verb|vtkSelectionNode = obj.GetNode (int idx)| -  Returns a node given it's index. Performs bound checking
+ and will return 0 if out-of-bounds.
+
+\item  \verb|obj.AddNode (vtkSelectionNode )| -  Adds a selection node.
+
+\item  \verb|obj.RemoveNode (int idx)| -  Removes a selection node.
+
+\item  \verb|obj.RemoveNode (vtkSelectionNode )| -  Removes a selection node.
+
+\item  \verb|obj.RemoveAllNodes ()| -  Removes a selection node.
+
+\item  \verb|obj.DeepCopy (vtkDataObject src)| -  Copy selection nodes of the input.
+
+\item  \verb|obj.ShallowCopy (vtkDataObject src)| -  Copy selection nodes of the input.
+ This is a shallow copy: selection lists and pointers in the
+ properties are passed by reference.
+
+\item  \verb|obj.Union (vtkSelection selection)| -  Union this selection with the specified selection.
+ Attempts to reuse selection nodes in this selection if properties
+ match exactly. Otherwise, creates new selection nodes.
+
+\item  \verb|obj.Union (vtkSelectionNode node)| -  Union this selection with the specified selection node.
+ Attempts to reuse a selection node in this selection if properties
+ match exactly. Otherwise, creates a new selection node.
+
+\item  \verb|long = obj.GetMTime ()| -  Return the MTime taking into account changes to the properties
+
+\item  \verb|obj.Dump ()| -  Dumps the contents of the selection, giving basic information only.
+
+\end{itemize}

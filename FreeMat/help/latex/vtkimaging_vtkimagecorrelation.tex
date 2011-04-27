@@ -1,0 +1,49 @@
+\section{vtkImageCorrelation}
+
+\subsection{Usage}
+
+ vtkImageCorrelation finds the correlation between two data sets. 
+ SetDimensionality determines
+ whether the Correlation will be 3D, 2D or 1D.  
+ The default is a 2D Correlation.  The Output type will be double.
+ The output size will match the size of the first input.
+ The second input is considered the correlation kernel.
+
+To create an instance of class vtkImageCorrelation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageCorrelation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageCorrelation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageCorrelation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageCorrelation = obj.NewInstance ()|
+
+\item  \verb|vtkImageCorrelation = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetDimensionality (int )| -  Determines how the input is interpreted (set of 2d slices ...).
+ The default is 2.
+
+\item  \verb|int = obj.GetDimensionalityMinValue ()| -  Determines how the input is interpreted (set of 2d slices ...).
+ The default is 2.
+
+\item  \verb|int = obj.GetDimensionalityMaxValue ()| -  Determines how the input is interpreted (set of 2d slices ...).
+ The default is 2.
+
+\item  \verb|int = obj.GetDimensionality ()| -  Determines how the input is interpreted (set of 2d slices ...).
+ The default is 2.
+
+\item  \verb|obj.SetInput1 (vtkDataObject in)| -  Set the correlation kernel.
+
+\item  \verb|obj.SetInput2 (vtkDataObject in)|
+
+\end{itemize}

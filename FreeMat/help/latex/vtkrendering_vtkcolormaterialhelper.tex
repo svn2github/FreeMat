@@ -1,0 +1,37 @@
+\section{vtkColorMaterialHelper}
+
+\subsection{Usage}
+
+  vtkColorMaterialHelper is a helper to assist in simulating the
+  ColorMaterial behaviour of the default OpenGL pipeline. Look at
+  vtkColorMaterialHelper\_s for available GLSL functions.
+
+
+To create an instance of class vtkColorMaterialHelper, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkColorMaterialHelper
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkColorMaterialHelper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkColorMaterialHelper class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkColorMaterialHelper = obj.NewInstance ()|
+
+\item  \verb|vtkColorMaterialHelper = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.PrepareForRendering ()| -  Prepares the shader i.e. reads color material paramters state from OpenGL. 
+ This must be called before the shader is bound. 
+
+\item  \verb|obj.Render ()| -  Uploads any uniforms needed. This must be called only
+ after the shader has been bound, but before rendering the geometry.
+
+\end{itemize}

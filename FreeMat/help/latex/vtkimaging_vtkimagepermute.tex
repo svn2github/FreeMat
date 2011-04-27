@@ -1,0 +1,38 @@
+\section{vtkImagePermute}
+
+\subsection{Usage}
+
+ vtkImagePermute reorders the axes of the input. Filtered axes specify
+ the input axes which become X, Y, Z.  The input has to have the
+ same scalar type of the output. The filter does copy the 
+ data when it executes. This filter is actually a very thin wrapper
+ around vtkImageReslice.
+
+To create an instance of class vtkImagePermute, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImagePermute
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImagePermute has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImagePermute class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImagePermute = obj.NewInstance ()|
+
+\item  \verb|vtkImagePermute = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFilteredAxes (int x, int y, int z)| -  The filtered axes are the input axes that get relabeled to X,Y,Z.
+
+\item  \verb|obj.SetFilteredAxes (int xyz[3])| -  The filtered axes are the input axes that get relabeled to X,Y,Z.
+
+\item  \verb|int = obj. GetFilteredAxes ()| -  The filtered axes are the input axes that get relabeled to X,Y,Z.
+
+\end{itemize}

@@ -1,0 +1,37 @@
+\section{vtkQuadratureSchemeDictionaryGenerator}
+
+\subsection{Usage}
+
+
+ Given an unstructured grid on its input this filter generates
+ for each data array in point data dictionary (ie an instance of 
+ vtkInformationQuadratureSchemeDefinitionVectorKey). This filter 
+ has been introduced to facilitate testing of the vtkQuadrature* 
+ classes as these cannot operate with the dictionary. This class
+ is for testing and should not be used for application development.
+
+ .SECTION See also
+ vtkQuadraturePointInterpolator, vtkQuadraturePointsGenerator, vtkQuadratureSchemeDefinition
+
+To create an instance of class vtkQuadratureSchemeDictionaryGenerator, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkQuadratureSchemeDictionaryGenerator
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkQuadratureSchemeDictionaryGenerator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkQuadratureSchemeDictionaryGenerator class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkQuadratureSchemeDictionaryGenerator = obj.NewInstance ()|
+
+\item  \verb|vtkQuadratureSchemeDictionaryGenerator = obj.SafeDownCast (vtkObject o)|
+
+\end{itemize}

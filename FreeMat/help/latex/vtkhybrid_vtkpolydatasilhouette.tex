@@ -1,0 +1,132 @@
+\section{vtkPolyDataSilhouette}
+
+\subsection{Usage}
+
+ vtkPolyDataSilhouette extracts a subset of a polygonal mesh edges to
+ generate an outline (silhouette) of the corresponding 3D object. In
+ addition, this filter can also extracts sharp edges (aka feature angles).
+ In order to use this filter you must specify the a point of view (origin) or
+ a direction (vector).  given this direction or origin, a silhouette is
+ generated wherever the surface's normal is orthogonal to the view direction.
+
+
+To create an instance of class vtkPolyDataSilhouette, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPolyDataSilhouette
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPolyDataSilhouette has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPolyDataSilhouette class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPolyDataSilhouette = obj.NewInstance ()|
+
+\item  \verb|vtkPolyDataSilhouette = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetEnableFeatureAngle (int )| -  Enables or Disables generation of silhouette edges along sharp edges
+
+\item  \verb|int = obj.GetEnableFeatureAngle ()| -  Enables or Disables generation of silhouette edges along sharp edges
+
+\item  \verb|obj.SetFeatureAngle (double )| -  Sets/Gets minimal angle for sharp edges detection. Default is 60
+
+\item  \verb|double = obj.GetFeatureAngle ()| -  Sets/Gets minimal angle for sharp edges detection. Default is 60
+
+\item  \verb|obj.SetBorderEdges (int )| -  Enables or Disables generation of border edges. Note: borders exist only
+ in case of non closed surface
+
+\item  \verb|int = obj.GetBorderEdges ()| -  Enables or Disables generation of border edges. Note: borders exist only
+ in case of non closed surface
+
+\item  \verb|obj.BorderEdgesOn ()| -  Enables or Disables generation of border edges. Note: borders exist only
+ in case of non closed surface
+
+\item  \verb|obj.BorderEdgesOff ()| -  Enables or Disables generation of border edges. Note: borders exist only
+ in case of non closed surface
+
+\item  \verb|obj.SetPieceInvariant (int )| -  Enables or Disables piece invariance. This is usefull when dealing with
+ multi-block data sets. Note: requires one level of ghost cells
+
+\item  \verb|int = obj.GetPieceInvariant ()| -  Enables or Disables piece invariance. This is usefull when dealing with
+ multi-block data sets. Note: requires one level of ghost cells
+
+\item  \verb|obj.PieceInvariantOn ()| -  Enables or Disables piece invariance. This is usefull when dealing with
+ multi-block data sets. Note: requires one level of ghost cells
+
+\item  \verb|obj.PieceInvariantOff ()| -  Enables or Disables piece invariance. This is usefull when dealing with
+ multi-block data sets. Note: requires one level of ghost cells
+
+\item  \verb|obj.SetDirection (int )| -  Specify how view direction is computed. By default, the
+ camera origin (eye) is used.
+
+\item  \verb|int = obj.GetDirection ()| -  Specify how view direction is computed. By default, the
+ camera origin (eye) is used.
+
+\item  \verb|obj.SetDirectionToSpecifiedVector ()| -  Specify how view direction is computed. By default, the
+ camera origin (eye) is used.
+
+\item  \verb|obj.SetDirectionToSpecifiedOrigin ()| -  Specify how view direction is computed. By default, the
+ camera origin (eye) is used.
+
+\item  \verb|obj.SetDirectionToCameraVector ()| -  Specify how view direction is computed. By default, the
+ camera origin (eye) is used.
+
+\item  \verb|obj.SetDirectionToCameraOrigin ()| -  Specify a camera that is used to define the view direction.  This ivar
+ only has effect if the direction is set to VTK\_DIRECTION\_CAMERA\_ORIGIN or
+ VTK\_DIRECTION\_CAMERA\_VECTOR, and a camera is specified.
+
+\item  \verb|obj.SetCamera (vtkCamera )| -  Specify a camera that is used to define the view direction.  This ivar
+ only has effect if the direction is set to VTK\_DIRECTION\_CAMERA\_ORIGIN or
+ VTK\_DIRECTION\_CAMERA\_VECTOR, and a camera is specified.
+
+\item  \verb|vtkCamera = obj.GetCamera ()| -  Specify a camera that is used to define the view direction.  This ivar
+ only has effect if the direction is set to VTK\_DIRECTION\_CAMERA\_ORIGIN or
+ VTK\_DIRECTION\_CAMERA\_VECTOR, and a camera is specified.
+
+\item  \verb|obj.SetProp3D (vtkProp3D )| -  Specify a transformation matrix (via the vtkProp3D::GetMatrix() method)
+ that is used to include the effects of transformation. This ivar only has
+ effect if the direction is set to VTK\_DIRECTION\_CAMERA\_ORIGIN or
+ VTK\_DIRECTION\_CAMERA\_VECTOR, and a camera is specified. Specifying the
+ vtkProp3D is optional.
+
+\item  \verb|vtkProp3D = obj.GetProp3D ()| -  Specify a transformation matrix (via the vtkProp3D::GetMatrix() method)
+ that is used to include the effects of transformation. This ivar only has
+ effect if the direction is set to VTK\_DIRECTION\_CAMERA\_ORIGIN or
+ VTK\_DIRECTION\_CAMERA\_VECTOR, and a camera is specified. Specifying the
+ vtkProp3D is optional.
+
+\item  \verb|obj.SetVector (double , double , double )| -  Set/Get the sort direction. This ivar only has effect if the sort
+ direction is set to SetDirectionToSpecifiedVector(). The edge detection
+ occurs in the direction of the vector.
+
+\item  \verb|obj.SetVector (double  a[3])| -  Set/Get the sort direction. This ivar only has effect if the sort
+ direction is set to SetDirectionToSpecifiedVector(). The edge detection
+ occurs in the direction of the vector.
+
+\item  \verb|double = obj. GetVector ()| -  Set/Get the sort direction. This ivar only has effect if the sort
+ direction is set to SetDirectionToSpecifiedVector(). The edge detection
+ occurs in the direction of the vector.
+
+\item  \verb|obj.SetOrigin (double , double , double )| -  Set/Get the sort origin. This ivar only has effect if the sort direction
+ is set to SetDirectionToSpecifiedOrigin(). The edge detection occurs in
+ the direction of the origin to each edge's center.
+
+\item  \verb|obj.SetOrigin (double  a[3])| -  Set/Get the sort origin. This ivar only has effect if the sort direction
+ is set to SetDirectionToSpecifiedOrigin(). The edge detection occurs in
+ the direction of the origin to each edge's center.
+
+\item  \verb|double = obj. GetOrigin ()| -  Set/Get the sort origin. This ivar only has effect if the sort direction
+ is set to SetDirectionToSpecifiedOrigin(). The edge detection occurs in
+ the direction of the origin to each edge's center.
+
+\item  \verb|long = obj.GetMTime ()| -  Return MTime also considering the dependent objects: the camera
+ and/or the prop3D.
+
+\end{itemize}

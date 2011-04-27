@@ -12,9 +12,9 @@ statements are used with two statement blocks as follows
      statements_2
    end
 \end{verbatim}
-The meaning of this construction is: try to execute \verb|statements_1|,
+The meaning of this construction is: try to execute \verb|statements\_1|,
 and if any errors occur during the execution, then execute the
-code in \verb|statements_2|.  An error can either be a FreeMat generated
+code in \verb|statements\_2|.  An error can either be a FreeMat generated
 error (such as a syntax error in the use of a built in function), or
 an error raised with the \verb|error| command.
 \subsection{Examples}
@@ -38,10 +38,10 @@ and then on one that we create (so that we know it exists).
 --> read_file('this_filename_is_invalid')
 
 c = 
-could not open file because of error :Access mode r requires file to exist 
+could not open file because of error :Invalid handle!
 
 ans = 
-could not open file because of error :Access mode r requires file to exist 
+could not open file because of error :Invalid handle!
 --> fp = fopen('test_text.txt','w');
 --> fprintf(fp,'a line of text\n');
 --> fclose(fp);

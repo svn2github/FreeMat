@@ -1,0 +1,47 @@
+\section{vtkMultiThreader}
+
+\subsection{Usage}
+
+ vtkMultithreader is a class that provides support for multithreaded
+ execution using sproc() on an SGI, or pthread\_create on any platform
+ supporting POSIX threads.  This class can be used to execute a single
+ method on multiple threads, or to specify a method per thread. 
+
+To create an instance of class vtkMultiThreader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMultiThreader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMultiThreader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMultiThreader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMultiThreader = obj.NewInstance ()|
+
+\item  \verb|vtkMultiThreader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetNumberOfThreads (int )| -  Get/Set the number of threads to create. It will be clamped to the range
+ 1 - VTK\_MAX\_THREADS, so the caller of this method should check that the
+ requested number of threads was accepted.
+
+\item  \verb|int = obj.GetNumberOfThreadsMinValue ()| -  Get/Set the number of threads to create. It will be clamped to the range
+ 1 - VTK\_MAX\_THREADS, so the caller of this method should check that the
+ requested number of threads was accepted.
+
+\item  \verb|int = obj.GetNumberOfThreadsMaxValue ()| -  Get/Set the number of threads to create. It will be clamped to the range
+ 1 - VTK\_MAX\_THREADS, so the caller of this method should check that the
+ requested number of threads was accepted.
+
+\item  \verb|int = obj.GetNumberOfThreads ()| -  Get/Set the number of threads to create. It will be clamped to the range
+ 1 - VTK\_MAX\_THREADS, so the caller of this method should check that the
+ requested number of threads was accepted.
+
+\end{itemize}

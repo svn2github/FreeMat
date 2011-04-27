@@ -1,0 +1,33 @@
+\section{vtkDataSetToImageFilter}
+
+\subsection{Usage}
+
+ vtkDataSetToImageFilter is an abstract filter class whose subclasses take
+ as input any dataset and generate image data on output.
+
+To create an instance of class vtkDataSetToImageFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDataSetToImageFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDataSetToImageFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDataSetToImageFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDataSetToImageFilter = obj.NewInstance ()|
+
+\item  \verb|vtkDataSetToImageFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInput (vtkDataSet input)| -  Set / get the input data or filter.
+
+\item  \verb|vtkDataSet = obj.GetInput ()| -  Set / get the input data or filter.
+
+\end{itemize}

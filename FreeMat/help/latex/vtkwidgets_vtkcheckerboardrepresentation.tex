@@ -1,0 +1,107 @@
+\section{vtkCheckerboardRepresentation}
+
+\subsection{Usage}
+
+ The vtkCheckerboardRepresentation is used to implement the representation of
+ the vtkCheckerboardWidget. The user can adjust the number of divisions in
+ each of the i-j directions in a 2D image. A frame appears around the
+ vtkImageActor with sliders along each side of the frame. The user can
+ interactively adjust the sliders to the desired number of checkerboard
+ subdivisions. The representation uses four instances of 
+ vtkSliderRepresentation3D to implement itself.
+
+To create an instance of class vtkCheckerboardRepresentation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCheckerboardRepresentation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCheckerboardRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCheckerboardRepresentation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard VTK methods.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard VTK methods.
+
+\item  \verb|vtkCheckerboardRepresentation = obj.NewInstance ()| -  Standard VTK methods.
+
+\item  \verb|vtkCheckerboardRepresentation = obj.SafeDownCast (vtkObject o)| -  Standard VTK methods.
+
+\item  \verb|obj.SetCheckerboard (vtkImageCheckerboard chkrbrd)| -  Specify an instance of vtkImageCheckerboard to manipulate.
+
+\item  \verb|vtkImageCheckerboard = obj.GetCheckerboard ()| -  Specify an instance of vtkImageCheckerboard to manipulate.
+
+\item  \verb|obj.SetImageActor (vtkImageActor imageActor)| -  Specify an instance of vtkImageActor to decorate.
+
+\item  \verb|vtkImageActor = obj.GetImageActor ()| -  Specify an instance of vtkImageActor to decorate.
+
+\item  \verb|obj.SetCornerOffset (double )| -  Specify the offset of the ends of the sliders (on the boundary edges of
+ the image) from the corner of the image. The offset is expressed as a
+ normalized fraction of the border edges.
+
+\item  \verb|double = obj.GetCornerOffsetMinValue ()| -  Specify the offset of the ends of the sliders (on the boundary edges of
+ the image) from the corner of the image. The offset is expressed as a
+ normalized fraction of the border edges.
+
+\item  \verb|double = obj.GetCornerOffsetMaxValue ()| -  Specify the offset of the ends of the sliders (on the boundary edges of
+ the image) from the corner of the image. The offset is expressed as a
+ normalized fraction of the border edges.
+
+\item  \verb|double = obj.GetCornerOffset ()| -  Specify the offset of the ends of the sliders (on the boundary edges of
+ the image) from the corner of the image. The offset is expressed as a
+ normalized fraction of the border edges.
+
+\item  \verb|obj.SliderValueChanged (int sliderNum)| -  This method is invoked by the vtkCheckerboardWidget() when a value of some
+ slider has changed.
+
+\item  \verb|obj.SetTopRepresentation (vtkSliderRepresentation3D )| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|obj.SetRightRepresentation (vtkSliderRepresentation3D )| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|obj.SetBottomRepresentation (vtkSliderRepresentation3D )| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|obj.SetLeftRepresentation (vtkSliderRepresentation3D )| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|vtkSliderRepresentation3D = obj.GetTopRepresentation ()| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|vtkSliderRepresentation3D = obj.GetRightRepresentation ()| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|vtkSliderRepresentation3D = obj.GetBottomRepresentation ()| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|vtkSliderRepresentation3D = obj.GetLeftRepresentation ()| -  Set and get the instances of vtkSliderRepresention used to implement this
+ representation. Normally default representations are created, but you can
+ specify the ones you want to use.
+
+\item  \verb|obj.BuildRepresentation ()| -  Methods required by superclass.
+
+\item  \verb|obj.GetActors (vtkPropCollection )| -  Methods required by superclass.
+
+\item  \verb|obj.ReleaseGraphicsResources (vtkWindow w)| -  Methods required by superclass.
+
+\item  \verb|int = obj.RenderOverlay (vtkViewport viewport)| -  Methods required by superclass.
+
+\item  \verb|int = obj.RenderOpaqueGeometry (vtkViewport viewport)| -  Methods required by superclass.
+
+\item  \verb|int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)| -  Methods required by superclass.
+
+\item  \verb|int = obj.HasTranslucentPolygonalGeometry ()| -  Methods required by superclass.
+
+\end{itemize}

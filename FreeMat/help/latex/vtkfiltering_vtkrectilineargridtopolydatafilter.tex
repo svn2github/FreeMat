@@ -1,0 +1,33 @@
+\section{vtkRectilinearGridToPolyDataFilter}
+
+\subsection{Usage}
+
+ vtkRectilinearGridToPolyDataFilter is a filter whose subclasses take as
+ input rectilinear grid datasets and generate polygonal data on output.
+
+To create an instance of class vtkRectilinearGridToPolyDataFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRectilinearGridToPolyDataFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRectilinearGridToPolyDataFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRectilinearGridToPolyDataFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRectilinearGridToPolyDataFilter = obj.NewInstance ()|
+
+\item  \verb|vtkRectilinearGridToPolyDataFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInput (vtkRectilinearGrid input)| -  Set / get the input Grid or filter.
+
+\item  \verb|vtkRectilinearGrid = obj.GetInput ()| -  Set / get the input Grid or filter.
+
+\end{itemize}

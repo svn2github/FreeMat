@@ -1,0 +1,40 @@
+\section{vtkSLACParticleReader}
+
+\subsection{Usage}
+
+
+ A reader for a data format used by Omega3p, Tau3p, and several other tools
+ used at the Standford Linear Accelerator Center (SLAC).  The underlying
+ format uses netCDF to store arrays, but also imposes some conventions
+ to store a list of particles in 3D space.
+ 
+ This reader supports pieces, but in actuality only loads anything in
+ piece 0.  All other pieces are empty.
+
+
+To create an instance of class vtkSLACParticleReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkSLACParticleReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkSLACParticleReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkSLACParticleReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkSLACParticleReader = obj.NewInstance ()|
+
+\item  \verb|vtkSLACParticleReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetFileName ()|
+
+\item  \verb|obj.SetFileName (string )|
+
+\end{itemize}

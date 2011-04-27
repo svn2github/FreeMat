@@ -1,0 +1,86 @@
+\section{vtkExtractGeometry}
+
+\subsection{Usage}
+
+ vtkExtractGeometry extracts from its input dataset all cells that are either
+ completely inside or outside of a specified implicit function. Any type of
+ dataset can be input to this filter. On output the filter generates an
+ unstructured grid.
+
+ To use this filter you must specify an implicit function. You must also
+ specify whethter to extract cells lying inside or outside of the implicit 
+ function. (The inside of an implicit function is the negative values 
+ region.) An option exists to extract cells that are neither inside or
+ outside (i.e., boundary).
+
+ A more efficient version of this filter is available for vtkPolyData input.
+ See vtkExtractPolyDataGeometry.
+
+To create an instance of class vtkExtractGeometry, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkExtractGeometry
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkExtractGeometry has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkExtractGeometry class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkExtractGeometry = obj.NewInstance ()|
+
+\item  \verb|vtkExtractGeometry = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|long = obj.GetMTime ()| -  Return the MTime taking into account changes to the implicit function
+
+\item  \verb|obj.SetImplicitFunction (vtkImplicitFunction )| -  Specify the implicit function for inside/outside checks.
+
+\item  \verb|vtkImplicitFunction = obj.GetImplicitFunction ()| -  Specify the implicit function for inside/outside checks.
+
+\item  \verb|obj.SetExtractInside (int )| -  Boolean controls whether to extract cells that are inside of implicit 
+ function (ExtractInside == 1) or outside of implicit function 
+ (ExtractInside == 0).
+
+\item  \verb|int = obj.GetExtractInside ()| -  Boolean controls whether to extract cells that are inside of implicit 
+ function (ExtractInside == 1) or outside of implicit function 
+ (ExtractInside == 0).
+
+\item  \verb|obj.ExtractInsideOn ()| -  Boolean controls whether to extract cells that are inside of implicit 
+ function (ExtractInside == 1) or outside of implicit function 
+ (ExtractInside == 0).
+
+\item  \verb|obj.ExtractInsideOff ()| -  Boolean controls whether to extract cells that are inside of implicit 
+ function (ExtractInside == 1) or outside of implicit function 
+ (ExtractInside == 0).
+
+\item  \verb|obj.SetExtractBoundaryCells (int )| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|int = obj.GetExtractBoundaryCells ()| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|obj.ExtractBoundaryCellsOn ()| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|obj.ExtractBoundaryCellsOff ()| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|obj.SetExtractOnlyBoundaryCells (int )| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|int = obj.GetExtractOnlyBoundaryCells ()| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|obj.ExtractOnlyBoundaryCellsOn ()| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\item  \verb|obj.ExtractOnlyBoundaryCellsOff ()| -  Boolean controls whether to extract cells that are partially inside.
+ By default, ExtractBoundaryCells is off.
+
+\end{itemize}

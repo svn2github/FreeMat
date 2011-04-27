@@ -1,0 +1,123 @@
+\section{vtkPExodusReader}
+
+\subsection{Usage}
+
+ vtkPExodusReader is a unstructured grid source object that reads
+ PExodusReaderII files. Most of the meta data associated with the
+ file is loaded when UpdateInformation is called. This includes
+ information like Title, number of blocks, number and names of
+ arrays. This data can be retrieved from methods in this
+ reader. Separate arrays that are meant to be a single vector, are
+ combined internally for convenience. To be combined, the array
+ names have to be identical except for a trailing X,Y and Z (or
+ x,y,z). By default all cell and point arrays are loaded. However,
+ the user can flag arrays not to load with the methods
+ ''SetPointDataArrayLoadFlag'' and ''SetCellDataArrayLoadFlag''. The
+ reader responds to piece requests by loading only a range of the
+ possible blocks. Unused points are filtered out internally.
+
+To create an instance of class vtkPExodusReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPExodusReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPExodusReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPExodusReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPExodusReader = obj.NewInstance ()|
+
+\item  \verb|vtkPExodusReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetFilePattern (string )| -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+
+\item  \verb|string = obj.GetFilePattern ()| -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+
+\item  \verb|obj.SetFilePrefix (string )| -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+
+\item  \verb|string = obj.GetFilePrefix ()| -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+
+\item  \verb|obj.SetFileRange (int , int )| -  Set the range of files that are being loaded. The range for single
+ file should add to 0.
+
+\item  \verb|obj.SetFileRange (int r)| -  Set the range of files that are being loaded. The range for single
+ file should add to 0.
+
+\item  \verb|int = obj. GetFileRange ()| -  Set the range of files that are being loaded. The range for single
+ file should add to 0.
+
+\item  \verb|obj.SetFileName (string name)|
+
+\item  \verb|int = obj.GetNumberOfFileNames ()| -    Return the number of files to be read.
+
+\item  \verb|int = obj.GetNumberOfFiles ()| -    Return the number of files to be read.
+
+\item  \verb|obj.SetGenerateFileIdArray (int flag)|
+
+\item  \verb|int = obj.GetGenerateFileIdArray ()|
+
+\item  \verb|obj.GenerateFileIdArrayOn ()|
+
+\item  \verb|obj.GenerateFileIdArrayOff ()|
+
+\item  \verb|int = obj.GetTotalNumberOfElements ()|
+
+\item  \verb|int = obj.GetTotalNumberOfNodes ()|
+
+\item  \verb|int = obj.GetNumberOfVariableArrays ()|
+
+\item  \verb|string = obj.GetVariableArrayName (int a\_which)|
+
+\item  \verb|obj.EnableDSPFiltering ()|
+
+\item  \verb|obj.AddFilter (vtkDSPFilterDefinition a\_filter)|
+
+\item  \verb|obj.StartAddingFilter ()|
+
+\item  \verb|obj.AddFilterInputVar (string name)|
+
+\item  \verb|obj.AddFilterOutputVar (string name)|
+
+\item  \verb|obj.AddFilterNumeratorWeight (double weight)|
+
+\item  \verb|obj.AddFilterForwardNumeratorWeight (double weight)|
+
+\item  \verb|obj.AddFilterDenominatorWeight (double weight)|
+
+\item  \verb|obj.FinishAddingFilter ()|
+
+\item  \verb|obj.RemoveFilter (string a\_outputVariableName)|
+
+\end{itemize}

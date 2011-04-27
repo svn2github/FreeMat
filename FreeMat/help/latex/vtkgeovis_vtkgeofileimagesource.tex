@@ -1,0 +1,43 @@
+\section{vtkGeoFileImageSource}
+
+\subsection{Usage}
+
+ vtkGeoFileImageSource is a vtkGeoSource that fetches .vti images from
+ disk in a directory with a certain naming scheme. You may use
+ vtkGeoAlignedImageRepresentation's SaveDatabase method to generate
+ an database of image tiles in this format.
+
+To create an instance of class vtkGeoFileImageSource, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGeoFileImageSource
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGeoFileImageSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGeoFileImageSource class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGeoFileImageSource = obj.NewInstance ()|
+
+\item  \verb|vtkGeoFileImageSource = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkGeoFileImageSource = obj.()|
+
+\item  \verb|~vtkGeoFileImageSource = obj.()|
+
+\item  \verb|bool = obj.FetchRoot (vtkGeoTreeNode root)| -  Fetches the root image representing the whole globe.
+
+\item  \verb|bool = obj.FetchChild (vtkGeoTreeNode node, int index, vtkGeoTreeNode child)| -  Fetches the child image of a parent from disk.
+
+\item  \verb|obj.SetPath (string )| -  The path the tiled image database.
+
+\item  \verb|string = obj.GetPath ()| -  The path the tiled image database.
+
+\end{itemize}

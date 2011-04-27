@@ -1,0 +1,39 @@
+\section{vtkEmptyRepresentation}
+
+\subsection{Usage}
+
+
+To create an instance of class vtkEmptyRepresentation, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkEmptyRepresentation
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkEmptyRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkEmptyRepresentation class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkEmptyRepresentation = obj.NewInstance ()|
+
+\item  \verb|vtkEmptyRepresentation = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort ()| -  Since this representation has no inputs, override superclass 
+ implementation with one that ignores ''port'' and ''conn'' and still allows it
+ to have an annotation output.
+
+\item  \verb|vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort (int port)| -  Since this representation has no inputs, override superclass 
+ implementation with one that ignores ''port'' and ''conn'' and still allows it
+ to have an annotation output.
+
+\item  \verb|vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort (int port, int conn)| -  Since this representation has no inputs, override superclass 
+ implementation with one that ignores ''port'' and ''conn'' and still allows it
+ to have an annotation output.
+
+\end{itemize}

@@ -1,0 +1,46 @@
+\section{vtkActorCollection}
+
+\subsection{Usage}
+
+ vtkActorCollection represents and provides methods to manipulate a list of
+ actors (i.e., vtkActor and subclasses). The list is unsorted and duplicate
+ entries are not prevented.
+
+To create an instance of class vtkActorCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkActorCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkActorCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkActorCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkActorCollection = obj.NewInstance ()|
+
+\item  \verb|vtkActorCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkActor a)| -  Add an actor to the list.
+
+\item  \verb|vtkActor = obj.GetNextActor ()| -  Get the next actor in the list.
+
+\item  \verb|vtkActor = obj.GetLastActor ()| -  Get the last actor in the list.
+
+\item  \verb|vtkActor = obj.GetNextItem ()| -  Access routines that are provided for compatibility with previous
+ version of VTK.  Please use the GetNextActor(), GetLastActor() variants
+ where possible.
+
+\item  \verb|vtkActor = obj.GetLastItem ()| -  Access routines that are provided for compatibility with previous
+ version of VTK.  Please use the GetNextActor(), GetLastActor() variants
+ where possible.
+
+\item  \verb|obj.ApplyProperties (vtkProperty p)| -  Apply properties to all actors in this collection.
+
+\end{itemize}

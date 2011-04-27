@@ -1,0 +1,248 @@
+\section{vtkColorTransferFunction}
+
+\subsection{Usage}
+
+ vtkColorTransferFunction is a color mapping in RGB or HSV space that
+ uses piecewise hermite functions to allow interpolation that can be
+ piecewise constant, piecewise linear, or somewhere in-between 
+ (a modified piecewise hermite function that squishes the function
+ according to a sharpness parameter). The function also allows for
+ the specification of the midpoint (the place where the function
+ reaches the average of the two bounding nodes) as a normalize distance
+ between nodes.
+ See the description of class vtkPiecewiseFunction for an explanation of
+ midpoint and sharpness.
+
+To create an instance of class vtkColorTransferFunction, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkColorTransferFunction
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkColorTransferFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkColorTransferFunction class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkColorTransferFunction = obj.NewInstance ()|
+
+\item  \verb|vtkColorTransferFunction = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.DeepCopy (vtkColorTransferFunction f)|
+
+\item  \verb|obj.ShallowCopy (vtkColorTransferFunction f)|
+
+\item  \verb|int = obj.GetSize ()| -  How many points are there defining this function?
+
+\item  \verb|int = obj.AddRGBPoint (double x, double r, double g, double b)| -  Add/Remove a point to/from the function defined in RGB or HSV
+ Return the index of the point (0 based), or -1 on error.
+ See the description of class vtkPiecewiseFunction for an explanation of
+ midpoint and sharpness.
+
+\item  \verb|int = obj.AddRGBPoint (double x, double r, double g, double b, double midpoint, double sharpness)| -  Add/Remove a point to/from the function defined in RGB or HSV
+ Return the index of the point (0 based), or -1 on error.
+ See the description of class vtkPiecewiseFunction for an explanation of
+ midpoint and sharpness.
+
+\item  \verb|int = obj.AddHSVPoint (double x, double h, double s, double v)| -  Add/Remove a point to/from the function defined in RGB or HSV
+ Return the index of the point (0 based), or -1 on error.
+ See the description of class vtkPiecewiseFunction for an explanation of
+ midpoint and sharpness.
+
+\item  \verb|int = obj.AddHSVPoint (double x, double h, double s, double v, double midpoint, double sharpness)| -  Add/Remove a point to/from the function defined in RGB or HSV
+ Return the index of the point (0 based), or -1 on error.
+ See the description of class vtkPiecewiseFunction for an explanation of
+ midpoint and sharpness.
+
+\item  \verb|int = obj.RemovePoint (double x)| -  Add/Remove a point to/from the function defined in RGB or HSV
+ Return the index of the point (0 based), or -1 on error.
+ See the description of class vtkPiecewiseFunction for an explanation of
+ midpoint and sharpness.
+
+\item  \verb|obj.AddRGBSegment (double x1, double r1, double g1, double b1, double x2, double r2, double g2, double b2)| -  Add two points to the function and remove all the points 
+ between them
+
+\item  \verb|obj.AddHSVSegment (double x1, double h1, double s1, double v1, double x2, double h2, double s2, double v2)| -  Add two points to the function and remove all the points 
+ between them
+
+\item  \verb|obj.RemoveAllPoints ()| -  Remove all points
+
+\item  \verb|double = obj.GetColor (double x)| -  Returns an RGB color for the specified scalar value 
+
+\item  \verb|obj.GetColor (double x, double rgb[3])| -  Returns an RGB color for the specified scalar value 
+
+\item  \verb|double = obj.GetRedValue (double x)| -  Get the color components individually.
+
+\item  \verb|double = obj.GetGreenValue (double x)| -  Get the color components individually.
+
+\item  \verb|double = obj.GetBlueValue (double x)| -  Get the color components individually.
+
+\item  \verb|int = obj.GetNodeValue (int index, double val[6])| -  For the node specified by index, set/get the
+ location (X), R, G, and B values, midpoint, and 
+ sharpness values at the node.
+
+\item  \verb|int = obj.SetNodeValue (int index, double val[6])| -  For the node specified by index, set/get the
+ location (X), R, G, and B values, midpoint, and 
+ sharpness values at the node.
+
+\item  \verb|double = obj. GetRange ()| -  Returns min and max position of all function points.
+
+\item  \verb|int = obj.AdjustRange (double range[2])| -  Remove all points out of the new range, and make sure there is a point
+ at each end of that range.
+ Return 1 on success, 0 otherwise.
+
+\item  \verb|obj.GetTable (double x1, double x2, int n, double table)| -  Fills in a table of n function values between x1 and x2
+
+\item  \verb|obj.GetTable (double x1, double x2, int n, float table)| -  Fills in a table of n function values between x1 and x2
+
+\item  \verb|obj.BuildFunctionFromTable (double x1, double x2, int size, double table)| -  Construct a color transfer function from a table. Function range is
+ is set to [x1, x2], each function size is set to size, and function 
+ points are regularly spaced between x1 and x2. Parameter ''table'' is 
+ assumed to be a block of memory of size [3*size]
+
+\item  \verb|obj.SetClamping (int )| -  Sets and gets the clamping value for this transfer function.
+
+\item  \verb|int = obj.GetClampingMinValue ()| -  Sets and gets the clamping value for this transfer function.
+
+\item  \verb|int = obj.GetClampingMaxValue ()| -  Sets and gets the clamping value for this transfer function.
+
+\item  \verb|int = obj.GetClamping ()| -  Sets and gets the clamping value for this transfer function.
+
+\item  \verb|obj.ClampingOn ()| -  Sets and gets the clamping value for this transfer function.
+
+\item  \verb|obj.ClampingOff ()| -  Sets and gets the clamping value for this transfer function.
+
+\item  \verb|obj.SetColorSpace (int )| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|int = obj.GetColorSpaceMinValue ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|int = obj.GetColorSpaceMaxValue ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.SetColorSpaceToRGB ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.SetColorSpaceToHSV ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.SetColorSpaceToLab ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.SetColorSpaceToDiverging ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|int = obj.GetColorSpace ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.SetHSVWrap (int )| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|int = obj.GetHSVWrap ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.HSVWrapOn ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.HSVWrapOff ()| -  Set/Get the color space used for interpolation: RGB, HSV, CIELAB, or
+ Diverging.  In HSV mode, if HSVWrap is on, it will take the shortest path
+ in Hue (going back through 0 if that is the shortest way around the hue
+ circle) whereas if HSVWrap is off it will not go through 0 (in order the
+ match the current functionality of vtkLookupTable).  Diverging is a special
+ mode where colors will pass through white when interpolating between two
+ saturated colors.
+
+\item  \verb|obj.SetScale (int )| -  Set the type of scale to use, linear or logarithmic.  The default
+ is linear.  If the scale is logarithmic, and the range contains
+ zero, the color mapping will be linear.
+
+\item  \verb|obj.SetScaleToLinear ()| -  Set the type of scale to use, linear or logarithmic.  The default
+ is linear.  If the scale is logarithmic, and the range contains
+ zero, the color mapping will be linear.
+
+\item  \verb|obj.SetScaleToLog10 ()| -  Set the type of scale to use, linear or logarithmic.  The default
+ is linear.  If the scale is logarithmic, and the range contains
+ zero, the color mapping will be linear.
+
+\item  \verb|int = obj.GetScale ()| -  Set the type of scale to use, linear or logarithmic.  The default
+ is linear.  If the scale is logarithmic, and the range contains
+ zero, the color mapping will be linear.
+
+\item  \verb|obj.FillFromDataPointer (int , double )| -  Returns a list of all nodes
+ Fills from a pointer to data stored in a similar list of nodes.
+
+\item  \verb|obj.SetAllowDuplicateScalars (int )| -  Toggle whether to allow duplicate scalar values in the color transfer
+ function (off by default).
+
+\item  \verb|int = obj.GetAllowDuplicateScalars ()| -  Toggle whether to allow duplicate scalar values in the color transfer
+ function (off by default).
+
+\item  \verb|obj.AllowDuplicateScalarsOn ()| -  Toggle whether to allow duplicate scalar values in the color transfer
+ function (off by default).
+
+\item  \verb|obj.AllowDuplicateScalarsOff ()| -  Toggle whether to allow duplicate scalar values in the color transfer
+ function (off by default).
+
+\end{itemize}

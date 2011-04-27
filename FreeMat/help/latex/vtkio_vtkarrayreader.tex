@@ -1,0 +1,36 @@
+\section{vtkArrayReader}
+
+\subsection{Usage}
+
+ Reads sparse and dense vtkArray data written with vtkArrayWriter.
+
+ Outputs:
+   Output port 0: vtkArrayData containing a dense or sparse array.
+
+
+To create an instance of class vtkArrayReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkArrayReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkArrayReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkArrayReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkArrayReader = obj.NewInstance ()|
+
+\item  \verb|vtkArrayReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetFileName ()| -  Set the filesystem location from which data will be read.
+
+\item  \verb|obj.SetFileName (string )| -  Set the filesystem location from which data will be read.
+
+\end{itemize}

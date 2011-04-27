@@ -1,0 +1,34 @@
+\section{vtkXMLStructuredGridWriter}
+
+\subsection{Usage}
+
+ vtkXMLStructuredGridWriter writes the VTK XML StructuredGrid file
+ format.  One structured grid input can be written into one file in
+ any number of streamed pieces.  The standard extension for this
+ writer's file format is ''vts''.  This writer is also used to write a
+ single piece of the parallel file format.
+
+To create an instance of class vtkXMLStructuredGridWriter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLStructuredGridWriter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLStructuredGridWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLStructuredGridWriter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLStructuredGridWriter = obj.NewInstance ()|
+
+\item  \verb|vtkXMLStructuredGridWriter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|string = obj.GetDefaultFileExtension ()| -  Get the default file extension for files written by this writer.
+
+\end{itemize}

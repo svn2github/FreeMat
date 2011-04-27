@@ -1,0 +1,53 @@
+\section{vtkCompositeDataPipeline}
+
+\subsection{Usage}
+
+ vtkCompositeDataPipeline is an executive that supports the processing of
+ composite dataset. It supports algorithms that are aware of composite
+ dataset as well as those that are not. Type checking is performed at run
+ time. Algorithms that are not composite dataset-aware have to support
+ all dataset types contained in the composite dataset. The pipeline
+ execution can be summarized as follows: 
+
+ * REQUEST\_INFORMATION: The producers have to provide information about
+ the contents of the composite dataset in this pass. 
+ Sources that can produce more than one piece (note that a piece is
+ different than a block; each piece consistes of 0 or more blocks) should
+ set MAXIMUM\_NUMBER\_OF\_PIECES to -1.
+
+ * REQUEST\_UPDATE\_EXTENT: This pass is identical to the one implemented
+ in vtkStreamingDemandDrivenPipeline
+
+ * REQUEST\_DATA: This is where the algorithms execute. If the 
+ vtkCompositeDataPipeline is assigned to a simple filter, 
+ it will invoke the  vtkStreamingDemandDrivenPipeline passes in a loop, 
+ passing a different block each time and will collect the results in a 
+ composite dataset. 
+ .SECTION See also
+  vtkCompositeDataSet
+
+To create an instance of class vtkCompositeDataPipeline, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkCompositeDataPipeline
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkCompositeDataPipeline has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkCompositeDataPipeline class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkCompositeDataPipeline = obj.NewInstance ()|
+
+\item  \verb|vtkCompositeDataPipeline = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkDataObject = obj.GetCompositeOutputData (int port)| -  Returns the data object stored with the DATA\_OBJECT() in the
+ output port
+
+\end{itemize}

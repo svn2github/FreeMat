@@ -1,0 +1,31 @@
+\section{vtkXMLPUnstructuredDataReader}
+
+\subsection{Usage}
+
+ vtkXMLPUnstructuredDataReader provides functionality common to all
+ parallel unstructured data format readers.
+
+To create an instance of class vtkXMLPUnstructuredDataReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLPUnstructuredDataReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLPUnstructuredDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLPUnstructuredDataReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLPUnstructuredDataReader = obj.NewInstance ()|
+
+\item  \verb|vtkXMLPUnstructuredDataReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.CopyOutputInformation (vtkInformation outInfo, int port)|
+
+\end{itemize}

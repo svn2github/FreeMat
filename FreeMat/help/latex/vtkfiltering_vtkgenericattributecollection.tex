@@ -1,0 +1,141 @@
+\section{vtkGenericAttributeCollection}
+
+\subsection{Usage}
+
+ vtkGenericAttributeCollection is a class that collects attributes 
+ (represented by vtkGenericAttribute).
+
+To create an instance of class vtkGenericAttributeCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGenericAttributeCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGenericAttributeCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGenericAttributeCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard type definition and print methods for a VTK class.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard type definition and print methods for a VTK class.
+
+\item  \verb|vtkGenericAttributeCollection = obj.NewInstance ()| -  Standard type definition and print methods for a VTK class.
+
+\item  \verb|vtkGenericAttributeCollection = obj.SafeDownCast (vtkObject o)| -  Standard type definition and print methods for a VTK class.
+
+\item  \verb|int = obj.GetNumberOfAttributes ()| -  Return the number of attributes (e.g., instances of vtkGenericAttribute) 
+ in the collection.
+ 
+
+\item  \verb|int = obj.GetNumberOfComponents ()| -  Return the number of components. This is the sum of all components
+ found in all attributes.
+ 
+
+\item  \verb|int = obj.GetNumberOfPointCenteredComponents ()| -  Return the number of components. This is the sum of all components
+ found in all point centered attributes.
+ 
+
+\item  \verb|int = obj.GetMaxNumberOfComponents ()| -  Maximum number of components encountered among all attributes.
+ 
+ 
+
+\item  \verb|long = obj.GetActualMemorySize ()| -  Actual size of the data in kilobytes; only valid after the pipeline has
+ updated. It is guaranteed to be greater than or equal to the memory
+ required to represent the data.
+
+\item  \verb|int = obj.IsEmpty ()| -  Indicate whether the collection contains any attributes.
+ 
+
+\item  \verb|vtkGenericAttribute = obj.GetAttribute (int i)| -  Return a pointer to the ith instance of vtkGenericAttribute.
+ 
+ 
+ 
+
+\item  \verb|int = obj.FindAttribute (string name)| -  Return the index of the attribute named `name'. Return the non-negative
+ index if found. Return -1 otherwise.
+ 
+ 
+
+\item  \verb|int = obj.GetAttributeIndex (int i)| -  Return the index of the first component of attribute `i' in an array of
+ format attrib0comp0 attrib0comp1 ... attrib4comp0 ...
+ 
+ 
+
+\item  \verb|obj.InsertNextAttribute (vtkGenericAttribute a)| -  Add the attribute `a' to the end of the collection.
+ 
+ 
+ 
+
+\item  \verb|obj.InsertAttribute (int i, vtkGenericAttribute a)| -  Replace the attribute at index `i' by `a'.
+ 
+ 
+ 
+ 
+ 
+
+\item  \verb|obj.RemoveAttribute (int i)| -  Remove the attribute at `i'.
+ 
+ 
+ 
+
+\item  \verb|obj.Reset ()| -  Remove all attributes.
+ 
+
+\item  \verb|obj.DeepCopy (vtkGenericAttributeCollection other)| -  Copy, without reference counting, the other attribute array.
+ 
+ 
+ 
+
+\item  \verb|obj.ShallowCopy (vtkGenericAttributeCollection other)| -  Copy, via reference counting, the other attribute array.
+ 
+ 
+ 
+
+\item  \verb|long = obj.GetMTime ()| -  vtkAttributeCollection is a composite object and needs to check each
+ member of its collection for modified time.
+
+\item  \verb|int = obj.GetActiveAttribute ()| -  Index of the attribute to be processed (not necessarily scalar).
+ 
+ 
+
+\item  \verb|int = obj.GetActiveComponent ()| -  Component of the active attribute to be processed. -1 means module.
+ 
+ 
+       result<GetAttribute(GetActiveAttribute())->GetNumberOfComponents()
+
+\item  \verb|obj.SetActiveAttribute (int attribute, int component)| -  Set the scalar attribute to be processed. -1 means module.
+ 
+ 
+ 
+              component<GetAttribute(attribute)->GetNumberOfComponents()
+ 
+               GetActiveComponent()==component
+
+\item  \verb|int = obj.GetNumberOfAttributesToInterpolate ()| -  Number of attributes to interpolate.
+ 
+ 
+
+\item  \verb|int = obj.HasAttribute (int size, int attributes, int attribute)|
+
+\item  \verb|obj.SetAttributesToInterpolate (int size, int attributes)| -  Set the attributes to interpolate.
+ 
+ 
+ 
+ 
+                     !HasAttributes(size,attributes,GetActiveAttribute())
+ 
+               (GetAttributesToInterpolate()==attributes)
+
+\item  \verb|obj.SetAttributesToInterpolateToAll ()| -  Set the attributes to interpolate.
+ 
+ 
+ 
+ 
+                     !HasAttributes(size,attributes,GetActiveAttribute())
+ 
+               (GetAttributesToInterpolate()==attributes)
+
+\end{itemize}

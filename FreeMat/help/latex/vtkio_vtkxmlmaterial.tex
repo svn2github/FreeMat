@@ -1,0 +1,60 @@
+\section{vtkXMLMaterial}
+
+\subsection{Usage}
+
+ vtkXMLMaterial encapsulates VTK Material description. It keeps a pointer
+ to vtkXMLDataElement that defines the material and provides 
+ access to Shaders/Properties defined in it.
+ .SECTION Thanks
+ Shader support in VTK includes key contributions by Gary Templet at 
+ Sandia National Labs.
+
+To create an instance of class vtkXMLMaterial, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkXMLMaterial
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkXMLMaterial has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkXMLMaterial class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkXMLMaterial = obj.NewInstance ()|
+
+\item  \verb|vtkXMLMaterial = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.GetNumberOfProperties ()| -  Get number of elements of type Property.
+
+\item  \verb|int = obj.GetNumberOfTextures ()| -  Get number of elements of type Texture.
+
+\item  \verb|int = obj.GetNumberOfVertexShaders ()| -  Get number of Vertex shaders.
+
+\item  \verb|int = obj.GetNumberOfFragmentShaders ()| -  Get number of fragment shaders.
+
+\item  \verb|vtkXMLDataElement = obj.GetProperty (int id)| -  Get the ith vtkXMLDataElement of type <Property />.
+
+\item  \verb|vtkXMLDataElement = obj.GetTexture (int id)| -  Get the ith vtkXMLDataElement of type <Texture />.
+
+\item  \verb|vtkXMLShader = obj.GetVertexShader (int id)| -  Get the ith vtkXMLDataElement of type <VertexShader />.
+
+\item  \verb|vtkXMLShader = obj.GetFragmentShader (int id)| -  Get the ith vtkXMLDataElement of type <FragmentShader />.
+
+\item  \verb|vtkXMLDataElement = obj.GetRootElement ()| -  Get/Set the XML root element that describes this material.
+
+\item  \verb|obj.SetRootElement (vtkXMLDataElement )| -  Get/Set the XML root element that describes this material.
+
+\item  \verb|int = obj.GetShaderLanguage ()| -  Get the Language used by the shaders in this Material.
+ The Language of a vtkXMLMaterial is based on the Language of it's
+ shaders. 
+
+\item  \verb|int = obj.GetShaderStyle ()| -  Get the style the shaders.
+ 
+
+\end{itemize}

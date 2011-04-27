@@ -1,0 +1,48 @@
+\section{vtkRTXMLPolyDataReader}
+
+\subsection{Usage}
+
+ vtkRTXMLPolyDataReader reads the VTK XML PolyData file format in real time.  
+
+To create an instance of class vtkRTXMLPolyDataReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkRTXMLPolyDataReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkRTXMLPolyDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkRTXMLPolyDataReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkRTXMLPolyDataReader = obj.NewInstance ()|
+
+\item  \verb|vtkRTXMLPolyDataReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetLocation (string dataLocation)|
+
+\item  \verb|string = obj.GetDataLocation ()|
+
+\item  \verb|obj.UpdateToNextFile ()| -  Reader will read in the next available data file
+ The filename is this->NextFileName maintained internally 
+
+\item  \verb|int = obj.NewDataAvailable ()| -  check if there is new data file available in the 
+ given DataLocation
+
+\item  \verb|obj.ResetReader ()| -  ResetReader check the data directory specified in 
+ this->DataLocation, and reset the Internal data structure
+ specifically: this->Internal->ProcessedFileList
+ for monitoring the arriving new data files
+ if SetDataLocation(char*) is set by the user, 
+ this ResetReader() should also be invoked. 
+
+\item  \verb|string = obj.GetNextFileName ()| -  Return the name of the next available data file
+ assume NewDataAvailable() return VTK\_OK
+
+\end{itemize}

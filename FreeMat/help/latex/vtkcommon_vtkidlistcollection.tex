@@ -1,0 +1,35 @@
+\section{vtkIdListCollection}
+
+\subsection{Usage}
+
+ vtkIdListCollection is an object that creates and manipulates lists of
+ datasets. See also vtkCollection and subclasses.
+
+To create an instance of class vtkIdListCollection, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkIdListCollection
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkIdListCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkIdListCollection class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkIdListCollection = obj.NewInstance ()|
+
+\item  \verb|vtkIdListCollection = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.AddItem (vtkIdList ds)| -  Get the next dataset in the list.
+
+\item  \verb|vtkIdList = obj.GetNextItem ()| -  Get the next dataset in the list.
+
+\item  \verb|vtkIdList = obj.GetItem (int i)| -  Get the ith dataset in the list.
+
+\end{itemize}

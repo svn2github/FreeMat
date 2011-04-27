@@ -1,0 +1,94 @@
+\section{vtkProjectedTexture}
+
+\subsection{Usage}
+
+ vtkProjectedTexture assigns texture coordinates to a dataset as if
+ the texture was projected from a slide projected located somewhere in the
+ scene.  Methods are provided to position the projector and aim it at a 
+ location, to set the width of the projector's frustum, and to set the
+ range of texture coordinates assigned to the dataset.  
+
+ Objects in the scene that appear behind the projector are also assigned
+ texture coordinates; the projected image is left-right and top-bottom 
+ flipped, much as a lens' focus flips the rays of light that pass through
+ it.  A warning is issued if a point in the dataset falls at the focus
+ of the projector.
+
+To create an instance of class vtkProjectedTexture, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkProjectedTexture
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkProjectedTexture has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkProjectedTexture class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkProjectedTexture = obj.NewInstance ()|
+
+\item  \verb|vtkProjectedTexture = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetPosition (double , double , double )| -  Set/Get the position of the focus of the projector.
+
+\item  \verb|obj.SetPosition (double  a[3])| -  Set/Get the position of the focus of the projector.
+
+\item  \verb|double = obj. GetPosition ()| -  Set/Get the position of the focus of the projector.
+
+\item  \verb|obj.SetFocalPoint (double focalPoint[3])| -  Set/Get the focal point of the projector (a point that lies along
+ the center axis of the projector's frustum).
+
+\item  \verb|obj.SetFocalPoint (double x, double y, double z)| -  Set/Get the focal point of the projector (a point that lies along
+ the center axis of the projector's frustum).
+
+\item  \verb|double = obj. GetFocalPoint ()| -  Set/Get the focal point of the projector (a point that lies along
+ the center axis of the projector's frustum).
+
+\item  \verb|obj.SetCameraMode (int )| -  Set/Get the camera mode of the projection -- pinhole projection or
+ two mirror projection.
+
+\item  \verb|int = obj.GetCameraMode ()| -  Set/Get the camera mode of the projection -- pinhole projection or
+ two mirror projection.
+
+\item  \verb|obj.SetCameraModeToPinhole ()| -  Set/Get the camera mode of the projection -- pinhole projection or
+ two mirror projection.
+
+\item  \verb|obj.SetCameraModeToTwoMirror ()| -  Set/Get the mirror separation for the two mirror system.
+
+\item  \verb|obj.SetMirrorSeparation (double )| -  Set/Get the mirror separation for the two mirror system.
+
+\item  \verb|double = obj.GetMirrorSeparation ()| -  Set/Get the mirror separation for the two mirror system.
+
+\item  \verb|double = obj. GetOrientation ()| -  Get the normalized orientation vector of the projector.
+
+\item  \verb|obj.SetUp (double , double , double )|
+
+\item  \verb|obj.SetUp (double  a[3])|
+
+\item  \verb|double = obj. GetUp ()|
+
+\item  \verb|obj.SetAspectRatio (double , double , double )|
+
+\item  \verb|obj.SetAspectRatio (double  a[3])|
+
+\item  \verb|double = obj. GetAspectRatio ()|
+
+\item  \verb|obj.SetSRange (double , double )| -  Specify s-coordinate range for texture s-t coordinate pair.
+
+\item  \verb|obj.SetSRange (double  a[2])| -  Specify s-coordinate range for texture s-t coordinate pair.
+
+\item  \verb|double = obj. GetSRange ()| -  Specify s-coordinate range for texture s-t coordinate pair.
+
+\item  \verb|obj.SetTRange (double , double )| -  Specify t-coordinate range for texture s-t coordinate pair.
+
+\item  \verb|obj.SetTRange (double  a[2])| -  Specify t-coordinate range for texture s-t coordinate pair.
+
+\item  \verb|double = obj. GetTRange ()| -  Specify t-coordinate range for texture s-t coordinate pair.
+
+\end{itemize}

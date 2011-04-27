@@ -1,0 +1,440 @@
+\section{vtkMedicalImageProperties}
+
+\subsection{Usage}
+
+ vtkMedicalImageProperties is a helper class that can be used by medical
+ image readers and applications to encapsulate medical image/acquisition
+ properties. Later on, this should probably be extended to add
+ any user-defined property.
+
+To create an instance of class vtkMedicalImageProperties, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkMedicalImageProperties
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkMedicalImageProperties has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkMedicalImageProperties class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkMedicalImageProperties = obj.NewInstance ()|
+
+\item  \verb|vtkMedicalImageProperties = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Clear ()| -  Convenience method to reset all fields to an emptry string/value
+
+\item  \verb|obj.SetPatientName (string )| -  Patient name
+ For ex: DICOM (0010,0010) = DOE,JOHN
+
+\item  \verb|string = obj.GetPatientName ()| -  Patient name
+ For ex: DICOM (0010,0010) = DOE,JOHN
+
+\item  \verb|obj.SetPatientID (string )| -  Patient ID
+ For ex: DICOM (0010,0020) = 1933197
+
+\item  \verb|string = obj.GetPatientID ()| -  Patient ID
+ For ex: DICOM (0010,0020) = 1933197
+
+\item  \verb|obj.SetPatientAge (string )| -  Patient age
+ Format: nnnD, nnW, nnnM or nnnY (eventually nnD, nnW, nnY)
+         with D (day), M (month), W (week), Y (year)
+ For ex: DICOM (0010,1010) = 031Y
+
+\item  \verb|string = obj.GetPatientAge ()| -  Patient age
+ Format: nnnD, nnW, nnnM or nnnY (eventually nnD, nnW, nnY)
+         with D (day), M (month), W (week), Y (year)
+ For ex: DICOM (0010,1010) = 031Y
+
+\item  \verb|int = obj.GetPatientAgeYear ()|
+
+\item  \verb|int = obj.GetPatientAgeMonth ()|
+
+\item  \verb|int = obj.GetPatientAgeWeek ()|
+
+\item  \verb|int = obj.GetPatientAgeDay ()|
+
+\item  \verb|obj.SetPatientSex (string )| -  Patient sex
+ For ex: DICOM (0010,0040) = M
+
+\item  \verb|string = obj.GetPatientSex ()| -  Patient sex
+ For ex: DICOM (0010,0040) = M
+
+\item  \verb|obj.SetPatientBirthDate (string )| -  Patient birth date
+ Format: yyyymmdd
+ For ex: DICOM (0010,0030) = 19680427
+
+\item  \verb|string = obj.GetPatientBirthDate ()| -  Patient birth date
+ Format: yyyymmdd
+ For ex: DICOM (0010,0030) = 19680427
+
+\item  \verb|int = obj.GetPatientBirthDateYear ()|
+
+\item  \verb|int = obj.GetPatientBirthDateMonth ()|
+
+\item  \verb|int = obj.GetPatientBirthDateDay ()|
+
+\item  \verb|obj.SetStudyDate (string )| -  Study Date
+ Format: yyyymmdd
+ For ex: DICOM (0008,0020) = 20030617
+
+\item  \verb|string = obj.GetStudyDate ()| -  Study Date
+ Format: yyyymmdd
+ For ex: DICOM (0008,0020) = 20030617
+
+\item  \verb|obj.SetAcquisitionDate (string )| -  Acquisition Date
+ Format: yyyymmdd
+ For ex: DICOM (0008,0022) = 20030617
+
+\item  \verb|string = obj.GetAcquisitionDate ()| -  Acquisition Date
+ Format: yyyymmdd
+ For ex: DICOM (0008,0022) = 20030617
+
+\item  \verb|int = obj.GetAcquisitionDateYear ()|
+
+\item  \verb|int = obj.GetAcquisitionDateMonth ()|
+
+\item  \verb|int = obj.GetAcquisitionDateDay ()|
+
+\item  \verb|obj.SetStudyTime (string )| -  Study Time
+ Format: hhmmss.frac (any trailing component(s) can be ommited)
+ For ex: DICOM (0008,0030) = 162552.0705 or 230012, or 0012
+
+\item  \verb|string = obj.GetStudyTime ()| -  Study Time
+ Format: hhmmss.frac (any trailing component(s) can be ommited)
+ For ex: DICOM (0008,0030) = 162552.0705 or 230012, or 0012
+
+\item  \verb|obj.SetAcquisitionTime (string )| -  Acquisition time
+ Format: hhmmss.frac (any trailing component(s) can be ommited)
+ For ex: DICOM (0008,0032) = 162552.0705 or 230012, or 0012
+
+\item  \verb|string = obj.GetAcquisitionTime ()| -  Acquisition time
+ Format: hhmmss.frac (any trailing component(s) can be ommited)
+ For ex: DICOM (0008,0032) = 162552.0705 or 230012, or 0012
+
+\item  \verb|obj.SetImageDate (string )| -  Image Date aka Content Date
+ Format: yyyymmdd
+ For ex: DICOM (0008,0023) = 20030617
+
+\item  \verb|string = obj.GetImageDate ()| -  Image Date aka Content Date
+ Format: yyyymmdd
+ For ex: DICOM (0008,0023) = 20030617
+
+\item  \verb|int = obj.GetImageDateYear ()|
+
+\item  \verb|int = obj.GetImageDateMonth ()|
+
+\item  \verb|int = obj.GetImageDateDay ()|
+
+\item  \verb|obj.SetImageTime (string )| -  Image Time
+ Format: hhmmss.frac (any trailing component(s) can be ommited)
+ For ex: DICOM (0008,0033) = 162552.0705 or 230012, or 0012
+
+\item  \verb|string = obj.GetImageTime ()| -  Image Time
+ Format: hhmmss.frac (any trailing component(s) can be ommited)
+ For ex: DICOM (0008,0033) = 162552.0705 or 230012, or 0012
+
+\item  \verb|obj.SetImageNumber (string )| -  Image number
+ For ex: DICOM (0020,0013) = 1
+
+\item  \verb|string = obj.GetImageNumber ()| -  Image number
+ For ex: DICOM (0020,0013) = 1
+
+\item  \verb|obj.SetSeriesNumber (string )| -  Series number
+ For ex: DICOM (0020,0011) = 902
+
+\item  \verb|string = obj.GetSeriesNumber ()| -  Series number
+ For ex: DICOM (0020,0011) = 902
+
+\item  \verb|obj.SetSeriesDescription (string )| -  Series Description
+ User provided description of the Series
+ For ex: DICOM (0008,103e) = SCOUT
+
+\item  \verb|string = obj.GetSeriesDescription ()| -  Series Description
+ User provided description of the Series
+ For ex: DICOM (0008,103e) = SCOUT
+
+\item  \verb|obj.SetStudyID (string )| -  Study ID
+ For ex: DICOM (0020,0010) = 37481
+
+\item  \verb|string = obj.GetStudyID ()| -  Study ID
+ For ex: DICOM (0020,0010) = 37481
+
+\item  \verb|obj.SetStudyDescription (string )| -  Study description
+ For ex: DICOM (0008,1030) = BRAIN/C-SP/FACIAL
+
+\item  \verb|string = obj.GetStudyDescription ()| -  Study description
+ For ex: DICOM (0008,1030) = BRAIN/C-SP/FACIAL
+
+\item  \verb|obj.SetModality (string )| -  Modality
+ For ex: DICOM (0008,0060)= CT
+
+\item  \verb|string = obj.GetModality ()| -  Modality
+ For ex: DICOM (0008,0060)= CT
+
+\item  \verb|obj.SetManufacturer (string )| -  Manufacturer
+ For ex: DICOM (0008,0070) = Siemens
+
+\item  \verb|string = obj.GetManufacturer ()| -  Manufacturer
+ For ex: DICOM (0008,0070) = Siemens
+
+\item  \verb|obj.SetManufacturerModelName (string )| -  Manufacturer's Model Name
+ For ex: DICOM (0008,1090) = LightSpeed QX/i
+
+\item  \verb|string = obj.GetManufacturerModelName ()| -  Manufacturer's Model Name
+ For ex: DICOM (0008,1090) = LightSpeed QX/i
+
+\item  \verb|obj.SetStationName (string )| -  Station Name
+ For ex: DICOM (0008,1010) = LSPD\_OC8
+
+\item  \verb|string = obj.GetStationName ()| -  Station Name
+ For ex: DICOM (0008,1010) = LSPD\_OC8
+
+\item  \verb|obj.SetInstitutionName (string )| -  Institution Name
+ For ex: DICOM (0008,0080) = FooCity Medical Center
+
+\item  \verb|string = obj.GetInstitutionName ()| -  Institution Name
+ For ex: DICOM (0008,0080) = FooCity Medical Center
+
+\item  \verb|obj.SetConvolutionKernel (string )| -  Convolution Kernel (or algorithm used to reconstruct the data)
+ For ex: DICOM (0018,1210) = Bone
+
+\item  \verb|string = obj.GetConvolutionKernel ()| -  Convolution Kernel (or algorithm used to reconstruct the data)
+ For ex: DICOM (0018,1210) = Bone
+
+\item  \verb|obj.SetSliceThickness (string )| -  Slice Thickness (Nominal reconstructed slice thickness, in mm)
+ For ex: DICOM (0018,0050) = 0.273438
+
+\item  \verb|string = obj.GetSliceThickness ()| -  Slice Thickness (Nominal reconstructed slice thickness, in mm)
+ For ex: DICOM (0018,0050) = 0.273438
+
+\item  \verb|double = obj.GetSliceThicknessAsDouble ()| -  Slice Thickness (Nominal reconstructed slice thickness, in mm)
+ For ex: DICOM (0018,0050) = 0.273438
+
+\item  \verb|obj.SetKVP (string )| -  Peak kilo voltage output of the (x-ray) generator used
+ For ex: DICOM (0018,0060) = 120
+
+\item  \verb|string = obj.GetKVP ()| -  Peak kilo voltage output of the (x-ray) generator used
+ For ex: DICOM (0018,0060) = 120
+
+\item  \verb|obj.SetGantryTilt (string )| -  Gantry/Detector tilt (Nominal angle of tilt in degrees of the scanning
+ gantry.)
+ For ex: DICOM (0018,1120) = 15
+
+\item  \verb|string = obj.GetGantryTilt ()| -  Gantry/Detector tilt (Nominal angle of tilt in degrees of the scanning
+ gantry.)
+ For ex: DICOM (0018,1120) = 15
+
+\item  \verb|double = obj.GetGantryTiltAsDouble ()| -  Gantry/Detector tilt (Nominal angle of tilt in degrees of the scanning
+ gantry.)
+ For ex: DICOM (0018,1120) = 15
+
+\item  \verb|obj.SetEchoTime (string )| -  Echo Time
+ (Time in ms between the middle of the excitation pulse and the peak of
+ the echo produced)
+ For ex: DICOM (0018,0081) = 105
+
+\item  \verb|string = obj.GetEchoTime ()| -  Echo Time
+ (Time in ms between the middle of the excitation pulse and the peak of
+ the echo produced)
+ For ex: DICOM (0018,0081) = 105
+
+\item  \verb|obj.SetEchoTrainLength (string )| -  Echo Train Length
+ (Number of lines in k-space acquired per excitation per image)
+ For ex: DICOM (0018,0091) = 35
+
+\item  \verb|string = obj.GetEchoTrainLength ()| -  Echo Train Length
+ (Number of lines in k-space acquired per excitation per image)
+ For ex: DICOM (0018,0091) = 35
+
+\item  \verb|obj.SetRepetitionTime (string )| -  Repetition Time
+ The period of time in msec between the beginning of a pulse sequence and
+ the beginning of the succeeding (essentially identical) pulse sequence.
+ For ex: DICOM (0018,0080) = 2040
+
+\item  \verb|string = obj.GetRepetitionTime ()| -  Repetition Time
+ The period of time in msec between the beginning of a pulse sequence and
+ the beginning of the succeeding (essentially identical) pulse sequence.
+ For ex: DICOM (0018,0080) = 2040
+
+\item  \verb|obj.SetExposureTime (string )| -  Exposure time (time of x-ray exposure in msec)
+ For ex: DICOM (0018,1150) = 5
+
+\item  \verb|string = obj.GetExposureTime ()| -  Exposure time (time of x-ray exposure in msec)
+ For ex: DICOM (0018,1150) = 5
+
+\item  \verb|obj.SetXRayTubeCurrent (string )| -  X-ray tube current (in mA)
+ For ex: DICOM (0018,1151) = 400
+
+\item  \verb|string = obj.GetXRayTubeCurrent ()| -  X-ray tube current (in mA)
+ For ex: DICOM (0018,1151) = 400
+
+\item  \verb|obj.SetExposure (string )| -  Exposure (The exposure expressed in mAs, for example calculated
+ from Exposure Time and X-ray Tube Current)
+ For ex: DICOM (0018,1152) = 114
+
+\item  \verb|string = obj.GetExposure ()| -  Exposure (The exposure expressed in mAs, for example calculated
+ from Exposure Time and X-ray Tube Current)
+ For ex: DICOM (0018,1152) = 114
+
+\item  \verb|obj.SetDirectionCosine (double , double , double , double , double , double )| -  Get the direction cosine (default to 1,0,0,0,1,0)
+
+\item  \verb|obj.SetDirectionCosine (double  a[6])| -  Get the direction cosine (default to 1,0,0,0,1,0)
+
+\item  \verb|double = obj. GetDirectionCosine ()| -  Get the direction cosine (default to 1,0,0,0,1,0)
+
+\item  \verb|obj.AddUserDefinedValue (string name, string value)|
+
+\item  \verb|string = obj.GetUserDefinedValue (string name)|
+
+\item  \verb|int = obj.GetNumberOfUserDefinedValues ()|
+
+\item  \verb|string = obj.GetUserDefinedNameByIndex (int idx)|
+
+\item  \verb|string = obj.GetUserDefinedValueByIndex (int idx)|
+
+\item  \verb|obj.RemoveAllUserDefinedValues ()|
+
+\item  \verb|int = obj.AddWindowLevelPreset (double w, double l)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|obj.RemoveWindowLevelPreset (double w, double l)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|obj.RemoveAllWindowLevelPresets ()| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|int = obj.GetNumberOfWindowLevelPresets ()| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|int = obj.HasWindowLevelPreset (double w, double l)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|int = obj.GetWindowLevelPresetIndex (double w, double l)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|int = obj.GetNthWindowLevelPreset (int idx, double w, double l)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|double = obj.GetNthWindowLevelPreset (int idx)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|obj.SetNthWindowLevelPresetComment (int idx, string comment)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|string = obj.GetNthWindowLevelPresetComment (int idx)| -  Add/Remove/Query the window/level presets that may have been associated
+ to a medical image. Window is also known as 'width', level is also known
+ as 'center'. The same window/level pair can not be added twice.
+ As a convenience, a comment (aka Explanation) can be associated to
+ a preset.
+ For ex:
+ \begin{verbatim}
+         DICOM Window Center (0028,1050) = 00045\000470
+         DICOM Window Width  (0028,1051) = 0106\03412
+         DICOM Window Center Width Explanation (0028,1055) = WINDOW1\WINDOW2
+ \end{verbatim}
+
+\item  \verb|string = obj.GetInstanceUIDFromSliceID (int volumeidx, int sliceid)| -  Mapping from a sliceidx within a volumeidx into a DICOM Instance UID
+ Some DICOM reader can populate this structure so that later on from 
+ a slice index in a vtkImageData volume we can backtrack and find out
+ which 2d slice it was coming from
+
+\item  \verb|obj.SetInstanceUIDFromSliceID (int volumeidx, int sliceid, string uid)| -  Mapping from a sliceidx within a volumeidx into a DICOM Instance UID
+ Some DICOM reader can populate this structure so that later on from 
+ a slice index in a vtkImageData volume we can backtrack and find out
+ which 2d slice it was coming from
+
+\item  \verb|int = obj.GetOrientationType (int volumeidx)|
+
+\item  \verb|obj.SetOrientationType (int volumeidx, int orientation)|
+
+\item  \verb|obj.DeepCopy (vtkMedicalImageProperties p)| -  Copy the contents of p to this instance.
+
+\end{itemize}

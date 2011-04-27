@@ -1,0 +1,36 @@
+\section{vtkPNGReader}
+
+\subsection{Usage}
+
+ vtkPNGReader is a source object that reads PNG files.
+ It should be able to read most any PNG file
+
+
+To create an instance of class vtkPNGReader, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkPNGReader
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkPNGReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkPNGReader class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkPNGReader = obj.NewInstance ()|
+
+\item  \verb|vtkPNGReader = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|int = obj.CanReadFile (string fname)| -  Is the given file a PNG file?
+
+\item  \verb|string = obj.GetFileExtensions ()| -  Return a descriptive name for the file format that might be useful in a GUI.
+
+\item  \verb|string = obj.GetDescriptiveName ()|
+
+\end{itemize}

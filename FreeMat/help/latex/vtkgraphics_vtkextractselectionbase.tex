@@ -1,0 +1,49 @@
+\section{vtkExtractSelectionBase}
+
+\subsection{Usage}
+
+ vtkExtractSelectionBase is an abstract base class for all extract selection
+ filters. It defines some properties common to all extract selection filters.
+
+To create an instance of class vtkExtractSelectionBase, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkExtractSelectionBase
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkExtractSelectionBase has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkExtractSelectionBase class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkExtractSelectionBase = obj.NewInstance ()|
+
+\item  \verb|vtkExtractSelectionBase = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetSelectionConnection (vtkAlgorithmOutput algOutput)| -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+
+\item  \verb|obj.SetPreserveTopology (int )| -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+
+\item  \verb|int = obj.GetPreserveTopology ()| -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+
+\item  \verb|obj.PreserveTopologyOn ()| -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+
+\item  \verb|obj.PreserveTopologyOff ()| -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+
+\end{itemize}

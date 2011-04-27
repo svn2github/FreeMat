@@ -1,0 +1,35 @@
+\section{vtkDataSetToPolyDataFilter}
+
+\subsection{Usage}
+
+ vtkDataSetToPolyDataFilter is an abstract filter class whose subclasses 
+ take as input any dataset and generate polygonal data on output.
+
+To create an instance of class vtkDataSetToPolyDataFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkDataSetToPolyDataFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkDataSetToPolyDataFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkDataSetToPolyDataFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkDataSetToPolyDataFilter = obj.NewInstance ()|
+
+\item  \verb|vtkDataSetToPolyDataFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetInput (vtkDataSet input)| -  Set / get the input data or filter.
+
+\item  \verb|vtkDataSet = obj.GetInput ()| -  Set / get the input data or filter.
+
+\item  \verb|obj.ComputeInputUpdateExtents (vtkDataObject output)| -  Do not let images return more than requested.
+
+\end{itemize}

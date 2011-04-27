@@ -1,0 +1,50 @@
+\section{vtkImageResample}
+
+\subsection{Usage}
+
+ This filter produces an output with different spacing (and extent)
+ than the input.  Linear interpolation can be used to resample the data.
+ The Output spacing can be set explicitly or relative to input spacing
+ with the SetAxisMagnificationFactor method.
+
+To create an instance of class vtkImageResample, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageResample
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageResample has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageResample class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageResample = obj.NewInstance ()|
+
+\item  \verb|vtkImageResample = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetAxisOutputSpacing (int axis, double spacing)| -  Set desired spacing.  
+ Zero is a reserved value indicating spacing has not been set.
+
+\item  \verb|obj.SetAxisMagnificationFactor (int axis, double factor)| -  Set/Get Magnification factors.
+ Zero is a reserved value indicating values have not been computed.
+
+\item  \verb|double = obj.GetAxisMagnificationFactor (int axis, vtkInformation inInfo)| -  Set/Get Magnification factors.
+ Zero is a reserved value indicating values have not been computed.
+
+\item  \verb|obj.SetDimensionality (int )| -  Dimensionality is the number of axes which are considered during
+ execution. To process images dimensionality would be set to 2.
+ This has the same effect as setting the magnification of the third
+ axis to 1.0
+
+\item  \verb|int = obj.GetDimensionality ()| -  Dimensionality is the number of axes which are considered during
+ execution. To process images dimensionality would be set to 2.
+ This has the same effect as setting the magnification of the third
+ axis to 1.0
+
+\end{itemize}

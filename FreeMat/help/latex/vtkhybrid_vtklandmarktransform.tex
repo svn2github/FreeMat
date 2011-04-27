@@ -1,0 +1,92 @@
+\section{vtkLandmarkTransform}
+
+\subsection{Usage}
+
+ A vtkLandmarkTransform is defined by two sets of landmarks, the 
+ transform computed gives the best fit mapping one onto the other, in a 
+ least squares sense. The indices are taken to correspond, so point 1 
+ in the first set will get mapped close to point 1 in the second set, 
+ etc. Call SetSourceLandmarks and SetTargetLandmarks to specify the two
+ sets of landmarks, ensure they have the same number of points.
+
+To create an instance of class vtkLandmarkTransform, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkLandmarkTransform
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkLandmarkTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkLandmarkTransform class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkLandmarkTransform = obj.NewInstance ()|
+
+\item  \verb|vtkLandmarkTransform = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetSourceLandmarks (vtkPoints points)| -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+
+\item  \verb|obj.SetTargetLandmarks (vtkPoints points)| -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+
+\item  \verb|vtkPoints = obj.GetSourceLandmarks ()| -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+
+\item  \verb|vtkPoints = obj.GetTargetLandmarks ()| -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+
+\item  \verb|obj.SetMode (int )| -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK\_LANDMARK\_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK\_LANDMARK\_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK\_LANDMARK\_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+
+\item  \verb|obj.SetModeToRigidBody ()| -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK\_LANDMARK\_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK\_LANDMARK\_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK\_LANDMARK\_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+
+\item  \verb|obj.SetModeToSimilarity ()| -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK\_LANDMARK\_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK\_LANDMARK\_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK\_LANDMARK\_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+
+\item  \verb|obj.SetModeToAffine ()| -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK\_LANDMARK\_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK\_LANDMARK\_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK\_LANDMARK\_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+
+\item  \verb|int = obj.GetMode ()| -  Get the current transformation mode.
+
+\item  \verb|string = obj.GetModeAsString ()| -  Get the current transformation mode.
+
+\item  \verb|obj.Inverse ()| -  Invert the transformation.  This is done by switching the
+ source and target landmarks.
+
+\item  \verb|long = obj.GetMTime ()| -  Get the MTime.
+
+\item  \verb|vtkAbstractTransform = obj.MakeTransform ()| -  Make another transform of the same type.
+
+\end{itemize}

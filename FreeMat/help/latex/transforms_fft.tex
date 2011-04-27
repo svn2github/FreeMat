@@ -43,7 +43,7 @@ e^{\frac{2\pi(k-1)l}{n}}.
 \]
 The FFT is computed using the FFTPack library, available from 
 netlib at \verb|http://www.netlib.org|.  Generally speaking, the 
-computational cost for a FFT is (in worst case) \verb|O(n^2)|.
+computational cost for a FFT is (in worst case) \verb|O(n\^2)|.
 However, if \verb|n| is composite, and can be factored as
 \[
 n = \prod_{k=1}^{p} m_k,
@@ -53,7 +53,7 @@ then the DFT can be computed in
 O(n \sum_{k=1}^{p} m_k)
 \]
 operations.  If \verb|n| is a power of 2, then the FFT can be
-calculated in \verb|O(n log_2 n)|.  The calculations for the
+calculated in \verb|O(n log\_2 n)|.  The calculations for the
 inverse FFT are identical.
 \subsection{Example}
 

@@ -1,0 +1,37 @@
+\section{vtkImageCacheFilter}
+
+\subsection{Usage}
+
+ vtkImageCacheFilter keep a number of vtkImageDataObjects from previous
+ updates to satisfy future updates without needing to update the input.  It
+ does not change the data at all.  It just makes the pipeline more
+ efficient at the expense of using extra memory.
+
+To create an instance of class vtkImageCacheFilter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageCacheFilter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageCacheFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageCacheFilter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageCacheFilter = obj.NewInstance ()|
+
+\item  \verb|vtkImageCacheFilter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCacheSize (int size)| -  This is the maximum number of images that can be retained in memory.
+ it defaults to 10.
+
+\item  \verb|int = obj.GetCacheSize ()| -  This is the maximum number of images that can be retained in memory.
+ it defaults to 10.
+
+\end{itemize}

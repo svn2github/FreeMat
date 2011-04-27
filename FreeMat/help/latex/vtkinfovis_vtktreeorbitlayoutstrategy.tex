@@ -1,0 +1,65 @@
+\section{vtkTreeOrbitLayoutStrategy}
+
+\subsection{Usage}
+
+ Assigns points to the nodes of a tree to an orbital layout. Each parent
+ is orbited by its children, recursively.
+
+To create an instance of class vtkTreeOrbitLayoutStrategy, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkTreeOrbitLayoutStrategy
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkTreeOrbitLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkTreeOrbitLayoutStrategy class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkTreeOrbitLayoutStrategy = obj.NewInstance ()|
+
+\item  \verb|vtkTreeOrbitLayoutStrategy = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.Layout ()| -  Perform the orbital layout.
+
+\item  \verb|obj.SetLogSpacingValue (double )| -  The spacing of orbital levels. Levels near zero give more space
+ to levels near the root, while levels near one (the default)
+ create evenly-spaced levels. Levels above one give more space
+ to levels near the leaves.
+
+\item  \verb|double = obj.GetLogSpacingValue ()| -  The spacing of orbital levels. Levels near zero give more space
+ to levels near the root, while levels near one (the default)
+ create evenly-spaced levels. Levels above one give more space
+ to levels near the leaves.
+
+\item  \verb|obj.SetLeafSpacing (double )| -  The spacing of leaves.  Levels near one evenly space leaves
+ with no gaps between subtrees.  Levels near zero creates
+ large gaps between subtrees.
+
+\item  \verb|double = obj.GetLeafSpacingMinValue ()| -  The spacing of leaves.  Levels near one evenly space leaves
+ with no gaps between subtrees.  Levels near zero creates
+ large gaps between subtrees.
+
+\item  \verb|double = obj.GetLeafSpacingMaxValue ()| -  The spacing of leaves.  Levels near one evenly space leaves
+ with no gaps between subtrees.  Levels near zero creates
+ large gaps between subtrees.
+
+\item  \verb|double = obj.GetLeafSpacing ()| -  The spacing of leaves.  Levels near one evenly space leaves
+ with no gaps between subtrees.  Levels near zero creates
+ large gaps between subtrees.
+
+\item  \verb|obj.SetChildRadiusFactor (double )| -  This is a magic number right now. Controls the radius
+ of the child layout, all of this should be fixed at
+ some point with a more logical layout. Defaults to .5 :)
+
+\item  \verb|double = obj.GetChildRadiusFactor ()| -  This is a magic number right now. Controls the radius
+ of the child layout, all of this should be fixed at
+ some point with a more logical layout. Defaults to .5 :)
+
+\end{itemize}

@@ -1,0 +1,89 @@
+\section{vtkImplicitSelectionLoop}
+
+\subsection{Usage}
+
+ vtkImplicitSelectionLoop computes the implicit function value and
+ function gradient for a irregular, cylinder-like object whose cross
+ section is defined by a set of points forming a loop. The loop need
+ not be convex nor its points coplanar. However, the loop must be
+ non-self-intersecting when projected onto the plane defined by the
+ accumulated cross product around the loop (i.e., the axis of the
+ loop). (Alternatively, you can specify the normal to use.)
+
+ The following procedure is used to compute the implicit function
+ value for a point x. Each point of the loop is first projected onto
+ the plane defined by the loop normal. This forms a polygon. Then,
+ to evaluate the implicit function value, inside/outside tests are
+ used to determine if x is inside the polygon, and the distance to
+ the loop boundary is computed (negative values are inside the
+ loop).
+
+ One example application of this implicit function class is to draw a 
+ loop on the surface of a mesh, and use the loop to clip or extract 
+ cells from within the loop. Remember, the selection loop is ''infinite'' 
+ in length, you can use a plane (in boolean combination) to cap the extent
+ of the selection loop. Another trick is to use a connectivity filter to
+ extract the closest region to a given point (i.e., one of the points used
+ to define the selection loop).
+
+To create an instance of class vtkImplicitSelectionLoop, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImplicitSelectionLoop
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImplicitSelectionLoop has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImplicitSelectionLoop class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Standard VTK methods for printing and type information.
+
+\item  \verb|int = obj.IsA (string name)| -  Standard VTK methods for printing and type information.
+
+\item  \verb|vtkImplicitSelectionLoop = obj.NewInstance ()| -  Standard VTK methods for printing and type information.
+
+\item  \verb|vtkImplicitSelectionLoop = obj.SafeDownCast (vtkObject o)| -  Standard VTK methods for printing and type information.
+
+\item  \verb|double = obj.EvaluateFunction (double x[3])| -  Evaluate selection loop returning a signed distance.
+
+\item  \verb|double = obj.EvaluateFunction (double x, double y, double z)| -  Evaluate selection loop returning a signed distance.
+
+\item  \verb|obj.EvaluateGradient (double x[3], double n[3])| -  Evaluate selection loop returning the gradient.
+
+\item  \verb|obj.SetLoop (vtkPoints )| -  Set/Get the array of point coordinates defining the loop. There must
+ be at least three points used to define a loop.
+
+\item  \verb|vtkPoints = obj.GetLoop ()| -  Set/Get the array of point coordinates defining the loop. There must
+ be at least three points used to define a loop.
+
+\item  \verb|obj.SetAutomaticNormalGeneration (int )| -  Turn on/off automatic normal generation. By default, the normal is
+ computed from the accumulated cross product of the edges. You can also
+ specify the normal to use.
+
+\item  \verb|int = obj.GetAutomaticNormalGeneration ()| -  Turn on/off automatic normal generation. By default, the normal is
+ computed from the accumulated cross product of the edges. You can also
+ specify the normal to use.
+
+\item  \verb|obj.AutomaticNormalGenerationOn ()| -  Turn on/off automatic normal generation. By default, the normal is
+ computed from the accumulated cross product of the edges. You can also
+ specify the normal to use.
+
+\item  \verb|obj.AutomaticNormalGenerationOff ()| -  Turn on/off automatic normal generation. By default, the normal is
+ computed from the accumulated cross product of the edges. You can also
+ specify the normal to use.
+
+\item  \verb|obj.SetNormal (double , double , double )| -  Set / get the normal used to determine whether a point is inside or outside
+ the selection loop.
+
+\item  \verb|obj.SetNormal (double  a[3])| -  Set / get the normal used to determine whether a point is inside or outside
+ the selection loop.
+
+\item  \verb|double = obj. GetNormal ()| -  Set / get the normal used to determine whether a point is inside or outside
+ the selection loop.
+
+\item  \verb|long = obj.GetMTime ()| -  Overload GetMTime() because we depend on the Loop
+
+\end{itemize}

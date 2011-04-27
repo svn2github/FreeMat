@@ -1,0 +1,34 @@
+\section{vtkVolumeRayCastFunction}
+
+\subsection{Usage}
+
+ vtkVolumeRayCastFunction is a superclass for ray casting functions that 
+ can be used within a vtkVolumeRayCastMapper. This includes for example,
+ vtkVolumeRayCastCompositeFunction, vtkVolumeRayCastMIPFunction, and
+ vtkVolumeRayCastIsosurfaceFunction.
+
+To create an instance of class vtkVolumeRayCastFunction, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkVolumeRayCastFunction
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkVolumeRayCastFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkVolumeRayCastFunction class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkVolumeRayCastFunction = obj.NewInstance ()|
+
+\item  \verb|vtkVolumeRayCastFunction = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|float = obj.GetZeroOpacityThreshold (vtkVolume vol)| -  Get the value below which all scalar values are considered to
+ have 0 opacity.
+
+\end{itemize}

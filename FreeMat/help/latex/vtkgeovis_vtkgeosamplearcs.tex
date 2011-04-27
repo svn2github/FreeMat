@@ -1,0 +1,74 @@
+\section{vtkGeoSampleArcs}
+
+\subsection{Usage}
+
+ vtkGeoSampleArcs refines lines in the input polygonal data
+ so that the distance between adjacent points is no more than a threshold
+ distance. Points are interpolated along the surface of the globe.
+ This is useful in order to keep lines such as political boundaries from
+ intersecting the globe and becoming invisible.
+
+To create an instance of class vtkGeoSampleArcs, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkGeoSampleArcs
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkGeoSampleArcs has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkGeoSampleArcs class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkGeoSampleArcs = obj.NewInstance ()|
+
+\item  \verb|vtkGeoSampleArcs = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetGlobeRadius (double )| -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+
+\item  \verb|double = obj.GetGlobeRadius ()| -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+
+\item  \verb|obj.SetMaximumDistanceMeters (double )| -  The maximum distance, in meters, between adjacent points.
+
+\item  \verb|double = obj.GetMaximumDistanceMeters ()| -  The maximum distance, in meters, between adjacent points.
+
+\item  \verb|obj.SetInputCoordinateSystem (int )| -  The input coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|int = obj.GetInputCoordinateSystem ()| -  The input coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|obj.SetInputCoordinateSystemToRectangular ()| -  The input coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|obj.SetInputCoordinateSystemToSpherical ()| -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|obj.SetOutputCoordinateSystem (int )| -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|int = obj.GetOutputCoordinateSystem ()| -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|obj.SetOutputCoordinateSystemToRectangular ()| -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+
+\item  \verb|obj.SetOutputCoordinateSystemToSpherical ()|
+
+\end{itemize}

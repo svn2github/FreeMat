@@ -1,0 +1,100 @@
+\section{vtkUniformGrid}
+
+\subsection{Usage}
+
+ vtkUniformGrid is a subclass of vtkImageData. In addition to all
+ the image data functionality, it supports blanking.
+
+To create an instance of class vtkUniformGrid, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkUniformGrid
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkUniformGrid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkUniformGrid class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()| -  Construct an empty uniform grid.
+
+\item  \verb|int = obj.IsA (string name)| -  Construct an empty uniform grid.
+
+\item  \verb|vtkUniformGrid = obj.NewInstance ()| -  Construct an empty uniform grid.
+
+\item  \verb|vtkUniformGrid = obj.SafeDownCast (vtkObject o)| -  Construct an empty uniform grid.
+
+\item  \verb|obj.CopyStructure (vtkDataSet ds)| -  Copy the geometric and topological structure of an input image data
+ object.
+
+\item  \verb|int = obj.GetDataObjectType ()| -  Return what type of dataset this is.
+
+\item  \verb|vtkCell = obj.GetCell (vtkIdType cellId)| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|obj.GetCell (vtkIdType cellId, vtkGenericCell cell)| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|int = obj.GetCellType (vtkIdType cellId)| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|obj.GetCellPoints (vtkIdType cellId, vtkIdList ptIds)| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|obj.GetPointCells (vtkIdType ptId, vtkIdList cellIds)| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|obj.Initialize ()| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|int = obj.GetMaxCellSize ()| -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+
+\item  \verb|obj.ShallowCopy (vtkDataObject src)| -  Shallow and Deep copy.
+
+\item  \verb|obj.DeepCopy (vtkDataObject src)| -  Shallow and Deep copy.
+
+\item  \verb|obj.BlankPoint (vtkIdType ptId)| -  Methods for supporting blanking of cells. Blanking turns on or off
+ points in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+
+\item  \verb|obj.UnBlankPoint (vtkIdType ptId)| -  Methods for supporting blanking of cells. Blanking turns on or off
+ points in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+
+\item  \verb|obj.BlankCell (vtkIdType ptId)| -  Methods for supporting blanking of cells. Blanking turns on or off
+ cells in the structured grid.
+ These methods should be called only after the dimensions of the
+ grid are set.
+
+\item  \verb|obj.UnBlankCell (vtkIdType ptId)| -  Methods for supporting blanking of cells. Blanking turns on or off
+ cells in the structured grid.
+ These methods should be called only after the dimensions of the
+ grid are set.
+
+\item  \verb|vtkUnsignedCharArray = obj.GetPointVisibilityArray ()| -  Get the array that defines the blanking (visibility) of each point.
+
+\item  \verb|obj.SetPointVisibilityArray (vtkUnsignedCharArray pointVisibility)| -  Set an array that defines the (blanking) visibility of the points
+ in the grid. Make sure that length of the visibility array matches
+ the number of points in the grid.
+
+\item  \verb|vtkUnsignedCharArray = obj.GetCellVisibilityArray ()| -  Get the array that defines the blanking (visibility) of each cell.
+
+\item  \verb|obj.SetCellVisibilityArray (vtkUnsignedCharArray pointVisibility)| -  Set an array that defines the (blanking) visibility of the cells
+ in the grid. Make sure that length of the visibility array matches
+ the number of points in the grid.
+
+\item  \verb|char = obj.IsPointVisible (vtkIdType ptId)| -  Return non-zero value if specified point is visible.
+ These methods should be called only after the dimensions of the
+ grid are set.
+
+\item  \verb|char = obj.IsCellVisible (vtkIdType cellId)| -  Return non-zero value if specified cell is visible.
+ These methods should be called only after the dimensions of the
+ grid are set.
+
+\item  \verb|char = obj.GetPointBlanking ()| -  Returns 1 if there is any visibility constraint on the points,
+ 0 otherwise.
+
+\item  \verb|char = obj.GetCellBlanking ()| -  Returns 1 if there is any visibility constraint on the cells,
+ 0 otherwise.
+
+\item  \verb|vtkImageData = obj.NewImageDataCopy ()|
+
+\end{itemize}

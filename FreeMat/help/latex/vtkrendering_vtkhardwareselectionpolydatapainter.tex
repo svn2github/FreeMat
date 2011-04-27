@@ -1,0 +1,41 @@
+\section{vtkHardwareSelectionPolyDataPainter}
+
+\subsection{Usage}
+
+ vtkHardwareSelectionPolyDataPainter is a painter for polydata used when
+ rendering hardware selection passes.
+
+To create an instance of class vtkHardwareSelectionPolyDataPainter, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkHardwareSelectionPolyDataPainter
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkHardwareSelectionPolyDataPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkHardwareSelectionPolyDataPainter class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkHardwareSelectionPolyDataPainter = obj.NewInstance ()|
+
+\item  \verb|vtkHardwareSelectionPolyDataPainter = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetEnableSelection (int )| -  Enable/Disable vtkHardwareSelector class. Useful when using this painter as
+ an internal painter. Default is enabled.
+
+\item  \verb|int = obj.GetEnableSelection ()| -  Enable/Disable vtkHardwareSelector class. Useful when using this painter as
+ an internal painter. Default is enabled.
+
+\item  \verb|obj.EnableSelectionOn ()| -  Enable/Disable vtkHardwareSelector class. Useful when using this painter as
+ an internal painter. Default is enabled.
+
+\item  \verb|obj.EnableSelectionOff ()| -  Enable/Disable vtkHardwareSelector class. Useful when using this painter as
+ an internal painter. Default is enabled.
+
+\end{itemize}

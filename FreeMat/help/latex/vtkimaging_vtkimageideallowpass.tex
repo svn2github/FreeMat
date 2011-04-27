@@ -1,0 +1,72 @@
+\section{vtkImageIdealLowPass}
+
+\subsection{Usage}
+
+ This filter only works on an image after it has been converted to
+ frequency domain by a vtkImageFFT filter.  A vtkImageRFFT filter
+ can be used to convert the output back into the spatial domain.
+ vtkImageIdealLowPass just sets a portion of the image to zero.  The result
+ is an image with a lot of ringing.  Input and Output must be doubles.
+ Dimensionality is set when the axes are set.  Defaults to 2D on X and Y
+ axes.
+
+To create an instance of class vtkImageIdealLowPass, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkImageIdealLowPass
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkImageIdealLowPass has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkImageIdealLowPass class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkImageIdealLowPass = obj.NewInstance ()|
+
+\item  \verb|vtkImageIdealLowPass = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|obj.SetCutOff (double , double , double )| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|obj.SetCutOff (double  a[3])| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|obj.SetCutOff (double v)| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|obj.SetXCutOff (double v)| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|obj.SetYCutOff (double v)| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|obj.SetZCutOff (double v)| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|double = obj. GetCutOff ()| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|double = obj.GetXCutOff ()| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|double = obj.GetYCutOff ()| -  Set/Get the cutoff frequency for each axis.
+ The values are specified in the order X, Y, Z, Time.
+ Units: Cycles per world unit (as defined by the data spacing).
+
+\item  \verb|double = obj.GetZCutOff ()|
+
+\end{itemize}

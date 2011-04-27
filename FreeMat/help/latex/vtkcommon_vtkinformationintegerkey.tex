@@ -1,0 +1,43 @@
+\section{vtkInformationIntegerKey}
+
+\subsection{Usage}
+
+ vtkInformationIntegerKey is used to represent keys for integer values
+ in vtkInformation.
+
+To create an instance of class vtkInformationIntegerKey, simply
+invoke its constructor as follows
+\begin{verbatim}
+  obj = vtkInformationIntegerKey
+\end{verbatim}
+\subsection{Methods}
+
+The class vtkInformationIntegerKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, \verb|obj| is an instance of the vtkInformationIntegerKey class.
+\begin{itemize}
+\item  \verb|string = obj.GetClassName ()|
+
+\item  \verb|int = obj.IsA (string name)|
+
+\item  \verb|vtkInformationIntegerKey = obj.NewInstance ()|
+
+\item  \verb|vtkInformationIntegerKey = obj.SafeDownCast (vtkObject o)|
+
+\item  \verb|vtkInformationIntegerKey = obj.(string name, string location)|
+
+\item  \verb|~vtkInformationIntegerKey = obj.()|
+
+\item  \verb|obj.Set (vtkInformation info, int )| -  Get/Set the value associated with this key in the given
+ information object.
+
+\item  \verb|int = obj.Get (vtkInformation info)| -  Get/Set the value associated with this key in the given
+ information object.
+
+\item  \verb|obj.ShallowCopy (vtkInformation from, vtkInformation to)| -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+
+\end{itemize}

@@ -48,6 +48,7 @@
     int   IsConcrete;
     char *ClassName;
     char *FileName;
+    char *SectionName;
     char *OutputFileName;
     
     char *SuperClasses[10];

@@ -3925,10 +3925,10 @@ int main(int argc,char *argv[])
   int ret;
   FILE *fout;
   
-  if (argc < 4 || argc > 5)
+  if (argc < 4 || argc > 6)
     {
     fprintf(stderr,
-            "Usage: %s input_file <hint_file> is_concrete output_file\n",argv[0]);
+            "Usage: %s input_file <hint_file> is_concrete output_file <sectionname>\n",argv[0]);
     exit(1);
     }
   
@@ -3940,13 +3940,14 @@ int main(int argc,char *argv[])
 
   fhint = 0;
   data.FileName = argv[1];
+  data.SectionName = argv[5];
   data.NameComment = NULL;
   data.Description = NULL;
   data.Caveats = NULL;
   data.SeeAlso = NULL;
   CommentState = 0;
 
-  if (argc == 5)
+  if (argc >= 5)
     {
     if (!(fhint = fopen(argv[2],"r")))
       {
@@ -3974,7 +3975,7 @@ int main(int argc,char *argv[])
     return ret;
     }
 
-  if (argc == 5)
+  if (argc >= 5)
     {
     fout = fopen(argv[4],"w");
     data.OutputFileName = argv[4];

@@ -818,12 +818,46 @@ int isOverloadedFunction(int j, FileInfo *data)
   return 0;
 }
 
+/*
+ * Set firstonly to 0 to replace all
+ * Set firstonly to 1 to replace once only
+ * Set firstonly to 2 to replace even instances only
+ */
+void StringReplace(char *buffer, const char *src, const char *rep, int firstonly)
+{
+  char *lbuff = (char*) malloc(strlen(buffer)*2);
+  char *dp = buffer;
+  char *lp = lbuff;
+  int replaced = 0;
+  int matches = 0;
+  int count = 0;
+  while (*dp)
+    {
+      matches = (strncmp(dp,src,strlen(src)) == 0);
+      if (matches) count++;
+      if (matches && ((firstonly == 0) ||
+		      ((count == 1) && (firstonly == 1)) ||
+		      ((count & 1 == 1) && (firstonly == 2))))
+	{
+	  strcpy(lp,rep);
+	  dp += strlen(src);
+	  lp += strlen(rep);
+	}
+      else
+	*lp++ = *dp++;
+    }
+  *lp = 0;
+  strcpy(buffer,lbuff);
+  free(lbuff);
+}
+
 /* print the parsed structures */
 void vtkParseOutput(FILE *fp, FileInfo *data)
 {
   int i,j;
   int in_example;
-
+  int anymembers;
+  char buffer[20000];
   for (i=0;i<data->NumberOfFunctions;i++)
     {
       int overloaded = 0;
@@ -908,6 +942,124 @@ void vtkParseOutput(FILE *fp, FileInfo *data)
   outputDeleteFunction(fp, data);
   //  outputSubsrefFunction(fp, data);
   //  outputSubsasgnFunction(fp, data);
+
+
+  if (data->Description)
+    {
+      fprintf(fp,"//!\n");
+      fprintf(fp,"//@Module %s\n",data->ClassName);
+      fprintf(fp,"//@@Section %s\n",data->SectionName);
+      fprintf(fp,"//@@Usage\n");
+      strcpy(buffer,data->Description);
+      StringReplace(buffer,"\n","\n//",0);
+      StringReplace(buffer,"\\code","\\begin{verbatim}",0);
+      StringReplace(buffer,"\\endcode","\\end{verbatim}",0);
+      fprintf(fp,"//%s",buffer);
+      fprintf(fp,"\n");
+      fprintf(fp,"//To create an instance of class %s, simply\n//invoke its constructor as follows\n",data->ClassName);
+      fprintf(fp,"//@[\n//  obj = %s\n//@]\n",data->ClassName);
+#if 0
+      fprintf(fp,"//@@Properties\n");
+      fprintf(fp,"//Here is the list of properties for the %s class.  These can be accessed\n",data->ClassName);
+      fprintf(fp,"//using the normal Get/Set methods (i.e., @| obj.SetFoo(value) | is equivalent to \n");
+      fprintf(fp,"// @|obj.Foo = value|, and @| obj.GetFoo() | is equivalent to @| obj.Foo |).\n");
+      fprintf(fp,"//\\begin{itemize}\n");
+      for (i=0;i<data->NumberOfFunctions;i++)
+	{
+	  char buffer[18192];
+	  char *dp;
+	  FunctionInfo *func = data->Functions+i;
+	  if (!func->Name) continue;
+	  if (!func->IsValid) continue;
+	  if (strncmp("Get", func->Name, 3) == 0)
+	    {
+	      if (!func->Comment) continue;
+	      if (strncmp(func->Comment," Set/Get",7) != 0) continue;
+	      strcpy(buffer,func->Name + 3);
+	      fprintf(fp,"//\\item @|%s|",buffer);
+	      strcpy(buffer,func->Signature);
+	      dp = buffer;
+	      while (strncmp(dp,"Get",3) != 0) dp++;
+	      *dp = 0;
+	      fprintf(fp," of type @|%s| ",buffer);
+	      if (func->Comment)
+		{
+		  strcpy(buffer,func->Comment + 8);
+		  StringReplace(buffer,"\n","\n//",0);
+		  StringReplace(buffer,"\\code","\\begin{verbatim}",0);
+		  StringReplace(buffer,"\\endcode","\\end{verbatim}",0);
+		  fprintf(fp," - %s",buffer);
+		}
+	      else
+		{
+		  fprintf(fp,"\n");
+		}
+	    }
+	}
+      fprintf(fp,"//\\end{itemize}\n");
+#endif
+      anymembers = 0;
+      for (i=0;i<data->NumberOfFunctions;i++)
+	{
+	  FunctionInfo *func = data->Functions+i;
+	  if (!func->Name) continue;
+	  if (!func->IsValid) continue;
+	  if (strcmp("New",func->Name) == 0) continue;
+	  if (strcmp("Print",func->Name) == 0) continue;
+	  if (strncmp(func->Signature,"static ",strlen("static ")) == 0) continue;
+	  anymembers = 1;
+	  break;	  
+	}
+      if (anymembers)
+	{
+	  fprintf(fp,"//@@Methods\n");
+	  fprintf(fp,"//The class %s has several methods that can be used.\n//  They are listed below.\n",data->ClassName);
+	  fprintf(fp,"//Note that the documentation is translated automatically from the VTK sources,\n");
+	  fprintf(fp,"//and may not be completely intelligible.  When in doubt, consult the VTK website.\n");
+	  fprintf(fp,"//In the methods listed below, @|obj| is an instance of the %s class.\n",data->ClassName);
+	  fprintf(fp,"//\\begin{itemize}\n");
+	  for (i=0;i<data->NumberOfFunctions;i++)
+	    {
+	      char buffer[4096];
+	      char *dp;
+	      FunctionInfo *func = data->Functions+i;
+	      if (!func->Name) continue;
+	      if (!func->IsValid) continue;
+	      if (strcmp("New",func->Name) == 0) continue;
+	      if (strcmp("Print",func->Name) == 0) continue;
+	      /* Copy the signature into a buffer */
+	      strcpy(buffer,func->Signature);
+	      StringReplace(buffer,"virtual ","",1);
+	      StringReplace(buffer," = 0","",1);
+	      StringReplace(buffer,"const char *","string ",0);
+	      StringReplace(buffer,"char *","string ",0);
+	      StringReplace(buffer,"*","",0);
+	      StringReplace(buffer,"unsigned ","",0);
+	      if (strncmp(buffer,"static ",strlen("static ")) == 0) continue;
+	      if (strncmp(buffer,"void ",strlen("void ")) == 0)
+		StringReplace(buffer,"void ","obj.",1);
+	      else
+		StringReplace(buffer," "," = obj.",1);
+	      StringReplace(buffer,"const ","",0);
+	      StringReplace(buffer,"\n","\n//",0);
+	      for (dp = buffer; *dp != 0; dp++) if (*dp == ';') *dp = 0;
+	      fprintf(fp,"// \\item @|%s|",buffer);
+	      if (!func->Comment) 
+		{
+		  fprintf(fp,"\n");
+	      continue;
+		}
+	      strcpy(buffer,func->Comment);
+	      StringReplace(buffer,"\n","\n//",0);
+	      StringReplace(buffer,"\\note","Note:",0);
+	      StringReplace(buffer,"\\code","\\begin{verbatim}",0);
+	      StringReplace(buffer,"\\endcode","\\end{verbatim}",0);
+	      fprintf(fp," - %s",buffer);
+	    }
+	  fprintf(fp,"//\\end{itemize}\n");
+	}
+      fprintf(fp,"//!\n");
+    }
 }
 
 /*

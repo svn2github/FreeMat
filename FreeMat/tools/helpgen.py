@@ -51,9 +51,11 @@ class ExpressionSet:
     
 class Writer:
     """The base class for writers..."""
+    def setsectioninfo(self,section_descriptors,section_order):
+        return
     def begingroup(self,groupname):
         return
-    def beginmodule(self,sourcepath,modname,moddesc,secname,section_descriptors):
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
         return
     def beginverbatim(self):
         return
@@ -84,13 +86,17 @@ class WriterGroup(Writer):
         self.writers.append(writer)
         return
     """The base class for writers..."""
+    def setsectioninfo(self,section_descriptors,section_order):
+        for writer in self.writers:
+            writer.setsectioninfo(section_descriptors,section_order)
+        return
     def begingroup(self,groupname):
         for writer in self.writers:
             writer.begingroup(groupname)
         return
-    def beginmodule(self,sourcepath,modname,moddesc,secname,section_descriptors):
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
         for writer in self.writers:
-            writer.beginmodule(sourcepath,modname,moddesc,secname,section_descriptors)
+            writer.beginmodule(sourcepath,modname,moddesc,secname)
         return
     def beginverbatim(self):
         for writer in self.writers:
@@ -152,13 +158,23 @@ class HTMLWriter(Writer):
     groupname = ''
     ignore = False
     section_descriptors = {}
+    section_order = []
     sourcepath = ''
     fp = -1
     def expand_codes(self,text):
         text = re.sub(r'\@\|([^\|]*)\|','<code>'r'\1''</code>',text)
+        while (re.search('\\\\f\$(.*?)\\\\f\$',text)):
+            eqn = re.search('\\\\f\$(.*?)\\\\f\$',text).group(1)
+            self.eqnlist.append(eqn)
+            subtxt = '<IMG STYLE="vertical-align:middle" SRC="%s_eqn%d.png"/>'%(self.modulename,len(self.eqnlist))
+            text = re.sub('\\\\f\$(.*?)\\\\f\$',text,subtxt,1)
         if (text == '\n'):
             text = '<P>\n'
         return text
+    def setsectioninfo(self,section_descriptors,section_order):
+        self.section_descriptors = section_descriptors
+        self.section_order = section_order
+        return
     def begingroup(self,groupname):
         self.groupname = groupname
         if (groupname.lower() == 'tests'):
@@ -167,14 +183,13 @@ class HTMLWriter(Writer):
             self.fp.write('<H3>%s</H3>\n'%(groupname))
             self.ignore = False
         return
-    def beginmodule(self,sourcepath,modname,moddesc,secname,section_descriptors):
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
         self.moddesc = moddesc
         self.secname = secname.lower()
         self.modulename = modname.lower()
-        self.section_descriptors = section_descriptors
         self.sourcepath = sourcepath
         self.eqnlist = []
-        filename = sourcepath + '/help/html/' + self.secname + '_' + self.modulename + '.html'
+        filename = sourcepath + '/help/html/' + self.secname + '_' + self.modulename + '.html.in'
         self.fp = open(filename,'w')
         self.fp.write('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n')
         self.fp.write('\n')
@@ -188,7 +203,7 @@ class HTMLWriter(Writer):
             self.sectables[self.secname] = {}
         self.sectables[self.secname][self.modulename] = self.moddesc;
         self.fp.write('<P>\n')
-        self.fp.write('Section: <A HREF=sec_%s.html> %s </A>\n'%(secname.lower(),section_descriptors[secname.lower()]))
+        self.fp.write('Section: <A HREF=sec_%s.html> %s </A>\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
         self.verbatim = False
         self.ignore = False
         return
@@ -198,7 +213,7 @@ class HTMLWriter(Writer):
         return
     def docomputeblock(self,cmds,errorsexpected,filename):
         self.fp.write('<PRE>\n')
-        self.fp.write('<<<< ' + filename + ' >>>>\n')
+        self.fp.write('<<<< ' + filename + '.out >>>>\n')
         self.fp.write('</PRE>\n')
         return
     def doenumerate(self,enums):
@@ -256,17 +271,6 @@ class HTMLWriter(Writer):
                 f.write('\\pagebreak\n');
             f.write('\\end{document}\n');
             f.close()
-#    cdir = pwd;
-#    cd('../tmp');
-#    a = system(sprintf('latex %s_eqn.tex',p.modulename));
-#    for i=1:numel(a)
-#      if (~isempty(regexp(a{i},'Emergency stop')))
-#        printf('Warning: equations for %s failed\n',p.modulename);
-#      end
-#    end
-#    cd(cdir);
-#    system(sprintf('dvipng -T tight ../tmp/%s_eqn.dvi',p.modulename));
-#  end
         return
     def endverbatim(self):
         self.fp.write('</PRE>\n<P>\n')
@@ -297,7 +301,7 @@ class HTMLWriter(Writer):
         f.write('<P>\n')
         f.write('<H2> Documentation Sections </H2>\n')
         f.write('<UL>\n')
-        for secname in self.section_descriptors:
+        for secname in self.section_order:
             f.write('<LI> <A HREF=sec_%s.html> %s </A> </LI>\n'%(secname,self.section_descriptors[secname]))
         f.write('</UL>\n')
         f.write('</BODY>\n')
@@ -307,7 +311,7 @@ class HTMLWriter(Writer):
         modulenames = []
         for section in self.section_descriptors:
             if (section in self.sectables):
-                modules = self.sectables[section]
+                modules = sorted(self.sectables[section].iterkeys())
                 for module in modules:
                     modulenames.append(module + ' (' + section + ')')
         for mod in modulenames:
@@ -335,13 +339,29 @@ class HTMLWriter(Writer):
         f.write('<A HREF=index.html> Main Index </A>\n')
         f.write('<P>\n')
         f.write('<UL>\n')
-        for module in modules:
+        for module in sorted(modules.iterkeys()):
             f.write('<LI> <A HREF=%s_%s.html> %s </A> %s </LI>\n'%(secname,module,module,self.sectables[secname][module]))
         f.write('</UL>\n')
         f.write('</BODY>\n')
         f.write('</HTML>\n')
         f.close()
         return
+
+def refilter(txt):
+    ret = ''
+    ineqn = False
+    protect = ['^','_','&','#']
+    prev = ''
+    while (txt):
+        c = txt[0]
+        txt = txt[1:]
+        if (c == '$' or (c == '[' and prev == '\\') or (c == ']' and prev == '\\')):
+            ineqn = not ineqn
+        if ((c in protect) and not ineqn and prev != '\\'):
+            ret += '\\'
+        ret += c
+        prev = c
+    return ret
 
 class LaTeXWriter(Writer):
     myfile = []
@@ -352,11 +372,37 @@ class LaTeXWriter(Writer):
     groupname = ''
     ignore = False
     section_descriptors = {}
+    section_order = []
     sourcepath = ''
     fp = -1
     def expand_codes(self,text):
         text = re.sub(r'\@\|([^\|]*)\|','\\\\verb|'r'\1''|',text)
+        text = re.sub('\\\\f\$(.*?)\\\\f\$','$'r'\1''$',text)
+        text = re.sub('\\\\f\[','\\\\[',text)
+        text = re.sub('\\\\f\]','\\\\]',text)
+        text = re.sub('"',"''",text)
+        text = re.sub('<pre>','\\\\begin{verbatim}',text)
+        text = re.sub('\\\\verbatim','\\\\begin{verbatim}',text)
+        text = re.sub('\\\\endverbatim','\\\\end{verbatim}',text)
+        text = re.sub('</pre>','\\\\end{verbatim}',text)
+        text = re.sub('\\\\dot','\\\\begin{verbatim}',text)
+        text = re.sub('\\\\enddot','\\\\end{verbatim}',text)
+        text = re.sub('\\\\pre (.*)','',text)
+        text = re.sub('\\\\post (.*)','',text)
+        text = re.sub('\\\\image (.*)','',text)
+        text = re.sub('\\\\p','',text)
+        text = re.sub('\\\\a','',text)
+        text = re.sub('\\\\n','\\\\\\\\n',text)
+        text = re.sub('\$renWin','\\\\$renWin',text)
+        text = re.sub('\\\\<','',text)
+        text = re.sub('\\\\>','',text)
+        text = re.sub('\\\\li','',text)
+        text = refilter(text)
         return text
+    def setsectioninfo(self,section_descriptors,section_order):
+        self.section_descriptors = section_descriptors
+        self.section_order = section_order
+        return
     def begingroup(self,groupname):
         self.groupname = groupname
         if (groupname.lower() == 'tests'):
@@ -365,14 +411,13 @@ class LaTeXWriter(Writer):
             self.fp.write('\\subsection{%s}\n\n'%(groupname))
             self.ignore = False
         return
-    def beginmodule(self,sourcepath,modname,moddesc,secname,section_descriptors):
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
         self.moddesc = moddesc
         self.secname = secname.lower()
         self.modulename = modname.lower()
-        self.section_descriptors = section_descriptors
         self.sourcepath = sourcepath
         self.eqnlist = []
-        filename = sourcepath + '/help/latex/' + self.secname + '_' + self.modulename + '.tex'
+        filename = sourcepath + '/help/latex/' + self.secname + '_' + self.modulename + '.tex.in'
         self.fp = open(filename,'w')
         self.fp.write('\\section{%s}\n\n'%(moddesc.rstrip()))
         if (not self.secname in self.sectables):
@@ -387,7 +432,7 @@ class LaTeXWriter(Writer):
         return
     def docomputeblock(self,cmds,errorsexpected,filename):
         self.fp.write('\\begin{verbatim}\n')
-        self.fp.write('<<<< ' + filename + ' >>>>\n')
+        self.fp.write('<<<< ' + filename + '.out >>>>\n')
         self.fp.write('\\end{verbatim}\n')
         return
     def doenumerate(self,enums):
@@ -438,20 +483,22 @@ class LaTeXWriter(Writer):
         f.write('\\documentclass{book}\n')
         f.write('\\usepackage{graphicx}\n')
         f.write('\\usepackage{amsmath}\n')
-        f.write('\\renewcommand{\\topfraction}{0.9}\n')
-        f.write('\\renewcommand{\\floatpagefraction}{0.9}\n')
-        f.write('\\oddsidemargin 0.0in\n')
-        f.write('\\evensidemargin 1.0in\n')
-        f.write('\\textwidth 6.0in\n')
+        f.write('\\usepackage[letterpaper]{geometry}\n')
+        f.write('\\geometry{top=1in,bottom=1in,left=1in,right=1in}\n')
+        f.write('\\usepackage{tocloft}\n')
+        f.write('\\setlength{\\cftpartnumwidth}{4em}')
+        f.write('\\setlength{\\cftsecnumwidth}{4em}')
+        f.write('\\setlength{\\cftsubsecnumwidth}{4em}')
         f.write('\\title{%s Documentation}\n'%(verstring))
         f.write('\\author{Samit Basu}\n')
         f.write('\\begin{document}\n')
         f.write('\\maketitle\n')
+        f.write('\\setcounter{tocdepth}{1}\n')
         f.write('\\tableofcontents\n')
-        for section in self.section_descriptors:
+        for section in self.section_order:
             if section in self.sectables:
                 f.write('\\chapter{%s}\n'%(self.section_descriptors[section]))
-                for mod in self.sectables[section]:
+                for mod in sorted(self.sectables[section].iterkeys()):
                     f.write('\\input{%s_%s}\n'%(section,mod.lower()))
         f.write('\\end{document}\n')
         f.close()
@@ -464,9 +511,14 @@ class BBTestWriter(Writer):
     blacklist = {'retall','keyboard','return','where'}
     secname = ''
     section_descriptors = {}
+    section_order = []
     sourcepath = ''
     filename = ''
     fp = []
+    def setsectioninfo(self,section_descriptors,section_order):
+        self.section_descriptors = section_descriptors
+        self.section_order = section_order
+        return
     def docomputeblock(self,cmds,errorsexpected,filename):
         if (self.modulename not in self.blacklist):
             self.fp.write('NumErrors = 0\n')
@@ -478,11 +530,10 @@ class BBTestWriter(Writer):
                 self.fp.write('end\n')
             self.fp.write('if (NumErrors ~= %d) bbtest_success = 0 return end\n'%(errorsexpected))
         self.empty = False
-    def beginmodule(self,sourcepath,modname,moddesc,secname,section_descriptors):
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
         self.moddesc = moddesc
         self.secname = secname.lower()
         self.modulename = modname.lower()
-        self.section_descriptors = section_descriptors
         self.sourcepath = sourcepath
         self.filename = sourcepath + '/toolbox/test/bbtest_' + self.secname + '_' + self.modulename + '.m'
         self.fp = open(self.filename,'w+')
@@ -508,22 +559,26 @@ class TextWriter(Writer):
     groupname = ''
     ignore = False
     section_descriptors = {}
+    section_order = []
     sourcepath = ''
     def expand_codes(self,text):
         return re.sub(r'\@\|([^\|]*)\|',r'\1',text)
+    def setsectioninfo(self,section_descriptors,section_order):
+        self.section_descriptors = section_descriptors
+        self.section_order = section_order
+        return
     def begingroup(self,groupname):
         self.groupname = groupname
-        if (groupname.lower() != 'usage'):
+        if ((groupname.lower() != 'usage') and (groupname.lower() != 'methods')):
             self.ignore = True
         else:
             self.myfile.write('Usage\n\n')
             self.ignore = False
         return
-    def beginmodule(self,sourcepath,modname,moddesc,secname,section_descriptors):
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
         self.moddesc = moddesc
         self.secname = secname.lower()
         self.modulename = modname.lower()
-        self.section_descriptors = section_descriptors
         self.sourcepath = sourcepath
         filename = sourcepath + '/help/text/' + self.modulename + '.mdc'
         self.myfile = open(filename,'w+')
@@ -553,7 +608,7 @@ class TextWriter(Writer):
         if (self.ignore):
             return
         for item in enums:
-            self.myfile.write('  - %s\n'%(item))
+            self.myfile.write('  - %s\n'%(self.expand_codes(item)))
         return
     def endmodule(self):
         self.myfile.close()
@@ -576,6 +631,7 @@ class HelpGen:
     pset = []
     writers = []
     section_descriptors = {}
+    section_order = []
     sourcepath = ''
     finished = False 
     genfiles = []
@@ -593,11 +649,12 @@ class HelpGen:
         for line in fp:
             m = re.search(r'(\w*)\s*([^\n]*)',line)
             self.section_descriptors[m.group(1)] = m.group(2)
+            self.section_order.append(m.group(1))
         fp.close()
+        self.writers.setsectioninfo(self.section_descriptors,self.section_order)
         return
     def testmatch(self,rtext):
         return re.search(rtext,self.pline,re.DOTALL)
-        return
     def mustmatch(self,rtext):
         match = re.search(rtext,self.pline,re.DOTALL)
         if (match):
@@ -703,10 +760,10 @@ class HelpGen:
             else:
                 (root, ext) = os.path.splitext(fname)
                 if ext == '.cpp':
-                    self.pset = ExpressionSet('//')
+                    self.pset = ExpressionSet('\s*//')
                     self.process_file(fname)
                 elif ext == '.m':
-                    self.pset = ExpressionSet('%')
+                    self.pset = ExpressionSet('\s*%')
                     self.process_file(fname)
     def process_file(self,filename):
         print('Processing file %s'%(filename))
@@ -723,7 +780,7 @@ class HelpGen:
                 moddesc = self.mustmatch(self.pset.moduledesc)
                 self.nextline()
                 self.secname = self.mustmatch(self.pset.sectionname).lower()
-                self.writers.beginmodule(self.sourcepath,self.modname,moddesc,self.secname,self.section_descriptors)
+                self.writers.beginmodule(self.sourcepath,self.modname,moddesc,self.secname)
                 self.nextline()
                 while not self.testmatch(self.pset.docblock):
                     groupname = self.mustmatch(self.pset.groupname)

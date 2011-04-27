@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAbstractPicker
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAbstractPicker
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkAbstractPicker is an abstract superclass that defines a minimal API
+ for its concrete subclasses. The minimum functionality of a picker is
+ to return the x-y-z global coordinate position of a pick (the pick
+ itself is defined in display coordinates).
+<P>
+ The API to this class is to invoke the Pick() method with a selection
+ point (in display coordinates - pixels) and a renderer. Then get the
+ resulting pick position in global coordinates with the GetPickPosition()
+ method.
+<P>
+ vtkPicker fires events during the picking process.  These
+ events are StartPickEvent, PickEvent, and EndPickEvent which are
+ invoked prior to picking, when something is picked, and after all picking
+ candidates have been tested. Note that during the pick process the
+ PickEvent of vtkProp (and its subclasses such as vtkActor) is fired
+ prior to the PickEvent of vtkPicker.
+<P>
+To create an instance of class vtkAbstractPicker, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAbstractPicker
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAbstractPicker has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAbstractPicker class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAbstractPicker = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAbstractPicker = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkRenderer = obj.GetRenderer ()</code> -  Get the renderer in which pick event occurred.
+ </LI>
+<LI>  <code>double = obj. GetSelectionPoint ()</code> -  Get the selection point in screen (pixel) coordinates. The third
+ value is related to z-buffer depth. (Normally should be =0.)
+ </LI>
+<LI>  <code>double = obj. GetPickPosition ()</code> -  Return position in global coordinates of pick point.
+ </LI>
+<LI>  <code>int = obj.Pick (double selectionX, double selectionY, double selectionZ, vtkRenderer renderer)</code> -  Perform pick operation with selection point provided. Normally the 
+ first two values for the selection point are x-y pixel coordinate, and
+ the third value is =0. Return non-zero if something was successfully 
+ picked.
+ </LI>
+<LI>  <code>int = obj.Pick (double selectionPt[3], vtkRenderer ren)</code> -  provided. Normally the first two values for the selection point
+ are x-y pixel coordinate, and the third value is =0. Return
+ non-zero if something was successfully picked.
+ </LI>
+<LI>  <code>obj.SetPickFromList (int )</code> -  Use these methods to control whether to limit the picking to this list
+ (rather than renderer's actors). Make sure that the pick list contains 
+ actors that referred to by the picker's renderer.
+ </LI>
+<LI>  <code>int = obj.GetPickFromList ()</code> -  Use these methods to control whether to limit the picking to this list
+ (rather than renderer's actors). Make sure that the pick list contains 
+ actors that referred to by the picker's renderer.
+ </LI>
+<LI>  <code>obj.PickFromListOn ()</code> -  Use these methods to control whether to limit the picking to this list
+ (rather than renderer's actors). Make sure that the pick list contains 
+ actors that referred to by the picker's renderer.
+ </LI>
+<LI>  <code>obj.PickFromListOff ()</code> -  Use these methods to control whether to limit the picking to this list
+ (rather than renderer's actors). Make sure that the pick list contains 
+ actors that referred to by the picker's renderer.
+ </LI>
+<LI>  <code>obj.InitializePickList ()</code> -  Initialize list of actors in pick list.
+ </LI>
+<LI>  <code>obj.AddPickList (vtkProp )</code> -  Add an actor to the pick list.
+ </LI>
+<LI>  <code>obj.DeletePickList (vtkProp )</code> -  Delete an actor from the pick list.
+ </LI>
+<LI>  <code>vtkPropCollection = obj.GetPickList ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

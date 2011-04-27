@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkParametricFunction
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkParametricFunction
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkParametricFunction is an abstract interface for functions
+ defined by parametric mapping i.e. f(u,v,w)-&gt;(x,y,z) where 
+ u_min &lt;= u &lt; u_max, v_min &lt;= v &lt; v_max, w_min &lt;= w &lt; w_max. (For
+ notational convenience, we will write f(u)-&gt;x and assume that
+ u means (u,v,w) and x means (x,y,z).)
+<P>
+ The interface contains the pure virtual function, Evaluate(), that
+ generates a point and the derivatives at that point which are then used to
+ construct the surface. A second pure virtual function, EvaluateScalar(),
+ can be used to generate a scalar for the surface. Finally, the
+ GetDimension() virtual function is used to differentiate 1D, 2D, and 3D
+ parametric functions. Since this abstract class defines a pure virtual
+ API, its subclasses must implement the pure virtual functions
+ GetDimension(), Evaluate() and EvaluateScalar().
+<P>
+ This class has also methods for defining a range of parametric values (u,v,w).
+ 
+ .SECTION Thanks
+ Andrew Maclean a.maclean@cas.edu.au for creating and contributing the
+ class.
+<P>
+<P>
+To create an instance of class vtkParametricFunction, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkParametricFunction
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkParametricFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkParametricFunction class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkParametricFunction = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkParametricFunction = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDimension ()</code>
+ </LI>
+<LI>  <code>obj.Evaluate (double uvw[3], double Pt[3], double Duvw[9])</code> -  Performs the mapping \$f(uvw)-&gt;(Pt,Duvw)\$f.
+ This is a pure virtual function that must be instantiated in 
+ a derived class. 
+
+ uvw are the parameters, with u corresponding to uvw[0],
+ v to uvw[1] and w to uvw[2] respectively. Pt is the returned Cartesian point, 
+ Duvw are the derivatives of this point with respect to u, v and w.  
+ Note that the first three values in Duvw are Du, the next three are Dv, 
+ and the final three are Dw. Du Dv Dw are the partial derivatives of the 
+ function at the point Pt with respect to u, v and w respectively.
+ </LI>
+<LI>  <code>double = obj.EvaluateScalar (double uvw[3], double Pt[3], double Duvw[9])</code> -  Calculate a user defined scalar using one or all of uvw, Pt, Duvw.
+ This is a pure virtual function that must be instantiated in 
+ a derived class. 
+
+ uvw are the parameters with Pt being the the cartesian point, 
+ Duvw are the derivatives of this point with respect to u, v, and w.
+ Pt, Duvw are obtained from Evaluate().
+ </LI>
+<LI>  <code>obj.SetMinimumU (double )</code> -  Set/Get the minimum u-value.
+ </LI>
+<LI>  <code>double = obj.GetMinimumU ()</code> -  Set/Get the minimum u-value.
+ </LI>
+<LI>  <code>obj.SetMaximumU (double )</code> -  Set/Get the maximum u-value.
+ </LI>
+<LI>  <code>double = obj.GetMaximumU ()</code> -  Set/Get the maximum u-value.
+ </LI>
+<LI>  <code>obj.SetMinimumV (double )</code> -  Set/Get the minimum v-value.
+ </LI>
+<LI>  <code>double = obj.GetMinimumV ()</code> -  Set/Get the minimum v-value.
+ </LI>
+<LI>  <code>obj.SetMaximumV (double )</code> -  Set/Get the maximum v-value.
+ </LI>
+<LI>  <code>double = obj.GetMaximumV ()</code> -  Set/Get the maximum v-value.
+ </LI>
+<LI>  <code>obj.SetMinimumW (double )</code> -  Set/Get the minimum w-value.
+ </LI>
+<LI>  <code>double = obj.GetMinimumW ()</code> -  Set/Get the minimum w-value.
+ </LI>
+<LI>  <code>obj.SetMaximumW (double )</code> -  Set/Get the maximum w-value.
+ </LI>
+<LI>  <code>double = obj.GetMaximumW ()</code> -  Set/Get the maximum w-value.
+ </LI>
+<LI>  <code>obj.SetJoinU (int )</code> -  Set/Get the flag which joins the first triangle strip to the last one.
+ </LI>
+<LI>  <code>int = obj.GetJoinU ()</code> -  Set/Get the flag which joins the first triangle strip to the last one.
+ </LI>
+<LI>  <code>obj.JoinUOn ()</code> -  Set/Get the flag which joins the first triangle strip to the last one.
+ </LI>
+<LI>  <code>obj.JoinUOff ()</code> -  Set/Get the flag which joins the first triangle strip to the last one.
+ </LI>
+<LI>  <code>obj.SetJoinV (int )</code> -  Set/Get the flag which joins the the ends of the triangle strips.
+ </LI>
+<LI>  <code>int = obj.GetJoinV ()</code> -  Set/Get the flag which joins the the ends of the triangle strips.
+ </LI>
+<LI>  <code>obj.JoinVOn ()</code> -  Set/Get the flag which joins the the ends of the triangle strips.
+ </LI>
+<LI>  <code>obj.JoinVOff ()</code> -  Set/Get the flag which joins the the ends of the triangle strips.
+ </LI>
+<LI>  <code>obj.SetTwistU (int )</code> -  Set/Get the flag which joins the first triangle strip to 
+ the last one with a twist.
+ JoinU must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>int = obj.GetTwistU ()</code> -  Set/Get the flag which joins the first triangle strip to 
+ the last one with a twist.
+ JoinU must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>obj.TwistUOn ()</code> -  Set/Get the flag which joins the first triangle strip to 
+ the last one with a twist.
+ JoinU must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>obj.TwistUOff ()</code> -  Set/Get the flag which joins the first triangle strip to 
+ the last one with a twist.
+ JoinU must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>obj.SetTwistV (int )</code> -  Set/Get the flag which joins the ends of the 
+ triangle strips with a twist.
+ JoinV must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>int = obj.GetTwistV ()</code> -  Set/Get the flag which joins the ends of the 
+ triangle strips with a twist.
+ JoinV must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>obj.TwistVOn ()</code> -  Set/Get the flag which joins the ends of the 
+ triangle strips with a twist.
+ JoinV must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>obj.TwistVOff ()</code> -  Set/Get the flag which joins the ends of the 
+ triangle strips with a twist.
+ JoinV must also be set if this is set. Used when building
+ some non-orientable surfaces.
+ </LI>
+<LI>  <code>obj.SetClockwiseOrdering (int )</code> -  Set/Get the flag which determines the ordering of the the 
+ vertices forming the triangle strips. The ordering of the 
+ points being inserted into the triangle strip is important 
+ because it determines the direction of the normals for the 
+ lighting. If set, the ordering is clockwise, otherwise the
+ ordering is anti-clockwise. Default is true (i.e. clockwise
+ ordering).
+ </LI>
+<LI>  <code>int = obj.GetClockwiseOrdering ()</code> -  Set/Get the flag which determines the ordering of the the 
+ vertices forming the triangle strips. The ordering of the 
+ points being inserted into the triangle strip is important 
+ because it determines the direction of the normals for the 
+ lighting. If set, the ordering is clockwise, otherwise the
+ ordering is anti-clockwise. Default is true (i.e. clockwise
+ ordering).
+ </LI>
+<LI>  <code>obj.ClockwiseOrderingOn ()</code> -  Set/Get the flag which determines the ordering of the the 
+ vertices forming the triangle strips. The ordering of the 
+ points being inserted into the triangle strip is important 
+ because it determines the direction of the normals for the 
+ lighting. If set, the ordering is clockwise, otherwise the
+ ordering is anti-clockwise. Default is true (i.e. clockwise
+ ordering).
+ </LI>
+<LI>  <code>obj.ClockwiseOrderingOff ()</code> -  Set/Get the flag which determines the ordering of the the 
+ vertices forming the triangle strips. The ordering of the 
+ points being inserted into the triangle strip is important 
+ because it determines the direction of the normals for the 
+ lighting. If set, the ordering is clockwise, otherwise the
+ ordering is anti-clockwise. Default is true (i.e. clockwise
+ ordering).
+ </LI>
+<LI>  <code>obj.SetDerivativesAvailable (int )</code> -  Set/Get the flag which determines whether derivatives are available 
+ from the parametric function (i.e., whether the Evaluate() method 
+ returns valid derivatives).
+ </LI>
+<LI>  <code>int = obj.GetDerivativesAvailable ()</code> -  Set/Get the flag which determines whether derivatives are available 
+ from the parametric function (i.e., whether the Evaluate() method 
+ returns valid derivatives).
+ </LI>
+<LI>  <code>obj.DerivativesAvailableOn ()</code> -  Set/Get the flag which determines whether derivatives are available 
+ from the parametric function (i.e., whether the Evaluate() method 
+ returns valid derivatives).
+ </LI>
+<LI>  <code>obj.DerivativesAvailableOff ()</code> -  Set/Get the flag which determines whether derivatives are available 
+ from the parametric function (i.e., whether the Evaluate() method 
+ returns valid derivatives).
+ </LI>
+</UL>
+</BODY>
+</HTML>

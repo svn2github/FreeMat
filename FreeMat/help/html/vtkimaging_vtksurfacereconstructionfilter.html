@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSurfaceReconstructionFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSurfaceReconstructionFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkSurfaceReconstructionFilter takes a list of points assumed to lie on
+ the surface of a solid 3D object. A signed measure of the distance to the
+ surface is computed and sampled on a regular grid. The grid can then be
+ contoured at zero to extract the surface. The default values for
+ neighborhood size and sample spacing should give reasonable results for
+ most uses but can be set if desired. This procedure is based on the PhD
+ work of Hugues Hoppe: http://www.research.microsoft.com/~hoppe
+<P>
+To create an instance of class vtkSurfaceReconstructionFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSurfaceReconstructionFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSurfaceReconstructionFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSurfaceReconstructionFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSurfaceReconstructionFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSurfaceReconstructionFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetNeighborhoodSize ()</code> -  Specify the number of neighbors each point has, used for estimating the
+ local surface orientation.  The default value of 20 should be OK for
+ most applications, higher values can be specified if the spread of
+ points is uneven. Values as low as 10 may yield adequate results for
+ some surfaces. Higher values cause the algorithm to take longer. Higher
+ values will cause errors on sharp boundaries.
+ </LI>
+<LI>  <code>obj.SetNeighborhoodSize (int )</code> -  Specify the number of neighbors each point has, used for estimating the
+ local surface orientation.  The default value of 20 should be OK for
+ most applications, higher values can be specified if the spread of
+ points is uneven. Values as low as 10 may yield adequate results for
+ some surfaces. Higher values cause the algorithm to take longer. Higher
+ values will cause errors on sharp boundaries.
+ </LI>
+<LI>  <code>double = obj.GetSampleSpacing ()</code> -  Specify the spacing of the 3D sampling grid. If not set, a
+ reasonable guess will be made.
+ </LI>
+<LI>  <code>obj.SetSampleSpacing (double )</code> -  Specify the spacing of the 3D sampling grid. If not set, a
+ reasonable guess will be made.
+ </LI>
+</UL>
+</BODY>
+</HTML>

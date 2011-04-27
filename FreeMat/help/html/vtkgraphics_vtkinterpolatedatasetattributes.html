@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInterpolateDataSetAttributes
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInterpolateDataSetAttributes
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkInterpolateDataSetAttributes is a filter that interpolates data set
+ attribute values between input data sets. The input to the filter
+ must be datasets of the same type, same number of cells, and same 
+ number of points. The output of the filter is a data set of the same
+ type as the input dataset and whose attribute values have been 
+ interpolated at the parametric value specified.
+<P>
+ The filter is used by specifying two or more input data sets (total of N),
+ and a parametric value t (0 &lt;= t &lt;= N-1). The output will contain
+ interpolated data set attributes common to all input data sets. (For
+ example, if one input has scalars and vectors, and another has just
+ scalars, then only scalars will be interpolated and output.)
+<P>
+To create an instance of class vtkInterpolateDataSetAttributes, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInterpolateDataSetAttributes
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInterpolateDataSetAttributes has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInterpolateDataSetAttributes class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInterpolateDataSetAttributes = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInterpolateDataSetAttributes = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkDataSetCollection = obj.GetInputList ()</code> -  Return the list of inputs to this filter.
+ </LI>
+<LI>  <code>obj.SetT (double )</code> -  Specify interpolation parameter t.
+ </LI>
+<LI>  <code>double = obj.GetTMinValue ()</code> -  Specify interpolation parameter t.
+ </LI>
+<LI>  <code>double = obj.GetTMaxValue ()</code> -  Specify interpolation parameter t.
+ </LI>
+<LI>  <code>double = obj.GetT ()</code> -  Specify interpolation parameter t.
+ </LI>
+</UL>
+</BODY>
+</HTML>

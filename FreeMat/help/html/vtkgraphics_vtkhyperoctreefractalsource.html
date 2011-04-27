@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHyperOctreeFractalSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHyperOctreeFractalSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+<P>
+<P>
+To create an instance of class vtkHyperOctreeFractalSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHyperOctreeFractalSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHyperOctreeFractalSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHyperOctreeFractalSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHyperOctreeFractalSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHyperOctreeFractalSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetMaximumLevel ()</code> -  Return the maximum number of levels of the hyperoctree.
+ \post positive_result: result&gt;=1
+ </LI>
+<LI>  <code>obj.SetMaximumLevel (int levels)</code> -  Set the maximum number of levels of the hyperoctree. If
+ GetMinLevels()&gt;=levels, GetMinLevels() is changed to levels-1.
+ \pre positive_levels: levels&gt;=1
+ \post is_set: this-&gt;GetLevels()==levels
+ \post min_is_valid: this-&gt;GetMinLevels()&lt;this-&gt;GetLevels()
+ </LI>
+<LI>  <code>obj.SetMinimumLevel (int level)</code> -  Return the minimal number of levels of systematic subdivision.
+ \post positive_result: result&gt;=0
+ </LI>
+<LI>  <code>int = obj.GetMinimumLevel ()</code> -  Return the minimal number of levels of systematic subdivision.
+ \post positive_result: result&gt;=0
+ </LI>
+<LI>  <code>obj.SetProjectionAxes (int x, int y, int z)</code> -  Set the projection from  the 4D space (4 parameters / 2 imaginary numbers)
+ to the axes of the 3D Volume. 
+ 0=C_Real, 1=C_Imaginary, 2=X_Real, 4=X_Imaginary
+ </LI>
+<LI>  <code>obj.SetProjectionAxes (int a[3])</code> -  Set the projection from  the 4D space (4 parameters / 2 imaginary numbers)
+ to the axes of the 3D Volume. 
+ 0=C_Real, 1=C_Imaginary, 2=X_Real, 4=X_Imaginary
+ </LI>
+<LI>  <code>int = obj. GetProjectionAxes ()</code> -  Set the projection from  the 4D space (4 parameters / 2 imaginary numbers)
+ to the axes of the 3D Volume. 
+ 0=C_Real, 1=C_Imaginary, 2=X_Real, 4=X_Imaginary
+ </LI>
+<LI>  <code>obj.SetOriginCX (double , double , double , double )</code> -  Imaginary and real value for C (constant in equation) 
+ and X (initial value).
+ </LI>
+<LI>  <code>obj.SetOriginCX (double  a[4])</code> -  Imaginary and real value for C (constant in equation) 
+ and X (initial value).
+ </LI>
+<LI>  <code>double = obj. GetOriginCX ()</code> -  Imaginary and real value for C (constant in equation) 
+ and X (initial value).
+ </LI>
+<LI>  <code>obj.SetSizeCX (double , double , double , double )</code> -  Just a different way of setting the sample.  
+ This sets the size of the 4D volume. 
+ SampleCX is computed from size and extent.
+ Size is ignored when a dimension i 0 (collapsed).
+ </LI>
+<LI>  <code>obj.SetSizeCX (double  a[4])</code> -  Just a different way of setting the sample.  
+ This sets the size of the 4D volume. 
+ SampleCX is computed from size and extent.
+ Size is ignored when a dimension i 0 (collapsed).
+ </LI>
+<LI>  <code>double = obj. GetSizeCX ()</code> -  Just a different way of setting the sample.  
+ This sets the size of the 4D volume. 
+ SampleCX is computed from size and extent.
+ Size is ignored when a dimension i 0 (collapsed).
+ </LI>
+<LI>  <code>obj.SetMaximumNumberOfIterations (short )</code> -  The maximum number of cycles run to see if the value goes over 2
+ </LI>
+<LI>  <code>GetMaximumNumberOfIterationsMinValue = obj.()</code> -  The maximum number of cycles run to see if the value goes over 2
+ </LI>
+<LI>  <code>GetMaximumNumberOfIterationsMaxValue = obj.()</code> -  The maximum number of cycles run to see if the value goes over 2
+ </LI>
+<LI>  <code>char = obj.GetMaximumNumberOfIterations ()</code> -  The maximum number of cycles run to see if the value goes over 2
+ </LI>
+<LI>  <code>obj.SetDimension (int )</code> -  Create a 2D or 3D fractal.
+ </LI>
+<LI>  <code>int = obj.GetDimensionMinValue ()</code> -  Create a 2D or 3D fractal.
+ </LI>
+<LI>  <code>int = obj.GetDimensionMaxValue ()</code> -  Create a 2D or 3D fractal.
+ </LI>
+<LI>  <code>int = obj.GetDimension ()</code> -  Create a 2D or 3D fractal.
+ </LI>
+<LI>  <code>obj.SetSpanThreshold (double )</code> -  Controls when a leaf gets subdivided.  If the corner values span 
+ a larger range than this value, the leaf is subdivided.  This
+ defaults to 2.
+ </LI>
+<LI>  <code>double = obj.GetSpanThreshold ()</code> -  Controls when a leaf gets subdivided.  If the corner values span 
+ a larger range than this value, the leaf is subdivided.  This
+ defaults to 2.
+ </LI>
+</UL>
+</BODY>
+</HTML>

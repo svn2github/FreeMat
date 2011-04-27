@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkIdentColoredPainter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkIdentColoredPainter
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ DEPRECATED. Refer to vtkHardwareSelectionPolyDataPainter instead.
+ This painter will color each polygon in a color that encodes an integer.
+ Doing so allows us to determine what polygon is behind each pixel on the 
+ screen.
+<P>
+To create an instance of class vtkIdentColoredPainter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkIdentColoredPainter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkIdentColoredPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkIdentColoredPainter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkIdentColoredPainter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkIdentColoredPainter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.ResetCurrentId ()</code>
+ </LI>
+<LI>  <code>obj.ColorByConstant (int constant)</code>
+ </LI>
+<LI>  <code>obj.ColorByIncreasingIdent (int plane)</code>
+ </LI>
+<LI>  <code>obj.ColorByActorId (vtkProp ActorId)</code>
+ </LI>
+<LI>  <code>obj.ColorByVertex ()</code>
+ </LI>
+<LI>  <code>vtkProp = obj.GetActorFromId (vtkIdType id)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkEdgeLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkEdgeLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ All edge layouts should subclass from this class.  vtkEdgeLayoutStrategy
+ works as a plug-in to the vtkEdgeLayout algorithm.
+<P>
+To create an instance of class vtkEdgeLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkEdgeLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkEdgeLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkEdgeLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkEdgeLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkEdgeLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGraph (vtkGraph graph)</code> -  Setting the graph for the layout strategy
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  This method allows the layout strategy to
+ do initialization of data structures
+ or whatever else it might want to do. 
+ </LI>
+<LI>  <code>obj.Layout ()</code> -  This is the layout method where the graph that was
+ set in SetGraph() is laid out.
+ </LI>
+<LI>  <code>obj.SetEdgeWeightArrayName (string )</code> -  Set/Get the field to use for the edge weights.
+ </LI>
+<LI>  <code>string = obj.GetEdgeWeightArrayName ()</code> -  Set/Get the field to use for the edge weights.
+ </LI>
+</UL>
+</BODY>
+</HTML>

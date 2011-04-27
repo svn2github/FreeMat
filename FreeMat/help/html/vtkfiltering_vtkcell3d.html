@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCell3D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCell3D
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkCell3D is an abstract class that extends the interfaces for 3D data 
+ cells, and implements methods needed to satisfy the vtkCell API. The 
+ 3D cells include hexehedra, tetrahedra, wedge, pyramid, and voxel.
+<P>
+To create an instance of class vtkCell3D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCell3D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCell3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCell3D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCell3D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCell3D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code>
+ </LI>
+<LI>  <code>obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray connectivity, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)</code> -  Cut (or clip) the cell based on the input cellScalars and the specified
+ value. The output of the clip operation will be one or more cells of the
+ same topological dimension as the original cell.  The flag insideOut
+ controls what part of the cell is considered inside - normally cell
+ points whose scalar value is greater than "value" are considered
+ inside. If insideOut is on, this is reversed. Also, if the output cell
+ data is non-NULL, the cell data from the clipped cell is passed to the
+ generated contouring primitives. (Note: the CopyAllocate() method must
+ be invoked on both the output cell and point data. The cellId refers to
+ the cell from which the cell data is copied.)  (Satisfies vtkCell API.)
+ </LI>
+<LI>  <code>int = obj.GetCellDimension ()</code> -  Set the tolerance for merging clip intersection points that are near
+ the vertices of cells. This tolerance is used to prevent the generation
+ of degenerate tetrahedra during clipping.
+ </LI>
+<LI>  <code>obj.SetMergeTolerance (double )</code> -  Set the tolerance for merging clip intersection points that are near
+ the vertices of cells. This tolerance is used to prevent the generation
+ of degenerate tetrahedra during clipping.
+ </LI>
+<LI>  <code>double = obj.GetMergeToleranceMinValue ()</code> -  Set the tolerance for merging clip intersection points that are near
+ the vertices of cells. This tolerance is used to prevent the generation
+ of degenerate tetrahedra during clipping.
+ </LI>
+<LI>  <code>double = obj.GetMergeToleranceMaxValue ()</code> -  Set the tolerance for merging clip intersection points that are near
+ the vertices of cells. This tolerance is used to prevent the generation
+ of degenerate tetrahedra during clipping.
+ </LI>
+<LI>  <code>double = obj.GetMergeTolerance ()</code> -  Set the tolerance for merging clip intersection points that are near
+ the vertices of cells. This tolerance is used to prevent the generation
+ of degenerate tetrahedra during clipping.
+ </LI>
+</UL>
+</BODY>
+</HTML>

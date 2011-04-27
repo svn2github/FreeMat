@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSquarifyLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSquarifyLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkSquarifyLayoutStrategy partitions the space for child vertices into regions
+ that use all avaliable space and are as close to squares as possible.
+ The algorithm also takes into account the relative vertex size.
+<P>
+ .SECTION Thanks
+ The squarified tree map algorithm comes from:
+ Bruls, D.M., C. Huizing, J.J. van Wijk. Squarified Treemaps.
+ In: W. de Leeuw, R. van Liere (eds.), Data Visualization 2000, 
+ Proceedings of the joint Eurographics and IEEE TCVG Symposium on Visualization, 
+ 2000, Springer, Vienna, p. 33-42.
+<P>
+To create an instance of class vtkSquarifyLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSquarifyLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSquarifyLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSquarifyLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSquarifyLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSquarifyLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Layout (vtkTree inputTree, vtkDataArray coordsArray, vtkDataArray sizeArray)</code> -  Perform the layout of a tree and place the results as 4-tuples in
+ coordsArray (Xmin, Xmax, Ymin, Ymax).
+ </LI>
+</UL>
+</BODY>
+</HTML>

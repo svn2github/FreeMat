@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAnimationScene
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAnimationScene
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkAnimationCue and vtkAnimationScene provide the framework to support
+ animations in VTK. vtkAnimationCue represents an entity that changes/
+ animates with time, while vtkAnimationScene represents scene or setup 
+ for the animation, which consists of individual cues or other scenes.
+<P>
+ A scene can be played in real time mode, or as a seqence of frames
+ 1/frame rate apart in time.
+<P>
+To create an instance of class vtkAnimationScene, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAnimationScene
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAnimationScene has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAnimationScene class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAnimationScene = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAnimationScene = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPlayMode (int )</code> -  Get/Set the PlayMode for running/playing the animation scene.
+ In the Sequence mode, all the frames are generated one after the other.
+ The time reported to each Tick of the constituent cues (during Play) is
+ incremented by 1/frame rate, irrespective of the current time.
+ In the RealTime mode, time indicates the instance in time. 
+ </LI>
+<LI>  <code>obj.SetModeToSequence ()</code> -  Get/Set the PlayMode for running/playing the animation scene.
+ In the Sequence mode, all the frames are generated one after the other.
+ The time reported to each Tick of the constituent cues (during Play) is
+ incremented by 1/frame rate, irrespective of the current time.
+ In the RealTime mode, time indicates the instance in time. 
+ </LI>
+<LI>  <code>obj.SetModeToRealTime ()</code> -  Get/Set the PlayMode for running/playing the animation scene.
+ In the Sequence mode, all the frames are generated one after the other.
+ The time reported to each Tick of the constituent cues (during Play) is
+ incremented by 1/frame rate, irrespective of the current time.
+ In the RealTime mode, time indicates the instance in time. 
+ </LI>
+<LI>  <code>int = obj.GetPlayMode ()</code> -  Get/Set the PlayMode for running/playing the animation scene.
+ In the Sequence mode, all the frames are generated one after the other.
+ The time reported to each Tick of the constituent cues (during Play) is
+ incremented by 1/frame rate, irrespective of the current time.
+ In the RealTime mode, time indicates the instance in time. 
+ </LI>
+<LI>  <code>obj.SetFrameRate (double )</code> -  Get/Set the frame rate (in frames per second).
+ This parameter affects only in the Sequence mode. The time interval
+ indicated to each cue on every tick is progressed by 1/frame-rate seconds.
+ </LI>
+<LI>  <code>double = obj.GetFrameRate ()</code> -  Get/Set the frame rate (in frames per second).
+ This parameter affects only in the Sequence mode. The time interval
+ indicated to each cue on every tick is progressed by 1/frame-rate seconds.
+ </LI>
+<LI>  <code>obj.AddCue (vtkAnimationCue cue)</code> -  Add/Remove an AnimationCue to/from the Scene.
+ It's an error to add a cue twice to the Scene.
+ </LI>
+<LI>  <code>obj.RemoveCue (vtkAnimationCue cue)</code> -  Add/Remove an AnimationCue to/from the Scene.
+ It's an error to add a cue twice to the Scene.
+ </LI>
+<LI>  <code>obj.RemoveAllCues ()</code> -  Add/Remove an AnimationCue to/from the Scene.
+ It's an error to add a cue twice to the Scene.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfCues ()</code> -  Add/Remove an AnimationCue to/from the Scene.
+ It's an error to add a cue twice to the Scene.
+ </LI>
+<LI>  <code>obj.Play ()</code> -  Starts playing the animation scene. Fires a vtkCommand::StartEvent
+ before play beings and vtkCommand::EndEvent after play ends.
+ </LI>
+<LI>  <code>obj.Stop ()</code> -  Stops the animation scene that is running.
+ </LI>
+<LI>  <code>obj.SetLoop (int )</code> -  Enable/Disable animation loop.
+ </LI>
+<LI>  <code>int = obj.GetLoop ()</code> -  Enable/Disable animation loop.
+ </LI>
+<LI>  <code>obj.SetAnimationTime (double time)</code> -  Makes the state of the scene same as the given time.
+ </LI>
+<LI>  <code>double = obj.GetAnimationTime ()</code> -  Makes the state of the scene same as the given time.
+ </LI>
+<LI>  <code>obj.SetTimeMode (int mode)</code> -  Overridden to allow change to Normalized mode only
+ if none of the constituent cues is in Relative time mode.
+ </LI>
+<LI>  <code>int = obj.IsInPlay ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

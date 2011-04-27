@@ -46,7 +46,6 @@ A =
  1 2 
  5 8 
 </PRE>
-<P>
 Now we define a new matrix by adding a column to the right of
 <code>A</code>, and using float constants.
 <PRE>
@@ -56,7 +55,6 @@ B =
     1.0000    2.0000    3.2000 
     5.0000    8.0000    5.1000 
 </PRE>
-<P>
 Next, we add extend <code>B</code> by adding a row at the bottom.  Note
 how the use of an untyped floating point constant forces the
 result to be of type <code>double</code>
@@ -68,7 +66,6 @@ C =
     5.0000    8.0000    5.1000 
     5.2000    1.0000         0 
 </PRE>
-<P>
 If we instead add a row of <code>complex</code> values (recall that <code>i</code> is
 a <code>complex</code> constant, not a <code>dcomplex</code> constant)
 <PRE>
@@ -79,7 +76,6 @@ D =
    5.0000 +  0.0000i   8.0000 +  0.0000i   5.1000 +  0.0000i 
    2.0000 +  3.0000i   0.0000 +  1.0000i        0           
 </PRE>
-<P>
 Likewise, but using <code>dcomplex</code> constants
 <PRE>
 --&gt; E = [B;2.0+3.0*i,i,0.0]
@@ -89,7 +85,6 @@ E =
    5.0000 +  0.0000i   8.0000 +  0.0000i   5.1000 +  0.0000i 
    2.0000 +  3.0000i   0.0000 +  1.0000i        0           
 </PRE>
-<P>
 Finally, in FreeMat, you can construct matrices with strings
 as contents, but you have to make sure that if the matrix has
 more than one row, that all the strings have the same length.
@@ -100,6 +95,5 @@ F =
 hello
 there
 </PRE>
-<P>
 </BODY>
 </HTML>

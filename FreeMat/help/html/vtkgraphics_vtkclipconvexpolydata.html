@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkClipConvexPolyData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkClipConvexPolyData
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkClipConvexPolyData is a filter that clips a convex polydata with a set
+ of planes. Its main usage is for clipping a bounding volume with frustum
+ planes (used later one in volume rendering).
+<P>
+To create an instance of class vtkClipConvexPolyData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkClipConvexPolyData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkClipConvexPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkClipConvexPolyData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkClipConvexPolyData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkClipConvexPolyData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPlanes (vtkPlaneCollection planes)</code> -  Set all the planes at once using a vtkPlanes implicit function.
+ This also sets the D value.
+ </LI>
+<LI>  <code>vtkPlaneCollection = obj.GetPlanes ()</code> -  Set all the planes at once using a vtkPlanes implicit function.
+ This also sets the D value.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Redefines this method, as this filter depends on time of its components
+ (planes)
+ </LI>
+</UL>
+</BODY>
+</HTML>

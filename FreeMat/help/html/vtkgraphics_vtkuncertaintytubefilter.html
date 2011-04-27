@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkUncertaintyTubeFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkUncertaintyTubeFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkUncertaintyTubeFilter is a filter that generates ellipsoidal (in cross
+ section) tubes that follows a polyline. The input is a vtkPolyData with
+ polylines that have associated vector point data. The vector data represents
+ the uncertainty of the polyline in the x-y-z directions.
+<P>
+<P>
+To create an instance of class vtkUncertaintyTubeFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkUncertaintyTubeFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkUncertaintyTubeFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkUncertaintyTubeFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for printing and obtaining type information for instances of this class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for printing and obtaining type information for instances of this class.
+ </LI>
+<LI>  <code>vtkUncertaintyTubeFilter = obj.NewInstance ()</code> -  Standard methods for printing and obtaining type information for instances of this class.
+ </LI>
+<LI>  <code>vtkUncertaintyTubeFilter = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for printing and obtaining type information for instances of this class.
+ </LI>
+<LI>  <code>obj.SetNumberOfSides (int )</code> -  Set / get the number of sides for the tube. At a minimum,
+ the number of sides is 3.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSidesMinValue ()</code> -  Set / get the number of sides for the tube. At a minimum,
+ the number of sides is 3.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSidesMaxValue ()</code> -  Set / get the number of sides for the tube. At a minimum,
+ the number of sides is 3.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSides ()</code> -  Set / get the number of sides for the tube. At a minimum,
+ the number of sides is 3.
+ </LI>
+</UL>
+</BODY>
+</HTML>

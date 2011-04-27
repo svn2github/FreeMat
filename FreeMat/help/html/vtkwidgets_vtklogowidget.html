@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLogoWidget
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLogoWidget
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This class provides support for interactively displaying and manipulating
+ a logo. Logos are defined by an image; this widget simply allows you to
+ interactively place and resize the image logo. To use this widget, simply
+ create a vtkLogoRepresentation (or subclass) and associate it with the
+ vtkLogoWidget.
+<P>
+To create an instance of class vtkLogoWidget, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLogoWidget
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLogoWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLogoWidget class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standar VTK class methods.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standar VTK class methods.
+ </LI>
+<LI>  <code>vtkLogoWidget = obj.NewInstance ()</code> -  Standar VTK class methods.
+ </LI>
+<LI>  <code>vtkLogoWidget = obj.SafeDownCast (vtkObject o)</code> -  Standar VTK class methods.
+ </LI>
+<LI>  <code>obj.SetRepresentation (vtkLogoRepresentation r)</code> -  Create the default widget representation if one is not set. 
+ </LI>
+<LI>  <code>obj.CreateDefaultRepresentation ()</code> -  Create the default widget representation if one is not set. 
+ </LI>
+</UL>
+</BODY>
+</HTML>

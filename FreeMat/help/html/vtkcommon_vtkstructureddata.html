@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkStructuredData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkStructuredData
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkStructuredData is an abstract class that specifies an interface for
+ topologically regular data. Regular data is data that can be accessed
+ in rectangular fashion using an i-j-k index. A finite difference grid,
+ a volume, or a pixmap are all considered regular.
+<P>
+To create an instance of class vtkStructuredData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkStructuredData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkStructuredData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkStructuredData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkStructuredData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkStructuredData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

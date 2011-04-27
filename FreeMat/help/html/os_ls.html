@@ -33,22 +33,19 @@ For compatibility with some environments, the function <code>dir</code> can also
 <LI>  If you want to capture the output of the <code>ls</code> command, use the <code>system</code> function instead.
  </LI>
 </UL>
-
+<P>
 <H3>Example</H3>
 First, we use the simplest form of the <code>ls</code> command, in which the directory name argument is given unquoted.
 <PRE>
 --&gt; ls m*.m
 </PRE>
-<P>
 Next, we use the ``traditional'' form of the function call, using both the parenthesis and the quoted string.
 <PRE>
 --&gt; ls('m*.m')
 </PRE>
-<P>
 In the third version, we use only the quoted string argument without parenthesis.  
 <PRE>
 --&gt; ls 'm*.m'
 </PRE>
-<P>
 </BODY>
 </HTML>

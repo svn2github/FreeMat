@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPDataSetWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPDataSetWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkPDataSetWriter will write a piece of a file, and will also create
+ a metadata file that lists all of the files in a data set.
+<P>
+To create an instance of class vtkPDataSetWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPDataSetWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPDataSetWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPDataSetWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPDataSetWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPDataSetWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.Write ()</code> -  Write the pvtk file and cooresponding vtk files.
+ </LI>
+<LI>  <code>obj.SetNumberOfPieces (int num)</code> -  This is how many pieces the whole data set will be divided into.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfPieces ()</code> -  This is how many pieces the whole data set will be divided into.
+ </LI>
+<LI>  <code>obj.SetGhostLevel (int )</code> -  Extra ghost cells will be written out to each piece file
+ if this value is larger than 0.
+ </LI>
+<LI>  <code>int = obj.GetGhostLevel ()</code> -  Extra ghost cells will be written out to each piece file
+ if this value is larger than 0.
+ </LI>
+<LI>  <code>obj.SetStartPiece (int )</code> -  This is the range of pieces that that this writer is 
+ responsible for writing.  All pieces must be written
+ by some process.  The process that writes piece 0 also
+ writes the pvtk file that lists all the piece file names.
+ </LI>
+<LI>  <code>int = obj.GetStartPiece ()</code> -  This is the range of pieces that that this writer is 
+ responsible for writing.  All pieces must be written
+ by some process.  The process that writes piece 0 also
+ writes the pvtk file that lists all the piece file names.
+ </LI>
+<LI>  <code>obj.SetEndPiece (int )</code> -  This is the range of pieces that that this writer is 
+ responsible for writing.  All pieces must be written
+ by some process.  The process that writes piece 0 also
+ writes the pvtk file that lists all the piece file names.
+ </LI>
+<LI>  <code>int = obj.GetEndPiece ()</code> -  This is the range of pieces that that this writer is 
+ responsible for writing.  All pieces must be written
+ by some process.  The process that writes piece 0 also
+ writes the pvtk file that lists all the piece file names.
+ </LI>
+<LI>  <code>obj.SetFilePattern (string )</code> -  This file pattern uses the file name and piece number
+ to contruct a file name for the piece file.
+ </LI>
+<LI>  <code>string = obj.GetFilePattern ()</code> -  This file pattern uses the file name and piece number
+ to contruct a file name for the piece file.
+ </LI>
+<LI>  <code>obj.SetUseRelativeFileNames (int )</code> -  This flag determines whether to use absolute paths for the piece files.
+ By default the pieces are put in the main directory, and the piece file
+ names in the meta data pvtk file are relative to this directory.
+ This should make moving the whole lot to another directory, an easier task.
+ </LI>
+<LI>  <code>int = obj.GetUseRelativeFileNames ()</code> -  This flag determines whether to use absolute paths for the piece files.
+ By default the pieces are put in the main directory, and the piece file
+ names in the meta data pvtk file are relative to this directory.
+ This should make moving the whole lot to another directory, an easier task.
+ </LI>
+<LI>  <code>obj.UseRelativeFileNamesOn ()</code> -  This flag determines whether to use absolute paths for the piece files.
+ By default the pieces are put in the main directory, and the piece file
+ names in the meta data pvtk file are relative to this directory.
+ This should make moving the whole lot to another directory, an easier task.
+ </LI>
+<LI>  <code>obj.UseRelativeFileNamesOff ()</code> -  This flag determines whether to use absolute paths for the piece files.
+ By default the pieces are put in the main directory, and the piece file
+ names in the meta data pvtk file are relative to this directory.
+ This should make moving the whole lot to another directory, an easier task.
+ </LI>
+</UL>
+</BODY>
+</HTML>

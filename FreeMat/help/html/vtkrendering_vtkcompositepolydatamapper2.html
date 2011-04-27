@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCompositePolyDataMapper2
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCompositePolyDataMapper2
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkCompositePolyDataMapper2 is similar to vtkCompositePolyDataMapper except
+ that instead of creating individual mapper for each block in the composite
+ dataset, it iterates over the blocks internally. 
+<P>
+To create an instance of class vtkCompositePolyDataMapper2, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCompositePolyDataMapper2
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCompositePolyDataMapper2 has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCompositePolyDataMapper2 class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCompositePolyDataMapper2 = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCompositePolyDataMapper2 = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.RenderPiece (vtkRenderer ren, vtkActor act)</code> -  Implemented by sub classes. Actual rendering is done here.
+ </LI>
+<LI>  <code>double = obj.GetBounds ()</code> -  Standard vtkProp method to get 3D bounds of a 3D prop
+ </LI>
+<LI>  <code>obj.GetBounds (double bounds[6])</code> -  Standard vtkProp method to get 3D bounds of a 3D prop
+ </LI>
+<LI>  <code>obj.Render (vtkRenderer ren, vtkActor act)</code> -  This calls RenderPiece (in a for loop is streaming is necessary).
+ Basically a reimplementation for vtkPolyDataMapper::Render() since we don't
+ want it to give up when vtkCompositeDataSet is encountered.
+ </LI>
+<LI>  <code>obj.SetColorBlocks (int )</code> -  When set, each block is colored with a different color. Note that scalar
+ coloring will be ignored.
+ </LI>
+<LI>  <code>int = obj.GetColorBlocks ()</code> -  When set, each block is colored with a different color. Note that scalar
+ coloring will be ignored.
+ </LI>
+</UL>
+</BODY>
+</HTML>

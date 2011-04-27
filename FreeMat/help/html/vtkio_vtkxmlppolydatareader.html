@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLPPolyDataReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLPPolyDataReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkXMLPPolyDataReader reads the PVTK XML PolyData file format.
+ This reads the parallel format's summary file and then uses
+ vtkXMLPolyDataReader to read data from the individual PolyData
+ piece files.  Streaming is supported.  The standard extension for
+ this reader's file format is "pvtp".
+<P>
+To create an instance of class vtkXMLPPolyDataReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLPPolyDataReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLPPolyDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLPPolyDataReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLPPolyDataReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLPPolyDataReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkPolyData = obj.GetOutput ()</code> -  Get the reader's output.
+ </LI>
+<LI>  <code>vtkPolyData = obj.GetOutput (int idx)</code> -  Get the reader's output.
+ </LI>
+</UL>
+</BODY>
+</HTML>

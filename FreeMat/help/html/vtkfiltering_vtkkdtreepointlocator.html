@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkKdTreePointLocator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkKdTreePointLocator
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkKdTreePointLocator is a wrapper class that derives from
+ vtkAbstractPointLocator and calls the search functions in vtkKdTree.
+<P>
+To create an instance of class vtkKdTreePointLocator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkKdTreePointLocator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkKdTreePointLocator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkKdTreePointLocator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkKdTreePointLocator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkKdTreePointLocator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkIdType = obj.FindClosestPoint (double x[3])</code> -  Given a position x, return the id of the point closest to it. Alternative
+ method requires separate x-y-z values.
+ These methods are thread safe if BuildLocator() is directly or
+ indirectly called from a single thread first.
+ </LI>
+<LI>  <code>obj.FindClosestNPoints (int N, double x[3], vtkIdList result)</code> -  Find the closest N points to a position. This returns the closest
+ N points to a position. A faster method could be created that returned
+ N close points to a position, but necessarily the exact N closest.
+ The returned points are sorted from closest to farthest.
+ These methods are thread safe if BuildLocator() is directly or
+ indirectly called from a single thread first.
+ </LI>
+<LI>  <code>obj.FindPointsWithinRadius (double R, double x[3], vtkIdList result)</code> -  Find all points within a specified radius R of position x.
+ The result is not sorted in any specific manner.
+ These methods are thread safe if BuildLocator() is directly or
+ indirectly called from a single thread first.
+ </LI>
+<LI>  <code>obj.FreeSearchStructure ()</code> -  See vtkLocator interface documentation.
+ These methods are not thread safe.
+ </LI>
+<LI>  <code>obj.BuildLocator ()</code> -  See vtkLocator interface documentation.
+ These methods are not thread safe.
+ </LI>
+<LI>  <code>obj.GenerateRepresentation (int level, vtkPolyData pd)</code> -  See vtkLocator interface documentation.
+ These methods are not thread safe.
+ </LI>
+</UL>
+</BODY>
+</HTML>

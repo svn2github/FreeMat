@@ -23,10 +23,10 @@ output <code>y</code> is the same size as the inputs, and is the element-wise th
 of <code>a</code> and <code>b</code>.  In the second case, either <code>a</code> or <code>b</code> is a scalar, 
 in which case <code>y</code> is the same size as the larger argument,
 and is the sum of the scalar added to each element of the other argument.
-
+<P>
 The rules for manipulating types has changed in FreeMat 4.0.  See <code>typerules</code>
 for more details.
-
+<P>
 <H3>Function Internals</H3>
 There are three formulae for the addition operator, depending on the
 sizes of the three arguments.  In the most general case, in which 
@@ -58,7 +58,6 @@ is straightforward:
 ans = 
  11 
 </PRE>
-<P>
 Next, we add a scalar to a vector of values:
 <PRE>
 --&gt; 3.1 + [2,4,5,6,7]
@@ -66,7 +65,6 @@ Next, we add a scalar to a vector of values:
 ans = 
     5.1000    7.1000    8.1000    9.1000   10.1000 
 </PRE>
-<P>
 With complex values
 <PRE>
 --&gt; a = 3 + 4*i
@@ -79,7 +77,6 @@ a =
 b = 
    5.0000 +  4.0000i 
 </PRE>
-<P>
 Finally, the element-wise version:
 <PRE>
 --&gt; a = [1,2;3,4]
@@ -100,6 +97,5 @@ c =
   3  5 
   9 11 
 </PRE>
-<P>
 </BODY>
 </HTML>

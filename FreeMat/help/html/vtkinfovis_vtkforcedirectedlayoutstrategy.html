@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkForceDirectedLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkForceDirectedLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Lays out a graph in 2D or 3D using a force-directed algorithm.
+ The user may specify whether to layout the graph randomly initially,
+ the bounds, the number of dimensions (2 or 3), and the cool-down rate.
+<P>
+ .SECTION Thanks
+ Thanks to Brian Wylie for adding functionality for allowing this layout
+ to be incremental.
+<P>
+To create an instance of class vtkForceDirectedLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkForceDirectedLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkForceDirectedLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkForceDirectedLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkForceDirectedLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkForceDirectedLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetRandomSeed (int )</code> -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>int = obj.GetRandomSeedMinValue ()</code> -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>int = obj.GetRandomSeedMaxValue ()</code> -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>int = obj.GetRandomSeed ()</code> -  Seed the random number generator used to jitter point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>obj.SetGraphBounds (double , double , double , double , double , double )</code> -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+ </LI>
+<LI>  <code>obj.SetGraphBounds (double  a[6])</code> -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+ </LI>
+<LI>  <code>double = obj. GetGraphBounds ()</code> -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+ </LI>
+<LI>  <code>obj.SetAutomaticBoundsComputation (int )</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>int = obj.GetAutomaticBoundsComputation ()</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>obj.AutomaticBoundsComputationOn ()</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>obj.AutomaticBoundsComputationOff ()</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>obj.SetMaxNumberOfIterations (int )</code> -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '50' for no particular reason
+ </LI>
+<LI>  <code>int = obj.GetMaxNumberOfIterationsMinValue ()</code> -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '50' for no particular reason
+ </LI>
+<LI>  <code>int = obj.GetMaxNumberOfIterationsMaxValue ()</code> -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '50' for no particular reason
+ </LI>
+<LI>  <code>int = obj.GetMaxNumberOfIterations ()</code> -  Set/Get the maximum number of iterations to be used.
+ The higher this number, the more iterations through the algorithm
+ is possible, and thus, the more the graph gets modified.
+ The default is '50' for no particular reason
+ </LI>
+<LI>  <code>obj.SetIterationsPerLayout (int )</code> -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '50' to match the default 'MaxNumberOfIterations'
+ </LI>
+<LI>  <code>int = obj.GetIterationsPerLayoutMinValue ()</code> -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '50' to match the default 'MaxNumberOfIterations'
+ </LI>
+<LI>  <code>int = obj.GetIterationsPerLayoutMaxValue ()</code> -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '50' to match the default 'MaxNumberOfIterations'
+ </LI>
+<LI>  <code>int = obj.GetIterationsPerLayout ()</code> -  Set/Get the number of iterations per layout.
+ The only use for this ivar is for the application
+ to do visualizations of the layout before it's complete.
+ The default is '50' to match the default 'MaxNumberOfIterations'
+ </LI>
+<LI>  <code>obj.SetCoolDownRate (double )</code> -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to "cool-down",
+ and thus, the more the graph will be modified.
+ </LI>
+<LI>  <code>double = obj.GetCoolDownRateMinValue ()</code> -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to "cool-down",
+ and thus, the more the graph will be modified.
+ </LI>
+<LI>  <code>double = obj.GetCoolDownRateMaxValue ()</code> -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to "cool-down",
+ and thus, the more the graph will be modified.
+ </LI>
+<LI>  <code>double = obj.GetCoolDownRate ()</code> -  Set/Get the Cool-down rate.
+ The higher this number is, the longer it will take to "cool-down",
+ and thus, the more the graph will be modified.
+ </LI>
+<LI>  <code>obj.SetThreeDimensionalLayout (int )</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is off.
+ </LI>
+<LI>  <code>int = obj.GetThreeDimensionalLayout ()</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is off.
+ </LI>
+<LI>  <code>obj.ThreeDimensionalLayoutOn ()</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is off.
+ </LI>
+<LI>  <code>obj.ThreeDimensionalLayoutOff ()</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is off.
+ </LI>
+<LI>  <code>obj.SetRandomInitialPoints (int )</code> -  Turn on/off use of random positions within the graph bounds as initial points.
+ </LI>
+<LI>  <code>int = obj.GetRandomInitialPoints ()</code> -  Turn on/off use of random positions within the graph bounds as initial points.
+ </LI>
+<LI>  <code>obj.RandomInitialPointsOn ()</code> -  Turn on/off use of random positions within the graph bounds as initial points.
+ </LI>
+<LI>  <code>obj.RandomInitialPointsOff ()</code> -  Turn on/off use of random positions within the graph bounds as initial points.
+ </LI>
+<LI>  <code>obj.SetInitialTemperature (float )</code> -  Set the initial temperature.  If zero (the default) , the initial temperature
+ will be computed automatically.
+ </LI>
+<LI>  <code>float = obj.GetInitialTemperatureMinValue ()</code> -  Set the initial temperature.  If zero (the default) , the initial temperature
+ will be computed automatically.
+ </LI>
+<LI>  <code>float = obj.GetInitialTemperatureMaxValue ()</code> -  Set the initial temperature.  If zero (the default) , the initial temperature
+ will be computed automatically.
+ </LI>
+<LI>  <code>float = obj.GetInitialTemperature ()</code> -  Set the initial temperature.  If zero (the default) , the initial temperature
+ will be computed automatically.
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  This strategy sets up some data structures
+ for faster processing of each Layout() call
+ </LI>
+<LI>  <code>obj.Layout ()</code> -  This is the layout method where the graph that was
+ set in SetGraph() is laid out. The method can either
+ entirely layout the graph or iteratively lay out the
+ graph. If you have an iterative layout please implement
+ the IsLayoutComplete() method.
+ </LI>
+<LI>  <code>int = obj.IsLayoutComplete ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

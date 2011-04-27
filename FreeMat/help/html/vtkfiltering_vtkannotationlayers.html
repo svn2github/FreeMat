@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAnnotationLayers
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAnnotationLayers
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkAnnotationLayers stores a vector of annotation layers. Each layer
+ may contain any number of vtkAnnotation objects. The ordering of the
+ layers introduces a prioritization of annotations. Annotations in
+ higher layers may obscure annotations in lower layers.
+<P>
+To create an instance of class vtkAnnotationLayers, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAnnotationLayers
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAnnotationLayers has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAnnotationLayers class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAnnotationLayers = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAnnotationLayers = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCurrentAnnotation (vtkAnnotation ann)</code> -  The current annotation associated with this annotation link.
+ </LI>
+<LI>  <code>vtkAnnotation = obj.GetCurrentAnnotation ()</code> -  The current annotation associated with this annotation link.
+ </LI>
+<LI>  <code>obj.SetCurrentSelection (vtkSelection sel)</code> -  The current selection associated with this annotation link.
+ This is simply the selection contained in the current annotation.
+ </LI>
+<LI>  <code>vtkSelection = obj.GetCurrentSelection ()</code> -  The current selection associated with this annotation link.
+ This is simply the selection contained in the current annotation.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfAnnotations ()</code> -  The number of annotations in a specific layer.
+ </LI>
+<LI>  <code>vtkAnnotation = obj.GetAnnotation (int idx)</code> -  Retrieve an annotation from a layer.
+ </LI>
+<LI>  <code>obj.AddAnnotation (vtkAnnotation ann)</code> -  Add an annotation to a layer.
+ </LI>
+<LI>  <code>obj.RemoveAnnotation (vtkAnnotation ann)</code> -  Remove an annotation from a layer.
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  Initialize the data structure to an empty state.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkDataObject other)</code> -  Copy data from another data object into this one
+ which references the same member annotations.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkDataObject other)</code> -  Copy data from another data object into this one,
+ performing a deep copy of member annotations.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  The modified time for this object.
+ </LI>
+</UL>
+</BODY>
+</HTML>

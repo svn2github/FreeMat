@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TRAPZ Trapezoidal Rule Integration
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TRAPZ Trapezoidal Rule Integration
+</H2>
+<P>
+Section: <A HREF=sec_num.html> Numerical Methods </A>
+<H3>Usage</H3>
+ The trapz routine has the following syntax
+ @[
+      z = trapz(x,y)
+ @]
+ where |x| is a dependent vector and |y| an m-by-n matrix equal in
+  at least one dimension to x. (e.g.:|x| = time samples, y = f(t))
+ 
+ Alternatively, you can enter 
+<PRE>
+     z = trapz(y) 
+</PRE>
+<P>
+ for a unit integration of y. 
+
+ If y is a matrix, m must be equal to length(x) (e.g.:
+ y must have the same number of rows as x has elements).
+ In this case, integrals are taken for each row, returned in a
+ resulting vector z of dimension (1,n)
+</BODY>
+</HTML>

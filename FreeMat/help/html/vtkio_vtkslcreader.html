@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSLCReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSLCReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkSLCReader reads an SLC file and creates a structured point dataset.
+ The size of the volume and the data spacing is set from the SLC file
+ header.
+<P>
+To create an instance of class vtkSLCReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSLCReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSLCReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSLCReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSLCReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSLCReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Set/Get the name of the file to read.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Set/Get the name of the file to read.
+ </LI>
+<LI>  <code>int = obj.GetError ()</code> -  Was there an error on the last read performed?
+ </LI>
+<LI>  <code>int = obj.CanReadFile (string fname)</code> -  Is the given file an SLC file?
+ </LI>
+<LI>  <code>string = obj.GetFileExtensions ()</code> -  SLC 
+ </LI>
+<LI>  <code>string = obj.GetDescriptiveName ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

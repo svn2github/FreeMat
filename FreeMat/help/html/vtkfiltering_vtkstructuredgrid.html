@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkStructuredGrid
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkStructuredGrid
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkStructuredGrid is a data object that is a concrete implementation of
+ vtkDataSet. vtkStructuredGrid represents a geometric structure that is a
+ topologically regular array of points. The topology is that of a cube that
+ has been subdivided into a regular array of smaller cubes. Each point/cell
+ can be addressed with i-j-k indices. Examples include finite difference 
+ grids.
+<P>
+ The order and number of points must match that specified by the dimensions
+ of the grid. The point order increases in i fastest (from 0&lt;=i&lt;dims[0]),
+ then j (0&lt;=j&lt;dims[1]), then k (0&lt;=k&lt;dims[2]) where dims[] are the
+ dimensions of the grid in the i-j-k topological directions. The number of
+ points is dims[0]*dims[1]*dims[2]. The same is true for the cells of the
+ grid. The order and number of cells must match that specified by the
+ dimensions of the grid. The cell order increases in i fastest (from
+ 0&lt;=i&lt;(dims[0]-1)), then j (0&lt;=j&lt;(dims[1]-1)), then k (0&lt;=k&lt;(dims[2]-1))
+ The number of cells is (dims[0]-1)*(dims[1]-1)*(dims[2]-1).
+ 
+ A unusual feature of vtkStructuredGrid is the ability to blank, 
+ or "turn-off" points and cells in the dataset. This is controlled by 
+ defining a "blanking array" whose values (0,1) specify whether
+ a point should be blanked or not.
+<P>
+To create an instance of class vtkStructuredGrid, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkStructuredGrid
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkStructuredGrid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkStructuredGrid class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkStructuredGrid = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkStructuredGrid = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDataObjectType ()</code> -  Copy the geometric and topological structure of an input poly data object.
+ </LI>
+<LI>  <code>obj.CopyStructure (vtkDataSet ds)</code> -  Copy the geometric and topological structure of an input poly data object.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPoints ()</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>double = obj.GetPoint (vtkIdType ptId)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetPoint (vtkIdType ptId, double p[3])</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>vtkCell = obj.GetCell (vtkIdType cellId)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetCell (vtkIdType cellId, vtkGenericCell cell)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetCellBounds (vtkIdType cellId, double bounds[6])</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>int = obj.GetCellType (vtkIdType cellId)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfCells ()</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetCellPoints (vtkIdType cellId, vtkIdList ptIds)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetPointCells (vtkIdType ptId, vtkIdList cellIds)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>int = obj.GetMaxCellSize ()</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetCellNeighbors (vtkIdType cellId, vtkIdList ptIds, vtkIdList cellIds)</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>obj.GetScalarRange (double range[2])</code> -  Standard vtkDataSet API methods. See vtkDataSet for more information.
+ </LI>
+<LI>  <code>double = obj.GetScalarRange ()</code> -  following methods are specific to structured grid
+ </LI>
+<LI>  <code>obj.SetDimensions (int i, int j, int k)</code> -  following methods are specific to structured grid
+ </LI>
+<LI>  <code>obj.SetDimensions (int dim[3])</code> -  following methods are specific to structured grid
+ </LI>
+<LI>  <code>int = obj.GetDimensions ()</code> -  Get dimensions of this structured points dataset.
+ </LI>
+<LI>  <code>obj.GetDimensions (int dim[3])</code> -  Get dimensions of this structured points dataset.
+ </LI>
+<LI>  <code>int = obj.GetDataDimension ()</code> -  Return the dimensionality of the data.
+ </LI>
+<LI>  <code>obj.SetExtent (int extent[6])</code> -  Different ways to set the extent of the data array.  The extent
+ should be set before the "Scalars" are set or allocated.
+ The Extent is stored  in the order (X, Y, Z).
+ </LI>
+<LI>  <code>obj.SetExtent (int x1, int x2, int y1, int y2, int z1, int z2)</code> -  Different ways to set the extent of the data array.  The extent
+ should be set before the "Scalars" are set or allocated.
+ The Extent is stored  in the order (X, Y, Z).
+ </LI>
+<LI>  <code>int = obj. GetExtent ()</code> -  Different ways to set the extent of the data array.  The extent
+ should be set before the "Scalars" are set or allocated.
+ The Extent is stored  in the order (X, Y, Z).
+ </LI>
+<LI>  <code>long = obj.GetActualMemorySize ()</code> -  Return the actual size of the data in kilobytes. This number
+ is valid only after the pipeline has updated. The memory size
+ returned is guaranteed to be greater than or equal to the
+ memory required to represent the data (e.g., extra space in
+ arrays, etc. are not included in the return value). THIS METHOD
+ IS THREAD SAFE.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkDataObject src)</code> -  Shallow and Deep copy.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkDataObject src)</code> -  Shallow and Deep copy.
+ </LI>
+<LI>  <code>int = obj.GetExtentType ()</code> -  Methods for supporting blanking of cells. Blanking turns on or off
+ points in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>obj.BlankPoint (vtkIdType ptId)</code> -  Methods for supporting blanking of cells. Blanking turns on or off
+ points in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>obj.UnBlankPoint (vtkIdType ptId)</code> -  Methods for supporting blanking of cells. Blanking turns on or off
+ points in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>obj.BlankCell (vtkIdType ptId)</code> -  Methods for supporting blanking of cells. Blanking turns on or off
+ cells in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>obj.UnBlankCell (vtkIdType ptId)</code> -  Methods for supporting blanking of cells. Blanking turns on or off
+ cells in the structured grid, and hence the cells connected to them.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>vtkUnsignedCharArray = obj.GetPointVisibilityArray ()</code> -  Get the array that defines the blanking (visibility) of each point.
+ </LI>
+<LI>  <code>obj.SetPointVisibilityArray (vtkUnsignedCharArray pointVisibility)</code> -  Set an array that defines the (blanking) visibility of the points 
+ in the grid. Make sure that length of the visibility array matches 
+ the number of points in the grid.
+ </LI>
+<LI>  <code>vtkUnsignedCharArray = obj.GetCellVisibilityArray ()</code> -  Get the array that defines the blanking (visibility) of each cell.
+ </LI>
+<LI>  <code>obj.SetCellVisibilityArray (vtkUnsignedCharArray pointVisibility)</code> -  Set an array that defines the (blanking) visibility of the cells 
+ in the grid. Make sure that length of the visibility array matches 
+ the number of points in the grid.
+ </LI>
+<LI>  <code>char = obj.IsPointVisible (vtkIdType ptId)</code> -  Return non-zero value if specified point is visible.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>char = obj.IsCellVisible (vtkIdType cellId)</code> -  Return non-zero value if specified point is visible.
+ These methods should be called only after the dimensions of the
+ grid are set.
+ </LI>
+<LI>  <code>char = obj.GetPointBlanking ()</code> -  Returns 1 if there is any visibility constraint on the points,
+ 0 otherwise.
+ </LI>
+<LI>  <code>char = obj.GetCellBlanking ()</code> -  Returns 1 if there is any visibility constraint on the cells,
+ 0 otherwise.
+ </LI>
+<LI>  <code>obj.Crop ()</code> -  Reallocates and copies to set the Extent to the UpdateExtent.
+ This is used internally when the exact extent is requested, 
+ and the source generated more than the update extent. 
+ </LI>
+<LI>  <code>obj.GetPoint (int i, int j, int k, double p[3], bool adjustForExtenttrue)</code> -  Get a point in the grid. If adjustForExtent is true, (i,j,k) is 
+ interpreted as a position relative to the beginning of the extent.
+ If adjustForExtent is false, (i,j,k) is interpreted literally
+ and the (i,j,k) point of the grid is returned regardless of the 
+ extent beginning.
+ The point coordinate is returned in 'p'.
+ The default adjustForExtent is true.
+ </LI>
+</UL>
+</BODY>
+</HTML>

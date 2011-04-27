@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTransformTextureCoords
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTransformTextureCoords
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkTransformTextureCoords is a filter that operates on texture
+ coordinates. It ingests any type of dataset, and outputs a dataset of the
+ same type. The filter lets you scale, translate, and rotate texture
+ coordinates. For example, by using the the Scale ivar, you can shift
+ texture coordinates that range from (0-&gt;1) to range from (0-&gt;10) (useful
+ for repeated patterns).
+ 
+ The filter operates on texture coordinates of dimension 1-&gt;3. The texture 
+ coordinates are referred to as r-s-t. If the texture map is two dimensional,
+ the t-coordinate (and operations on the t-coordinate) are ignored.
+<P>
+To create an instance of class vtkTransformTextureCoords, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTransformTextureCoords
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTransformTextureCoords has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTransformTextureCoords class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTransformTextureCoords = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTransformTextureCoords = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPosition (double , double , double )</code> -  Set/Get the position of the texture map. Setting the position translates
+ the texture map by the amount specified. 
+ </LI>
+<LI>  <code>obj.SetPosition (double  a[3])</code> -  Set/Get the position of the texture map. Setting the position translates
+ the texture map by the amount specified. 
+ </LI>
+<LI>  <code>double = obj. GetPosition ()</code> -  Set/Get the position of the texture map. Setting the position translates
+ the texture map by the amount specified. 
+ </LI>
+<LI>  <code>obj.AddPosition (double deltaR, double deltaS, double deltaT)</code> -  Incrementally change the position of the texture map (i.e., does a
+ translate or shift of the texture coordinates).
+ </LI>
+<LI>  <code>obj.AddPosition (double deltaPosition[3])</code> -  Incrementally change the position of the texture map (i.e., does a
+ translate or shift of the texture coordinates).
+ </LI>
+<LI>  <code>obj.SetScale (double , double , double )</code> -  Set/Get the scale of the texture map. Scaling in performed independently 
+ on the r, s and t axes.
+ </LI>
+<LI>  <code>obj.SetScale (double  a[3])</code> -  Set/Get the scale of the texture map. Scaling in performed independently 
+ on the r, s and t axes.
+ </LI>
+<LI>  <code>double = obj. GetScale ()</code> -  Set/Get the scale of the texture map. Scaling in performed independently 
+ on the r, s and t axes.
+ </LI>
+<LI>  <code>obj.SetOrigin (double , double , double )</code> -  Set/Get the origin of the texture map. This is the point about which the
+ texture map is flipped (e.g., rotated). Since a typical texture map ranges
+ from (0,1) in the r-s-t coordinates, the default origin is set at 
+ (0.5,0.5,0.5).
+ </LI>
+<LI>  <code>obj.SetOrigin (double  a[3])</code> -  Set/Get the origin of the texture map. This is the point about which the
+ texture map is flipped (e.g., rotated). Since a typical texture map ranges
+ from (0,1) in the r-s-t coordinates, the default origin is set at 
+ (0.5,0.5,0.5).
+ </LI>
+<LI>  <code>double = obj. GetOrigin ()</code> -  Set/Get the origin of the texture map. This is the point about which the
+ texture map is flipped (e.g., rotated). Since a typical texture map ranges
+ from (0,1) in the r-s-t coordinates, the default origin is set at 
+ (0.5,0.5,0.5).
+ </LI>
+<LI>  <code>obj.SetFlipR (int )</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>int = obj.GetFlipR ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.FlipROn ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.FlipROff ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.SetFlipS (int )</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>int = obj.GetFlipS ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.FlipSOn ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.FlipSOff ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ s-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.SetFlipT (int )</code> -  Boolean indicates whether the texture map should be flipped around the 
+ t-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>int = obj.GetFlipT ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ t-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.FlipTOn ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ t-axis. Note that the flips occur around the texture origin.
+ </LI>
+<LI>  <code>obj.FlipTOff ()</code> -  Boolean indicates whether the texture map should be flipped around the 
+ t-axis. Note that the flips occur around the texture origin.
+ </LI>
+</UL>
+</BODY>
+</HTML>

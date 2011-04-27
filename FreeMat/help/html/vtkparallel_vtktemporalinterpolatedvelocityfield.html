@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTemporalInterpolatedVelocityField
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTemporalInterpolatedVelocityField
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkTemporalInterpolatedVelocityField is a general purpose
+ helper for the temporal particle tracing code (vtkTemporalStreamTracer)
+<P>
+ It maintains two copies of vtkCachingInterpolatedVelocityField internally 
+ and uses them to obtain velocity values at time T0 and T1. 
+<P>
+ In fact the class does quite a bit more than this because when the geometry
+ of the datasets is the same at T0 and T1, we can re-use cached cell Ids and 
+ weights used in the cell interpolation routines.
+ Additionally, the same weights can be used when interpolating (point) scalar 
+ values and computing vorticity etc.
+<P>
+<P>
+To create an instance of class vtkTemporalInterpolatedVelocityField, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTemporalInterpolatedVelocityField
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTemporalInterpolatedVelocityField has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTemporalInterpolatedVelocityField class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTemporalInterpolatedVelocityField = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTemporalInterpolatedVelocityField = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.FunctionValues (double x, double u)</code> -  Evaluate the velocity field, f, at (x, y, z, t).
+ For now, t is ignored.
+ </LI>
+<LI>  <code>int = obj.FunctionValuesAtT (int T, double x, double u)</code> -  Evaluate the velocity field, f, at (x, y, z, t).
+ For now, t is ignored.
+ </LI>
+<LI>  <code>obj.SelectVectors (string fieldName)</code> -  In order to use this class, two sets of data must be supplied, 
+ corresponding to times T1 and T2. Data is added via
+ this function.
+ </LI>
+<LI>  <code>obj.SetDataSetAtTime (int I, int N, double T, vtkDataSet dataset, bool staticdataset)</code> -  In order to use this class, two sets of data must be supplied, 
+ corresponding to times T1 and T2. Data is added via
+ this function.
+ </LI>
+<LI>  <code>obj.ClearCache ()</code> -  Set the last cell id to -1 so that the next search does not
+ start from the previous cell
+ </LI>
+<LI>  <code>int = obj.TestPoint (double x)</code> -  A utility function which evaluates the point at T1, T2 to see 
+ if it is inside the data at both times or only one.
+ </LI>
+<LI>  <code>int = obj.QuickTestPoint (double x)</code> -  A utility function which evaluates the point at T1, T2 to see 
+ if it is inside the data at both times or only one.
+ </LI>
+<LI>  <code>double = obj. GetLastGoodVelocity ()</code> -  If an interpolation was successful, we can retrieve the last computed
+ value from here. Initial value is (0.0,0.0,0.0)
+ </LI>
+<LI>  <code>double = obj.GetCurrentWeight ()</code> -  Get the most recent weight between 0-&gt;1 from T1-&gt;T2. Initial value is 0.
+ </LI>
+<LI>  <code>bool = obj.InterpolatePoint (vtkPointData outPD1, vtkPointData outPD2, vtkIdType outIndex)</code>
+ </LI>
+<LI>  <code>bool = obj.InterpolatePoint (int T, vtkPointData outPD1, vtkIdType outIndex)</code>
+ </LI>
+<LI>  <code>obj.ShowCacheResults ()</code>
+ </LI>
+<LI>  <code>bool = obj.IsStatic (int datasetIndex)</code>
+ </LI>
+<LI>  <code>obj.AdvanceOneTimeStep ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

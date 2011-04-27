@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataObjectWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataObjectWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkDataObjectWriter is a source object that writes ASCII or binary 
+ field data files in vtk format. Field data is a general form of data in
+ matrix form.
+<P>
+To create an instance of class vtkDataObjectWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataObjectWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataObjectWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataObjectWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataObjectWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataObjectWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string filename)</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>obj.SetHeader (string header)</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>string = obj.GetHeader ()</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>obj.SetFileType (int type)</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>int = obj.GetFileType ()</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>obj.SetFileTypeToASCII ()</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>obj.SetFileTypeToBinary ()</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>obj.SetFieldDataName (string fieldname)</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+<LI>  <code>string = obj.GetFieldDataName ()</code> -  Methods delegated to vtkDataWriter, see vtkDataWriter.
+ </LI>
+</UL>
+</BODY>
+</HTML>

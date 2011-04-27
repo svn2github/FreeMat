@@ -77,31 +77,24 @@ some convenient place.  To run FreeMat, simply double click on the application. 
 <H3>Source Code</H3>
 The source code build is a little more complicated than previous versions of FreeMat.  Here
 are the current build instructions for all platforms.
-<OL>
-<LI>  Build and install Qt 4.3 or later - <code>http://trolltech.com/developer/downloads/opensource</code>
- </LI>
-<LI>  Install g77 or gfortran (use fink for Mac OS X, use <code>gcc-g77</code> package for MinGW)
- </LI>
-<LI>  Download the source code <code>FreeMat-&lt;VERSION_NUMBER&gt;-src.tar.gz</code>.
- </LI>
-<LI>  Unpack the source code: <code>tar xvfz FreeMat-&lt;VERSION_NUMBER&gt;-src.tar.gz</code>.
- </LI>
-<LI>  For Windows, you will need to install MSYS as well as MINGW to
+\begin{enumerate}
+\item Build and install Qt 4.3 or later - <code>http://trolltech.com/developer/downloads/opensource</code>
+\item Install g77 or gfortran (use fink for Mac OS X, use <code>gcc-g77</code> package for MinGW)
+\item Download the source code <code>FreeMat-&lt;VERSION_NUMBER&gt;-src.tar.gz</code>.
+\item Unpack the source code: <code>tar xvfz FreeMat-&lt;VERSION_NUMBER&gt;-src.tar.gz</code>.
+\item For Windows, you will need to install MSYS as well as MINGW to
 build FreeMat.  You will also need unzip to unpack the enclosed
 matio.zip archive.  Alternately, you can cross-build the WIndows version
 of FreeMat under Linux (this is how I build it now).
- </LI>
-<LI>  If you are extraordinarily lucky (or prepared), you can issue the
+\item If you are extraordinarily lucky (or prepared), you can issue the
 usual ./configure, then the make and make install.
 This is not likely to work
 because of the somewhat esoteric dependencies of FreeMat.  The configure
 step will probably fail and indicate what external dependencies are
 still needed. 
- </LI>
-<LI>  I assume that you are familiar with the process of installing 
+\item I assume that you are familiar with the process of installing 
 dependencies if you are trying to build FreeMat from source.
- </LI>
-</OL>
+\end{enumerate}
 To build a binary distributable (app bundle on the Mac, setup
 installer on win32, and a binary distribution on Linux), you will
 need to run <code>make package</code> instead of <code>make install</code>.

@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBooleanTexture
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBooleanTexture
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkBooleanTexture is a filter to generate a 2D texture map based on 
+ combinations of inside, outside, and on region boundary. The "region" is
+ implicitly represented via 2D texture coordinates. These texture 
+ coordinates are normally generated using a filter like 
+ vtkImplicitTextureCoords, which generates the texture coordinates for 
+ any implicit function.
+<P>
+ vtkBooleanTexture generates the map according to the s-t texture
+ coordinates plus the notion of being in, on, or outside of a
+ region. An in region is when the texture coordinate is between
+ (0,0.5-thickness/2).  An out region is where the texture coordinate
+ is (0.5+thickness/2). An on region is between
+ (0.5-thickness/2,0.5+thickness/2). The combination in, on, and out
+ for each of the s-t texture coordinates results in 16 possible
+ combinations (see text). For each combination, a different value of 
+ intensity and transparency can be assigned. To assign maximum intensity
+ and/or opacity use the value 255. A minimum value of 0 results in
+ a black region (for intensity) and a fully transparent region (for
+ transparency).
+<P>
+To create an instance of class vtkBooleanTexture, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBooleanTexture
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBooleanTexture has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBooleanTexture class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkBooleanTexture = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkBooleanTexture = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetXSize (int )</code> -  Set the X texture map dimension.
+ </LI>
+<LI>  <code>int = obj.GetXSize ()</code> -  Set the X texture map dimension.
+ </LI>
+<LI>  <code>obj.SetYSize (int )</code> -  Set the Y texture map dimension.
+ </LI>
+<LI>  <code>int = obj.GetYSize ()</code> -  Set the Y texture map dimension.
+ </LI>
+<LI>  <code>obj.SetThickness (int )</code> -  Set the thickness of the "on" region.
+ </LI>
+<LI>  <code>int = obj.GetThickness ()</code> -  Set the thickness of the "on" region.
+ </LI>
+<LI>  <code>obj.SetInIn (char , char )</code> -  Specify intensity/transparency for "in/in" region.
+ </LI>
+<LI>  <code>obj.SetInIn (char  a[2])</code> -  Specify intensity/transparency for "in/in" region.
+ </LI>
+<LI>  <code>char = obj. GetInIn ()</code> -  Specify intensity/transparency for "in/in" region.
+ </LI>
+<LI>  <code>obj.SetInOut (char , char )</code> -  Specify intensity/transparency for "in/out" region.
+ </LI>
+<LI>  <code>obj.SetInOut (char  a[2])</code> -  Specify intensity/transparency for "in/out" region.
+ </LI>
+<LI>  <code>char = obj. GetInOut ()</code> -  Specify intensity/transparency for "in/out" region.
+ </LI>
+<LI>  <code>obj.SetOutIn (char , char )</code> -  Specify intensity/transparency for "out/in" region.
+ </LI>
+<LI>  <code>obj.SetOutIn (char  a[2])</code> -  Specify intensity/transparency for "out/in" region.
+ </LI>
+<LI>  <code>char = obj. GetOutIn ()</code> -  Specify intensity/transparency for "out/in" region.
+ </LI>
+<LI>  <code>obj.SetOutOut (char , char )</code> -  Specify intensity/transparency for "out/out" region.
+ </LI>
+<LI>  <code>obj.SetOutOut (char  a[2])</code> -  Specify intensity/transparency for "out/out" region.
+ </LI>
+<LI>  <code>char = obj. GetOutOut ()</code> -  Specify intensity/transparency for "out/out" region.
+ </LI>
+<LI>  <code>obj.SetOnOn (char , char )</code> -  Specify intensity/transparency for "on/on" region.
+ </LI>
+<LI>  <code>obj.SetOnOn (char  a[2])</code> -  Specify intensity/transparency for "on/on" region.
+ </LI>
+<LI>  <code>char = obj. GetOnOn ()</code> -  Specify intensity/transparency for "on/on" region.
+ </LI>
+<LI>  <code>obj.SetOnIn (char , char )</code> -  Specify intensity/transparency for "on/in" region.
+ </LI>
+<LI>  <code>obj.SetOnIn (char  a[2])</code> -  Specify intensity/transparency for "on/in" region.
+ </LI>
+<LI>  <code>char = obj. GetOnIn ()</code> -  Specify intensity/transparency for "on/in" region.
+ </LI>
+<LI>  <code>obj.SetOnOut (char , char )</code> -  Specify intensity/transparency for "on/out" region.
+ </LI>
+<LI>  <code>obj.SetOnOut (char  a[2])</code> -  Specify intensity/transparency for "on/out" region.
+ </LI>
+<LI>  <code>char = obj. GetOnOut ()</code> -  Specify intensity/transparency for "on/out" region.
+ </LI>
+<LI>  <code>obj.SetInOn (char , char )</code> -  Specify intensity/transparency for "in/on" region.
+ </LI>
+<LI>  <code>obj.SetInOn (char  a[2])</code> -  Specify intensity/transparency for "in/on" region.
+ </LI>
+<LI>  <code>char = obj. GetInOn ()</code> -  Specify intensity/transparency for "in/on" region.
+ </LI>
+<LI>  <code>obj.SetOutOn (char , char )</code> -  Specify intensity/transparency for "out/on" region.
+ </LI>
+<LI>  <code>obj.SetOutOn (char  a[2])</code> -  Specify intensity/transparency for "out/on" region.
+ </LI>
+<LI>  <code>char = obj. GetOutOn ()</code> -  Specify intensity/transparency for "out/on" region.
+ </LI>
+</UL>
+</BODY>
+</HTML>

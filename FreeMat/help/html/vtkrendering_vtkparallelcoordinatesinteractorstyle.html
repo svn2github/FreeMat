@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkParallelCoordinatesInteractorStyle
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkParallelCoordinatesInteractorStyle
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkParallelCoordinatesInteractorStyle allows the user to interactively manipulate
+ (rotate, pan, zoomm etc.) the camera.
+ Several events are overloaded from its superclass
+ vtkParallelCoordinatesInteractorStyle, hence the mouse bindings are 
+ different. (The bindings
+ keep the camera's view plane normal perpendicular to the x-y plane.) In
+ summary the mouse events are as follows:
+ + Left Mouse button triggers window level events
+ + CTRL Left Mouse spins the camera around its view plane normal
+ + SHIFT Left Mouse pans the camera
+ + CTRL SHIFT Left Mouse dollys (a positional zoom) the camera
+ + Middle mouse button pans the camera
+ + Right mouse button dollys the camera.
+ + SHIFT Right Mouse triggers pick events
+<P>
+ Note that the renderer's actors are not moved; instead the camera is moved.
+<P>
+To create an instance of class vtkParallelCoordinatesInteractorStyle, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkParallelCoordinatesInteractorStyle
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkParallelCoordinatesInteractorStyle has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkParallelCoordinatesInteractorStyle class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkParallelCoordinatesInteractorStyle = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkParallelCoordinatesInteractorStyle = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj. GetCursorStartPosition ()</code> -  Get the cursor positions in pixel coords
+ </LI>
+<LI>  <code>int = obj. GetCursorCurrentPosition ()</code> -  Get the cursor positions in pixel coords
+ </LI>
+<LI>  <code>int = obj. GetCursorLastPosition ()</code> -  Get the cursor positions in pixel coords
+ </LI>
+<LI>  <code>obj.GetCursorStartPosition (vtkViewport viewport, double pos[2])</code> -  Get the cursor positions in a given coordinate system
+ </LI>
+<LI>  <code>obj.GetCursorCurrentPosition (vtkViewport viewport, double pos[2])</code> -  Get the cursor positions in a given coordinate system
+ </LI>
+<LI>  <code>obj.GetCursorLastPosition (vtkViewport viewport, double pos[2])</code> -  Get the cursor positions in a given coordinate system
+ </LI>
+<LI>  <code>obj.OnMouseMove ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeftButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeftButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnMiddleButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnMiddleButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnRightButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnRightButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeave ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.StartInspect (int x, int y)</code>
+ </LI>
+<LI>  <code>obj.Inspect (int x, int y)</code>
+ </LI>
+<LI>  <code>obj.EndInspect ()</code>
+ </LI>
+<LI>  <code>obj.StartZoom ()</code>
+ </LI>
+<LI>  <code>obj.Zoom ()</code>
+ </LI>
+<LI>  <code>obj.EndZoom ()</code>
+ </LI>
+<LI>  <code>obj.StartPan ()</code>
+ </LI>
+<LI>  <code>obj.Pan ()</code>
+ </LI>
+<LI>  <code>obj.EndPan ()</code>
+ </LI>
+<LI>  <code>obj.OnChar ()</code> -  Override the "fly-to" (f keypress) for images.
+ </LI>
+</UL>
+</BODY>
+</HTML>

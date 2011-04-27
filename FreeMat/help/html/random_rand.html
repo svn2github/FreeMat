@@ -32,7 +32,7 @@ where each element in the vector specifies a dimension length:
 <P>
 This syntax is more convenient for calling <code>rand</code> using a 
 variable for the argument.
-
+<P>
 Finally, <code>rand</code> supports two additional forms that allow
 you to manipulate the state of the random number generator.
 The first retrieves the state
@@ -59,14 +59,13 @@ The following example demonstrates an example of using the first form of the <co
 ans = 
 
 (:,:,1) = 
-    0.3478    0.5313 
-    0.0276    0.9958 
+    0.8539    0.1733 
+    0.0415    0.1300 
 
 (:,:,2) = 
-    0.2079    0.7597 
-    0.4921    0.3365 
+    0.7163    0.5752 
+    0.5953    0.3728 
 </PRE>
-<P>
 The second example demonstrates the second form of the <code>rand</code> function.
 <PRE>
 --&gt; rand([2,2,2])
@@ -74,28 +73,26 @@ The second example demonstrates the second form of the <code>rand</code> functio
 ans = 
 
 (:,:,1) = 
-    0.8670    0.2174 
-    0.2714    0.6897 
+    0.4992    0.2797 
+    0.6513    0.3209 
 
 (:,:,2) = 
-    0.2305    0.3898 
-    0.1721    0.9545 
+    0.6244    0.7774 
+    0.0934    0.1820 
 </PRE>
-<P>
 The third example computes the mean and variance of a large number of uniform random numbers.  Recall that the mean should be <code>1/2</code>, and the variance should be <code>1/12 ~ 0.083</code>.
 <PRE>
 --&gt; x = rand(1,10000);
 --&gt; mean(x)
 
 ans = 
-    0.5023 
+    0.4952 
 
 --&gt; var(x)
 
 ans = 
-    0.0840 
+    0.0845 
 </PRE>
-<P>
 Now, we use the state manipulation functions of <code>rand</code> to exactly reproduce 
 a random sequence.  Note that unlike using <code>seed</code>, we can exactly control where
 the random number generator starts by saving the state.
@@ -118,6 +115,5 @@ c =
 c = 
     0.3580    0.7604    0.8077 
 </PRE>
-<P>
 </BODY>
 </HTML>

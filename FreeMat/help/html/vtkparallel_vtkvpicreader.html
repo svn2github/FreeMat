@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVPICReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVPICReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkDataReader is a helper superclass that reads the vtk data file header,
+ dataset type, and attribute data (point and cell attributes such as
+ scalars, vectors, normals, etc.) from a vtk data file.  See text for
+ the format of the various vtk file types.
+<P>
+<P>
+To create an instance of class vtkVPICReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVPICReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVPICReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVPICReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVPICReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVPICReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Specify file name of VPIC data file to read.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Specify file name of VPIC data file to read.
+ </LI>
+<LI>  <code>obj.SetStride (int , int , int )</code> -  Set the stride in each dimension
+ </LI>
+<LI>  <code>obj.SetStride (int  a[3])</code> -  Set the stride in each dimension
+ </LI>
+<LI>  <code>int = obj. GetStride ()</code> -  Set the stride in each dimension
+ </LI>
+<LI>  <code>obj.SetXExtent (int , int )</code> -  Set the simulation file decomposition in each dimension
+ </LI>
+<LI>  <code>obj.SetXExtent (int  a[2])</code> -  Set the simulation file decomposition in each dimension
+ </LI>
+<LI>  <code>obj.SetYExtent (int , int )</code> -  Set the simulation file decomposition in each dimension
+ </LI>
+<LI>  <code>obj.SetYExtent (int  a[2])</code> -  Set the simulation file decomposition in each dimension
+ </LI>
+<LI>  <code>obj.SetZExtent (int , int )</code> -  Set the simulation file decomposition in each dimension
+ </LI>
+<LI>  <code>obj.SetZExtent (int  a[2])</code> -  Set the simulation file decomposition in each dimension
+ </LI>
+<LI>  <code>int = obj. GetXLayout ()</code>
+ </LI>
+<LI>  <code>int = obj. GetYLayout ()</code>
+ </LI>
+<LI>  <code>int = obj. GetZLayout ()</code>
+ </LI>
+<LI>  <code>vtkImageData = obj.GetOutput ()</code> -  Get the reader's output
+ </LI>
+<LI>  <code>vtkImageData = obj.GetOutput (int index)</code> -  Get the reader's output
+ </LI>
+<LI>  <code>int = obj.GetNumberOfPointArrays ()</code> -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+ </LI>
+<LI>  <code>string = obj.GetPointArrayName (int index)</code> -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+ </LI>
+<LI>  <code>int = obj.GetPointArrayStatus (string name)</code> -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+ </LI>
+<LI>  <code>obj.SetPointArrayStatus (string name, int status)</code> -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+ </LI>
+<LI>  <code>obj.DisableAllPointArrays ()</code> -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+ </LI>
+<LI>  <code>obj.EnableAllPointArrays ()</code> -  The following methods allow selective reading of solutions fields.
+ By default, ALL data fields on the nodes are read, but this can
+ be modified.
+ </LI>
+</UL>
+</BODY>
+</HTML>

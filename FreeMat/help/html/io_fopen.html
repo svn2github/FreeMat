@@ -95,7 +95,7 @@ the file.
 --&gt; fp = fopen('test.dat','w','ieee-le')
 
 fp = 
- 8 
+ 4 
 
 --&gt; fwrite(fp,float([1.2,4.3,2.1]))
 
@@ -104,13 +104,12 @@ ans =
 
 --&gt; fclose(fp)
 </PRE>
-<P>
 Next, we open the file and read the data back
 <PRE>
 --&gt; fp = fopen('test.dat','r','ieee-le')
 
 fp = 
- 8 
+ 4 
 
 --&gt; fread(fp,[1,3],'float')
 
@@ -119,14 +118,13 @@ ans =
 
 --&gt; fclose(fp)
 </PRE>
-<P>
 Now, we re-open the file in append mode and add two additional <code>float</code>s to the
 file.
 <PRE>
 --&gt; fp = fopen('test.dat','a+','le')
 
 fp = 
- 8 
+ 4 
 
 --&gt; fwrite(fp,float([pi,e]))
 
@@ -135,13 +133,12 @@ ans =
 
 --&gt; fclose(fp)
 </PRE>
-<P>
 Finally, we read all 5 <code>float</code> values from the file
 <PRE>
 --&gt; fp = fopen('test.dat','r','ieee-le')
 
 fp = 
- 8 
+ 4 
 
 --&gt; fread(fp,[1,5],'float')
 
@@ -150,6 +147,5 @@ ans =
 
 --&gt; fclose(fp)
 </PRE>
-<P>
 </BODY>
 </HTML>

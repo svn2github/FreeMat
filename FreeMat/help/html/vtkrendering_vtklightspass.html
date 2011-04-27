@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLightsPass
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLightsPass
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ Render the lights.
+<P>
+ This pass expects an initialized camera.
+ It disables all the lights, apply transformations for lights following the
+ camera, and turn on the enables lights.
+ 
+<P>
+To create an instance of class vtkLightsPass, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLightsPass
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLightsPass has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLightsPass class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLightsPass = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLightsPass = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

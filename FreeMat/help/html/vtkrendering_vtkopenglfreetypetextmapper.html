@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkOpenGLFreeTypeTextMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkOpenGLFreeTypeTextMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkOpenGLFreeTypeTextMapper provides 2D text annotation support for VTK
+ using the FreeType and FTGL libraries. Normally the user should use 
+ vtktextMapper which in turn will use this class.
+<P>
+To create an instance of class vtkOpenGLFreeTypeTextMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkOpenGLFreeTypeTextMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkOpenGLFreeTypeTextMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkOpenGLFreeTypeTextMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkOpenGLFreeTypeTextMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkOpenGLFreeTypeTextMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.RenderOverlay (vtkViewport viewport, vtkActor2D actor)</code> -  Actally draw the text.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>obj.GetSize (vtkViewport viewport, int size[2])</code> -  What is the size of the rectangle required to draw this
+ mapper ?
+ </LI>
+</UL>
+</BODY>
+</HTML>

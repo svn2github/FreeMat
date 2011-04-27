@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInformationExecutivePortKey
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInformationExecutivePortKey
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkInformationExecutivePortKey is used to represent keys in
+ vtkInformation for values that are vtkExecutive instances paired
+ with port numbers.
+<P>
+To create an instance of class vtkInformationExecutivePortKey, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInformationExecutivePortKey
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInformationExecutivePortKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInformationExecutivePortKey class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInformationExecutivePortKey = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInformationExecutivePortKey = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkInformationExecutivePortKey = obj.(string name, string location)</code>
+ </LI>
+<LI>  <code>~vtkInformationExecutivePortKey = obj.()</code>
+ </LI>
+<LI>  <code>obj.Set (vtkInformation info, vtkExecutive , int )</code> -  Get/Set the value associated with this key in the given
+ information object.
+ </LI>
+<LI>  <code>vtkExecutive = obj.GetExecutive (vtkInformation info)</code> -  Get/Set the value associated with this key in the given
+ information object.
+ </LI>
+<LI>  <code>int = obj.GetPort (vtkInformation info)</code> -  Get/Set the value associated with this key in the given
+ information object.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkInformation from, vtkInformation to)</code> -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+ </LI>
+<LI>  <code>obj.Report (vtkInformation info, vtkGarbageCollector collector)</code> -  Report a reference this key has in the given information object.
+ </LI>
+</UL>
+</BODY>
+</HTML>

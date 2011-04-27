@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkJPEGWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkJPEGWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkJPEGWriter writes JPEG files. It supports 1 and 3 component data of
+ unsigned char. It relies on the IJG's libjpeg.  Thanks to IJG for
+ supplying a public jpeg IO library.
+<P>
+To create an instance of class vtkJPEGWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkJPEGWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkJPEGWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkJPEGWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkJPEGWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkJPEGWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Write ()</code> -  The main interface which triggers the writer to start.
+ </LI>
+<LI>  <code>obj.SetQuality (int )</code> -  Compression quality. 0 = Low quality, 100 = High quality
+ </LI>
+<LI>  <code>int = obj.GetQualityMinValue ()</code> -  Compression quality. 0 = Low quality, 100 = High quality
+ </LI>
+<LI>  <code>int = obj.GetQualityMaxValue ()</code> -  Compression quality. 0 = Low quality, 100 = High quality
+ </LI>
+<LI>  <code>int = obj.GetQuality ()</code> -  Compression quality. 0 = Low quality, 100 = High quality
+ </LI>
+<LI>  <code>obj.SetProgressive (int )</code> -  Progressive JPEG generation.
+ </LI>
+<LI>  <code>int = obj.GetProgressive ()</code> -  Progressive JPEG generation.
+ </LI>
+<LI>  <code>obj.ProgressiveOn ()</code> -  Progressive JPEG generation.
+ </LI>
+<LI>  <code>obj.ProgressiveOff ()</code> -  Progressive JPEG generation.
+ </LI>
+<LI>  <code>obj.SetWriteToMemory (int )</code> -  Write the image to memory (a vtkUnsignedCharArray)
+ </LI>
+<LI>  <code>int = obj.GetWriteToMemory ()</code> -  Write the image to memory (a vtkUnsignedCharArray)
+ </LI>
+<LI>  <code>obj.WriteToMemoryOn ()</code> -  Write the image to memory (a vtkUnsignedCharArray)
+ </LI>
+<LI>  <code>obj.WriteToMemoryOff ()</code> -  Write the image to memory (a vtkUnsignedCharArray)
+ </LI>
+<LI>  <code>obj.SetResult (vtkUnsignedCharArray )</code> -  When writing to memory this is the result, it will be NULL until the 
+ data is written the first time
+ </LI>
+<LI>  <code>vtkUnsignedCharArray = obj.GetResult ()</code> -  When writing to memory this is the result, it will be NULL until the 
+ data is written the first time
+ </LI>
+</UL>
+</BODY>
+</HTML>

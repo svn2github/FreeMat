@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageViewer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageViewer
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkImageViewer is a convenience class for displaying a 2d image.  It
+ packages up the functionality found in vtkRenderWindow, vtkRenderer,
+ vtkActor2D and vtkImageMapper into a single easy to use class.  Behind the
+ scenes these four classes are actually used to to provide the required
+ functionality. vtkImageViewer is simply a wrapper around them.
+<P>
+To create an instance of class vtkImageViewer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageViewer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageViewer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageViewer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageViewer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageViewer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>string = obj.GetWindowName ()</code> -  Get name of rendering window
+ </LI>
+<LI>  <code>obj.Render (void )</code> -  Render the resulting image.
+ </LI>
+<LI>  <code>obj.SetInput (vtkImageData in)</code> -  Set/Get the input to the viewer.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetInput ()</code> -  Set/Get the input to the viewer.
+ </LI>
+<LI>  <code>obj.SetInputConnection (vtkAlgorithmOutput input)</code> -  Set/Get the input to the viewer.
+ </LI>
+<LI>  <code>int = obj.GetWholeZMin ()</code> -  What is the possible Min/ Max z slices available.
+ </LI>
+<LI>  <code>int = obj.GetWholeZMax ()</code> -  What is the possible Min/ Max z slices available.
+ </LI>
+<LI>  <code>int = obj.GetZSlice ()</code> -  Set/Get the current Z Slice to display
+ </LI>
+<LI>  <code>obj.SetZSlice (int s)</code> -  Set/Get the current Z Slice to display
+ </LI>
+<LI>  <code>double = obj.GetColorWindow ()</code> -  Sets window/level for mapping pixels to colors.
+ </LI>
+<LI>  <code>double = obj.GetColorLevel ()</code> -  Sets window/level for mapping pixels to colors.
+ </LI>
+<LI>  <code>obj.SetColorWindow (double s)</code> -  Sets window/level for mapping pixels to colors.
+ </LI>
+<LI>  <code>obj.SetColorLevel (double s)</code> -  Sets window/level for mapping pixels to colors.
+ </LI>
+<LI>  <code>int = obj.GetGrayScaleHint ()</code> -  By default this is a color viewer.  GrayScaleHintOn will improve the
+ appearance of gray scale images on some systems.
+ </LI>
+<LI>  <code>obj.SetGrayScaleHint (int )</code> -  By default this is a color viewer.  GrayScaleHintOn will improve the
+ appearance of gray scale images on some systems.
+ </LI>
+<LI>  <code>obj.GrayScaleHintOn ()</code> -  By default this is a color viewer.  GrayScaleHintOn will improve the
+ appearance of gray scale images on some systems.
+ </LI>
+<LI>  <code>obj.GrayScaleHintOff ()</code> -  By default this is a color viewer.  GrayScaleHintOn will improve the
+ appearance of gray scale images on some systems.
+ </LI>
+<LI>  <code>int = obj.GetPosition ()</code> -  Set/Get the position in screen coordinates of the rendering window.
+ </LI>
+<LI>  <code>obj.SetPosition (int a, int b)</code> -  Set/Get the position in screen coordinates of the rendering window.
+ </LI>
+<LI>  <code>obj.SetPosition (int a[2])</code> -  Set/Get the position in screen coordinates of the rendering window.
+ </LI>
+<LI>  <code>int = obj.GetSize ()</code> -  Set/Get the size of the window in screen coordinates in pixels.
+ </LI>
+<LI>  <code>obj.SetSize (int a, int b)</code> -  Set/Get the size of the window in screen coordinates in pixels.
+ </LI>
+<LI>  <code>obj.SetSize (int a[2])</code> -  Set/Get the size of the window in screen coordinates in pixels.
+ </LI>
+<LI>  <code>vtkRenderWindow = obj.GetRenderWindow ()</code> -  Get the internal objects
+ </LI>
+<LI>  <code>vtkRenderer = obj.GetRenderer ()</code> -  Get the internal objects
+ </LI>
+<LI>  <code>vtkImageMapper = obj.GetImageMapper ()</code> -  Get the internal objects
+ </LI>
+<LI>  <code>vtkActor2D = obj.GetActor2D ()</code> -  Get the internal objects
+ </LI>
+<LI>  <code>obj.SetupInteractor (vtkRenderWindowInteractor )</code> -  Create and attach an interactor for this window
+ </LI>
+<LI>  <code>obj.SetOffScreenRendering (int )</code> -  Create a window in memory instead of on the screen. This may not
+ be supported for every type of window and on some windows you may
+ need to invoke this prior to the first render.
+ </LI>
+<LI>  <code>int = obj.GetOffScreenRendering ()</code> -  Create a window in memory instead of on the screen. This may not
+ be supported for every type of window and on some windows you may
+ need to invoke this prior to the first render.
+ </LI>
+<LI>  <code>obj.OffScreenRenderingOn ()</code> -  Create a window in memory instead of on the screen. This may not
+ be supported for every type of window and on some windows you may
+ need to invoke this prior to the first render.
+ </LI>
+<LI>  <code>obj.OffScreenRenderingOff ()</code> -  Create a window in memory instead of on the screen. This may not
+ be supported for every type of window and on some windows you may
+ need to invoke this prior to the first render.
+ </LI>
+</UL>
+</BODY>
+</HTML>

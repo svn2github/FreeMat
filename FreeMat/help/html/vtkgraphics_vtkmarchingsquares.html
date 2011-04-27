@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMarchingSquares
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMarchingSquares
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkMarchingSquares is a filter that takes as input a structured points set
+ and generates on output one or more isolines.  One or more contour values 
+ must be specified to generate the isolines.  Alternatively, you can specify 
+ a min/max scalar range and the number of contours to generate a series of 
+ evenly spaced contour values. 
+<P>
+ To generate contour lines the input data must be of topological dimension 2 
+ (i.e., an image). If not, you can use the ImageRange ivar to select an
+ image plane from an input volume. This avoids having to extract a plane first
+ (using vtkExtractSubVolume).  The filter deals with this by first
+ trying to use the input data directly, and if not a 2D image, then uses the 
+ ImageRange ivar to reduce it to an image.
+<P>
+To create an instance of class vtkMarchingSquares, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMarchingSquares
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMarchingSquares has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMarchingSquares class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMarchingSquares = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMarchingSquares = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetImageRange (int  [6])</code> -  Set/Get the i-j-k index range which define a plane on which to generate 
+ contour lines. Using this ivar it is possible to input a 3D volume
+ directly and then generate contour lines on one of the i-j-k planes, or 
+ a portion of a plane.
+ </LI>
+<LI>  <code>int = obj. GetImageRange ()</code> -  Set/Get the i-j-k index range which define a plane on which to generate 
+ contour lines. Using this ivar it is possible to input a 3D volume
+ directly and then generate contour lines on one of the i-j-k planes, or 
+ a portion of a plane.
+ </LI>
+<LI>  <code>obj.SetImageRange (int imin, int imax, int jmin, int jmax, int kmin, int kmax)</code> -  Set/Get the i-j-k index range which define a plane on which to generate 
+ contour lines. Using this ivar it is possible to input a 3D volume
+ directly and then generate contour lines on one of the i-j-k planes, or 
+ a portion of a plane.
+ </LI>
+<LI>  <code>obj.SetValue (int i, double value)</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>double = obj.GetValue (int i)</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>obj.GetValues (double contourValues)</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>obj.SetNumberOfContours (int number)</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>int = obj.GetNumberOfContours ()</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>obj.GenerateValues (int numContours, double range[2])</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>obj.GenerateValues (int numContours, double rangeStart, double rangeEnd)</code> -  Methods to set contour values
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Because we delegate to vtkContourValues
+ </LI>
+<LI>  <code>obj.SetLocator (vtkIncrementalPointLocator locator)</code>
+ </LI>
+<LI>  <code>vtkIncrementalPointLocator = obj.GetLocator ()</code>
+ </LI>
+<LI>  <code>obj.CreateDefaultLocator ()</code> -  Create default locator. Used to create one when none is specified. 
+ The locator is used to merge coincident points.
+ </LI>
+</UL>
+</BODY>
+</HTML>

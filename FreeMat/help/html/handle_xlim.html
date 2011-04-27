@@ -29,6 +29,11 @@ respectively.  In <code>auto</code> mode, FreeMat chooses the range for the axis
 automatically.  The <code>xlim('mode')</code> form returns the current mode for the axis
 (either <code>'auto'</code> or <code>'manual'</code>).  Finally, you can specify the handle of an
 axis to manipulate instead of using the current one.
+<P>
+As an additional feature, you can now specify <code>inf</code> for a limit, and
+FreeMat will take that limit from the automatic set.  So, for example 
+<code>xlim([10,inf])</code> will set the minimum for the x axis, but use the
+automatic value for the maximum.
 <H3>Example</H3>
 <PRE>
 --&gt; x = linspace(-1,1);
@@ -39,7 +44,6 @@ axis to manipulate instead of using the current one.
 ans = 
  -1  1 
 </PRE>
-<P>
 which results in
 <P>
 <DIV ALIGN="CENTER">
@@ -51,11 +55,21 @@ Next, we zoom in on the plot using the <code>xlim</code> function
 --&gt; plot(x,y,'r-')
 --&gt; xlim([-0.2,0.2])
 </PRE>
-<P>
 which results in
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="xlim2.png">
+</DIV>
+<P>
+To demonstrate the infinite limits feature.  Consider the following
+<PRE>
+--&gt; plot(x,y,'r-');
+--&gt; xlim([0,inf])
+</PRE>
+which results in 
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="xlim3.png">
 </DIV>
 <P>
 </BODY>

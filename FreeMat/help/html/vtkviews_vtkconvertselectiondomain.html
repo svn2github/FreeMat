@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkConvertSelectionDomain
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkConvertSelectionDomain
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+ vtkConvertSelectionDomain converts a selection from one domain to another
+ using known domain mappings. The domain mappings are described by a
+ vtkMultiBlockDataSet containing one or more vtkTables.
+<P>
+ The first input port is for the input selection (or collection of annotations
+ in a vtkAnnotationLayers object), while the second port
+ is for the multi-block of mappings, and the third port is for the
+ data that is being selected on.
+<P>
+ If the second or third port is not set, this filter will pass the
+ selection/annotation to the output unchanged.
+<P>
+ The second output is the selection associated with the "current annotation"
+ normally representing the current interactive selection.
+<P>
+To create an instance of class vtkConvertSelectionDomain, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkConvertSelectionDomain
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkConvertSelectionDomain has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkConvertSelectionDomain class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkConvertSelectionDomain = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkConvertSelectionDomain = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

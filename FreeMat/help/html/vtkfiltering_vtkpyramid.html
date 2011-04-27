@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPyramid
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPyramid
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkPyramid is a concrete implementation of vtkCell to represent a 3D
+ pyramid. A pyramid consists of a rectangular base with four triangular
+ faces. vtkPyramid uses the standard isoparametric shape functions for
+ a linear pyramid. The pyramid is defined by the five points (0-4) where
+ (0,1,2,3) is the base of the pyramid which, using the right hand rule,
+ forms a quadrilaterial whose normal points in the direction of the
+ pyramid apex at vertex #4.
+<P>
+To create an instance of class vtkPyramid, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPyramid
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPyramid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPyramid class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPyramid = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPyramid = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetCellType ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetCellDimension ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFaces ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetEdge (int edgeId)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetFace (int faceId)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetParametricCenter (double pcoords[3])</code> -  Return the center of the pyramid in parametric coordinates.
+ </LI>
+<LI>  <code>obj.InterpolateFunctions (double pcoords[3], double weights[5])</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.InterpolateDerivs (double pcoords[3], double derivs[15])</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

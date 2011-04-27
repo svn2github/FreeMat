@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageShiftScale
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageShiftScale
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ With vtkImageShiftScale Pixels are shifted (a constant value added)
+ and then scaled (multiplied by a scalar. As a convenience, this class 
+ allows you to set the output scalar type similar to vtkImageCast. 
+ This is because shift scale operations frequently convert data types.
+<P>
+To create an instance of class vtkImageShiftScale, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageShiftScale
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageShiftScale has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageShiftScale class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageShiftScale = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageShiftScale = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetShift (double )</code> -  Set/Get the shift value. This value is added to each pixel
+ </LI>
+<LI>  <code>double = obj.GetShift ()</code> -  Set/Get the shift value. This value is added to each pixel
+ </LI>
+<LI>  <code>obj.SetScale (double )</code> -  Set/Get the scale value. Each pixel is multiplied by this value.
+ </LI>
+<LI>  <code>double = obj.GetScale ()</code> -  Set/Get the scale value. Each pixel is multiplied by this value.
+ </LI>
+<LI>  <code>obj.SetOutputScalarType (int )</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>int = obj.GetOutputScalarType ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToDouble ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToFloat ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToLong ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToUnsignedLong ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToInt ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToUnsignedInt ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToShort ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToUnsignedShort ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToChar ()</code> -  Set the desired output scalar type. The result of the shift 
+ and scale operations is cast to the type specified.
+ </LI>
+<LI>  <code>obj.SetOutputScalarTypeToUnsignedChar ()</code> -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+ </LI>
+<LI>  <code>obj.SetClampOverflow (int )</code> -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+ </LI>
+<LI>  <code>int = obj.GetClampOverflow ()</code> -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+ </LI>
+<LI>  <code>obj.ClampOverflowOn ()</code> -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+ </LI>
+<LI>  <code>obj.ClampOverflowOff ()</code> -  When the ClampOverflow flag is on, the data is thresholded so that
+ the output value does not exceed the max or min of the data type.
+ By default, ClampOverflow is off.
+ </LI>
+</UL>
+</BODY>
+</HTML>

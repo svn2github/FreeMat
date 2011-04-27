@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRibbonFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRibbonFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkRibbonFilter is a filter to create oriented ribbons from lines defined
+ in polygonal dataset. The orientation of the ribbon is along the line 
+ segments and perpendicular to "projected" line normals. Projected line 
+ normals are the original line normals projected to be perpendicular to 
+ the local line segment. An offset angle can be specified to rotate the 
+ ribbon with respect to the normal.
+<P>
+<P>
+To create an instance of class vtkRibbonFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRibbonFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRibbonFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRibbonFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRibbonFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRibbonFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetWidth (double )</code> -  Set the "half" width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+ </LI>
+<LI>  <code>double = obj.GetWidthMinValue ()</code> -  Set the "half" width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+ </LI>
+<LI>  <code>double = obj.GetWidthMaxValue ()</code> -  Set the "half" width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+ </LI>
+<LI>  <code>double = obj.GetWidth ()</code> -  Set the "half" width of the ribbon. If the width is allowed to vary, 
+ this is the minimum width. The default is 0.5
+ </LI>
+<LI>  <code>obj.SetAngle (double )</code> -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+ </LI>
+<LI>  <code>double = obj.GetAngleMinValue ()</code> -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+ </LI>
+<LI>  <code>double = obj.GetAngleMaxValue ()</code> -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+ </LI>
+<LI>  <code>double = obj.GetAngle ()</code> -  Set the offset angle of the ribbon from the line normal. (The angle
+ is expressed in degrees.) The default is 0.0
+ </LI>
+<LI>  <code>obj.SetVaryWidth (int )</code> -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+ </LI>
+<LI>  <code>int = obj.GetVaryWidth ()</code> -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+ </LI>
+<LI>  <code>obj.VaryWidthOn ()</code> -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+ </LI>
+<LI>  <code>obj.VaryWidthOff ()</code> -  Turn on/off the variation of ribbon width with scalar value.
+ The default is Off
+ </LI>
+<LI>  <code>obj.SetWidthFactor (double )</code> -  Set the maximum ribbon width in terms of a multiple of the minimum width.
+ The default is 2.0
+ </LI>
+<LI>  <code>double = obj.GetWidthFactor ()</code> -  Set the maximum ribbon width in terms of a multiple of the minimum width.
+ The default is 2.0
+ </LI>
+<LI>  <code>obj.SetDefaultNormal (double , double , double )</code> -  Set the default normal to use if no normals are supplied, and
+ DefaultNormalOn is set. The default is (0,0,1)
+ </LI>
+<LI>  <code>obj.SetDefaultNormal (double  a[3])</code> -  Set the default normal to use if no normals are supplied, and
+ DefaultNormalOn is set. The default is (0,0,1)
+ </LI>
+<LI>  <code>double = obj. GetDefaultNormal ()</code> -  Set the default normal to use if no normals are supplied, and
+ DefaultNormalOn is set. The default is (0,0,1)
+ </LI>
+<LI>  <code>obj.SetUseDefaultNormal (int )</code> -  Set a boolean to control whether to use default normals.
+ The default is Off
+ </LI>
+<LI>  <code>int = obj.GetUseDefaultNormal ()</code> -  Set a boolean to control whether to use default normals.
+ The default is Off
+ </LI>
+<LI>  <code>obj.UseDefaultNormalOn ()</code> -  Set a boolean to control whether to use default normals.
+ The default is Off
+ </LI>
+<LI>  <code>obj.UseDefaultNormalOff ()</code> -  Set a boolean to control whether to use default normals.
+ The default is Off
+ </LI>
+<LI>  <code>obj.SetGenerateTCoords (int )</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>int = obj.GetGenerateTCoordsMinValue ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>int = obj.GetGenerateTCoordsMaxValue ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>int = obj.GetGenerateTCoords ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>obj.SetGenerateTCoordsToOff ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>obj.SetGenerateTCoordsToNormalizedLength ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>obj.SetGenerateTCoordsToUseLength ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>obj.SetGenerateTCoordsToUseScalars ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>string = obj.GetGenerateTCoordsAsString ()</code> -  Control whether and how texture coordinates are produced. This is
+ useful for striping the ribbon with time textures, etc.
+ </LI>
+<LI>  <code>obj.SetTextureLength (double )</code> -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+ </LI>
+<LI>  <code>double = obj.GetTextureLengthMinValue ()</code> -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+ </LI>
+<LI>  <code>double = obj.GetTextureLengthMaxValue ()</code> -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+ </LI>
+<LI>  <code>double = obj.GetTextureLength ()</code> -  Control the conversion of units during the texture coordinates
+ calculation. The TextureLength indicates what length (whether 
+ calculated from scalars or length) is mapped to the [0,1)
+ texture space. The default is 1.0
+ </LI>
+</UL>
+</BODY>
+</HTML>

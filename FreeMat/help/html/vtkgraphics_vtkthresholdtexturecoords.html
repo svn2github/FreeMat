@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkThresholdTextureCoords
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkThresholdTextureCoords
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkThresholdTextureCoords is a filter that generates texture coordinates for
+ any input dataset type given a threshold criterion. The criterion can take 
+ three forms: 1) greater than a particular value (ThresholdByUpper()); 
+ 2) less than a particular value (ThresholdByLower(); or 3) between two 
+ values (ThresholdBetween(). If the threshold criterion is satisfied, 
+ the "in" texture coordinate will be set (this can be specified by the
+ user). If the threshold criterion is not satisfied the "out" is set.
+<P>
+To create an instance of class vtkThresholdTextureCoords, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkThresholdTextureCoords
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkThresholdTextureCoords has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkThresholdTextureCoords class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkThresholdTextureCoords = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkThresholdTextureCoords = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.ThresholdByLower (double lower)</code> -  Criterion is cells whose scalars are less than lower threshold.
+ </LI>
+<LI>  <code>obj.ThresholdByUpper (double upper)</code> -  Criterion is cells whose scalars are less than upper threshold.
+ </LI>
+<LI>  <code>obj.ThresholdBetween (double lower, double upper)</code> -  Criterion is cells whose scalars are between lower and upper thresholds.
+ </LI>
+<LI>  <code>double = obj.GetUpperThreshold ()</code> -  Return the upper and lower thresholds.
+ </LI>
+<LI>  <code>double = obj.GetLowerThreshold ()</code> -  Return the upper and lower thresholds.
+ </LI>
+<LI>  <code>obj.SetTextureDimension (int )</code> -  Set the desired dimension of the texture map.
+ </LI>
+<LI>  <code>int = obj.GetTextureDimensionMinValue ()</code> -  Set the desired dimension of the texture map.
+ </LI>
+<LI>  <code>int = obj.GetTextureDimensionMaxValue ()</code> -  Set the desired dimension of the texture map.
+ </LI>
+<LI>  <code>int = obj.GetTextureDimension ()</code> -  Set the desired dimension of the texture map.
+ </LI>
+<LI>  <code>obj.SetInTextureCoord (double , double , double )</code> -  Set the texture coordinate value for point satisfying threshold criterion.
+ </LI>
+<LI>  <code>obj.SetInTextureCoord (double  a[3])</code> -  Set the texture coordinate value for point satisfying threshold criterion.
+ </LI>
+<LI>  <code>double = obj. GetInTextureCoord ()</code> -  Set the texture coordinate value for point satisfying threshold criterion.
+ </LI>
+<LI>  <code>obj.SetOutTextureCoord (double , double , double )</code> -  Set the texture coordinate value for point NOT satisfying threshold
+  criterion.
+ </LI>
+<LI>  <code>obj.SetOutTextureCoord (double  a[3])</code> -  Set the texture coordinate value for point NOT satisfying threshold
+  criterion.
+ </LI>
+<LI>  <code>double = obj. GetOutTextureCoord ()</code> -  Set the texture coordinate value for point NOT satisfying threshold
+  criterion.
+ </LI>
+</UL>
+</BODY>
+</HTML>

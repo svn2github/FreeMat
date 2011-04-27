@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSequencePass
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSequencePass
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkSequencePass executes a list of render passes sequentially.
+ This class allows to define a sequence of render passes at run time.
+ The other solution to write a sequence of render passes is to write an
+ effective subclass of vtkRenderPass.
+<P>
+ As vtkSequencePass is a vtkRenderPass itself, it is possible to have a
+ hierarchy of render passes built at runtime.
+<P>
+To create an instance of class vtkSequencePass, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSequencePass
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSequencePass has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSequencePass class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSequencePass = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSequencePass = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow w)</code> -  Release graphics resources and ask components to release their own
+ resources.
+ \pre w_exists: w!=0
+ </LI>
+<LI>  <code>vtkRenderPassCollection = obj.GetPasses ()</code> -  The ordered list of render passes to execute sequentially.
+ If the pointer is NULL or the list is empty, it is silently ignored.
+ There is no warning.
+ Initial value is a NULL pointer.
+ </LI>
+<LI>  <code>obj.SetPasses (vtkRenderPassCollection passes)</code> -  The ordered list of render passes to execute sequentially.
+ If the pointer is NULL or the list is empty, it is silently ignored.
+ There is no warning.
+ Initial value is a NULL pointer.
+ </LI>
+</UL>
+</BODY>
+</HTML>

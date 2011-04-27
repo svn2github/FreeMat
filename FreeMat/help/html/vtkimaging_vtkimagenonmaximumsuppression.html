@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageNonMaximumSuppression
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageNonMaximumSuppression
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageNonMaximumSuppression Sets to zero any pixel that is not a peak.
+ If a pixel has a neighbor along the vector that has larger magnitude, the
+ smaller pixel is set to zero.  The filter takes two inputs: a magnitude
+ and a vector.  Output is magnitude information and is always in doubles.
+ Typically this filter is used with vtkImageGradient and
+ vtkImageGradientMagnitude as inputs.
+<P>
+To create an instance of class vtkImageNonMaximumSuppression, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageNonMaximumSuppression
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageNonMaximumSuppression has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageNonMaximumSuppression class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageNonMaximumSuppression = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageNonMaximumSuppression = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMagnitudeInput (vtkImageData input)</code> -  Set the magnitude and vector inputs.
+ </LI>
+<LI>  <code>obj.SetVectorInput (vtkImageData input)</code> -  Set the magnitude and vector inputs.
+ </LI>
+<LI>  <code>obj.SetHandleBoundaries (int )</code> -  If "HandleBoundariesOn" then boundary pixels are duplicated
+ So central differences can get values.
+ </LI>
+<LI>  <code>int = obj.GetHandleBoundaries ()</code> -  If "HandleBoundariesOn" then boundary pixels are duplicated
+ So central differences can get values.
+ </LI>
+<LI>  <code>obj.HandleBoundariesOn ()</code> -  If "HandleBoundariesOn" then boundary pixels are duplicated
+ So central differences can get values.
+ </LI>
+<LI>  <code>obj.HandleBoundariesOff ()</code> -  If "HandleBoundariesOn" then boundary pixels are duplicated
+ So central differences can get values.
+ </LI>
+<LI>  <code>obj.SetDimensionality (int )</code> -  Determines how the input is interpreted (set of 2d slices or a 3D volume)
+ </LI>
+<LI>  <code>int = obj.GetDimensionalityMinValue ()</code> -  Determines how the input is interpreted (set of 2d slices or a 3D volume)
+ </LI>
+<LI>  <code>int = obj.GetDimensionalityMaxValue ()</code> -  Determines how the input is interpreted (set of 2d slices or a 3D volume)
+ </LI>
+<LI>  <code>int = obj.GetDimensionality ()</code> -  Determines how the input is interpreted (set of 2d slices or a 3D volume)
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkProcess
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkProcess
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkProcess is an abstract class representing a process that can be launched
+ by a vtkMultiProcessController. Concrete classes just have to implement
+ Execute() method and make sure it set the proper value in ReturnValue.
+<P>
+ .SECTION Example
+  class MyProcess: public vtkProcess
+  ...
+  vtkMultiProcessController *c;
+  MyProcess *p=new MyProcess::New();
+  p-&gt;SetArgs(argc,argv); // some parameters specific to the process
+  p-&gt;SetX(10.0); // ...
+  c-&gt;SetSingleProcess(p);
+  c-&gt;SingleMethodExecute();
+  int returnValue=p-&gt;GetReturnValue();
+<P>
+<P>
+To create an instance of class vtkProcess, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkProcess
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkProcess has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkProcess class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkProcess = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkProcess = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Execute ()</code>
+ </LI>
+<LI>  <code>vtkMultiProcessController = obj.GetController ()</code> -  Give access to the controller that launched the process.
+ Initial value is NULL.
+ </LI>
+<LI>  <code>obj.SetController (vtkMultiProcessController aController)</code> -  This method should not be called directly but set by the controller
+ itself.
+ </LI>
+<LI>  <code>int = obj.GetReturnValue ()</code> -  Value set at the end of a call to Execute.
+ </LI>
+</UL>
+</BODY>
+</HTML>

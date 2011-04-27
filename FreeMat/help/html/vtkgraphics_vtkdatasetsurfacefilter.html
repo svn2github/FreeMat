@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataSetSurfaceFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataSetSurfaceFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkDataSetSurfaceFilter is a faster version of vtkGeometry filter, but it 
+ does not have an option to select bounds.  It may use more memory than
+ vtkGeometryFilter.  It only has one option: whether to use triangle strips 
+ when the input type is structured.
+<P>
+To create an instance of class vtkDataSetSurfaceFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataSetSurfaceFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataSetSurfaceFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataSetSurfaceFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataSetSurfaceFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataSetSurfaceFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetUseStrips (int )</code> -  When input is structured data, this flag will generate faces with
+ triangle strips.  This should render faster and use less memory, but no
+ cell data is copied.  By default, UseStrips is Off.
+ </LI>
+<LI>  <code>int = obj.GetUseStrips ()</code> -  When input is structured data, this flag will generate faces with
+ triangle strips.  This should render faster and use less memory, but no
+ cell data is copied.  By default, UseStrips is Off.
+ </LI>
+<LI>  <code>obj.UseStripsOn ()</code> -  When input is structured data, this flag will generate faces with
+ triangle strips.  This should render faster and use less memory, but no
+ cell data is copied.  By default, UseStrips is Off.
+ </LI>
+<LI>  <code>obj.UseStripsOff ()</code> -  When input is structured data, this flag will generate faces with
+ triangle strips.  This should render faster and use less memory, but no
+ cell data is copied.  By default, UseStrips is Off.
+ </LI>
+<LI>  <code>obj.SetPieceInvariant (int )</code> -  If PieceInvariant is true, vtkDataSetSurfaceFilter requests
+ 1 ghost level from input in order to remove internal surface
+ that are between processes. False by default.
+ </LI>
+<LI>  <code>int = obj.GetPieceInvariant ()</code> -  If PieceInvariant is true, vtkDataSetSurfaceFilter requests
+ 1 ghost level from input in order to remove internal surface
+ that are between processes. False by default.
+ </LI>
+<LI>  <code>obj.SetPassThroughCellIds (int )</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>int = obj.GetPassThroughCellIds ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>obj.PassThroughCellIdsOn ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>obj.PassThroughCellIdsOff ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>obj.SetPassThroughPointIds (int )</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>int = obj.GetPassThroughPointIds ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>obj.PassThroughPointIdsOn ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>obj.PassThroughPointIdsOff ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve 
+ memory. Note that PassThroughCellIds will be ignored if UseStrips is on,
+ since in that case each tringle strip can represent more than on of the
+ input cells.
+ </LI>
+<LI>  <code>int = obj.StructuredExecute (vtkDataSet input, vtkPolyData output, int ext32, int wholeExt32)</code> -  Direct access methods that can be used to use the this class as an
+ algorithm without using it as a filter.
+ </LI>
+<LI>  <code>int = obj.UnstructuredGridExecute (vtkDataSet input, vtkPolyData output)</code> -  Direct access methods that can be used to use the this class as an
+ algorithm without using it as a filter.
+ </LI>
+<LI>  <code>int = obj.DataSetExecute (vtkDataSet input, vtkPolyData output)</code> -  Direct access methods that can be used to use the this class as an
+ algorithm without using it as a filter.
+ </LI>
+</UL>
+</BODY>
+</HTML>

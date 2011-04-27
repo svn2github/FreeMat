@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageRectilinearWipe
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageRectilinearWipe
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageRectilinearWipe makes a rectilinear combination of two
+ images. The two input images must correspond in size, scalar type and
+ number of components.
+ The resulting image has four possible configurations
+ called:
+   Quad - alternate input 0 and input 1 horizontally and
+     vertically. Select this with SetWipeModeToQuad. The Position
+     specifies the location of the quad intersection.
+   Corner - 3 of one input and 1 of the other. Select the location of
+     input 0 with with SetWipeModeToLowerLeft, SetWipeModeToLowerRight,
+     SetWipeModeToUpperLeft and SetWipeModeToUpperRight. The Position
+     selects the location of the corner.
+   Horizontal - alternate input 0 and input 1 with a vertical
+     split. Select this with SetWipeModeToHorizontal. Position[0]
+     specifies the location of the vertical transition between input 0
+     and input 1.
+   Vertical - alternate input 0 and input 1 with a horizontal
+     split. Only the y The intersection point of the rectilinear points
+     is controlled with the Point ivar.
+<P>
+To create an instance of class vtkImageRectilinearWipe, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageRectilinearWipe
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageRectilinearWipe has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageRectilinearWipe class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageRectilinearWipe = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageRectilinearWipe = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPosition (int , int )</code> -  Set/Get the location of the image transition. Note that position is
+ specified in pixels.
+ </LI>
+<LI>  <code>obj.SetPosition (int  a[2])</code> -  Set/Get the location of the image transition. Note that position is
+ specified in pixels.
+ </LI>
+<LI>  <code>int = obj. GetPosition ()</code> -  Set/Get the location of the image transition. Note that position is
+ specified in pixels.
+ </LI>
+<LI>  <code>obj.SetInput1 (vtkDataObject in)</code> -  Set the two inputs to this filter.
+ </LI>
+<LI>  <code>obj.SetInput2 (vtkDataObject in)</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipe (int )</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>int = obj.GetWipeMinValue ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>int = obj.GetWipeMaxValue ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>int = obj.GetWipe ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToQuad ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToHorizontal ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToVertical ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToLowerLeft ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToLowerRight ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToUpperLeft ()</code> -  Specify the wipe mode. This mode determnis how input 0 and input
+ 1 are combined to produce the output. Each mode uses one or both
+ of the values stored in Position.
+   SetWipeToQuad - alternate input 0 and input 1 horizontally and
+     vertically. The Position specifies the location of the quad
+     intersection.
+   SetWipeToLowerLeft{LowerRight,UpperLeft.UpperRight} - 3 of one
+     input and 1 of the other. Select the location of input 0 to the
+     LowerLeft{LowerRight,UpperLeft,UpperRight}. Position
+     selects the location of the corner.
+   SetWipeToHorizontal - alternate input 0 and input 1 with a vertical
+     split. Position[0] specifies the location of the vertical
+     transition between input 0 and input 1.
+   SetWipeToVertical - alternate input 0 and input 1 with a
+     horizontal split. Position[1] specifies the location of the
+     horizonal transition between input 0 and input 1.
+ </LI>
+<LI>  <code>obj.SetWipeToUpperRight ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

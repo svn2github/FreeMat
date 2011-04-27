@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>INTERP2 2-D Interpolation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>INTERP2 2-D Interpolation
+</H2>
+<P>
+Section: <A HREF=sec_curvefit.html> Optimization and Curve Fitting </A>
+<H3>Usage</H3>
+Given a set of monotonically increasing <code>x</code> coordinates and a 
+corresponding set of <code>y</code> values, performs simple linear 
+interpolation to a new set of <code>x</code> coordinates. The general syntax
+for its usage is
+<PRE>
+   zi = interp2(z,xi,yi)
+</PRE>
+<P>
+where <code>xi</code> and <code>yi</code> are vectors of the same length. The output
+vector <code>zi</code> is the same size as the input vector <code>xi</code>.
+For each element of <code>xi</code>, the values in <code>zi</code> are linearly interpolated
+by default. Interpolation method can be selected as:
+<PRE>
+   zi = interp2(z,xi,yi,method)
+</PRE>
+<P>
+Default interpolation method is <code>'linear'</code>. Other methods are
+ <code>'nearest'</code>, and <code>'cubic'</code>.
+For values in <code>xi, yi</code> that are outside the size of <code>z</code>,
+the default value returned is NaN.  To change this behavior,
+you can specify the extrapolation value:
+<PRE>
+   zi = interp2(z,xi,yi,method,extrapval)
+</PRE>
+<P>
+The <code>z</code> and <code>xi,yi</code> vectors must be real, although complex types
+are allowed for <code>z</code>.
+</BODY>
+</HTML>

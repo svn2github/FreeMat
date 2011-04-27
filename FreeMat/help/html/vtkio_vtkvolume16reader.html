@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolume16Reader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolume16Reader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkVolume16Reader is a source object that reads 16 bit image files.
+<P>
+ Volume16Reader creates structured point datasets. The dimension of the 
+ dataset depends upon the number of files read. Reading a single file 
+ results in a 2D image, while reading more than one file results in a 
+ 3D volume.
+<P>
+ File names are created using FilePattern and FilePrefix as follows:
+ sprintf (filename, FilePattern, FilePrefix, number);
+ where number is in the range ImageRange[0] to ImageRange[1]. If
+ ImageRange[1] &lt;= ImageRange[0], then slice number ImageRange[0] is
+ read. Thus to read an image set ImageRange[0] = ImageRange[1] = slice 
+ number. The default behavior is to read a single file (i.e., image slice 1).
+<P>
+ The DataMask instance variable is used to read data files with imbedded
+ connectivity or segmentation information. For example, some data has
+ the high order bit set to indicate connected surface. The DataMask allows
+ you to select this data. Other important ivars include HeaderSize, which
+ allows you to skip over initial info, and SwapBytes, which turns on/off
+ byte swapping.
+<P>
+ The Transform instance variable specifies a permutation transformation
+ to map slice space into world space. vtkImageReader has replaced the
+ functionality of this class and should be used instead.
+<P>
+To create an instance of class vtkVolume16Reader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolume16Reader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolume16Reader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolume16Reader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolume16Reader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolume16Reader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetDataDimensions (int , int )</code> -  Specify the dimensions for the data.
+ </LI>
+<LI>  <code>obj.SetDataDimensions (int  a[2])</code> -  Specify the dimensions for the data.
+ </LI>
+<LI>  <code>int = obj. GetDataDimensions ()</code> -  Specify the dimensions for the data.
+ </LI>
+<LI>  <code>obj.SetDataMask (short )</code> -  Specify a mask used to eliminate data in the data file (e.g.,
+ connectivity bits).
+ </LI>
+<LI>  <code>short = obj.GetDataMask ()</code> -  Specify a mask used to eliminate data in the data file (e.g.,
+ connectivity bits).
+ </LI>
+<LI>  <code>obj.SetHeaderSize (int )</code> -  Specify the number of bytes to seek over at start of image.
+ </LI>
+<LI>  <code>int = obj.GetHeaderSize ()</code> -  Specify the number of bytes to seek over at start of image.
+ </LI>
+<LI>  <code>obj.SetDataByteOrderToBigEndian ()</code> -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian otherwise
+ SetDataByteOrderToBigEndian. 
+ </LI>
+<LI>  <code>obj.SetDataByteOrderToLittleEndian ()</code> -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian otherwise
+ SetDataByteOrderToBigEndian. 
+ </LI>
+<LI>  <code>int = obj.GetDataByteOrder ()</code> -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian otherwise
+ SetDataByteOrderToBigEndian. 
+ </LI>
+<LI>  <code>obj.SetDataByteOrder (int )</code> -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian otherwise
+ SetDataByteOrderToBigEndian. 
+ </LI>
+<LI>  <code>string = obj.GetDataByteOrderAsString ()</code> -  These methods should be used instead of the SwapBytes methods.
+ They indicate the byte ordering of the file you are trying
+ to read in. These methods will then either swap or not swap
+ the bytes depending on the byte ordering of the machine it is
+ being run on. For example, reading in a BigEndian file on a
+ BigEndian machine will result in no swapping. Trying to read
+ the same file on a LittleEndian machine will result in swapping.
+ As a quick note most UNIX machines are BigEndian while PC's
+ and VAX tend to be LittleEndian. So if the file you are reading
+ in was generated on a VAX or PC, SetDataByteOrderToLittleEndian otherwise
+ SetDataByteOrderToBigEndian. 
+ </LI>
+<LI>  <code>obj.SetSwapBytes (int )</code> -  Turn on/off byte swapping.
+ </LI>
+<LI>  <code>int = obj.GetSwapBytes ()</code> -  Turn on/off byte swapping.
+ </LI>
+<LI>  <code>obj.SwapBytesOn ()</code> -  Turn on/off byte swapping.
+ </LI>
+<LI>  <code>obj.SwapBytesOff ()</code> -  Turn on/off byte swapping.
+ </LI>
+<LI>  <code>obj.SetTransform (vtkTransform )</code> -  Set/Get transformation matrix to transform the data from slice space
+ into world space. This matrix must be a permutation matrix. To qualify,
+ the sums of the rows must be + or - 1.
+ </LI>
+<LI>  <code>vtkTransform = obj.GetTransform ()</code> -  Set/Get transformation matrix to transform the data from slice space
+ into world space. This matrix must be a permutation matrix. To qualify,
+ the sums of the rows must be + or - 1.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetImage (int ImageNumber)</code> -  Other objects make use of these methods
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCaptionWidget
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCaptionWidget
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This class provides support for interactively placing a caption on the 2D
+ overlay plane. A caption is defined by some text with a leader (e.g.,
+ arrow) that points from the text to a point in the scene. The caption is
+ represented by a vtkCaptionRepresentation. It uses the event bindings of
+ its superclass (vtkBorderWidget) to control the placement of the text, and
+ adds the ability to move the attachment point around. In addition, when
+ the caption text is selected, the widget emits a ActivateEvent that
+ observers can watch for. This is useful for opening GUI dialogoues to
+ adjust font characteristics, etc. (Please see the superclass for a
+ description of event bindings.)
+<P>
+ Note that this widget extends the behavior of its superclass 
+ vtkBorderWidget. The end point of the leader can be selected and
+ moved around with an internal vtkHandleWidget.
+<P>
+To create an instance of class vtkCaptionWidget, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCaptionWidget
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCaptionWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCaptionWidget class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard VTK class methods.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard VTK class methods.
+ </LI>
+<LI>  <code>vtkCaptionWidget = obj.NewInstance ()</code> -  Standard VTK class methods.
+ </LI>
+<LI>  <code>vtkCaptionWidget = obj.SafeDownCast (vtkObject o)</code> -  Standard VTK class methods.
+ </LI>
+<LI>  <code>obj.SetEnabled (int enabling)</code> -  Override superclasses' SetEnabled() method because the caption leader
+ has its own dedicated widget.
+ </LI>
+<LI>  <code>obj.SetRepresentation (vtkCaptionRepresentation r)</code> -  Specify a vtkCaptionActor2D to manage. This is convenient, alternative
+ method to SetRepresentation(). It internally create a vtkCaptionRepresentation
+ and then invokes vtkCaptionRepresentation::SetCaptionActor2D().
+ </LI>
+<LI>  <code>obj.SetCaptionActor2D (vtkCaptionActor2D capActor)</code> -  Specify a vtkCaptionActor2D to manage. This is convenient, alternative
+ method to SetRepresentation(). It internally create a vtkCaptionRepresentation
+ and then invokes vtkCaptionRepresentation::SetCaptionActor2D().
+ </LI>
+<LI>  <code>vtkCaptionActor2D = obj.GetCaptionActor2D ()</code> -  Specify a vtkCaptionActor2D to manage. This is convenient, alternative
+ method to SetRepresentation(). It internally create a vtkCaptionRepresentation
+ and then invokes vtkCaptionRepresentation::SetCaptionActor2D().
+ </LI>
+<LI>  <code>obj.CreateDefaultRepresentation ()</code> -  Create the default widget representation if one is not set. 
+ </LI>
+</UL>
+</BODY>
+</HTML>

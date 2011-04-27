@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMergeFields
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMergeFields
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkMergeFields is used to merge mutliple field into one.
+ The new field is put in the same field data as the original field.
+ For example
+ @verbatim
+ mf-&gt;SetOutputField("foo", vtkMergeFields::POINT_DATA);
+ mf-&gt;SetNumberOfComponents(2);
+ mf-&gt;Merge(0, "array1", 1);
+ mf-&gt;Merge(1, "array2", 0);
+ @endverbatim
+ will tell vtkMergeFields to use the 2nd component of array1 and
+ the 1st component of array2 to create a 2 component field called foo.
+ The same can be done using Tcl:
+ @verbatim
+ mf SetOutputField foo POINT_DATA
+ mf Merge 0 array1 1
+ mf Merge 1 array2 0
+<P>
+ Field locations: DATA_OBJECT, POINT_DATA, CELL_DATA
+ @endverbatim
+<P>
+To create an instance of class vtkMergeFields, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMergeFields
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMergeFields has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMergeFields class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMergeFields = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMergeFields = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetOutputField (string name, int fieldLoc)</code> -  The output field will have the given name and it will be in
+ fieldLoc (the input fields also have to be in fieldLoc).
+ </LI>
+<LI>  <code>obj.SetOutputField (string name, string fieldLoc)</code> -  Helper method used by the other language bindings. Allows the caller to
+ specify arguments as strings instead of enums.Returns an operation id 
+ which can later be used to remove the operation.
+ </LI>
+<LI>  <code>obj.Merge (int component, string arrayName, int sourceComp)</code> -  Add a component (arrayName,sourceComp) to the output field.
+ </LI>
+<LI>  <code>obj.SetNumberOfComponents (int )</code> -  Set the number of the components in the output field.
+ This has to be set before execution. Default value is 0.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfComponents ()</code> -  Set the number of the components in the output field.
+ This has to be set before execution. Default value is 0.
+ </LI>
+</UL>
+</BODY>
+</HTML>

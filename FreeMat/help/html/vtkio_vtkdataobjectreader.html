@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataObjectReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataObjectReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkDataObjectReader is a source object that reads ASCII or binary field
+ data files in vtk format. Fields are general matrix structures used
+ represent complex data. (See text for format details).  The output of this
+ reader is a single vtkDataObject.  The superclass of this class,
+ vtkDataReader, provides many methods for controlling the reading of the
+ data file, see vtkDataReader for more information.
+<P>
+To create an instance of class vtkDataObjectReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataObjectReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataObjectReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataObjectReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataObjectReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataObjectReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetOutput ()</code> -  Get the output field of this reader.
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetOutput (int idx)</code> -  Get the output field of this reader.
+ </LI>
+<LI>  <code>obj.SetOutput (vtkDataObject )</code> -  Get the output field of this reader.
+ </LI>
+</UL>
+</BODY>
+</HTML>

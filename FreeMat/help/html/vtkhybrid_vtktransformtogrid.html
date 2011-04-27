@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTransformToGrid
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTransformToGrid
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkTransformToGrid takes any transform as input and produces a grid
+ for use by a vtkGridTransform.  This can be used, for example, to 
+ invert a grid transform, concatenate two grid transforms, or to
+ convert a thin plate spline transform into a grid transform.
+<P>
+To create an instance of class vtkTransformToGrid, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTransformToGrid
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTransformToGrid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTransformToGrid class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTransformToGrid = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTransformToGrid = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInput (vtkAbstractTransform )</code> -  Set/Get the transform which will be converted into a grid.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.GetInput ()</code> -  Set/Get the transform which will be converted into a grid.
+ </LI>
+<LI>  <code>obj.SetGridExtent (int , int , int , int , int , int )</code> -  Get/Set the extent of the grid.
+ </LI>
+<LI>  <code>obj.SetGridExtent (int  a[6])</code> -  Get/Set the extent of the grid.
+ </LI>
+<LI>  <code>int = obj. GetGridExtent ()</code> -  Get/Set the extent of the grid.
+ </LI>
+<LI>  <code>obj.SetGridOrigin (double , double , double )</code> -  Get/Set the origin of the grid.
+ </LI>
+<LI>  <code>obj.SetGridOrigin (double  a[3])</code> -  Get/Set the origin of the grid.
+ </LI>
+<LI>  <code>double = obj. GetGridOrigin ()</code> -  Get/Set the origin of the grid.
+ </LI>
+<LI>  <code>obj.SetGridSpacing (double , double , double )</code> -  Get/Set the spacing between samples in the grid.
+ </LI>
+<LI>  <code>obj.SetGridSpacing (double  a[3])</code> -  Get/Set the spacing between samples in the grid.
+ </LI>
+<LI>  <code>double = obj. GetGridSpacing ()</code> -  Get/Set the spacing between samples in the grid.
+ </LI>
+<LI>  <code>obj.SetGridScalarType (int )</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>int = obj.GetGridScalarType ()</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>obj.SetGridScalarTypeToFloat ()</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>obj.SetGridScalarTypeToShort ()</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>obj.SetGridScalarTypeToUnsignedShort ()</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>obj.SetGridScalarTypeToUnsignedChar ()</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>obj.SetGridScalarTypeToChar ()</code> -  Get/Set the scalar type of the grid.  The default is
+ double.
+ </LI>
+<LI>  <code>double = obj.GetDisplacementScale ()</code> -  Get the scale and shift to convert integer grid elements into
+ real values:  dx = scale*di + shift.  If the grid is of double type,
+ then scale = 1 and shift = 0.
+ </LI>
+<LI>  <code>double = obj.GetDisplacementShift ()</code> -  Get the scale and shift to convert integer grid elements into
+ real values:  dx = scale*di + shift.  If the grid is of double type,
+ then scale = 1 and shift = 0.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetOutput ()</code> -  Get the output data object for a port on this algorithm.
+ </LI>
+</UL>
+</BODY>
+</HTML>

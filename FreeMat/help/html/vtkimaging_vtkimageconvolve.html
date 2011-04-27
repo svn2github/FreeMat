@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageConvolve
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageConvolve
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageConvolve convolves the image with a 3D NxNxN kernel or a
+ 2D NxN kernal.  The output image is cropped to the same size as
+ the input.
+<P>
+To create an instance of class vtkImageConvolve, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageConvolve
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageConvolve has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageConvolve class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Construct an instance of vtkImageConvolve filter.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Construct an instance of vtkImageConvolve filter.
+ </LI>
+<LI>  <code>vtkImageConvolve = obj.NewInstance ()</code> -  Construct an instance of vtkImageConvolve filter.
+ </LI>
+<LI>  <code>vtkImageConvolve = obj.SafeDownCast (vtkObject o)</code> -  Construct an instance of vtkImageConvolve filter.
+ </LI>
+<LI>  <code>int = obj. GetKernelSize ()</code> -  Get the kernel size
+ </LI>
+<LI>  <code>obj.SetKernel3x3 (double kernel[9])</code> -  Set the kernel to be a given 3x3 or 5x5 or 7x7 kernel.
+ </LI>
+<LI>  <code>obj.SetKernel5x5 (double kernel[25])</code> -  Set the kernel to be a given 3x3 or 5x5 or 7x7 kernel.
+ </LI>
+<LI>  <code>obj.GetKernel3x3 (double kernel[9])</code> -  Return an array that contains the kernel.
+ </LI>
+<LI>  <code>obj.GetKernel5x5 (double kernel[25])</code> -  Return an array that contains the kernel.
+ </LI>
+<LI>  <code>obj.SetKernel3x3x3 (double kernel[27])</code> -  Set the kernel to be a 3x3x3 or 5x5x5 or 7x7x7 kernel.
+ </LI>
+<LI>  <code>obj.GetKernel3x3x3 (double kernel[27])</code> -  Return an array that contains the kernel
+ </LI>
+</UL>
+</BODY>
+</HTML>

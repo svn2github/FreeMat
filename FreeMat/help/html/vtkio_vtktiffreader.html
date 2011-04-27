@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTIFFReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTIFFReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkTIFFReader is a source object that reads TIFF files.
+ It should be able to read almost any TIFF file
+<P>
+<P>
+To create an instance of class vtkTIFFReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTIFFReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTIFFReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTIFFReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTIFFReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTIFFReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.CanReadFile (string fname)</code> -  Is the given file name a tiff file file?
+ </LI>
+<LI>  <code>string = obj.GetFileExtensions ()</code> -  Return a descriptive name for the file format that might be useful
+ in a GUI.
+ </LI>
+<LI>  <code>string = obj.GetDescriptiveName ()</code> -  Auxilary methods used by the reader internally.
+ </LI>
+<LI>  <code>obj.InitializeColors ()</code> -  Auxilary methods used by the reader internally.
+ </LI>
+<LI>  <code>obj.SetOrientationType (int orientationType)</code> -  Set orientation type 
+ ORIENTATION_TOPLEFT         1       (row 0 top, col 0 lhs)
+ ORIENTATION_TOPRIGHT        2       (row 0 top, col 0 rhs)
+ ORIENTATION_BOTRIGHT        3       (row 0 bottom, col 0 rhs)
+ ORIENTATION_BOTLEFT         4       (row 0 bottom, col 0 lhs)
+ ORIENTATION_LEFTTOP         5       (row 0 lhs, col 0 top)
+ ORIENTATION_RIGHTTOP        6       (row 0 rhs, col 0 top)
+ ORIENTATION_RIGHTBOT        7       (row 0 rhs, col 0 bottom)
+ ORIENTATION_LEFTBOT         8       (row 0 lhs, col 0 bottom)
+ User need to explicitely include vtk_tiff.h header to have access to those #define
+ </LI>
+<LI>  <code>int = obj.GetOrientationType ()</code> -  Set orientation type 
+ ORIENTATION_TOPLEFT         1       (row 0 top, col 0 lhs)
+ ORIENTATION_TOPRIGHT        2       (row 0 top, col 0 rhs)
+ ORIENTATION_BOTRIGHT        3       (row 0 bottom, col 0 rhs)
+ ORIENTATION_BOTLEFT         4       (row 0 bottom, col 0 lhs)
+ ORIENTATION_LEFTTOP         5       (row 0 lhs, col 0 top)
+ ORIENTATION_RIGHTTOP        6       (row 0 rhs, col 0 top)
+ ORIENTATION_RIGHTBOT        7       (row 0 rhs, col 0 bottom)
+ ORIENTATION_LEFTBOT         8       (row 0 lhs, col 0 bottom)
+ User need to explicitely include vtk_tiff.h header to have access to those #define
+ </LI>
+<LI>  <code>bool = obj.GetOrientationTypeSpecifiedFlag ()</code> -  Get method to check if orientation type is specified
+ </LI>
+<LI>  <code>obj.SetOriginSpecifiedFlag (bool )</code> -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+ </LI>
+<LI>  <code>bool = obj.GetOriginSpecifiedFlag ()</code> -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+ </LI>
+<LI>  <code>obj.OriginSpecifiedFlagOn ()</code> -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+ </LI>
+<LI>  <code>obj.OriginSpecifiedFlagOff ()</code> -  Set/get methods to see if manual Origin/Spacing have
+ been set.
+ </LI>
+<LI>  <code>obj.SetSpacingSpecifiedFlag (bool )</code> -  
+ </LI>
+<LI>  <code>bool = obj.GetSpacingSpecifiedFlag ()</code> -  
+ </LI>
+<LI>  <code>obj.SpacingSpecifiedFlagOn ()</code> -  
+ </LI>
+<LI>  <code>obj.SpacingSpecifiedFlagOff ()</code> -  
+ </LI>
+</UL>
+</BODY>
+</HTML>

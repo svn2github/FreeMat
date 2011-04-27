@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTreeDFSIterator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTreeDFSIterator
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkTreeDFSIterator performs a depth first seedgeh of a tree.  First,
+ you must set the tree on which you are going to iterate, and set
+ the starting vertex and mode.  The mode is either DISCOVER, in which
+ case vertices are visited as they are first reached, or FINISH, in which
+ case vertices are visited when they are done, i.e. all adjacent vertices
+ have been discovered already.
+<P>
+ After setting up the iterator, the normal mode of operation is to
+ set up a &lt;code&gt;while(iter-&gt;HasNext())&lt;/code&gt; loop, with the statement
+ &lt;code&gt;vtkIdType vertex = iter-&gt;Next()&lt;/code&gt; inside the loop.
+<P>
+To create an instance of class vtkTreeDFSIterator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTreeDFSIterator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTreeDFSIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTreeDFSIterator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTreeDFSIterator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTreeDFSIterator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetTree (vtkTree graph)</code> -  Set the graph to iterate over.
+ </LI>
+<LI>  <code>obj.SetMode (int mode)</code> -  Set the visit mode of the iterator.  Mode can be
+   DISCOVER (0): Order by discovery time
+   FINISH   (1): Order by finish time
+ Default is DISCOVER.
+ Use DISCOVER for top-down algorithms where parents need to be processed before children.
+ Use FINISH for bottom-up algorithms where children need to be processed before parents.
+ </LI>
+<LI>  <code>int = obj.GetMode ()</code> -  Set the visit mode of the iterator.  Mode can be
+   DISCOVER (0): Order by discovery time
+   FINISH   (1): Order by finish time
+ Default is DISCOVER.
+ Use DISCOVER for top-down algorithms where parents need to be processed before children.
+ Use FINISH for bottom-up algorithms where children need to be processed before parents.
+ </LI>
+<LI>  <code>obj.SetStartVertex (vtkIdType vertex)</code> -  The start vertex of the seedgeh.
+ The tree iterator will only iterate over the subtree rooted at vertex.
+ If not set (or set to a negative value), starts at the root of the tree.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetStartVertex ()</code> -  The start vertex of the seedgeh.
+ The tree iterator will only iterate over the subtree rooted at vertex.
+ If not set (or set to a negative value), starts at the root of the tree.
+ </LI>
+<LI>  <code>vtkIdType = obj.Next ()</code> -  The next vertex visited in the graph.
+ </LI>
+<LI>  <code>bool = obj.HasNext ()</code> -  Return true when all vertices have been visited.
+ </LI>
+</UL>
+</BODY>
+</HTML>

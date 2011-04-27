@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolume
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolume
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkVolume is used to represent a volumetric entity in a rendering scene.
+ It inherits functions related to the volume's position, orientation and
+ origin from vtkProp3D. The volume maintains a reference to the
+ volumetric data (i.e., the volume mapper). The volume also contains a
+ reference to a volume property which contains all common volume rendering 
+ parameters.
+<P>
+To create an instance of class vtkVolume, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolume
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolume has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolume class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolume = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolume = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMapper (vtkAbstractVolumeMapper mapper)</code> -  Set/Get the volume mapper.
+ </LI>
+<LI>  <code>vtkAbstractVolumeMapper = obj.GetMapper ()</code> -  Set/Get the volume mapper.
+ </LI>
+<LI>  <code>obj.SetProperty (vtkVolumeProperty property)</code> -  Set/Get the volume property.
+ </LI>
+<LI>  <code>vtkVolumeProperty = obj.GetProperty ()</code> -  Set/Get the volume property.
+ </LI>
+<LI>  <code>obj.GetVolumes (vtkPropCollection vc)</code> -  For some exporters and other other operations we must be
+ able to collect all the actors or volumes. This method
+ is used in that process.
+ </LI>
+<LI>  <code>obj.Update ()</code> -  Update the volume rendering pipeline by updating the volume mapper
+ </LI>
+<LI>  <code>double = obj.GetBounds ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>obj.GetBounds (double bounds[6])</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>double = obj.GetMinXBound ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>double = obj.GetMaxXBound ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>double = obj.GetMinYBound ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>double = obj.GetMaxYBound ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>double = obj.GetMinZBound ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>double = obj.GetMaxZBound ()</code> -  Get the bounds - either all six at once 
+ (xmin, xmax, ymin, ymax, zmin, zmax) or one at a time.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return the MTime also considering the property etc.
+ </LI>
+<LI>  <code>long = obj.GetRedrawMTime ()</code> -  Return the mtime of anything that would cause the rendered image to 
+ appear differently. Usually this involves checking the mtime of the 
+ prop plus anything else it depends on such as properties, mappers,
+ etc.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkProp prop)</code> -  Shallow copy of this vtkVolume. Overloads the virtual vtkProp method.
+ </LI>
+</UL>
+</BODY>
+</HTML>

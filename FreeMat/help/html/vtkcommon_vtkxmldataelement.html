@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLDataElement
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLDataElement
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkXMLDataElement is used by vtkXMLDataParser to represent an XML
+ element.  It provides methods to access the element's attributes
+ and nested elements in a convenient manner.  This allows easy
+ traversal of an input XML file by vtkXMLReader and its subclasses.
+<P>
+To create an instance of class vtkXMLDataElement, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLDataElement
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLDataElement has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLDataElement class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>string = obj.GetName ()</code> -  Set/Get the name of the element.  This is its XML tag.
+ </LI>
+<LI>  <code>obj.SetName (string _arg)</code> -  Set/Get the name of the element.  This is its XML tag.
+ </LI>
+<LI>  <code>string = obj.GetId ()</code> -  Set/Get the value of the id attribute of the element, if any.
+ </LI>
+<LI>  <code>obj.SetId (string )</code> -  Set/Get the value of the id attribute of the element, if any.
+ </LI>
+<LI>  <code>string = obj.GetAttribute (string name)</code> -  Get the attribute with the given name.  If it doesn't exist,
+ returns 0.
+ </LI>
+<LI>  <code>obj.SetAttribute (string name, string value)</code> -  Set the attribute with the given name and value. If it doesn't exist,
+ adds it.
+ </LI>
+<LI>  <code>obj.SetCharacterData (string c, int length)</code> -  Set/Get the character data between XML start/end tags.
+ </LI>
+<LI>  <code>string = obj.GetCharacterData ()</code> -  Set/Get the character data between XML start/end tags.
+ </LI>
+<LI>  <code>obj.SetIntAttribute (string name, int value)</code> -  Set the attribute with the given name.
+ We can not use the same GetScalarAttribute() construct since
+ the compiler will not be able to resolve between
+ SetAttribute(..., int) and SetAttribute(..., unsigned long).
+ </LI>
+<LI>  <code>obj.SetFloatAttribute (string name, float value)</code> -  Set the attribute with the given name.
+ We can not use the same GetScalarAttribute() construct since
+ the compiler will not be able to resolve between
+ SetAttribute(..., int) and SetAttribute(..., unsigned long).
+ </LI>
+<LI>  <code>obj.SetDoubleAttribute (string name, double value)</code> -  Set the attribute with the given name.
+ We can not use the same GetScalarAttribute() construct since
+ the compiler will not be able to resolve between
+ SetAttribute(..., int) and SetAttribute(..., unsigned long).
+ </LI>
+<LI>  <code>obj.SetUnsignedLongAttribute (string name, long value)</code> -  Set the attribute with the given name.
+ We can not use the same GetScalarAttribute() construct since
+ the compiler will not be able to resolve between
+ SetAttribute(..., int) and SetAttribute(..., unsigned long).
+ </LI>
+<LI>  <code>int = obj.GetVectorAttribute (string name, int length, int value)</code> -  Get the attribute with the given name and converted to a scalar
+ value.  Returns length of vector read.
+ </LI>
+<LI>  <code>int = obj.GetVectorAttribute (string name, int length, float value)</code> -  Get the attribute with the given name and converted to a scalar
+ value.  Returns length of vector read.
+ </LI>
+<LI>  <code>int = obj.GetVectorAttribute (string name, int length, double value)</code> -  Get the attribute with the given name and converted to a scalar
+ value.  Returns length of vector read.
+ </LI>
+<LI>  <code>int = obj.GetVectorAttribute (string name, int length, long value)</code> -  Get the attribute with the given name and converted to a scalar
+ value.  Returns length of vector read.
+ </LI>
+<LI>  <code>obj.SetVectorAttribute (string name, int length, int value)</code> -  Set the attribute with the given name.
+ </LI>
+<LI>  <code>obj.SetVectorAttribute (string name, int length, float value)</code> -  Set the attribute with the given name.
+ </LI>
+<LI>  <code>obj.SetVectorAttribute (string name, int length, double value)</code> -  Set the attribute with the given name.
+ </LI>
+<LI>  <code>obj.SetVectorAttribute (string name, int length, long value)</code> -  Set the attribute with the given name.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfAttributes ()</code> -  Get the number of attributes.
+ </LI>
+<LI>  <code>string = obj.GetAttributeName (int idx)</code> -  Get the n-th attribute name.
+ Returns 0 if there is no such attribute.
+ </LI>
+<LI>  <code>string = obj.GetAttributeValue (int idx)</code> -  Get the n-th attribute value.
+ Returns 0 if there is no such attribute.
+ </LI>
+<LI>  <code>obj.RemoveAttribute (string name)</code> -  Remove one or all attributes.
+ </LI>
+<LI>  <code>obj.RemoveAllAttributes ()</code> -  Remove one or all attributes.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.GetParent ()</code> -  Set/Get the parent of this element.
+ </LI>
+<LI>  <code>obj.SetParent (vtkXMLDataElement parent)</code> -  Set/Get the parent of this element.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.GetRoot ()</code> -  Get root of the XML tree this element is part of.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfNestedElements ()</code> -  Get the number of elements nested in this one.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.GetNestedElement (int index)</code> -  Get the element nested in this one at the given index.
+ </LI>
+<LI>  <code>obj.AddNestedElement (vtkXMLDataElement element)</code> -  Add nested element
+ </LI>
+<LI>  <code>obj.RemoveNestedElement (vtkXMLDataElement )</code> -  Remove nested element.
+ </LI>
+<LI>  <code>obj.RemoveAllNestedElements ()</code> -  Remove all nested elements.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.FindNestedElement (string id)</code> -  Find the first nested element with the given id, given name, or given
+ name and id.
+ WARNING: the search is only performed on the children, not 
+ the grand-children.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.FindNestedElementWithName (string name)</code> -  Find the first nested element with the given id, given name, or given
+ name and id.
+ WARNING: the search is only performed on the children, not 
+ the grand-children.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.FindNestedElementWithNameAndId (string name, string id)</code> -  Find the first nested element with the given id, given name, or given
+ name and id.
+ WARNING: the search is only performed on the children, not 
+ the grand-children.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.FindNestedElementWithNameAndAttribute (string name, string att_name, string att_value)</code> -  Find the first nested element with the given id, given name, or given
+ name and id.
+ WARNING: the search is only performed on the children, not 
+ the grand-children.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.LookupElementWithName (string name)</code> -  Find the first nested element with given name.
+ WARNING: the search is performed on the whole XML tree.
+ </LI>
+<LI>  <code>vtkXMLDataElement = obj.LookupElement (string id)</code> -  Lookup the element with the given id, starting at this scope.
+ </LI>
+<LI>  <code>long = obj.GetXMLByteIndex ()</code> -  Set/Get the offset from the beginning of the XML document to this element.
+ </LI>
+<LI>  <code>obj.SetXMLByteIndex (long )</code> -  Set/Get the offset from the beginning of the XML document to this element.
+ </LI>
+<LI>  <code>int = obj.IsEqualTo (vtkXMLDataElement elem)</code> -  Check if the instance has the same name, attributes, character data
+ and nested elements contents than the given element (this method is
+ applied recursively on the nested elements, and they must be stored in
+ the same order).
+ Warning: Id, Parent, XMLByteIndex are ignored.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkXMLDataElement elem)</code> -  Copy this element from another of the same type (elem), recursively.
+ Old attributes and nested elements are removed, new ones are created
+ given the contents of 'elem'.
+ Warning: Parent is ignored.
+ </LI>
+<LI>  <code>obj.SetAttributeEncoding (int )</code> -  Get/Set the internal character encoding of the attributes.
+ Default type is VTK_ENCODING_UTF_8.
+ Note that a vtkXMLDataParser has its own AttributesEncoding ivar. If 
+ this ivar is set to something other than VTK_ENCODING_NONE, it will be
+ used to set the attribute encoding of each vtkXMLDataElement 
+ created by this vtkXMLDataParser.
+ </LI>
+<LI>  <code>int = obj.GetAttributeEncodingMinValue ()</code> -  Get/Set the internal character encoding of the attributes.
+ Default type is VTK_ENCODING_UTF_8.
+ Note that a vtkXMLDataParser has its own AttributesEncoding ivar. If 
+ this ivar is set to something other than VTK_ENCODING_NONE, it will be
+ used to set the attribute encoding of each vtkXMLDataElement 
+ created by this vtkXMLDataParser.
+ </LI>
+<LI>  <code>int = obj.GetAttributeEncodingMaxValue ()</code> -  Get/Set the internal character encoding of the attributes.
+ Default type is VTK_ENCODING_UTF_8.
+ Note that a vtkXMLDataParser has its own AttributesEncoding ivar. If 
+ this ivar is set to something other than VTK_ENCODING_NONE, it will be
+ used to set the attribute encoding of each vtkXMLDataElement 
+ created by this vtkXMLDataParser.
+ </LI>
+<LI>  <code>int = obj.GetAttributeEncoding ()</code> -  Get/Set the internal character encoding of the attributes.
+ Default type is VTK_ENCODING_UTF_8.
+ Note that a vtkXMLDataParser has its own AttributesEncoding ivar. If 
+ this ivar is set to something other than VTK_ENCODING_NONE, it will be
+ used to set the attribute encoding of each vtkXMLDataElement 
+ created by this vtkXMLDataParser.
+ </LI>
+<LI>  <code>obj.PrintXML (string fname)</code> -  Prints element tree as XML.
+ </LI>
+<LI>  <code>int = obj.GetCharacterDataWidth ()</code> -  Get/Set the width (in number of fields) that character
+ data (that between open and closing tags ie. &lt;X&gt; ... &lt;/X&gt;)
+ is printed. If the width is less than one the tag's character
+ data is printed all on one line. If it is greater than one
+ the character data is streamed insterting line feeds every
+ width number of fields. See PrintXML.
+ </LI>
+<LI>  <code>obj.SetCharacterDataWidth (int )</code> -  Get/Set the width (in number of fields) that character
+ data (that between open and closing tags ie. &lt;X&gt; ... &lt;/X&gt;)
+ is printed. If the width is less than one the tag's character
+ data is printed all on one line. If it is greater than one
+ the character data is streamed insterting line feeds every
+ width number of fields. See PrintXML.
+ </LI>
+</UL>
+</BODY>
+</HTML>

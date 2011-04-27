@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageHybridMedian2D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageHybridMedian2D
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageHybridMedian2D is a median filter that preserves thin lines and
+ corners.  It operates on a 5x5 pixel neighborhood.  It computes two values
+ initially: the median of the + neighbors and the median of the x
+ neighbors.  It then computes the median of these two values plus the center
+ pixel.  This result of this second median is the output pixel value.
+<P>
+To create an instance of class vtkImageHybridMedian2D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageHybridMedian2D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageHybridMedian2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageHybridMedian2D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageHybridMedian2D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageHybridMedian2D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

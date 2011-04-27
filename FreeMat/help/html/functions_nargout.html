@@ -21,6 +21,15 @@ FreeMat allows for
 fewer return values to be requested from a function than were declared,
 and <code>nargout</code> can be used to determine exactly what subset of 
 the functions outputs are required.  
+<P>
+You can also use <code>nargout</code> on a function handle to return the
+number of input arguments expected by the function
+<PRE>
+  y = nargout(fun)
+</PRE>
+<P>
+where <code>fun</code> is the name of the function (e.g. <code>'sin'</code>) or 
+a function handle.
 <H3>Example</H3>
 Here is a function that is declared to return five 
 values, and that simply prints the value of <code>nargout</code>
@@ -76,7 +85,20 @@ a4 =
 
 a5 = 
  5 
+
+--&gt; nargout('sin')
+
+ans = 
+ 1 
+
+--&gt; y = @sin
+
+y = 
+ @sin
+--&gt; nargout(y)
+
+ans = 
+ 1 
 </PRE>
-<P>
 </BODY>
 </HTML>

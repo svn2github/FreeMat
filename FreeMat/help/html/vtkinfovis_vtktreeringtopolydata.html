@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTreeRingToPolyData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTreeRingToPolyData
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ This algorithm requires that the vtkTreeRingLayout filter has already
+ been applied to the data in order to create the quadruple array 
+ (start angle, end angle, inner radius, outer radius) of bounds 
+ for each vertex of the tree.
+<P>
+To create an instance of class vtkTreeRingToPolyData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTreeRingToPolyData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTreeRingToPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTreeRingToPolyData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTreeRingToPolyData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTreeRingToPolyData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSectorsArrayName (string name)</code> -  Define a shrink percentage for each of the sectors.
+ </LI>
+<LI>  <code>obj.SetShrinkPercentage (double )</code> -  Define a shrink percentage for each of the sectors.
+ </LI>
+<LI>  <code>double = obj.GetShrinkPercentage ()</code> -  Define a shrink percentage for each of the sectors.
+ </LI>
+<LI>  <code>int = obj.FillInputPortInformation (int port, vtkInformation info)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTexturedActor2D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTexturedActor2D
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkTexturedActor2D is an Actor2D which has additional support for
+ textures, just like vtkActor. To use textures, the geometry must have
+ texture coordinates, and the texture must be set with SetTexture().
+<P>
+To create an instance of class vtkTexturedActor2D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTexturedActor2D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTexturedActor2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTexturedActor2D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTexturedActor2D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTexturedActor2D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetTexture (vtkTexture texture)</code> -  Set/Get the texture object to control rendering texture maps.  This will
+ be a vtkTexture object. An actor does not need to have an associated
+ texture map and multiple actors can share one texture.
+ </LI>
+<LI>  <code>vtkTexture = obj.GetTexture ()</code> -  Set/Get the texture object to control rendering texture maps.  This will
+ be a vtkTexture object. An actor does not need to have an associated
+ texture map and multiple actors can share one texture.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow win)</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return this object's modified time.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkProp prop)</code> -  Shallow copy of this vtkTexturedActor2D. Overrides vtkActor2D method.
+ </LI>
+</UL>
+</BODY>
+</HTML>

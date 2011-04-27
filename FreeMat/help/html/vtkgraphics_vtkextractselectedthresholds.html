@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractSelectedThresholds
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractSelectedThresholds
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkExtractSelectedThresholds extracts all cells and points with attribute 
+ values that lie within a vtkSelection's THRESHOLD contents. The selecion
+ can specify to threshold a particular array within either the point or cell
+ attribute data of the input. This is similar to vtkThreshold
+ but allows mutliple thresholds ranges.
+ This filter adds a scalar array called vtkOriginalCellIds that says what 
+ input cell produced each output cell. This is an example of a Pedigree ID 
+ which helps to trace back results.
+<P>
+To create an instance of class vtkExtractSelectedThresholds, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractSelectedThresholds
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractSelectedThresholds has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractSelectedThresholds class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractSelectedThresholds = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractSelectedThresholds = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

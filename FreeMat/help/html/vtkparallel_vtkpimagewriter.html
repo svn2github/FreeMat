@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPImageWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPImageWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkPImageWriter writes images to files with any data type. The data type of
+ the file is the same scalar type as the input.  The dimensionality
+ determines whether the data will be written in one or multiple files.
+ This class is used as the superclass of most image writing classes 
+ such as vtkBMPWriter etc. It supports streaming.
+<P>
+To create an instance of class vtkPImageWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPImageWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPImageWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPImageWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPImageWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPImageWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMemoryLimit (long )</code> -  Set / Get the memory limit in kilobytes. The writer will
+ stream to attempt to keep the pipeline size within this limit
+ </LI>
+<LI>  <code>long = obj.GetMemoryLimit ()</code> -  Set / Get the memory limit in kilobytes. The writer will
+ stream to attempt to keep the pipeline size within this limit
+ </LI>
+</UL>
+</BODY>
+</HTML>

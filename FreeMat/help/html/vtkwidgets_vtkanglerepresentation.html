@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAngleRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAngleRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ The vtkAngleRepresentation is a superclass for classes representing the
+ vtkAngleWidget. This representation consists of two rays and three
+ vtkHandleRepresentations to place and manipulate the three points defining
+ the angle representation. (Note: the three points are referred to as Point1,
+ Center, and Point2, at the two end points (Point1 and Point2) and Center
+ (around which the angle is measured).
+<P>
+To create an instance of class vtkAngleRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAngleRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAngleRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAngleRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>vtkAngleRepresentation = obj.NewInstance ()</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>vtkAngleRepresentation = obj.SafeDownCast (vtkObject o)</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>double = obj.GetAngle ()</code> -  This representation and all subclasses must keep an angle (in degrees)
+ consistent with the state of the widget.
+ </LI>
+<LI>  <code>obj.GetPoint1WorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetCenterWorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetPoint2WorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetPoint1DisplayPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetCenterDisplayPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetPoint2DisplayPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetPoint1DisplayPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetCenterDisplayPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetPoint2DisplayPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the three points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetHandleRepresentation (vtkHandleRepresentation handle)</code> -  This method is used to specify the type of handle representation to use
+ for the three internal vtkHandleWidgets within vtkAngleRepresentation.
+ To use this method, create a dummy vtkHandleRepresentation (or
+ subclass), and then invoke this method with this dummy. Then the
+ vtkAngleRepresentation uses this dummy to clone three
+ vtkHandleRepresentations of the same type. Make sure you set the handle
+ representation before the widget is enabled. (The method
+ InstantiateHandleRepresentation() is invoked by the vtkAngle widget.)
+ </LI>
+<LI>  <code>obj.InstantiateHandleRepresentation ()</code> -  This method is used to specify the type of handle representation to use
+ for the three internal vtkHandleWidgets within vtkAngleRepresentation.
+ To use this method, create a dummy vtkHandleRepresentation (or
+ subclass), and then invoke this method with this dummy. Then the
+ vtkAngleRepresentation uses this dummy to clone three
+ vtkHandleRepresentations of the same type. Make sure you set the handle
+ representation before the widget is enabled. (The method
+ InstantiateHandleRepresentation() is invoked by the vtkAngle widget.)
+ </LI>
+<LI>  <code>vtkHandleRepresentation = obj.GetPoint1Representation ()</code> -  Set/Get the handle representations used for the vtkAngleRepresentation.
+ </LI>
+<LI>  <code>vtkHandleRepresentation = obj.GetCenterRepresentation ()</code> -  Set/Get the handle representations used for the vtkAngleRepresentation.
+ </LI>
+<LI>  <code>vtkHandleRepresentation = obj.GetPoint2Representation ()</code> -  Set/Get the handle representations used for the vtkAngleRepresentation.
+ </LI>
+<LI>  <code>obj.SetTolerance (int )</code> -  The tolerance representing the distance to the representation (in
+ pixels) in which the cursor is considered near enough to the end points
+ of the representation to be active.
+ </LI>
+<LI>  <code>int = obj.GetToleranceMinValue ()</code> -  The tolerance representing the distance to the representation (in
+ pixels) in which the cursor is considered near enough to the end points
+ of the representation to be active.
+ </LI>
+<LI>  <code>int = obj.GetToleranceMaxValue ()</code> -  The tolerance representing the distance to the representation (in
+ pixels) in which the cursor is considered near enough to the end points
+ of the representation to be active.
+ </LI>
+<LI>  <code>int = obj.GetTolerance ()</code> -  The tolerance representing the distance to the representation (in
+ pixels) in which the cursor is considered near enough to the end points
+ of the representation to be active.
+ </LI>
+<LI>  <code>obj.SetLabelFormat (string )</code> -  Specify the format to use for labelling the angle. Note that an empty
+ string results in no label, or a format string without a "%" character
+ will not print the angle value.
+ </LI>
+<LI>  <code>string = obj.GetLabelFormat ()</code> -  Specify the format to use for labelling the angle. Note that an empty
+ string results in no label, or a format string without a "%" character
+ will not print the angle value.
+ </LI>
+<LI>  <code>obj.SetRay1Visibility (int )</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>int = obj.GetRay1Visibility ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.Ray1VisibilityOn ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.Ray1VisibilityOff ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.SetRay2Visibility (int )</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>int = obj.GetRay2Visibility ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.Ray2VisibilityOn ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.Ray2VisibilityOff ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.SetArcVisibility (int )</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>int = obj.GetArcVisibility ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.ArcVisibilityOn ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.ArcVisibilityOff ()</code> -  Special methods for turning off the rays and arc that define the cone
+ and arc of the angle.
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  These are methods that satisfy vtkWidgetRepresentation's API.
+ </LI>
+<LI>  <code>int = obj.ComputeInteractionState (int X, int Y, int modify)</code> -  These are methods that satisfy vtkWidgetRepresentation's API.
+ </LI>
+<LI>  <code>obj.StartWidgetInteraction (double e[2])</code> -  These are methods that satisfy vtkWidgetRepresentation's API.
+ </LI>
+<LI>  <code>obj.CenterWidgetInteraction (double e[2])</code> -  These are methods that satisfy vtkWidgetRepresentation's API.
+ </LI>
+<LI>  <code>obj.WidgetInteraction (double e[2])</code> -  These are methods that satisfy vtkWidgetRepresentation's API.
+ </LI>
+</UL>
+</BODY>
+</HTML>

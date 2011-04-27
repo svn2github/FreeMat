@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRandomLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRandomLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Assigns points to the vertices of a graph randomly within a bounded range.
+<P>
+ .SECION Thanks
+ Thanks to Brian Wylie from Sandia National Laboratories for adding incremental
+ layout capabilities.
+<P>
+To create an instance of class vtkRandomLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRandomLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRandomLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRandomLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRandomLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRandomLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetRandomSeed (int )</code> -  Seed the random number generator used to compute point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>int = obj.GetRandomSeedMinValue ()</code> -  Seed the random number generator used to compute point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>int = obj.GetRandomSeedMaxValue ()</code> -  Seed the random number generator used to compute point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>int = obj.GetRandomSeed ()</code> -  Seed the random number generator used to compute point positions.
+ This has a significant effect on their final positions when
+ the layout is complete.
+ </LI>
+<LI>  <code>obj.SetGraphBounds (double , double , double , double , double , double )</code> -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+ </LI>
+<LI>  <code>obj.SetGraphBounds (double  a[6])</code> -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+ </LI>
+<LI>  <code>double = obj. GetGraphBounds ()</code> -  Set / get the region in space in which to place the final graph.
+ The GraphBounds only affects the results if AutomaticBoundsComputation
+ is off.
+ </LI>
+<LI>  <code>obj.SetAutomaticBoundsComputation (int )</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>int = obj.GetAutomaticBoundsComputation ()</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>obj.AutomaticBoundsComputationOn ()</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>obj.AutomaticBoundsComputationOff ()</code> -  Turn on/off automatic graph bounds calculation. If this
+ boolean is off, then the manually specified GraphBounds is used.
+ If on, then the input's bounds us used as the graph bounds.
+ </LI>
+<LI>  <code>obj.SetThreeDimensionalLayout (int )</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is on.
+ </LI>
+<LI>  <code>int = obj.GetThreeDimensionalLayout ()</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is on.
+ </LI>
+<LI>  <code>obj.ThreeDimensionalLayoutOn ()</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is on.
+ </LI>
+<LI>  <code>obj.ThreeDimensionalLayoutOff ()</code> -  Turn on/off layout of graph in three dimensions. If off, graph
+ layout occurs in two dimensions. By default, three dimensional
+ layout is on.
+ </LI>
+<LI>  <code>obj.SetGraph (vtkGraph graph)</code> -  Set the graph to layout.
+ </LI>
+<LI>  <code>obj.Layout ()</code> -  Perform the random layout.
+ </LI>
+</UL>
+</BODY>
+</HTML>

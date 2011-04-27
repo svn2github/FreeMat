@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSortFileNames
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSortFileNames
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkSortFileNames will take a list of filenames (e.g. from
+ a file load dialog) and sort them into one or more series.  If
+ the input list of filenames contains any directories, these can
+ be removed before sorting using the SkipDirectories flag.  This
+ class should be used where information about the series groupings
+ can be determined by the filenames, but it might not be successful
+ in cases where the information about the series groupings is
+ stored in the files themselves (e.g DICOM).
+<P>
+To create an instance of class vtkSortFileNames, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSortFileNames
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSortFileNames has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSortFileNames class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSortFileNames = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSortFileNames = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGrouping (int )</code> -  Sort the file names into groups, according to similarity in
+ filename name and path.  Files in different directories,
+ or with different extensions, or which do not fit into the same
+ numbered series will be placed into different groups.  This is
+ off by default.
+ </LI>
+<LI>  <code>int = obj.GetGrouping ()</code> -  Sort the file names into groups, according to similarity in
+ filename name and path.  Files in different directories,
+ or with different extensions, or which do not fit into the same
+ numbered series will be placed into different groups.  This is
+ off by default.
+ </LI>
+<LI>  <code>obj.GroupingOn ()</code> -  Sort the file names into groups, according to similarity in
+ filename name and path.  Files in different directories,
+ or with different extensions, or which do not fit into the same
+ numbered series will be placed into different groups.  This is
+ off by default.
+ </LI>
+<LI>  <code>obj.GroupingOff ()</code> -  Sort the file names into groups, according to similarity in
+ filename name and path.  Files in different directories,
+ or with different extensions, or which do not fit into the same
+ numbered series will be placed into different groups.  This is
+ off by default.
+ </LI>
+<LI>  <code>obj.SetNumericSort (int )</code> -  Sort the files numerically, rather than lexicographically.
+ For filenames that contain numbers, this means the order will be
+ ["file8.dat", "file9.dat", "file10.dat"]
+ instead of the usual alphabetic sorting order
+ ["file10.dat" "file8.dat", "file9.dat"].
+ NumericSort is off by default.
+ </LI>
+<LI>  <code>int = obj.GetNumericSort ()</code> -  Sort the files numerically, rather than lexicographically.
+ For filenames that contain numbers, this means the order will be
+ ["file8.dat", "file9.dat", "file10.dat"]
+ instead of the usual alphabetic sorting order
+ ["file10.dat" "file8.dat", "file9.dat"].
+ NumericSort is off by default.
+ </LI>
+<LI>  <code>obj.NumericSortOn ()</code> -  Sort the files numerically, rather than lexicographically.
+ For filenames that contain numbers, this means the order will be
+ ["file8.dat", "file9.dat", "file10.dat"]
+ instead of the usual alphabetic sorting order
+ ["file10.dat" "file8.dat", "file9.dat"].
+ NumericSort is off by default.
+ </LI>
+<LI>  <code>obj.NumericSortOff ()</code> -  Sort the files numerically, rather than lexicographically.
+ For filenames that contain numbers, this means the order will be
+ ["file8.dat", "file9.dat", "file10.dat"]
+ instead of the usual alphabetic sorting order
+ ["file10.dat" "file8.dat", "file9.dat"].
+ NumericSort is off by default.
+ </LI>
+<LI>  <code>obj.SetIgnoreCase (int )</code> -  Ignore case when sorting.  This flag is honored by both
+ the sorting and the grouping. This is off by default.
+ </LI>
+<LI>  <code>int = obj.GetIgnoreCase ()</code> -  Ignore case when sorting.  This flag is honored by both
+ the sorting and the grouping. This is off by default.
+ </LI>
+<LI>  <code>obj.IgnoreCaseOn ()</code> -  Ignore case when sorting.  This flag is honored by both
+ the sorting and the grouping. This is off by default.
+ </LI>
+<LI>  <code>obj.IgnoreCaseOff ()</code> -  Ignore case when sorting.  This flag is honored by both
+ the sorting and the grouping. This is off by default.
+ </LI>
+<LI>  <code>obj.SetSkipDirectories (int )</code> -  Skip directories. If this flag is set, any input item that
+ is a directory rather than a file will not be included in
+ the output.  This is off by default.
+ </LI>
+<LI>  <code>int = obj.GetSkipDirectories ()</code> -  Skip directories. If this flag is set, any input item that
+ is a directory rather than a file will not be included in
+ the output.  This is off by default.
+ </LI>
+<LI>  <code>obj.SkipDirectoriesOn ()</code> -  Skip directories. If this flag is set, any input item that
+ is a directory rather than a file will not be included in
+ the output.  This is off by default.
+ </LI>
+<LI>  <code>obj.SkipDirectoriesOff ()</code> -  Skip directories. If this flag is set, any input item that
+ is a directory rather than a file will not be included in
+ the output.  This is off by default.
+ </LI>
+<LI>  <code>obj.SetInputFileNames (vtkStringArray input)</code> -  Set a list of file names to group and sort.
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetInputFileNames ()</code> -  Set a list of file names to group and sort.
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetFileNames ()</code> -  Get the full list of sorted filenames.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfGroups ()</code> -  Get the number of groups that the names were split into, if
+ grouping is on.  The filenames are automatically split into
+ groups, where the filenames in each group will be identical
+ except for their series numbers.  If grouping is not on, this
+ method will return zero.
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetNthGroup (int i)</code> -  Get the Nth group of file names.  This method should only
+ be used if grouping is on.  If grouping is off, it will always
+ return null.
+ </LI>
+<LI>  <code>obj.Update ()</code> -  Update the output filenames from the input filenames.
+ This method is called automatically by GetFileNames()
+ and GetNumberOfGroups() if the input names have changed.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInformationQuadratureSchemeDefinitionVectorKey
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInformationQuadratureSchemeDefinitionVectorKey
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkInformationQuadratureSchemeDefinitionVectorKey is used to represent keys for double
+ vector values in vtkInformation.h. NOTE the interface in this key differs
+ from that in other similar keys because of our internal use of smart
+ pointers.
+<P>
+To create an instance of class vtkInformationQuadratureSchemeDefinitionVectorKey, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInformationQuadratureSchemeDefinitionVectorKey
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInformationQuadratureSchemeDefinitionVectorKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInformationQuadratureSchemeDefinitionVectorKey class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInformationQuadratureSchemeDefinitionVectorKey = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInformationQuadratureSchemeDefinitionVectorKey = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkInformationQuadratureSchemeDefinitionVectorKey = obj.(string name, string location)</code> -  The name of the static instance and the class in which
+ it is defined(location) should be passed to the constructor.
+ </LI>
+<LI>  <code>~vtkInformationQuadratureSchemeDefinitionVectorKey = obj.()</code> -  The name of the static instance and the class in which
+ it is defined(location) should be passed to the constructor.
+
+ </LI>
+<LI>  <code>obj.Clear (vtkInformation info)</code> -  Clear the vector.
+ </LI>
+<LI>  <code>obj.Resize (vtkInformation info, int n)</code> -  Resize (extend) the vector to hold n objects. Any new elements
+ created will be null initialized.
+ </LI>
+<LI>  <code>int = obj.Size (vtkInformation info)</code> -  Get the vector's length.
+ </LI>
+<LI>  <code>int = obj.Length (vtkInformation info)</code> -  Put the value on the back of the vector, with reference counting.
+ </LI>
+<LI>  <code>obj.Append (vtkInformation info, vtkQuadratureSchemeDefinition value)</code> -  Put the value on the back of the vector, with reference counting.
+ </LI>
+<LI>  <code>obj.Set (vtkInformation info, vtkQuadratureSchemeDefinition value, int i)</code> -  Set element i of the vector to value. Resizes the vector
+ if needed.
+ </LI>
+<LI>  <code>vtkQuadratureSchemeDefinition = obj.Get (vtkInformation info, int idx)</code> -  Get the vtkQuadratureSchemeDefinition at a specific location in the vector.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkInformation from, vtkInformation to)</code> -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkInformation from, vtkInformation to)</code> -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+ </LI>
+<LI>  <code>int = obj.SaveState (vtkInformation info, vtkXMLDataElement element)</code> -  Generate an XML representation of the object. Each
+ key/value pair will be nested in the resulting XML hierarchy.
+ The element passed in is assumed to be empty.
+ </LI>
+<LI>  <code>int = obj.RestoreState (vtkInformation info, vtkXMLDataElement element)</code> -  Load key/value pairs from an XML state representation created
+ with SaveState. Duplicate keys will generate a fatal error.
+ </LI>
+</UL>
+</BODY>
+</HTML>

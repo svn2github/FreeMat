@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageSeedConnectivity
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageSeedConnectivity
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageSeedConnectivity marks pixels connected to user supplied seeds.
+ The input must be unsigned char, and the output is also unsigned char.  If
+ a seed supplied by the user does not have pixel value "InputTrueValue",
+ then the image is scanned +x, +y, +z until a pixel is encountered with
+ value "InputTrueValue".  This new pixel is used as the seed .  Any pixel
+ with out value "InputTrueValue" is consider off.  The output pixels values
+ are 0 for any off pixel in input, "OutputTrueValue" for any pixels
+ connected to seeds, and "OutputUnconnectedValue" for any on pixels not
+ connected to seeds.  The same seeds are used for all images in the image
+ set.
+<P>
+To create an instance of class vtkImageSeedConnectivity, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageSeedConnectivity
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageSeedConnectivity has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageSeedConnectivity class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageSeedConnectivity = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageSeedConnectivity = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.RemoveAllSeeds ()</code> -  Methods for manipulating the seed pixels.
+ </LI>
+<LI>  <code>obj.AddSeed (int num, int index)</code> -  Methods for manipulating the seed pixels.
+ </LI>
+<LI>  <code>obj.AddSeed (int i0, int i1, int i2)</code> -  Methods for manipulating the seed pixels.
+ </LI>
+<LI>  <code>obj.AddSeed (int i0, int i1)</code> -  Methods for manipulating the seed pixels.
+ </LI>
+<LI>  <code>obj.SetInputConnectValue (int )</code> -  Set/Get what value is considered as connecting pixels.
+ </LI>
+<LI>  <code>int = obj.GetInputConnectValue ()</code> -  Set/Get what value is considered as connecting pixels.
+ </LI>
+<LI>  <code>obj.SetOutputConnectedValue (int )</code> -  Set/Get the value to set connected pixels to.
+ </LI>
+<LI>  <code>int = obj.GetOutputConnectedValue ()</code> -  Set/Get the value to set connected pixels to.
+ </LI>
+<LI>  <code>obj.SetOutputUnconnectedValue (int )</code> -  Set/Get the value to set unconnected pixels to.
+ </LI>
+<LI>  <code>int = obj.GetOutputUnconnectedValue ()</code> -  Set/Get the value to set unconnected pixels to.
+ </LI>
+<LI>  <code>vtkImageConnector = obj.GetConnector ()</code> -  Get the vtkImageCOnnector used by this filter.
+ </LI>
+<LI>  <code>obj.SetDimensionality (int )</code> -  Set the number of axes to use in connectivity.
+ </LI>
+<LI>  <code>int = obj.GetDimensionality ()</code> -  Set the number of axes to use in connectivity.
+ </LI>
+</UL>
+</BODY>
+</HTML>

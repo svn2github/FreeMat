@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGenericCell
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGenericCell
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkGenericCell is a class that provides access to concrete types of cells.
+ It's main purpose is to allow thread-safe access to cells, supporting
+ the vtkDataSet::GetCell(vtkGenericCell *) method. vtkGenericCell acts
+ like any type of cell, it just dereferences an internal representation.
+ The SetCellType() methods use \#define constants; these are defined in
+ the file vtkCellType.h.
+<P>
+To create an instance of class vtkGenericCell, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGenericCell
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGenericCell has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGenericCell class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGenericCell = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGenericCell = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkCell c)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkCell c)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetCellType ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetCellDimension ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.IsLinear ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.RequiresInitialization ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFaces ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetEdge (int edgeId)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetFace (int faceId)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray connectivity, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetParametricCenter (double pcoords[3])</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.IsPrimaryCell ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.InterpolateFunctions (double pcoords[3], double weights)</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.InterpolateDerivs (double pcoords[3], double derivs)</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.SetCellType (int cellType)</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToEmptyCell ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToVertex ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToPolyVertex ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToLine ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToPolyLine ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToTriangle ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToTriangleStrip ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToPolygon ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToPixel ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuad ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToTetra ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToVoxel ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToHexahedron ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToWedge ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToPyramid ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToPentagonalPrism ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToHexagonalPrism ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToConvexPointSet ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticEdge ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToCubicLine ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticTriangle ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToBiQuadraticTriangle ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticQuad ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticTetra ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticHexahedron ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticWedge ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticPyramid ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticLinearQuad ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToBiQuadraticQuad ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToQuadraticLinearWedge ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToBiQuadraticQuadraticWedge ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToTriQuadraticHexahedron ()</code> -  This method is used to support the vtkDataSet::GetCell(vtkGenericCell *)
+ method. It allows vtkGenericCell to act like any cell type by
+ dereferencing an internal instance of a concrete cell type. When
+ you set the cell type, you are resetting a pointer to an internal
+ cell which is then used for computation.
+ </LI>
+<LI>  <code>obj.SetCellTypeToBiQuadraticQuadraticHexahedron ()</code> -  Instantiate a new vtkCell based on it's cell type value
+ </LI>
+</UL>
+</BODY>
+</HTML>

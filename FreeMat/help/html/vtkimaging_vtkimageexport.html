@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageExport
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageExport
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageExport provides a way of exporting image data at the end
+ of a pipeline to a third-party system or to a simple C array.
+ Applications can use this to get direct access to the image data
+ in memory.  A callback interface is provided to allow connection
+ of the VTK pipeline to a third-party pipeline.  This interface
+ conforms to the interface of vtkImageImport.
+ In Python it is possible to use this class to write the image data
+ into a python string that has been pre-allocated to be the correct
+ size.
+<P>
+To create an instance of class vtkImageExport, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageExport
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageExport has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageExport class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageExport = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageExport = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDataMemorySize ()</code> -  Get the number of bytes required for the output C array.
+ </LI>
+<LI>  <code>obj.GetDataDimensions (int ptr)</code> -  Get the (x,y,z) index dimensions of the data.  Please note
+ that C arrays are indexed in decreasing order, i.e. array[z][y][x]. 
+ </LI>
+<LI>  <code>int = obj.GetDataDimensions ()</code> -  Get the number of scalar components of the data.  Please note that
+ when you index into a C array, the scalar component index comes
+ last, i.e. array[z][y][x][c].
+ </LI>
+<LI>  <code>int = obj.GetDataNumberOfScalarComponents ()</code> -  Get the number of scalar components of the data.  Please note that
+ when you index into a C array, the scalar component index comes
+ last, i.e. array[z][y][x][c].
+ </LI>
+<LI>  <code>int = obj.GetDataScalarType ()</code> -  Get the scalar type of the data.  The scalar type of the C array
+ must match the scalar type of the data.
+ </LI>
+<LI>  <code>string = obj.GetDataScalarTypeAsString ()</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>int = obj.GetDataExtent ()</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>obj.GetDataExtent (int ptr)</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>double = obj.GetDataSpacing ()</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>obj.GetDataSpacing (double ptr)</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>double = obj.GetDataOrigin ()</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>obj.GetDataOrigin (double ptr)</code> -  Get miscellaneous additional information about the data.
+ </LI>
+<LI>  <code>obj.ImageLowerLeftOn ()</code> -  Set/Get whether the data goes to the exported memory starting 
+ in the lower left corner or upper left corner.  Default: On.
+ When this flag is Off, the image will be flipped vertically
+ before it is exported.
+ WARNING: this flag is used only with the Export() method,
+ it is ignored by GetPointerToData().
+ </LI>
+<LI>  <code>obj.ImageLowerLeftOff ()</code> -  Set/Get whether the data goes to the exported memory starting 
+ in the lower left corner or upper left corner.  Default: On.
+ When this flag is Off, the image will be flipped vertically
+ before it is exported.
+ WARNING: this flag is used only with the Export() method,
+ it is ignored by GetPointerToData().
+ </LI>
+<LI>  <code>int = obj.GetImageLowerLeft ()</code> -  Set/Get whether the data goes to the exported memory starting 
+ in the lower left corner or upper left corner.  Default: On.
+ When this flag is Off, the image will be flipped vertically
+ before it is exported.
+ WARNING: this flag is used only with the Export() method,
+ it is ignored by GetPointerToData().
+ </LI>
+<LI>  <code>obj.SetImageLowerLeft (int )</code> -  Set/Get whether the data goes to the exported memory starting 
+ in the lower left corner or upper left corner.  Default: On.
+ When this flag is Off, the image will be flipped vertically
+ before it is exported.
+ WARNING: this flag is used only with the Export() method,
+ it is ignored by GetPointerToData().
+ </LI>
+<LI>  <code>obj.Export ()</code> -  The main interface: update the pipeline and export the image
+ to the memory pointed to by SetExportVoidPointer().  You can
+ also specify a void pointer when you call Export().
+ </LI>
+</UL>
+</BODY>
+</HTML>

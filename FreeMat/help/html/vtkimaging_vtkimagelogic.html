@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageLogic
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageLogic
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageLogic implements basic logic operations.
+ SetOperation is used to select the filter's behavior.
+ The filter can take two or one input. Inputs must have the same type.
+<P>
+To create an instance of class vtkImageLogic, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageLogic
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageLogic has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageLogic class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageLogic = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageLogic = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetOperation (int )</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>int = obj.GetOperation ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOperationToAnd ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOperationToOr ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOperationToXor ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOperationToNand ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOperationToNor ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOperationToNot ()</code> -  Set/Get the Operation to perform.
+ </LI>
+<LI>  <code>obj.SetOutputTrueValue (double )</code> -  Set the value to use for true in the output.
+ </LI>
+<LI>  <code>double = obj.GetOutputTrueValue ()</code> -  Set the value to use for true in the output.
+ </LI>
+<LI>  <code>obj.SetInput1 (vtkDataObject input)</code> -  Set the Input1 of this filter. 
+ </LI>
+<LI>  <code>obj.SetInput2 (vtkDataObject input)</code> -  Set the Input2 of this filter.
+ </LI>
+</UL>
+</BODY>
+</HTML>

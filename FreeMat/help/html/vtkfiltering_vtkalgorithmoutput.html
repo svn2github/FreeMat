@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAlgorithmOutput
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAlgorithmOutput
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkAlgorithmOutput is a proxy object returned by the GetOutputPort
+ method of vtkAlgorithm.  It may be passed to the
+ SetInputConnection, AddInputConnection, or RemoveInputConnection
+ methods of another vtkAlgorithm to establish a connection between
+ an output and input port.  The connection is not stored in the
+ proxy object: it is simply a convenience for creating or removing
+ connections.
+<P>
+To create an instance of class vtkAlgorithmOutput, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAlgorithmOutput
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAlgorithmOutput has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAlgorithmOutput class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetIndex (int index)</code>
+ </LI>
+<LI>  <code>int = obj.GetIndex ()</code>
+ </LI>
+<LI>  <code>vtkAlgorithm = obj.GetProducer ()</code>
+ </LI>
+<LI>  <code>obj.SetProducer (vtkAlgorithm producer)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

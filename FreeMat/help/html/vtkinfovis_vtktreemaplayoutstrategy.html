@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTreeMapLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTreeMapLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ All subclasses of this class perform a tree map layout on a tree.
+ This involves assigning a rectangular region to each vertex in the tree,
+ and placing that information in a data array with four components per
+ tuple representing (Xmin, Xmax, Ymin, Ymax).
+<P>
+ Instances of subclasses of this class may be assigned as the layout
+ strategy to vtkTreeMapLayout
+<P>
+ .SECTION Thanks
+ Thanks to Brian Wylie and Ken Moreland from Sandia National Laboratories
+ for help developing this class.
+<P>
+To create an instance of class vtkTreeMapLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTreeMapLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTreeMapLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTreeMapLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTreeMapLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTreeMapLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkIdType = obj.FindVertex (vtkTree tree, vtkDataArray areaArray, float pnt[2])</code> -  Find the vertex at a certain location, or -1 if none found.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCompositer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCompositer
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkCompositer operates in multiple processes.  Each compositer has 
+ a render window.  They use vtkMultiProcessControllers to communicate 
+ the color and depth buffer to process 0's render window.
+ It will not handle transparency well.
+<P>
+<P>
+To create an instance of class vtkCompositer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCompositer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCompositer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCompositer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCompositer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCompositer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.CompositeBuffer (vtkDataArray pBuf, vtkFloatArray zBuf, vtkDataArray pTmp, vtkFloatArray zTmp)</code> -  This method gets called on every process.  The final image gets
+ put into pBuf and zBuf.
+ </LI>
+<LI>  <code>obj.SetController (vtkMultiProcessController )</code> -  Access to the controller.
+ </LI>
+<LI>  <code>vtkMultiProcessController = obj.GetController ()</code> -  Access to the controller.
+ </LI>
+<LI>  <code>obj.SetNumberOfProcesses (int )</code> -  A hack to get a sub world until I can get communicators working.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfProcesses ()</code> -  A hack to get a sub world until I can get communicators working.
+ </LI>
+</UL>
+</BODY>
+</HTML>

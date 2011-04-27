@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageMapToColors
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageMapToColors
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ The vtkImageMapToColors filter will take an input image of any valid
+ scalar type, and map the first component of the image through a
+ lookup table.  The result is an image of type VTK_UNSIGNED_CHAR.
+ If the lookup table is not set, or is set to NULL, then the input
+ data will be passed through if it is already of type VTK_UNSIGNED_CHAR.
+<P>
+To create an instance of class vtkImageMapToColors, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageMapToColors
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageMapToColors has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageMapToColors class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageMapToColors = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageMapToColors = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLookupTable (vtkScalarsToColors )</code> -  Set the lookup table.
+ </LI>
+<LI>  <code>vtkScalarsToColors = obj.GetLookupTable ()</code> -  Set the lookup table.
+ </LI>
+<LI>  <code>obj.SetOutputFormat (int )</code> -  Set the output format, the default is RGBA.  
+ </LI>
+<LI>  <code>int = obj.GetOutputFormat ()</code> -  Set the output format, the default is RGBA.  
+ </LI>
+<LI>  <code>obj.SetOutputFormatToRGBA ()</code> -  Set the output format, the default is RGBA.  
+ </LI>
+<LI>  <code>obj.SetOutputFormatToRGB ()</code> -  Set the output format, the default is RGBA.  
+ </LI>
+<LI>  <code>obj.SetOutputFormatToLuminanceAlpha ()</code> -  Set the output format, the default is RGBA.  
+ </LI>
+<LI>  <code>obj.SetOutputFormatToLuminance ()</code> -  Set the output format, the default is RGBA.  
+ </LI>
+<LI>  <code>obj.SetActiveComponent (int )</code> -  Set the component to map for multi-component images (default: 0)
+ </LI>
+<LI>  <code>int = obj.GetActiveComponent ()</code> -  Set the component to map for multi-component images (default: 0)
+ </LI>
+<LI>  <code>obj.SetPassAlphaToOutput (int )</code> -  Use the alpha component of the input when computing the alpha component
+ of the output (useful when converting monochrome+alpha data to RGBA)
+ </LI>
+<LI>  <code>obj.PassAlphaToOutputOn ()</code> -  Use the alpha component of the input when computing the alpha component
+ of the output (useful when converting monochrome+alpha data to RGBA)
+ </LI>
+<LI>  <code>obj.PassAlphaToOutputOff ()</code> -  Use the alpha component of the input when computing the alpha component
+ of the output (useful when converting monochrome+alpha data to RGBA)
+ </LI>
+<LI>  <code>int = obj.GetPassAlphaToOutput ()</code> -  Use the alpha component of the input when computing the alpha component
+ of the output (useful when converting monochrome+alpha data to RGBA)
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  We need to check the modified time of the lookup table too.
+ </LI>
+</UL>
+</BODY>
+</HTML>

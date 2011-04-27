@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkWindowToImageFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkWindowToImageFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkWindowToImageFilter provides methods needed to read the data in
+ a vtkWindow and use it as input to the imaging pipeline. This is
+ useful for saving an image to a file for example. The window can
+ be read as either RGB or RGBA pixels;  in addition, the depth buffer
+ can also be read.   RGB and RGBA pixels are of type unsigned char,
+ while Z-Buffer data is returned as floats.  Use this filter
+ to convert RenderWindows or ImageWindows to an image format.  
+<P>
+<P>
+To create an instance of class vtkWindowToImageFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkWindowToImageFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkWindowToImageFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkWindowToImageFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkWindowToImageFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkWindowToImageFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInput (vtkWindow input)</code> -  Indicates what renderer to get the pixel data from. Initial value is 0.
+ </LI>
+<LI>  <code>vtkWindow = obj.GetInput ()</code> -  Returns which renderer is being used as the source for the pixel data.
+ Initial value is 0.
+ </LI>
+<LI>  <code>obj.SetMagnification (int )</code> -  The magnification of the current render window. Initial value is 1.
+ </LI>
+<LI>  <code>int = obj.GetMagnificationMinValue ()</code> -  The magnification of the current render window. Initial value is 1.
+ </LI>
+<LI>  <code>int = obj.GetMagnificationMaxValue ()</code> -  The magnification of the current render window. Initial value is 1.
+ </LI>
+<LI>  <code>int = obj.GetMagnification ()</code> -  The magnification of the current render window. Initial value is 1.
+ </LI>
+<LI>  <code>obj.ReadFrontBufferOn ()</code> -  Set/Get the flag that determines which buffer to read from.
+ The default is to read from the front buffer.   
+ </LI>
+<LI>  <code>obj.ReadFrontBufferOff ()</code> -  Set/Get the flag that determines which buffer to read from.
+ The default is to read from the front buffer.   
+ </LI>
+<LI>  <code>int = obj.GetReadFrontBuffer ()</code> -  Set/Get the flag that determines which buffer to read from.
+ The default is to read from the front buffer.   
+ </LI>
+<LI>  <code>obj.SetReadFrontBuffer (int )</code> -  Set/Get the flag that determines which buffer to read from.
+ The default is to read from the front buffer.   
+ </LI>
+<LI>  <code>obj.ShouldRerenderOn ()</code> -  Set/get whether to re-render the input window. Initial value is true.
+ (This option makes no difference if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>obj.ShouldRerenderOff ()</code> -  Set/get whether to re-render the input window. Initial value is true.
+ (This option makes no difference if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>obj.SetShouldRerender (int )</code> -  Set/get whether to re-render the input window. Initial value is true.
+ (This option makes no difference if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>int = obj.GetShouldRerender ()</code> -  Set/get whether to re-render the input window. Initial value is true.
+ (This option makes no difference if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>obj.SetViewport (double , double , double , double )</code> -  Set/get the extents to be used to generate the image. Initial value is
+ {0,0,1,1} (This option does not work if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>obj.SetViewport (double  a[4])</code> -  Set/get the extents to be used to generate the image. Initial value is
+ {0,0,1,1} (This option does not work if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>double = obj. GetViewport ()</code> -  Set/get the extents to be used to generate the image. Initial value is
+ {0,0,1,1} (This option does not work if Magnification &gt; 1.)
+ </LI>
+<LI>  <code>obj.SetInputBufferType (int )</code> -  Set/get the window buffer from which data will be read.  Choices
+ include VTK_RGB (read the color image from the window), VTK_RGBA 
+ (same, but include the alpha channel), and VTK_ZBUFFER (depth
+ buffer, returned as a float array). Initial value is VTK_RGB.
+ </LI>
+<LI>  <code>int = obj.GetInputBufferType ()</code> -  Set/get the window buffer from which data will be read.  Choices
+ include VTK_RGB (read the color image from the window), VTK_RGBA 
+ (same, but include the alpha channel), and VTK_ZBUFFER (depth
+ buffer, returned as a float array). Initial value is VTK_RGB.
+ </LI>
+<LI>  <code>obj.SetInputBufferTypeToRGB ()</code> -  Set/get the window buffer from which data will be read.  Choices
+ include VTK_RGB (read the color image from the window), VTK_RGBA 
+ (same, but include the alpha channel), and VTK_ZBUFFER (depth
+ buffer, returned as a float array). Initial value is VTK_RGB.
+ </LI>
+<LI>  <code>obj.SetInputBufferTypeToRGBA ()</code> -  Set/get the window buffer from which data will be read.  Choices
+ include VTK_RGB (read the color image from the window), VTK_RGBA 
+ (same, but include the alpha channel), and VTK_ZBUFFER (depth
+ buffer, returned as a float array). Initial value is VTK_RGB.
+ </LI>
+<LI>  <code>obj.SetInputBufferTypeToZBuffer ()</code> -  Set/get the window buffer from which data will be read.  Choices
+ include VTK_RGB (read the color image from the window), VTK_RGBA 
+ (same, but include the alpha channel), and VTK_ZBUFFER (depth
+ buffer, returned as a float array). Initial value is VTK_RGB.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetOutput ()</code> -  Get the output data object for a port on this algorithm.
+ </LI>
+</UL>
+</BODY>
+</HTML>

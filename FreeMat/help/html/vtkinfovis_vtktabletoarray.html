@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTableToArray
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTableToArray
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Converts a vtkTable into a dense matrix.  Use AddColumn() to
+ designate one-to-many table columns that will become columns in the
+ output matrix.
+<P>
+<P>
+To create an instance of class vtkTableToArray, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTableToArray
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTableToArray has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTableToArray class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTableToArray = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTableToArray = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.ClearColumns ()</code> -  Specify the set of input table columns that will be mapped to columns
+ in the output matrix.
+ </LI>
+<LI>  <code>obj.AddColumn (string name)</code> -  Specify the set of input table columns that will be mapped to columns
+ in the output matrix.
+ </LI>
+</UL>
+</BODY>
+</HTML>

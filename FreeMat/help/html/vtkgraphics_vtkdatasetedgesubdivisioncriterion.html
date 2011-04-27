@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataSetEdgeSubdivisionCriterion
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataSetEdgeSubdivisionCriterion
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ This is a subclass of vtkEdgeSubdivisionCriterion that is used for
+ tessellating cells of a vtkDataSet, particularly nonlinear
+ cells.
+<P>
+ It provides functions for setting the current cell being tessellated and a
+ convenience routine, \a EvaluateFields() to evaluate field values at a
+ point. You should call \a EvaluateFields() from inside \a EvaluateEdge()
+ whenever the result of \a EvaluateEdge() will be true. Otherwise, do
+ not call \a EvaluateFields() as the midpoint is about to be discarded.
+ (&lt;i&gt;Implementor's note&lt;/i&gt;: This isn't true if UGLY_ASPECT_RATIO_HACK
+ has been defined. But in that case, we don't want the exact field values;
+ we need the linearly interpolated ones at the midpoint for continuity.)
+<P>
+<P>
+To create an instance of class vtkDataSetEdgeSubdivisionCriterion, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataSetEdgeSubdivisionCriterion
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataSetEdgeSubdivisionCriterion has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataSetEdgeSubdivisionCriterion class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataSetEdgeSubdivisionCriterion = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataSetEdgeSubdivisionCriterion = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMesh (vtkDataSet )</code>
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetMesh ()</code>
+ </LI>
+<LI>  <code>obj.SetCellId (vtkIdType cell)</code>
+ </LI>
+<LI>  <code>vtkIdType = obj.GetCellId () const</code>
+ </LI>
+<LI>  <code>vtkCell = obj.GetCell ()</code>
+ </LI>
+<LI>  <code>bool = obj.EvaluateEdge (double p0, double midpt, double p1, int field_start)</code>
+ </LI>
+<LI>  <code>obj.EvaluatePointDataField (double result, double weights, int field)</code> -  Evaluate either a cell or nodal field.
+ This exists because of the funky way that Exodus data will be handled.
+ Sure, it's a hack, but what are ya gonna do?
+ </LI>
+<LI>  <code>obj.EvaluateCellDataField (double result, double weights, int field)</code> -  Evaluate either a cell or nodal field.
+ This exists because of the funky way that Exodus data will be handled.
+ Sure, it's a hack, but what are ya gonna do?
+ </LI>
+<LI>  <code>obj.SetChordError2 (double )</code> -  Get/Set the square of the allowable chord error at any edge's midpoint.
+ This value is used by EvaluateEdge.
+ </LI>
+<LI>  <code>double = obj.GetChordError2 ()</code> -  Get/Set the square of the allowable chord error at any edge's midpoint.
+ This value is used by EvaluateEdge.
+ </LI>
+<LI>  <code>obj.SetFieldError2 (int s, double err)</code> -  Get/Set the square of the allowable error magnitude for the
+ scalar field \a s at any edge's midpoint.
+ A value less than or equal to 0 indicates that the field
+ should not be used as a criterion for subdivision.
+ </LI>
+<LI>  <code>double = obj.GetFieldError2 (int s) const</code> -  Get/Set the square of the allowable error magnitude for the
+ scalar field \a s at any edge's midpoint.
+ A value less than or equal to 0 indicates that the field
+ should not be used as a criterion for subdivision.
+ </LI>
+<LI>  <code>obj.ResetFieldError2 ()</code> -  Tell the subdivider not to use any field values as subdivision criteria.
+ Effectively calls SetFieldError2( a, -1. ) for all fields.
+ </LI>
+<LI>  <code>int = obj.GetActiveFieldCriteria ()</code> -  Return a bitfield specifying which FieldError2 criteria are positive (i.e., actively
+ used to decide edge subdivisions).
+ This is stored as separate state to make subdivisions go faster.
+ </LI>
+<LI>  <code>int = obj.GetActiveFieldCriteria () const</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

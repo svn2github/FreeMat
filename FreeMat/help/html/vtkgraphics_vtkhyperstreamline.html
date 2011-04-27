@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHyperStreamline
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHyperStreamline
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkHyperStreamline is a filter that integrates through a tensor field to 
+ generate a hyperstreamline. The integration is along the maximum eigenvector
+ and the cross section of the hyperstreamline is defined by the two other
+ eigenvectors. Thus the shape of the hyperstreamline is "tube-like", with 
+ the cross section being elliptical. Hyperstreamlines are used to visualize
+ tensor fields.
+<P>
+ The starting point of a hyperstreamline can be defined in one of two ways. 
+ First, you may specify an initial position. This is a x-y-z global 
+ coordinate. The second option is to specify a starting location. This is 
+ cellId, subId, and  cell parametric coordinates.
+<P>
+ The integration of the hyperstreamline occurs through the major eigenvector 
+ field. IntegrationStepLength controls the step length within each cell 
+ (i.e., this is the fraction of the cell length). The length of the 
+ hyperstreamline is controlled by MaximumPropagationDistance. This parameter
+ is the length of the hyperstreamline in units of distance. The tube itself 
+ is composed of many small sub-tubes - NumberOfSides controls the number of 
+ sides in the tube, and StepLength controls the length of the sub-tubes.
+<P>
+ Because hyperstreamlines are often created near regions of singularities, it
+ is possible to control the scaling of the tube cross section by using a 
+ logarithmic scale. Use LogScalingOn to turn this capability on. The Radius 
+ value controls the initial radius of the tube.
+<P>
+To create an instance of class vtkHyperStreamline, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHyperStreamline
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHyperStreamline has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHyperStreamline class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHyperStreamline = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHyperStreamline = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetStartLocation (vtkIdType cellId, int subId, double pcoords[3])</code> -  Specify the start of the hyperstreamline in the cell coordinate system. 
+ That is, cellId and subId (if composite cell), and parametric coordinates.
+ </LI>
+<LI>  <code>obj.SetStartLocation (vtkIdType cellId, int subId, double r, double s, double t)</code> -  Specify the start of the hyperstreamline in the cell coordinate system. 
+ That is, cellId and subId (if composite cell), and parametric coordinates.
+ </LI>
+<LI>  <code>obj.SetStartPosition (double x[3])</code> -  Specify the start of the hyperstreamline in the global coordinate system. 
+ Starting from position implies that a search must be performed to find 
+ initial cell to start integration from.
+ </LI>
+<LI>  <code>obj.SetStartPosition (double x, double y, double z)</code> -  Specify the start of the hyperstreamline in the global coordinate system. 
+ Starting from position implies that a search must be performed to find 
+ initial cell to start integration from.
+ </LI>
+<LI>  <code>double = obj.GetStartPosition ()</code> -  Get the start position of the hyperstreamline in global x-y-z coordinates.
+ </LI>
+<LI>  <code>obj.SetMaximumPropagationDistance (double )</code> -  Set / get the maximum length of the hyperstreamline expressed as absolute
+ distance (i.e., arc length) value.
+ </LI>
+<LI>  <code>double = obj.GetMaximumPropagationDistanceMinValue ()</code> -  Set / get the maximum length of the hyperstreamline expressed as absolute
+ distance (i.e., arc length) value.
+ </LI>
+<LI>  <code>double = obj.GetMaximumPropagationDistanceMaxValue ()</code> -  Set / get the maximum length of the hyperstreamline expressed as absolute
+ distance (i.e., arc length) value.
+ </LI>
+<LI>  <code>double = obj.GetMaximumPropagationDistance ()</code> -  Set / get the maximum length of the hyperstreamline expressed as absolute
+ distance (i.e., arc length) value.
+ </LI>
+<LI>  <code>obj.SetIntegrationEigenvector (int )</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>int = obj.GetIntegrationEigenvectorMinValue ()</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>int = obj.GetIntegrationEigenvectorMaxValue ()</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>int = obj.GetIntegrationEigenvector ()</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>obj.SetIntegrationEigenvectorToMajor ()</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>obj.SetIntegrationEigenvectorToMedium ()</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>obj.SetIntegrationEigenvectorToMinor ()</code> -  Set / get the eigenvector field through which to ingrate. It is
+ possible to integrate using the major, medium or minor
+ eigenvector field.  The major eigenvector is the eigenvector
+ whose corresponding eigenvalue is closest to positive infinity.
+ The minor eigenvector is the eigenvector whose corresponding
+ eigenvalue is closest to negative infinity.  The medium
+ eigenvector is the eigenvector whose corresponding eigenvalue is
+ between the major and minor eigenvalues.
+ </LI>
+<LI>  <code>obj.IntegrateMajorEigenvector ()</code> -  Use the major eigenvector field as the vector field through which
+ to integrate.  The major eigenvector is the eigenvector whose
+ corresponding eigenvalue is closest to positive infinity.  
+ </LI>
+<LI>  <code>obj.IntegrateMediumEigenvector ()</code> -  Use the medium eigenvector field as the vector field through which
+ to integrate. The medium eigenvector is the eigenvector whose
+ corresponding eigenvalue is between the major and minor
+ eigenvalues.
+ </LI>
+<LI>  <code>obj.IntegrateMinorEigenvector ()</code> -  Use the minor eigenvector field as the vector field through which
+ to integrate. The minor eigenvector is the eigenvector whose
+ corresponding eigenvalue is closest to negative infinity.
+ </LI>
+<LI>  <code>obj.SetIntegrationStepLength (double )</code> -  Set / get a nominal integration step size (expressed as a fraction of
+ the size of each cell).
+ </LI>
+<LI>  <code>double = obj.GetIntegrationStepLengthMinValue ()</code> -  Set / get a nominal integration step size (expressed as a fraction of
+ the size of each cell).
+ </LI>
+<LI>  <code>double = obj.GetIntegrationStepLengthMaxValue ()</code> -  Set / get a nominal integration step size (expressed as a fraction of
+ the size of each cell).
+ </LI>
+<LI>  <code>double = obj.GetIntegrationStepLength ()</code> -  Set / get a nominal integration step size (expressed as a fraction of
+ the size of each cell).
+ </LI>
+<LI>  <code>obj.SetStepLength (double )</code> -  Set / get the length of a tube segment composing the
+ hyperstreamline. The length is specified as a fraction of the
+ diagonal length of the input bounding box.
+ </LI>
+<LI>  <code>double = obj.GetStepLengthMinValue ()</code> -  Set / get the length of a tube segment composing the
+ hyperstreamline. The length is specified as a fraction of the
+ diagonal length of the input bounding box.
+ </LI>
+<LI>  <code>double = obj.GetStepLengthMaxValue ()</code> -  Set / get the length of a tube segment composing the
+ hyperstreamline. The length is specified as a fraction of the
+ diagonal length of the input bounding box.
+ </LI>
+<LI>  <code>double = obj.GetStepLength ()</code> -  Set / get the length of a tube segment composing the
+ hyperstreamline. The length is specified as a fraction of the
+ diagonal length of the input bounding box.
+ </LI>
+<LI>  <code>obj.SetIntegrationDirection (int )</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>int = obj.GetIntegrationDirectionMinValue ()</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>int = obj.GetIntegrationDirectionMaxValue ()</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>int = obj.GetIntegrationDirection ()</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>obj.SetIntegrationDirectionToForward ()</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>obj.SetIntegrationDirectionToBackward ()</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>obj.SetIntegrationDirectionToIntegrateBothDirections ()</code> -  Specify the direction in which to integrate the hyperstreamline.
+ </LI>
+<LI>  <code>obj.SetTerminalEigenvalue (double )</code> -  Set/get terminal eigenvalue.  If major eigenvalue falls below this
+ value, hyperstreamline terminates propagation.
+ </LI>
+<LI>  <code>double = obj.GetTerminalEigenvalueMinValue ()</code> -  Set/get terminal eigenvalue.  If major eigenvalue falls below this
+ value, hyperstreamline terminates propagation.
+ </LI>
+<LI>  <code>double = obj.GetTerminalEigenvalueMaxValue ()</code> -  Set/get terminal eigenvalue.  If major eigenvalue falls below this
+ value, hyperstreamline terminates propagation.
+ </LI>
+<LI>  <code>double = obj.GetTerminalEigenvalue ()</code> -  Set/get terminal eigenvalue.  If major eigenvalue falls below this
+ value, hyperstreamline terminates propagation.
+ </LI>
+<LI>  <code>obj.SetNumberOfSides (int )</code> -  Set / get the number of sides for the hyperstreamlines. At a minimum,
+ number of sides is 3.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSidesMinValue ()</code> -  Set / get the number of sides for the hyperstreamlines. At a minimum,
+ number of sides is 3.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSidesMaxValue ()</code> -  Set / get the number of sides for the hyperstreamlines. At a minimum,
+ number of sides is 3.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSides ()</code> -  Set / get the number of sides for the hyperstreamlines. At a minimum,
+ number of sides is 3.
+ </LI>
+<LI>  <code>obj.SetRadius (double )</code> -  Set / get the initial tube radius. This is the maximum "elliptical"
+ radius at the beginning of the tube. Radius varies based on ratio of
+ eigenvalues.  Note that tube section is actually elliptical and may
+ become a point or line in cross section in some cases.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMinValue ()</code> -  Set / get the initial tube radius. This is the maximum "elliptical"
+ radius at the beginning of the tube. Radius varies based on ratio of
+ eigenvalues.  Note that tube section is actually elliptical and may
+ become a point or line in cross section in some cases.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMaxValue ()</code> -  Set / get the initial tube radius. This is the maximum "elliptical"
+ radius at the beginning of the tube. Radius varies based on ratio of
+ eigenvalues.  Note that tube section is actually elliptical and may
+ become a point or line in cross section in some cases.
+ </LI>
+<LI>  <code>double = obj.GetRadius ()</code> -  Set / get the initial tube radius. This is the maximum "elliptical"
+ radius at the beginning of the tube. Radius varies based on ratio of
+ eigenvalues.  Note that tube section is actually elliptical and may
+ become a point or line in cross section in some cases.
+ </LI>
+<LI>  <code>obj.SetLogScaling (int )</code> -  Turn on/off logarithmic scaling. If scaling is on, the log base 10
+ of the computed eigenvalues are used to scale the cross section radii.
+ </LI>
+<LI>  <code>int = obj.GetLogScaling ()</code> -  Turn on/off logarithmic scaling. If scaling is on, the log base 10
+ of the computed eigenvalues are used to scale the cross section radii.
+ </LI>
+<LI>  <code>obj.LogScalingOn ()</code> -  Turn on/off logarithmic scaling. If scaling is on, the log base 10
+ of the computed eigenvalues are used to scale the cross section radii.
+ </LI>
+<LI>  <code>obj.LogScalingOff ()</code> -  Turn on/off logarithmic scaling. If scaling is on, the log base 10
+ of the computed eigenvalues are used to scale the cross section radii.
+ </LI>
+</UL>
+</BODY>
+</HTML>

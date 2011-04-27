@@ -39,11 +39,10 @@ elements
 --&gt; A = randi(ones(3,4),10*ones(3,4))
 
 A = 
-  2  1  4  2 
-  8 10  4  7 
- 10  7  4 10 
+  2  3  2  3 
+ 10  2  4  8 
+  5 10  1  2 
 </PRE>
-<P>
 We can extract the elements <code>(1,3),(2,3),(3,4)</code> of <code>A</code> via <code>sub2ind</code>.
 To calculate which elements of <code>A</code> this corresponds to, we can use
 <code>sub2ind</code> as
@@ -56,8 +55,7 @@ n =
 --&gt; A(n)
 
 ans = 
-  1  4 10 
+ 3 4 2 
 </PRE>
-<P>
 </BODY>
 </HTML>

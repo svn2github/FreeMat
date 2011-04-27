@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPExodusReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPExodusReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkPExodusReader is a unstructured grid source object that reads
+ PExodusReaderII files. Most of the meta data associated with the
+ file is loaded when UpdateInformation is called. This includes
+ information like Title, number of blocks, number and names of
+ arrays. This data can be retrieved from methods in this
+ reader. Separate arrays that are meant to be a single vector, are
+ combined internally for convenience. To be combined, the array
+ names have to be identical except for a trailing X,Y and Z (or
+ x,y,z). By default all cell and point arrays are loaded. However,
+ the user can flag arrays not to load with the methods
+ "SetPointDataArrayLoadFlag" and "SetCellDataArrayLoadFlag". The
+ reader responds to piece requests by loading only a range of the
+ possible blocks. Unused points are filtered out internally.
+<P>
+To create an instance of class vtkPExodusReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPExodusReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPExodusReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPExodusReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPExodusReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPExodusReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFilePattern (string )</code> -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+ </LI>
+<LI>  <code>string = obj.GetFilePattern ()</code> -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+ </LI>
+<LI>  <code>obj.SetFilePrefix (string )</code> -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+ </LI>
+<LI>  <code>string = obj.GetFilePrefix ()</code> -  These methods tell the reader that the data is ditributed across
+ multiple files. This is for distributed execution. It this case,
+ pieces are mapped to files. The pattern should have one %d to
+ format the file number. FileNumberRange is used to generate file
+ numbers. I was thinking of having an arbitrary list of file
+ numbers. This may happen in the future. (That is why there is no
+ GetFileNumberRange method.
+ </LI>
+<LI>  <code>obj.SetFileRange (int , int )</code> -  Set the range of files that are being loaded. The range for single
+ file should add to 0.
+ </LI>
+<LI>  <code>obj.SetFileRange (int r)</code> -  Set the range of files that are being loaded. The range for single
+ file should add to 0.
+ </LI>
+<LI>  <code>int = obj. GetFileRange ()</code> -  Set the range of files that are being loaded. The range for single
+ file should add to 0.
+ </LI>
+<LI>  <code>obj.SetFileName (string name)</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFileNames ()</code> -    Return the number of files to be read.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFiles ()</code> -    Return the number of files to be read.
+ </LI>
+<LI>  <code>obj.SetGenerateFileIdArray (int flag)</code>
+ </LI>
+<LI>  <code>int = obj.GetGenerateFileIdArray ()</code>
+ </LI>
+<LI>  <code>obj.GenerateFileIdArrayOn ()</code>
+ </LI>
+<LI>  <code>obj.GenerateFileIdArrayOff ()</code>
+ </LI>
+<LI>  <code>int = obj.GetTotalNumberOfElements ()</code>
+ </LI>
+<LI>  <code>int = obj.GetTotalNumberOfNodes ()</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVariableArrays ()</code>
+ </LI>
+<LI>  <code>string = obj.GetVariableArrayName (int a_which)</code>
+ </LI>
+<LI>  <code>obj.EnableDSPFiltering ()</code>
+ </LI>
+<LI>  <code>obj.AddFilter (vtkDSPFilterDefinition a_filter)</code>
+ </LI>
+<LI>  <code>obj.StartAddingFilter ()</code>
+ </LI>
+<LI>  <code>obj.AddFilterInputVar (string name)</code>
+ </LI>
+<LI>  <code>obj.AddFilterOutputVar (string name)</code>
+ </LI>
+<LI>  <code>obj.AddFilterNumeratorWeight (double weight)</code>
+ </LI>
+<LI>  <code>obj.AddFilterForwardNumeratorWeight (double weight)</code>
+ </LI>
+<LI>  <code>obj.AddFilterDenominatorWeight (double weight)</code>
+ </LI>
+<LI>  <code>obj.FinishAddingFilter ()</code>
+ </LI>
+<LI>  <code>obj.RemoveFilter (string a_outputVariableName)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

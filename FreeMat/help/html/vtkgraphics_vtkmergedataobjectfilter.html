@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMergeDataObjectFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMergeDataObjectFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkMergeDataObjectFilter is a filter that merges the field from a
+ vtkDataObject with a vtkDataSet. The resulting combined dataset can
+ then be processed by other filters (e.g.,
+ vtkFieldDataToAttributeDataFilter) to create attribute data like
+ scalars, vectors, etc.
+<P>
+ The filter operates as follows. The field data from the
+ vtkDataObject is merged with the input's vtkDataSet and then placed
+ in the output. You can choose to place the field data into the cell
+ data field, the point data field, or the datasets field (i.e., the
+ one inherited from vtkDataSet's superclass vtkDataObject). All this
+ data shuffling occurs via reference counting, therefore memory is
+ not copied.
+<P>
+ One of the uses of this filter is to allow you to read/generate the
+ structure of a dataset independent of the attributes. So, for
+ example, you could store the dataset geometry/topology in one file,
+ and field data in another. Then use this filter in combination with
+ vtkFieldDataToAttributeData to create a dataset ready for
+ processing in the visualization pipeline.
+<P>
+To create an instance of class vtkMergeDataObjectFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMergeDataObjectFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMergeDataObjectFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMergeDataObjectFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMergeDataObjectFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMergeDataObjectFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetDataObject (vtkDataObject object)</code> -  Specify the data object to merge with the input dataset.
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetDataObject ()</code> -  Specify the data object to merge with the input dataset.
+ </LI>
+<LI>  <code>obj.SetOutputField (int )</code> -  Specify where to place the field data during the merge process.  There
+ are three choices: the field data associated with the vtkDataObject
+ superclass; the point field attribute data; and the cell field attribute
+ data.
+ </LI>
+<LI>  <code>int = obj.GetOutputField ()</code> -  Specify where to place the field data during the merge process.  There
+ are three choices: the field data associated with the vtkDataObject
+ superclass; the point field attribute data; and the cell field attribute
+ data.
+ </LI>
+<LI>  <code>obj.SetOutputFieldToDataObjectField ()</code> -  Specify where to place the field data during the merge process.  There
+ are three choices: the field data associated with the vtkDataObject
+ superclass; the point field attribute data; and the cell field attribute
+ data.
+ </LI>
+<LI>  <code>obj.SetOutputFieldToPointDataField ()</code> -  Specify where to place the field data during the merge process.  There
+ are three choices: the field data associated with the vtkDataObject
+ superclass; the point field attribute data; and the cell field attribute
+ data.
+ </LI>
+<LI>  <code>obj.SetOutputFieldToCellDataField ()</code> -  Specify where to place the field data during the merge process.  There
+ are three choices: the field data associated with the vtkDataObject
+ superclass; the point field attribute data; and the cell field attribute
+ data.
+ </LI>
+</UL>
+</BODY>
+</HTML>

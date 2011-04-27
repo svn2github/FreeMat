@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractSelectionBase
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractSelectionBase
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkExtractSelectionBase is an abstract base class for all extract selection
+ filters. It defines some properties common to all extract selection filters.
+<P>
+To create an instance of class vtkExtractSelectionBase, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractSelectionBase
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractSelectionBase has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractSelectionBase class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractSelectionBase = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractSelectionBase = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSelectionConnection (vtkAlgorithmOutput algOutput)</code> -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+ </LI>
+<LI>  <code>obj.SetPreserveTopology (int )</code> -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+ </LI>
+<LI>  <code>int = obj.GetPreserveTopology ()</code> -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+ </LI>
+<LI>  <code>obj.PreserveTopologyOn ()</code> -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+ </LI>
+<LI>  <code>obj.PreserveTopologyOff ()</code> -  This flag tells the extraction filter not to convert the selected
+ output into an unstructured grid, but instead to produce a vtkInsidedness
+ array and add it to the input dataset. Default value is false(0).
+ </LI>
+</UL>
+</BODY>
+</HTML>

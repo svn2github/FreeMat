@@ -22,14 +22,11 @@ There are a total of six comparison operators available in FreeMat, all of which
 </PRE>
 <P>
 where <code>a</code> and <code>b</code> are numerical arrays or scalars, and <code>y</code> is a <code>logical</code> array of the appropriate size.  Each of the operators has three modes of operation, summarized in the following list:
-<OL>
-<LI>  <code>a</code> is a scalar, <code>b</code> is an n-dimensional array - the output is then the same size as <code>b</code>, and contains the result of comparing each element in <code>b</code> to the scalar <code>a</code>.
- </LI>
-<LI>  <code>a</code> is an n-dimensional array, <code>b</code> is a scalar - the output is the same size as <code>a</code>, and contains the result of comparing each element in <code>a</code> to the scalar <code>b</code>.
- </LI>
-<LI>  <code>a</code> and <code>b</code> are both n-dimensional arrays of the same size - the output is then the same size as both <code>a</code> and <code>b</code>, and contains the result of an element-wise comparison between <code>a</code> and <code>b</code>.
- </LI>
-</OL>
+\begin{enumerate}
+  \item <code>a</code> is a scalar, <code>b</code> is an n-dimensional array - the output is then the same size as <code>b</code>, and contains the result of comparing each element in <code>b</code> to the scalar <code>a</code>.
+  \item <code>a</code> is an n-dimensional array, <code>b</code> is a scalar - the output is the same size as <code>a</code>, and contains the result of comparing each element in <code>a</code> to the scalar <code>b</code>.
+  \item <code>a</code> and <code>b</code> are both n-dimensional arrays of the same size - the output is then the same size as both <code>a</code> and <code>b</code>, and contains the result of an element-wise comparison between <code>a</code> and <code>b</code>.
+\end{enumerate}
 The operators behave the same way as in <code>C</code>, with unequal types being promoted using the standard type promotion rules prior to comparisons.  The only difference is that in FreeMat, the not-equals operator is <code>~=</code> instead of <code>!=</code>.
 <H3>Examples</H3>
 Some simple examples of comparison operations.  First a comparison with a scalar:
@@ -37,14 +34,13 @@ Some simple examples of comparison operations.  First a comparison with a scalar
 --&gt; a = randn(1,5)
 
 a = 
-   -0.1760    0.0212    0.0095    2.0556   -1.1627 
+   -0.0454   -0.1876    1.5987   -0.9136   -0.2120 
 
 --&gt; a&gt;0
 
 ans = 
- 0 1 1 1 0 
+ 0 0 1 0 0 
 </PRE>
-<P>
 Next, we construct two vectors, and test for equality:
 <PRE>
 --&gt; a = [1,2,5,7,3]
@@ -62,6 +58,5 @@ b =
 c = 
  0 1 1 0 0 
 </PRE>
-<P>
 </BODY>
 </HTML>

@@ -77,7 +77,6 @@ A =
  3 2 1 
  0 3 1 
 </PRE>
-<P>
 We first take the maximum along the columns, resulting in a row vector.
 <PRE>
 --&gt; max(A)
@@ -85,7 +84,6 @@ We first take the maximum along the columns, resulting in a row vector.
 ans = 
  5 3 3 
 </PRE>
-<P>
 Next, we take the maximum along the rows, resulting in a column vector.
 <PRE>
 --&gt; max(A,[],2)
@@ -95,7 +93,6 @@ ans =
  3 
  3 
 </PRE>
-<P>
 When the dimension argument is not supplied, <code>max</code> acts along the first non-singular dimension.  For a row vector, this is the column direction:
 <PRE>
 --&gt; max([5,3,2,9])
@@ -104,49 +101,46 @@ ans =
  9 
 </PRE>
 <P>
-
 For the two-argument version, we can compute the smaller of two arrays,
 as in this example:
 <PRE>
 --&gt; a = int8(100*randn(4))
 
 a = 
-    8  127  -51  -57 
-   -5  -25  -62  -14 
-  -17  -73  127  -73 
- -102   21   36   39 
+  -16   65  -38  -45 
+  -33  -46  127  -14 
+ -110   18  -15  -11 
+  127 -128 -128 -120 
 
 --&gt; b = int8(100*randn(4))
 
 b = 
-   59  127   46   24 
-  -98  -78  -50 -114 
- -128   57  127   -2 
-  -64  -95   30  127 
+  -60  127 -128   91 
+   71 -128  -36  -53 
+    8  127 -106 -128 
+ -128   47  -93  -34 
 
 --&gt; max(a,b)
 
 ans = 
-  59 127  46  24 
-  -5 -25 -50 -14 
- -17  57 127  -2 
- -64  21  36 127 
+ -16 127 -38  91 
+  71 -46 127 -14 
+   8 127 -15 -11 
+ 127  47 -93 -34 
 </PRE>
-<P>
 Or alternately, we can compare an array with a scalar
 <PRE>
 --&gt; a = randn(2)
 
 a = 
-    1.4356    0.4894 
-   -0.8816    0.6359 
+   -0.0574    1.1346 
+   -1.3497   -2.3248 
 
 --&gt; max(a,0)
 
 ans = 
-    1.4356    0.4894 
-         0    0.6359 
+         0    1.1346 
+         0         0 
 </PRE>
-<P>
 </BODY>
 </HTML>

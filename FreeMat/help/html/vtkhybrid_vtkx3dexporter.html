@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkX3DExporter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkX3DExporter
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkX3DExporter is a render window exporter which writes out the renderered
+ scene into an X3D file. X3D is an XML-based format for representation 
+ 3D scenes (similar to VRML). Check out http://www.web3d.org/x3d/ for more
+ details.
+ .SECTION Thanks
+ X3DExporter is contributed by Christophe Mouton at EDF.
+<P>
+To create an instance of class vtkX3DExporter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkX3DExporter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkX3DExporter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkX3DExporter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkX3DExporter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkX3DExporter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Set/Get the output file name.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Set/Get the output file name.
+ </LI>
+<LI>  <code>obj.SetSpeed (double )</code> -  Specify the Speed of navigation. Default is 4.
+ </LI>
+<LI>  <code>double = obj.GetSpeed ()</code> -  Specify the Speed of navigation. Default is 4.
+ </LI>
+<LI>  <code>obj.SetBinary (int )</code> -  Turn on binary mode
+ </LI>
+<LI>  <code>int = obj.GetBinaryMinValue ()</code> -  Turn on binary mode
+ </LI>
+<LI>  <code>int = obj.GetBinaryMaxValue ()</code> -  Turn on binary mode
+ </LI>
+<LI>  <code>obj.BinaryOn ()</code> -  Turn on binary mode
+ </LI>
+<LI>  <code>obj.BinaryOff ()</code> -  Turn on binary mode
+ </LI>
+<LI>  <code>int = obj.GetBinary ()</code> -  Turn on binary mode
+ </LI>
+<LI>  <code>obj.SetFastest (int )</code> -  In binary mode use fastest instead of best compression
+ </LI>
+<LI>  <code>int = obj.GetFastestMinValue ()</code> -  In binary mode use fastest instead of best compression
+ </LI>
+<LI>  <code>int = obj.GetFastestMaxValue ()</code> -  In binary mode use fastest instead of best compression
+ </LI>
+<LI>  <code>obj.FastestOn ()</code> -  In binary mode use fastest instead of best compression
+ </LI>
+<LI>  <code>obj.FastestOff ()</code> -  In binary mode use fastest instead of best compression
+ </LI>
+<LI>  <code>int = obj.GetFastest ()</code> -  In binary mode use fastest instead of best compression
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDSPFilterDefinition
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDSPFilterDefinition
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkDSPFilterDefinition is used by vtkExodusReader, vtkExodusIIReader and
+ vtkPExodusReader to do temporal smoothing of data
+<P>
+To create an instance of class vtkDSPFilterDefinition, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDSPFilterDefinition
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDSPFilterDefinition has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDSPFilterDefinition class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDSPFilterDefinition = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDSPFilterDefinition = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Copy (vtkDSPFilterDefinition other)</code>
+ </LI>
+<LI>  <code>obj.Clear ()</code>
+ </LI>
+<LI>  <code>bool = obj.IsThisInputVariableInstanceNeeded (int a_timestep, int a_outputTimestep)</code>
+ </LI>
+<LI>  <code>obj.PushBackNumeratorWeight (double a_value)</code>
+ </LI>
+<LI>  <code>obj.PushBackDenominatorWeight (double a_value)</code>
+ </LI>
+<LI>  <code>obj.PushBackForwardNumeratorWeight (double a_value)</code>
+ </LI>
+<LI>  <code>obj.SetInputVariableName (string a_value)</code>
+ </LI>
+<LI>  <code>obj.SetOutputVariableName (string a_value)</code>
+ </LI>
+<LI>  <code>string = obj.GetInputVariableName ()</code>
+ </LI>
+<LI>  <code>string = obj.GetOutputVariableName ()</code>
+ </LI>
+<LI>  <code>int = obj.GetNumNumeratorWeights ()</code>
+ </LI>
+<LI>  <code>int = obj.GetNumDenominatorWeights ()</code>
+ </LI>
+<LI>  <code>int = obj.GetNumForwardNumeratorWeights ()</code>
+ </LI>
+<LI>  <code>double = obj.GetNumeratorWeight (int a_which)</code>
+ </LI>
+<LI>  <code>double = obj.GetDenominatorWeight (int a_which)</code>
+ </LI>
+<LI>  <code>double = obj.GetForwardNumeratorWeight (int a_which)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

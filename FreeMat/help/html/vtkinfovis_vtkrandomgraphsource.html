@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRandomGraphSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRandomGraphSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Generates a graph with a specified number of vertices, with the density of
+ edges specified by either an exact number of edges or the probability of
+ an edge.  You may additionally specify whether to begin with a random
+ tree (which enforces graph connectivity).
+<P>
+<P>
+To create an instance of class vtkRandomGraphSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRandomGraphSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRandomGraphSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRandomGraphSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRandomGraphSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRandomGraphSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVertices ()</code> -  The number of vertices in the graph.
+ </LI>
+<LI>  <code>obj.SetNumberOfVertices (int )</code> -  The number of vertices in the graph.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVerticesMinValue ()</code> -  The number of vertices in the graph.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVerticesMaxValue ()</code> -  The number of vertices in the graph.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  If UseEdgeProbability is off, creates a graph with the specified number
+ of edges.  Duplicate (parallel) edges are allowed.
+ </LI>
+<LI>  <code>obj.SetNumberOfEdges (int )</code> -  If UseEdgeProbability is off, creates a graph with the specified number
+ of edges.  Duplicate (parallel) edges are allowed.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdgesMinValue ()</code> -  If UseEdgeProbability is off, creates a graph with the specified number
+ of edges.  Duplicate (parallel) edges are allowed.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdgesMaxValue ()</code> -  If UseEdgeProbability is off, creates a graph with the specified number
+ of edges.  Duplicate (parallel) edges are allowed.
+ </LI>
+<LI>  <code>double = obj.GetEdgeProbability ()</code> -  If UseEdgeProbability is on, adds an edge with this probability between 0 and 1
+ for each pair of vertices in the graph.
+ </LI>
+<LI>  <code>obj.SetEdgeProbability (double )</code> -  If UseEdgeProbability is on, adds an edge with this probability between 0 and 1
+ for each pair of vertices in the graph.
+ </LI>
+<LI>  <code>double = obj.GetEdgeProbabilityMinValue ()</code> -  If UseEdgeProbability is on, adds an edge with this probability between 0 and 1
+ for each pair of vertices in the graph.
+ </LI>
+<LI>  <code>double = obj.GetEdgeProbabilityMaxValue ()</code> -  If UseEdgeProbability is on, adds an edge with this probability between 0 and 1
+ for each pair of vertices in the graph.
+ </LI>
+<LI>  <code>obj.SetIncludeEdgeWeights (bool )</code> -  When set, includes edge weights in an array named "edge_weights".
+ Defaults to off.  Weights are random between 0 and 1.
+ </LI>
+<LI>  <code>bool = obj.GetIncludeEdgeWeights ()</code> -  When set, includes edge weights in an array named "edge_weights".
+ Defaults to off.  Weights are random between 0 and 1.
+ </LI>
+<LI>  <code>obj.IncludeEdgeWeightsOn ()</code> -  When set, includes edge weights in an array named "edge_weights".
+ Defaults to off.  Weights are random between 0 and 1.
+ </LI>
+<LI>  <code>obj.IncludeEdgeWeightsOff ()</code> -  When set, includes edge weights in an array named "edge_weights".
+ Defaults to off.  Weights are random between 0 and 1.
+ </LI>
+<LI>  <code>obj.SetEdgeWeightArrayName (string )</code> -  The name of the edge weight array. Default "edge weight".
+ </LI>
+<LI>  <code>string = obj.GetEdgeWeightArrayName ()</code> -  The name of the edge weight array. Default "edge weight".
+ </LI>
+<LI>  <code>obj.SetDirected (bool )</code> -  When set, creates a directed graph, as opposed to an undirected graph.
+ </LI>
+<LI>  <code>bool = obj.GetDirected ()</code> -  When set, creates a directed graph, as opposed to an undirected graph.
+ </LI>
+<LI>  <code>obj.DirectedOn ()</code> -  When set, creates a directed graph, as opposed to an undirected graph.
+ </LI>
+<LI>  <code>obj.DirectedOff ()</code> -  When set, creates a directed graph, as opposed to an undirected graph.
+ </LI>
+<LI>  <code>obj.SetUseEdgeProbability (bool )</code> -  When set, uses the EdgeProbability parameter to determine the density
+ of edges.  Otherwise, NumberOfEdges is used.
+ </LI>
+<LI>  <code>bool = obj.GetUseEdgeProbability ()</code> -  When set, uses the EdgeProbability parameter to determine the density
+ of edges.  Otherwise, NumberOfEdges is used.
+ </LI>
+<LI>  <code>obj.UseEdgeProbabilityOn ()</code> -  When set, uses the EdgeProbability parameter to determine the density
+ of edges.  Otherwise, NumberOfEdges is used.
+ </LI>
+<LI>  <code>obj.UseEdgeProbabilityOff ()</code> -  When set, uses the EdgeProbability parameter to determine the density
+ of edges.  Otherwise, NumberOfEdges is used.
+ </LI>
+<LI>  <code>obj.SetStartWithTree (bool )</code> -  When set, builds a random tree structure first, then adds additional
+ random edges.
+ </LI>
+<LI>  <code>bool = obj.GetStartWithTree ()</code> -  When set, builds a random tree structure first, then adds additional
+ random edges.
+ </LI>
+<LI>  <code>obj.StartWithTreeOn ()</code> -  When set, builds a random tree structure first, then adds additional
+ random edges.
+ </LI>
+<LI>  <code>obj.StartWithTreeOff ()</code> -  When set, builds a random tree structure first, then adds additional
+ random edges.
+ </LI>
+<LI>  <code>obj.SetAllowSelfLoops (bool )</code> -  If this flag is set to true, edges where the source and target
+ vertex are the same can be generated.  The default is to forbid
+ such loops.
+ </LI>
+<LI>  <code>bool = obj.GetAllowSelfLoops ()</code> -  If this flag is set to true, edges where the source and target
+ vertex are the same can be generated.  The default is to forbid
+ such loops.
+ </LI>
+<LI>  <code>obj.AllowSelfLoopsOn ()</code> -  If this flag is set to true, edges where the source and target
+ vertex are the same can be generated.  The default is to forbid
+ such loops.
+ </LI>
+<LI>  <code>obj.AllowSelfLoopsOff ()</code> -  If this flag is set to true, edges where the source and target
+ vertex are the same can be generated.  The default is to forbid
+ such loops.
+ </LI>
+<LI>  <code>obj.SetAllowParallelEdges (bool )</code> -  When set, multiple edges from a source to a target vertex are
+ allowed. The default is to forbid such loops.
+ </LI>
+<LI>  <code>bool = obj.GetAllowParallelEdges ()</code> -  When set, multiple edges from a source to a target vertex are
+ allowed. The default is to forbid such loops.
+ </LI>
+<LI>  <code>obj.AllowParallelEdgesOn ()</code> -  When set, multiple edges from a source to a target vertex are
+ allowed. The default is to forbid such loops.
+ </LI>
+<LI>  <code>obj.AllowParallelEdgesOff ()</code> -  When set, multiple edges from a source to a target vertex are
+ allowed. The default is to forbid such loops.
+ </LI>
+<LI>  <code>obj.SetGeneratePedigreeIds (bool )</code> -  Add pedigree ids to vertex and edge data.
+ </LI>
+<LI>  <code>bool = obj.GetGeneratePedigreeIds ()</code> -  Add pedigree ids to vertex and edge data.
+ </LI>
+<LI>  <code>obj.GeneratePedigreeIdsOn ()</code> -  Add pedigree ids to vertex and edge data.
+ </LI>
+<LI>  <code>obj.GeneratePedigreeIdsOff ()</code> -  Add pedigree ids to vertex and edge data.
+ </LI>
+<LI>  <code>obj.SetVertexPedigreeIdArrayName (string )</code> -  The name of the vertex pedigree id array. Default "vertex id".
+ </LI>
+<LI>  <code>string = obj.GetVertexPedigreeIdArrayName ()</code> -  The name of the vertex pedigree id array. Default "vertex id".
+ </LI>
+<LI>  <code>obj.SetEdgePedigreeIdArrayName (string )</code> -  The name of the edge pedigree id array. Default "edge id".
+ </LI>
+<LI>  <code>string = obj.GetEdgePedigreeIdArrayName ()</code> -  The name of the edge pedigree id array. Default "edge id".
+ </LI>
+<LI>  <code>obj.SetSeed (int )</code> -  Control the seed used for pseudo-random-number generation.
+ This ensures that vtkRandomGraphSource can produce repeatable
+ results.
+ </LI>
+<LI>  <code>int = obj.GetSeed ()</code> -  Control the seed used for pseudo-random-number generation.
+ This ensures that vtkRandomGraphSource can produce repeatable
+ results.
+ </LI>
+</UL>
+</BODY>
+</HTML>

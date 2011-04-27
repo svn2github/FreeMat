@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageHSVToRGB
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageHSVToRGB
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ For each pixel with hue, saturation and value components this filter
+ outputs the color coded as red, green, blue.  Output type must be the same
+ as input type.
+<P>
+To create an instance of class vtkImageHSVToRGB, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageHSVToRGB
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageHSVToRGB has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageHSVToRGB class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageHSVToRGB = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageHSVToRGB = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMaximum (double )</code> -  Hue is an angle. Maximum specifies when it maps back to 0.
+ HueMaximum defaults to 255 instead of 2PI, because unsigned char
+ is expected as input.
+ Maximum also specifies the maximum of the Saturation, and R, G, B.
+ </LI>
+<LI>  <code>double = obj.GetMaximum ()</code> -  Hue is an angle. Maximum specifies when it maps back to 0.
+ HueMaximum defaults to 255 instead of 2PI, because unsigned char
+ is expected as input.
+ Maximum also specifies the maximum of the Saturation, and R, G, B.
+ </LI>
+</UL>
+</BODY>
+</HTML>

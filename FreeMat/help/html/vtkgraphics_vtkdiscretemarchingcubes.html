@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDiscreteMarchingCubes
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDiscreteMarchingCubes
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ takes as input a volume (e.g., 3D structured point set) of
+ segmentation labels and generates on output one or more
+ models representing the boundaries between the specified label and
+ the adjacent structures.  One or more label values must be specified to
+ generate the models.  The boundary positions are always defined to
+ be half-way between adjacent voxels. This filter works best with
+ integral scalar values.
+ If ComputeScalars is on (the default), each output cell will have
+ cell data that corresponds to the scalar value (segmentation label)
+ of the corresponding cube. Note that this differs from vtkMarchingCubes,
+ which stores the scalar value as point data. The rationale for this
+ difference is that cell vertices may be shared between multiple
+ cells. This also means that the resultant polydata may be
+ non-manifold (cell faces may be coincident). To further process the
+ polydata, users should either: 1) extract cells that have a common
+ scalar value using vtkThreshold, or 2) process the data with
+ filters that can handle non-manifold polydata
+ (e.g. vtkWindowedSincPolyDataFilter).
+ Also note, Normals and Gradients are not computed.
+<P>
+To create an instance of class vtkDiscreteMarchingCubes, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDiscreteMarchingCubes
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDiscreteMarchingCubes has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDiscreteMarchingCubes class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDiscreteMarchingCubes = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDiscreteMarchingCubes = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

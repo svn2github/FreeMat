@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkImageMapper provides 2D image display support for vtk.
+ It is a Mapper2D subclass that can be associated with an Actor2D
+ and placed within a RenderWindow or ImageWindow.
+<P>
+To create an instance of class vtkImageMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Override Modifiedtime as we have added a lookuptable
+ </LI>
+<LI>  <code>obj.SetColorWindow (double )</code> -  Set/Get the window value for window/level
+ </LI>
+<LI>  <code>double = obj.GetColorWindow ()</code> -  Set/Get the window value for window/level
+ </LI>
+<LI>  <code>obj.SetColorLevel (double )</code> -  Set/Get the level value for window/level
+ </LI>
+<LI>  <code>double = obj.GetColorLevel ()</code> -  Set/Get the level value for window/level
+ </LI>
+<LI>  <code>obj.SetZSlice (int )</code> -  Set/Get the current slice number. The axis Z in ZSlice does not
+ necessarily have any relation to the z axis of the data on disk.
+ It is simply the axis orthogonal to the x,y, display plane.
+ GetWholeZMax and Min are convenience methods for obtaining
+ the number of slices that can be displayed. Again the number
+ of slices is in reference to the display z axis, which is not
+ necessarily the z axis on disk. (due to reformatting etc)
+ </LI>
+<LI>  <code>int = obj.GetZSlice ()</code> -  Set/Get the current slice number. The axis Z in ZSlice does not
+ necessarily have any relation to the z axis of the data on disk.
+ It is simply the axis orthogonal to the x,y, display plane.
+ GetWholeZMax and Min are convenience methods for obtaining
+ the number of slices that can be displayed. Again the number
+ of slices is in reference to the display z axis, which is not
+ necessarily the z axis on disk. (due to reformatting etc)
+ </LI>
+<LI>  <code>int = obj.GetWholeZMin ()</code> -  Set/Get the current slice number. The axis Z in ZSlice does not
+ necessarily have any relation to the z axis of the data on disk.
+ It is simply the axis orthogonal to the x,y, display plane.
+ GetWholeZMax and Min are convenience methods for obtaining
+ the number of slices that can be displayed. Again the number
+ of slices is in reference to the display z axis, which is not
+ necessarily the z axis on disk. (due to reformatting etc)
+ </LI>
+<LI>  <code>int = obj.GetWholeZMax ()</code> -  Set/Get the current slice number. The axis Z in ZSlice does not
+ necessarily have any relation to the z axis of the data on disk.
+ It is simply the axis orthogonal to the x,y, display plane.
+ GetWholeZMax and Min are convenience methods for obtaining
+ the number of slices that can be displayed. Again the number
+ of slices is in reference to the display z axis, which is not
+ necessarily the z axis on disk. (due to reformatting etc)
+ </LI>
+<LI>  <code>obj.RenderStart (vtkViewport viewport, vtkActor2D actor)</code> -  Draw the image to the screen.
+ </LI>
+<LI>  <code>obj.RenderData (vtkViewport , vtkImageData , vtkActor2D )</code> -  Function called by Render to actually draw the image to to the screen
+ </LI>
+<LI>  <code>double = obj.GetColorShift ()</code> -  Methods used internally for performing the Window/Level mapping.
+ </LI>
+<LI>  <code>double = obj.GetColorScale ()</code> -  Methods used internally for performing the Window/Level mapping.
+ </LI>
+<LI>  <code>obj.SetInput (vtkImageData input)</code> -  Set the Input of a filter. 
+ </LI>
+<LI>  <code>vtkImageData = obj.GetInput ()</code> -  Set the Input of a filter. 
+ </LI>
+<LI>  <code>obj.SetRenderToRectangle (int )</code> -  If RenderToRectangle is set (by default not), then the imagemapper
+ will render the image into the rectangle supplied by the Actor2D's
+ PositionCoordinate and Position2Coordinate
+ </LI>
+<LI>  <code>int = obj.GetRenderToRectangle ()</code> -  If RenderToRectangle is set (by default not), then the imagemapper
+ will render the image into the rectangle supplied by the Actor2D's
+ PositionCoordinate and Position2Coordinate
+ </LI>
+<LI>  <code>obj.RenderToRectangleOn ()</code> -  If RenderToRectangle is set (by default not), then the imagemapper
+ will render the image into the rectangle supplied by the Actor2D's
+ PositionCoordinate and Position2Coordinate
+ </LI>
+<LI>  <code>obj.RenderToRectangleOff ()</code> -  If RenderToRectangle is set (by default not), then the imagemapper
+ will render the image into the rectangle supplied by the Actor2D's
+ PositionCoordinate and Position2Coordinate
+ </LI>
+<LI>  <code>obj.SetUseCustomExtents (int )</code> -  Usually, the entire image is displayed, if UseCustomExtents
+ is set (by default not), then the region supplied in the
+ CustomDisplayExtents is used in preference.
+ Note that the Custom extents are x,y only and the zslice is still
+ applied
+ </LI>
+<LI>  <code>int = obj.GetUseCustomExtents ()</code> -  Usually, the entire image is displayed, if UseCustomExtents
+ is set (by default not), then the region supplied in the
+ CustomDisplayExtents is used in preference.
+ Note that the Custom extents are x,y only and the zslice is still
+ applied
+ </LI>
+<LI>  <code>obj.UseCustomExtentsOn ()</code> -  Usually, the entire image is displayed, if UseCustomExtents
+ is set (by default not), then the region supplied in the
+ CustomDisplayExtents is used in preference.
+ Note that the Custom extents are x,y only and the zslice is still
+ applied
+ </LI>
+<LI>  <code>obj.UseCustomExtentsOff ()</code> -  Usually, the entire image is displayed, if UseCustomExtents
+ is set (by default not), then the region supplied in the
+ CustomDisplayExtents is used in preference.
+ Note that the Custom extents are x,y only and the zslice is still
+ applied
+ </LI>
+<LI>  <code>obj.SetCustomDisplayExtents (int  [4])</code> -  The image extents which should be displayed with UseCustomExtents
+ Note that the Custom extents are x,y only and the zslice is still
+ applied
+ </LI>
+<LI>  <code>int = obj. GetCustomDisplayExtents ()</code> -  The image extents which should be displayed with UseCustomExtents
+ Note that the Custom extents are x,y only and the zslice is still
+ applied
+ </LI>
+</UL>
+</BODY>
+</HTML>

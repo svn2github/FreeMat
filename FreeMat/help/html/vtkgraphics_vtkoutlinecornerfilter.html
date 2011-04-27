@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkOutlineCornerFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkOutlineCornerFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkOutlineCornerFilter is a filter that generates wireframe outline corners of any 
+ data set. The outline consists of the eight corners of the dataset 
+ bounding box.
+<P>
+To create an instance of class vtkOutlineCornerFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkOutlineCornerFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkOutlineCornerFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkOutlineCornerFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkOutlineCornerFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkOutlineCornerFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCornerFactor (double )</code> -  Set/Get the factor that controls the relative size of the corners
+ to the length of the corresponding bounds
+ </LI>
+<LI>  <code>double = obj.GetCornerFactorMinValue ()</code> -  Set/Get the factor that controls the relative size of the corners
+ to the length of the corresponding bounds
+ </LI>
+<LI>  <code>double = obj.GetCornerFactorMaxValue ()</code> -  Set/Get the factor that controls the relative size of the corners
+ to the length of the corresponding bounds
+ </LI>
+<LI>  <code>double = obj.GetCornerFactor ()</code> -  Set/Get the factor that controls the relative size of the corners
+ to the length of the corresponding bounds
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHyperOctreeLimiter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHyperOctreeLimiter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ This filter returns a lower resolution copy of its input vtkHyperOctree.
+ It does a length/area/volume weighted averaging to obtain data at each
+ cut point. Above the cut level, leaf attribute data is simply copied.
+<P>
+To create an instance of class vtkHyperOctreeLimiter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHyperOctreeLimiter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHyperOctreeLimiter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHyperOctreeLimiter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHyperOctreeLimiter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHyperOctreeLimiter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetMaximumLevel ()</code> -  Return the maximum number of levels of the hyperoctree.
+ </LI>
+<LI>  <code>obj.SetMaximumLevel (int levels)</code> -  Set the maximum number of levels of the hyperoctree.
+ </LI>
+</UL>
+</BODY>
+</HTML>

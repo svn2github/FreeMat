@@ -25,9 +25,9 @@ For Linux, FreeMat will typically use <code>/usr/local/share/FreeMat-&lt;Version
 for the root path.  Installations from source code will generally work,
 but binary installations (e.g., from an <code>RPM</code>) may need to have the
 rootpath set.
-
+<P>
 The <code>rootpath</code> function has two forms.  The first form takes no arguments
-and allows you to browse to the rootpath directory
+and returns the current root path
 <PRE>
    rootpath
 </PRE>
@@ -39,6 +39,13 @@ The second form will set a rootpath directly from the command line
 <P>
 where <code>path</code> is the full path to where the <code>toolbox</code> and <code>help</code> 
 directories are located.  For example, <code>rootpath('/usr/share/FreeMat-4.0')</code>.
+The third form enables the GUI form 
+<PRE>
+   rootpath gui
+</PRE>
+<P>
+which activates a dialog box to pick a directory that is the root directory
+of the FreeMat installation (e.g., where <code>help</code> and <code>toolbox</code> are located.
 Changes to <code>rootpath</code> are persistent (you do not need to run it every
 time you start FreeMat).
 </BODY>

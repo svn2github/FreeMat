@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>TRIU Upper Triangular Matrix Function
+</TITLE>
+</HEAD>
+<BODY>
+<H2>TRIU Upper Triangular Matrix Function
+</H2>
+<P>
+Section: <A HREF=sec_array.html> Array Generation and Manipulations </A>
+<H3>Usage</H3>
+ 
+ Returns the upper triangular matrix of a square matrix. The general
+ syntax for its use is
+<PRE>
+   y = triu(x)
+</PRE>
+<P>
+ where x is a square matrix. This returns the upper triangular matrix
+ (i.e.: all elements on or below the diagonal are set to 0). You can also
+ specify a different diagonal using the alternate form
+<PRE>
+   y = triu(x,n)
+</PRE>
+<P>
+ where n is the diagonal offset. In this mode, the diagonal specified 
+ is not set to zero in the returned matrix (e.g.: tril(x) and tril(x,1))
+ will return the same value.
+</BODY>
+</HTML>

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHierarchicalGraphView
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHierarchicalGraphView
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+ Takes a graph and a hierarchy (currently a tree) and lays out the graph 
+ vertices based on their categorization within the hierarchy.
+<P>
+ .SEE ALSO
+ vtkGraphLayoutView
+<P>
+ .SECTION Thanks
+ Thanks to the turtle with jets for feet, without you this class wouldn't 
+ have been possible.
+<P>
+To create an instance of class vtkHierarchicalGraphView, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHierarchicalGraphView
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHierarchicalGraphView has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHierarchicalGraphView class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHierarchicalGraphView = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHierarchicalGraphView = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkDataRepresentation = obj.SetHierarchyFromInputConnection (vtkAlgorithmOutput conn)</code> -  Set the tree and graph representations to the appropriate input ports.
+ </LI>
+<LI>  <code>vtkDataRepresentation = obj.SetHierarchyFromInput (vtkDataObject input)</code> -  Set the tree and graph representations to the appropriate input ports.
+ </LI>
+<LI>  <code>vtkDataRepresentation = obj.SetGraphFromInputConnection (vtkAlgorithmOutput conn)</code> -  Set the tree and graph representations to the appropriate input ports.
+ </LI>
+<LI>  <code>vtkDataRepresentation = obj.SetGraphFromInput (vtkDataObject input)</code> -  Set the tree and graph representations to the appropriate input ports.
+ </LI>
+<LI>  <code>obj.SetGraphEdgeLabelArrayName (string name)</code> -  The array to use for edge labeling.  Default is "label".
+ </LI>
+<LI>  <code>string = obj.GetGraphEdgeLabelArrayName ()</code> -  The array to use for edge labeling.  Default is "label".
+ </LI>
+<LI>  <code>obj.SetGraphEdgeLabelVisibility (bool vis)</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetGraphEdgeLabelVisibility ()</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>obj.GraphEdgeLabelVisibilityOn ()</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>obj.GraphEdgeLabelVisibilityOff ()</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>obj.SetGraphEdgeColorArrayName (string name)</code> -  The array to use for coloring edges.  Default is "color".
+ </LI>
+<LI>  <code>string = obj.GetGraphEdgeColorArrayName ()</code> -  The array to use for coloring edges.  Default is "color".
+ </LI>
+<LI>  <code>obj.SetGraphEdgeColorToSplineFraction ()</code> -  Set the color to be the spline fraction
+ </LI>
+<LI>  <code>obj.SetColorGraphEdgesByArray (bool vis)</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetColorGraphEdgesByArray ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.ColorGraphEdgesByArrayOn ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.ColorGraphEdgesByArrayOff ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.SetBundlingStrength (double strength)</code> -  Set the bundling strength.
+ </LI>
+<LI>  <code>double = obj.GetBundlingStrength ()</code> -  Set the bundling strength.
+ </LI>
+<LI>  <code>obj.SetGraphVisibility (bool b)</code> -  Whether the graph edges are visible (default off).
+ </LI>
+<LI>  <code>bool = obj.GetGraphVisibility ()</code> -  Whether the graph edges are visible (default off).
+ </LI>
+<LI>  <code>obj.GraphVisibilityOn ()</code> -  Whether the graph edges are visible (default off).
+ </LI>
+<LI>  <code>obj.GraphVisibilityOff ()</code> -  Whether the graph edges are visible (default off).
+ </LI>
+<LI>  <code>obj.SetGraphEdgeLabelFontSize (int size)</code> -  The size of the font used for edge labeling
+ </LI>
+<LI>  <code>int = obj.GetGraphEdgeLabelFontSize ()</code> -  The size of the font used for edge labeling
+ </LI>
+</UL>
+</BODY>
+</HTML>

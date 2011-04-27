@@ -25,7 +25,7 @@ threads returned by <code>threadnew</code> are in a dormant state (i.e.,
 not running).  Once you are finished with the thread you
 must call <code>threadfree</code> to free the resources associated with
 that thread.
-
+<P>
 Some additional important information.  Thread functions operate
 in their own context or workspace, which means that data cannot
 be shared between threads.  The exception is <code>global</code> variables,

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageGaussianSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageGaussianSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageGaussianSource just produces images with pixel values determined 
+ by a Gaussian.
+<P>
+To create an instance of class vtkImageGaussianSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageGaussianSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageGaussianSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageGaussianSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageGaussianSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageGaussianSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetWholeExtent (int xMinx, int xMax, int yMin, int yMax, int zMin, int zMax)</code> -  Set/Get the extent of the whole output image.
+ </LI>
+<LI>  <code>obj.SetCenter (double , double , double )</code> -  Set/Get the center of the Gaussian.
+ </LI>
+<LI>  <code>obj.SetCenter (double  a[3])</code> -  Set/Get the center of the Gaussian.
+ </LI>
+<LI>  <code>double = obj. GetCenter ()</code> -  Set/Get the center of the Gaussian.
+ </LI>
+<LI>  <code>obj.SetMaximum (double )</code> -  Set/Get the Maximum value of the gaussian
+ </LI>
+<LI>  <code>double = obj.GetMaximum ()</code> -  Set/Get the Maximum value of the gaussian
+ </LI>
+<LI>  <code>obj.SetStandardDeviation (double )</code> -  Set/Get the standard deviation of the gaussian
+ </LI>
+<LI>  <code>double = obj.GetStandardDeviation ()</code> -  Set/Get the standard deviation of the gaussian
+ </LI>
+</UL>
+</BODY>
+</HTML>

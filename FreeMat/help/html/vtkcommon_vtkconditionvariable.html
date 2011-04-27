@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkConditionVariable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkConditionVariable
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkConditionVariable allows the locking of variables which are accessed 
+ through different threads.  This header file also defines 
+ vtkSimpleConditionVariable which is not a subclass of vtkObject.
+<P>
+ The win32 implementation is based on notes provided by
+ Douglas C. Schmidt and Irfan Pyarali,
+ Department of Computer Science,
+ Washington University, St. Louis, Missouri.
+ http://www.cs.wustl.edu/~schmidt/win32-cv-1.html
+<P>
+To create an instance of class vtkConditionVariable, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkConditionVariable
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkConditionVariable has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkConditionVariable class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkConditionVariable = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkConditionVariable = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Signal ()</code> -  Wake one thread waiting for the condition to change.
+ </LI>
+<LI>  <code>obj.Broadcast ()</code> -  Wake all threads waiting for the condition to change.
+ </LI>
+<LI>  <code>int = obj.Wait (vtkMutexLock mutex)</code> -  Wait for the condition to change.
+ Upon entry, the mutex must be locked and the lock held by the calling thread.
+ Upon exit, the mutex will be locked and held by the calling thread.
+ Between entry and exit, the mutex will be unlocked and may be held by other threads.
+ 
+ @param mutex The mutex that should be locked on entry and will be locked on exit (but not in between)
+ @retval Normally, this function returns 0. Should a thread be interrupted by a signal, a non-zero value may be returned.
+ </LI>
+</UL>
+</BODY>
+</HTML>

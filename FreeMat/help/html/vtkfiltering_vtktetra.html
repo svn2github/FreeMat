@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTetra
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTetra
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkTetra is a concrete implementation of vtkCell to represent a 3D
+ tetrahedron. vtkTetra uses the standard isoparametric shape functions
+ for a linear tetrahedron. The tetrahedron is defined by the four points
+ (0-3); where (0,1,2) is the base of the tetrahedron which, using the
+ right hand rule, forms a triangle whose normal points in the direction
+ of the fourth point.
+<P>
+To create an instance of class vtkTetra, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTetra
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTetra has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTetra class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTetra = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTetra = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetCellType ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFaces ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetEdge (int edgeId)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetFace (int faceId)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray connectivity, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)</code> -  Returns the set of points that are on the boundary of the tetrahedron that
+ are closest parametrically to the point specified. This may include faces,
+ edges, or vertices.
+ </LI>
+<LI>  <code>int = obj.GetParametricCenter (double pcoords[3])</code> -  Return the center of the tetrahedron in parametric coordinates.
+ </LI>
+<LI>  <code>double = obj.GetParametricDistance (double pcoords[3])</code> -  Return the distance of the parametric coordinate provided to the
+ cell. If inside the cell, a distance of zero is returned.
+ </LI>
+<LI>  <code>obj.InterpolateFunctions (double pcoords[3], double weights[4])</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.InterpolateDerivs (double pcoords[3], double derivs[12])</code> -  Return the ids of the vertices defining edge/face (`edgeId`/`faceId').
+ Ids are related to the cell, not to the dataset.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -47,15 +47,15 @@ following types:
 The fourth argument is more complicated.  It encodes the arguments of the
 imported function using a special syntax.  In general, the argument list
 is a string consisting of entries of the form:
-
+<P>
 <PRE>
   type[optional bounds check] {optional &amp;}name
 </PRE>
 <P>
-
+<P>
 Here is a list of various scenarios (expressed in 'C'), and the corresponding
 entries, along with snippets of code.
-
+<P>
 \emph{Scalar variable passed by value:}
 Suppose a function is defined in the library as
 <PRE>
@@ -83,7 +83,7 @@ promote the type of scalar variables to the type expected by the <code>C</code>
 function.  For example, if we call a function expecting a <code>float</code>
 with a <code>double</code> or <code>int16</code> argument, then FreeMat will automatically
 apply type promotion rules prior to calling the function.
-
+<P>
 \emph{Scalar variable passed by reference:}
 Suppose a function is defined in the library as
 <PRE>
@@ -98,7 +98,7 @@ the corresponding argument string would be
 <P>
 If the function <code>fooFunction</code> modifies <code>t</code>, then the argument
 passed in FreeMat will also be modified.
-
+<P>
 \emph{Array variable passed by value:}
 In <code>C</code>, it is impossible to distinguish an array being passed from
 a simple pointer being passed.  More often than not, another argument
@@ -130,7 +130,7 @@ we can use the following argument to <code>import</code>:
   'int32 N, float[N*N] t'.
 </PRE>
 <P>
-
+<P>
 \emph{Array variable passed by reference:}
 If the function in <code>C</code> modifies an array, and we wish this to be
 reflected in the FreeMat side, we must pass that argument by reference.
@@ -149,7 +149,7 @@ Note that to avoid problems with memory allocation, external functions
 are not allowed to return pointers.  As a result, as a general operating
 mechanism, the FreeMat code must allocate the proper arrays, and then
 pass them by reference to the external function.
-
+<P>
 \emph{Sending text to the FreeMat console:}
 Starting with FreeMat 4.0, it is possible for external code that is 
 called using the <code>import</code> statement to send text to the FreeMat console.
@@ -179,11 +179,19 @@ how this works:
 <P>
 In this case, once <code>SomeImportedFunction</code> is called from within FreeMat, the
 text <code>"I am going to double that argument"</code> will appear in the FreeMat console.
-
+<P>
 Your <code>freemat_io_handler</code> function is automatically called when your library is
 loaded by FreeMat, which happens with the first <code>import</code> statement that references
 it.
-
+<P>
+Repeating <code>import</code> calls to import the same function name will be ignored, except
+the first call. In order to refresh the function without restarting FreeMat,
+you have to first clear all imported libraries via:
+<PRE>
+   clear 'libs'
+</PRE>
+<P>
+<P>
 <H3>Example</H3>
 Here is a complete example.  We have a <code>C</code> function that adds
 two float vectors of the same length, and stores the result in a third array 
@@ -226,6 +234,5 @@ ans =
 ans = 
  8 8 3 3 
 </PRE>
-<P>
 </BODY>
 </HTML>

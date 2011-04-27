@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLandmarkTransform
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLandmarkTransform
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ A vtkLandmarkTransform is defined by two sets of landmarks, the 
+ transform computed gives the best fit mapping one onto the other, in a 
+ least squares sense. The indices are taken to correspond, so point 1 
+ in the first set will get mapped close to point 1 in the second set, 
+ etc. Call SetSourceLandmarks and SetTargetLandmarks to specify the two
+ sets of landmarks, ensure they have the same number of points.
+<P>
+To create an instance of class vtkLandmarkTransform, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLandmarkTransform
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLandmarkTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLandmarkTransform class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLandmarkTransform = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLandmarkTransform = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSourceLandmarks (vtkPoints points)</code> -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+ </LI>
+<LI>  <code>obj.SetTargetLandmarks (vtkPoints points)</code> -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+ </LI>
+<LI>  <code>vtkPoints = obj.GetSourceLandmarks ()</code> -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+ </LI>
+<LI>  <code>vtkPoints = obj.GetTargetLandmarks ()</code> -  Specify the source and target landmark sets. The two sets must have 
+ the same number of points.  If you add or change points in these objects,
+ you must call Modified() on them or the transformation might not update.
+ </LI>
+<LI>  <code>obj.SetMode (int )</code> -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK_LANDMARK_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+ </LI>
+<LI>  <code>obj.SetModeToRigidBody ()</code> -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK_LANDMARK_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+ </LI>
+<LI>  <code>obj.SetModeToSimilarity ()</code> -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK_LANDMARK_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+ </LI>
+<LI>  <code>obj.SetModeToAffine ()</code> -  Set the number of degrees of freedom to constrain the solution to.
+ Rigidbody (VTK_LANDMARK_RIGIDBODY): rotation and translation only.  
+ Similarity (VTK_LANDMARK_SIMILARITY): rotation, translation and 
+            isotropic scaling.
+ Affine (VTK_LANDMARK_AFFINE): collinearity is preserved. 
+        Ratios of distances along a line are preserved.
+ The default is similarity.
+ </LI>
+<LI>  <code>int = obj.GetMode ()</code> -  Get the current transformation mode.
+ </LI>
+<LI>  <code>string = obj.GetModeAsString ()</code> -  Get the current transformation mode.
+ </LI>
+<LI>  <code>obj.Inverse ()</code> -  Invert the transformation.  This is done by switching the
+ source and target landmarks.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Get the MTime.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.MakeTransform ()</code> -  Make another transform of the same type.
+ </LI>
+</UL>
+</BODY>
+</HTML>

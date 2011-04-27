@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractArraysOverTime
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractArraysOverTime
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkExtractArraysOverTime extracts a selection over time.
+ The output is a multiblock dataset. If selection content type is  
+ vtkSelection::Locations, then each output block corresponds to each probed
+ location. Otherwise, each output block corresponds to an extracted cell/point
+ depending on whether the selection field type is CELL or POINT.
+ Each block is a vtkTable with a column named Time (or TimeData if Time exists
+ in the input).
+ When extracting point data, the input point coordinates are copied
+ to a column named Point Coordinates or Points (if Point Coordinates
+ exists in the input).
+ This algorithm does not produce a TIME_STEPS or TIME_RANGE information
+ because it works across time. 
+ .Section Caveat
+ This algorithm works only with source that produce TIME_STEPS().
+ Continuous time range is not yet supported.
+<P>
+To create an instance of class vtkExtractArraysOverTime, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractArraysOverTime
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractArraysOverTime has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractArraysOverTime class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractArraysOverTime = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractArraysOverTime = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfTimeSteps ()</code> -  Get the number of time steps
+ </LI>
+<LI>  <code>obj.SetSelectionConnection (vtkAlgorithmOutput algOutput)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

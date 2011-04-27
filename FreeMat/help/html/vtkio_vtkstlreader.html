@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSTLReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSTLReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkSTLReader is a source object that reads ASCII or binary stereo 
+ lithography files (.stl files). The FileName must be specified to
+ vtkSTLReader. The object automatically detects whether the file is
+ ASCII or binary.
+<P>
+ .stl files are quite inefficient since they duplicate vertex 
+ definitions. By setting the Merging boolean you can control whether the 
+ point data is merged after reading. Merging is performed by default, 
+ however, merging requires a large amount of temporary storage since a 
+ 3D hash table must be constructed.
+<P>
+To create an instance of class vtkSTLReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSTLReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSTLReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSTLReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSTLReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSTLReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Overload standard modified time function. If locator is modified,
+ then this object is modified as well.
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Specify file name of stereo lithography file.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Specify file name of stereo lithography file.
+ </LI>
+<LI>  <code>obj.SetMerging (int )</code> -  Turn on/off merging of points/triangles.
+ </LI>
+<LI>  <code>int = obj.GetMerging ()</code> -  Turn on/off merging of points/triangles.
+ </LI>
+<LI>  <code>obj.MergingOn ()</code> -  Turn on/off merging of points/triangles.
+ </LI>
+<LI>  <code>obj.MergingOff ()</code> -  Turn on/off merging of points/triangles.
+ </LI>
+<LI>  <code>obj.SetScalarTags (int )</code> -  Turn on/off tagging of solids with scalars.
+ </LI>
+<LI>  <code>int = obj.GetScalarTags ()</code> -  Turn on/off tagging of solids with scalars.
+ </LI>
+<LI>  <code>obj.ScalarTagsOn ()</code> -  Turn on/off tagging of solids with scalars.
+ </LI>
+<LI>  <code>obj.ScalarTagsOff ()</code> -  Turn on/off tagging of solids with scalars.
+ </LI>
+<LI>  <code>obj.SetLocator (vtkIncrementalPointLocator locator)</code> -  Specify a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+ </LI>
+<LI>  <code>vtkIncrementalPointLocator = obj.GetLocator ()</code> -  Specify a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+ </LI>
+<LI>  <code>obj.CreateDefaultLocator ()</code> -  Create default locator. Used to create one when none is specified.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRotationFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRotationFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ The vtkRotationFilter duplicates a data set by rotation about one of the
+ 3 axis of the dataset's reference.
+ Since it converts data sets into unstructured grids, it is not efficient
+ for structured data sets.
+<P>
+ .SECTION Thanks
+ Theophane Foggia of The Swiss National Supercomputing Centre (CSCS)
+ for creating and contributing this filter
+<P>
+To create an instance of class vtkRotationFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRotationFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRotationFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRotationFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRotationFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRotationFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetAxis (int )</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>int = obj.GetAxisMinValue ()</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>int = obj.GetAxisMaxValue ()</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>int = obj.GetAxis ()</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>obj.SetAxisToX ()</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>obj.SetAxisToY ()</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>obj.SetAxisToZ ()</code> -  Set the axis of rotation to use. It is set by default to Z.
+ </LI>
+<LI>  <code>obj.SetAngle (double )</code> -  Set the rotation angle to use.
+ </LI>
+<LI>  <code>double = obj.GetAngle ()</code> -  Set the rotation angle to use.
+ </LI>
+<LI>  <code>obj.SetCenter (double , double , double )</code> -  Set the rotation center coordinates.
+ </LI>
+<LI>  <code>obj.SetCenter (double  a[3])</code> -  Set the rotation center coordinates.
+ </LI>
+<LI>  <code>double = obj. GetCenter ()</code> -  Set the rotation center coordinates.
+ </LI>
+<LI>  <code>obj.SetNumberOfCopies (int )</code> -  Set the number of copies to create. The source will be rotated N times
+ and a new polydata copy of the original created at each angular position
+ All copies will be appended to form a single output
+ </LI>
+<LI>  <code>int = obj.GetNumberOfCopies ()</code> -  Set the number of copies to create. The source will be rotated N times
+ and a new polydata copy of the original created at each angular position
+ All copies will be appended to form a single output
+ </LI>
+<LI>  <code>obj.SetCopyInput (int )</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+ </LI>
+<LI>  <code>int = obj.GetCopyInput ()</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+ </LI>
+<LI>  <code>obj.CopyInputOn ()</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+ </LI>
+<LI>  <code>obj.CopyInputOff ()</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the rotation.
+ </LI>
+</UL>
+</BODY>
+</HTML>

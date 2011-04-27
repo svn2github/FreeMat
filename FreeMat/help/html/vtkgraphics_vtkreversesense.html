@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkReverseSense
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkReverseSense
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ 
+ vtkReverseSense is a filter that reverses the order of polygonal cells
+ and/or reverses the direction of point and cell normals. Two flags are
+ used to control these operations. Cell reversal means reversing the order
+ of indices in the cell connectivity list. Normal reversal means
+ multiplying the normal vector by -1 (both point and cell normals, 
+ if present).
+<P>
+To create an instance of class vtkReverseSense, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkReverseSense
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkReverseSense has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkReverseSense class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkReverseSense = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkReverseSense = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetReverseCells (int )</code> -  Flag controls whether to reverse cell ordering.
+ </LI>
+<LI>  <code>int = obj.GetReverseCells ()</code> -  Flag controls whether to reverse cell ordering.
+ </LI>
+<LI>  <code>obj.ReverseCellsOn ()</code> -  Flag controls whether to reverse cell ordering.
+ </LI>
+<LI>  <code>obj.ReverseCellsOff ()</code> -  Flag controls whether to reverse cell ordering.
+ </LI>
+<LI>  <code>obj.SetReverseNormals (int )</code> -  Flag controls whether to reverse normal orientation.
+ </LI>
+<LI>  <code>int = obj.GetReverseNormals ()</code> -  Flag controls whether to reverse normal orientation.
+ </LI>
+<LI>  <code>obj.ReverseNormalsOn ()</code> -  Flag controls whether to reverse normal orientation.
+ </LI>
+<LI>  <code>obj.ReverseNormalsOff ()</code> -  Flag controls whether to reverse normal orientation.
+ </LI>
+</UL>
+</BODY>
+</HTML>

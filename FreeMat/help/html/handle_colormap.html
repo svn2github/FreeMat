@@ -53,27 +53,25 @@ We start by creating a smoothly varying image of a 2D Gaussian pulse.
 --&gt; Z = exp(-(x.^2+y.^2)/0.3);
 --&gt; image(Z);
 </PRE>
-<P>
 which we display with the default (grayscale) colormap here.
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap1.png">
 </DIV>
 <P>
-
+<P>
 Next we switch to the <code>copper</code> colormap, and redisplay the image.
 <PRE>
 --&gt; colormap(copper);
 --&gt; image(Z);
 </PRE>
-<P>
 which results in the following image.
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap2.png">
 </DIV>
 <P>
-
+<P>
 If we capture the output of the <code>copper</code> command and plot it, we obtain
 the following result:
 <PRE>
@@ -81,12 +79,11 @@ the following result:
 --&gt; plot(a);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap3.png">
 </DIV>
 <P>
-
+<P>
 Note that in the output that each of the color components are linear functions
 of the index, with the ratio between the red, blue and green components remaining
 constant as a function of index.  The result is an intensity map with a copper
@@ -99,24 +96,22 @@ curves, one for each color, centered on different parts of the index space:
 --&gt; plot(A);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap4.png">
 </DIV>
 <P>
-
+<P>
 The resulting image has dark bands in it near the color transitions.
 <PRE>
 --&gt; image(Z);
 --&gt; colormap(A);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap5.png">
 </DIV>
 <P>
-
+<P>
 These dark bands are a result of the nonuniform color intensity, which 
 we can correct for by renormalizing each color to have the same norm.
 <PRE>
@@ -125,18 +120,16 @@ we can correct for by renormalizing each color to have the same norm.
 --&gt; plot(A);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap6.png">
 </DIV>
 <P>
-
+<P>
 The resulting image has no more dark bands.
 <PRE>
 --&gt; image(Z);
 --&gt; colormap(A);
 </PRE>
-<P>
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colormap7.png">

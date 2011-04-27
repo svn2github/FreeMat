@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCameraActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCameraActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkCameraActor is an actor used to represent a camera by its wireframe
+ frustum.
+<P>
+To create an instance of class vtkCameraActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCameraActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCameraActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCameraActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCameraActor = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCameraActor = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCamera (vtkCamera camera)</code> -  The camera to represent. Initial value is NULL.
+ </LI>
+<LI>  <code>vtkCamera = obj.GetCamera ()</code> -  The camera to represent. Initial value is NULL.
+ </LI>
+<LI>  <code>obj.SetWidthByHeightRatio (double )</code> -  Ratio between the width and the height of the frustum. Initial value is
+ 1.0 (square)
+ </LI>
+<LI>  <code>double = obj.GetWidthByHeightRatio ()</code> -  Ratio between the width and the height of the frustum. Initial value is
+ 1.0 (square)
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Does this prop have some translucent polygonal geometry? No.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Get the actors mtime plus consider its properties and texture if set.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetProperty ()</code> -  Get property of the internal actor.
+ </LI>
+<LI>  <code>obj.SetProperty (vtkProperty p)</code> -  Set property of the internal actor.
+ </LI>
+</UL>
+</BODY>
+</HTML>

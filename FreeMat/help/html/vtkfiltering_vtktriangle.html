@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTriangle
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTriangle
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkTriangle is a concrete implementation of vtkCell to represent a triangle
+ located in 3-space.
+<P>
+To create an instance of class vtkTriangle, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTriangle
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTriangle has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTriangle class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTriangle = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTriangle = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkCell = obj.GetEdge (int edgeId)</code> -  Get the edge specified by edgeId (range 0 to 2) and return that edge's
+ coordinates.
+ </LI>
+<LI>  <code>int = obj.GetCellType ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetCellDimension ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFaces ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetFace (int )</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>double = obj.ComputeArea ()</code> -  A convenience function to compute the area of a vtkTriangle.
+ </LI>
+<LI>  <code>obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)</code> -  Clip this triangle using scalar value provided. Like contouring, except
+ that it cuts the triangle to produce other triangles.
+ </LI>
+<LI>  <code>obj.InterpolateFunctions (double pcoords[3], double sf[3])</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.InterpolateDerivs (double pcoords[3], double derivs[6])</code> -  Return the ids of the vertices defining edge (`edgeId`).
+ Ids are related to the cell, not to the dataset.
+ </LI>
+<LI>  <code>int = obj.GetParametricCenter (double pcoords[3])</code> -  Return the center of the triangle in parametric coordinates.
+ </LI>
+<LI>  <code>double = obj.GetParametricDistance (double pcoords[3])</code> -  Return the distance of the parametric coordinate provided to the
+ cell. If inside the cell, a distance of zero is returned.
+ </LI>
+</UL>
+</BODY>
+</HTML>

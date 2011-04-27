@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractDataSets
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractDataSets
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkExtractDataSets accepts a vtkHierarchicalBoxDataSet as input and extracts
+ different datasets from different levels. The output is
+ vtkHierarchicalBoxDataSet with same structure as the input with only the
+ selected datasets passed through. 
+<P>
+To create an instance of class vtkExtractDataSets, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractDataSets
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractDataSets has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractDataSets class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractDataSets = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractDataSets = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.AddDataSet (int level, int idx)</code> -  Add a dataset to be extracted.
+ </LI>
+<LI>  <code>obj.ClearDataSetList ()</code> -  Remove all entries from the list of datasets to be extracted.
+ </LI>
+</UL>
+</BODY>
+</HTML>

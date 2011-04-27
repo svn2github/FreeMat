@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMatrixToLinearTransform
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMatrixToLinearTransform
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ This is a very simple class which allows a vtkMatrix4x4 to be used in
+ place of a vtkLinearTransform or vtkAbstractTransform.  For example,
+ if you use it as a proxy between a matrix and vtkTransformPolyDataFilter
+ then any modifications to the matrix will automatically be reflected in
+ the output of the filter.
+<P>
+To create an instance of class vtkMatrixToLinearTransform, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMatrixToLinearTransform
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMatrixToLinearTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMatrixToLinearTransform class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMatrixToLinearTransform = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMatrixToLinearTransform = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInput (vtkMatrix4x4 )</code> -  Set the input matrix.  Any modifications to the matrix will be
+ reflected in the transformation.
+ </LI>
+<LI>  <code>vtkMatrix4x4 = obj.GetInput ()</code> -  Set the input matrix.  Any modifications to the matrix will be
+ reflected in the transformation.
+ </LI>
+<LI>  <code>obj.Inverse ()</code> -  The input matrix is left as-is, but the transformation matrix
+ is inverted.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Get the MTime: this is the bit of magic that makes everything work.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.MakeTransform ()</code> -  Make a new transform of the same type.
+ </LI>
+<LI>  <code>obj.SetMatrix (vtkMatrix4x4 matrix)</code> -  @deprecated This method is deprecated.
+ </LI>
+</UL>
+</BODY>
+</HTML>

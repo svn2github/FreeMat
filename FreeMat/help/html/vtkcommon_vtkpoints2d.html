@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPoints2D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPoints2D
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkPoints2D represents 2D points. The data model for vtkPoints2D is an
+ array of vx-vy doublets accessible by (point or cell) id.
+<P>
+To create an instance of class vtkPoints2D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPoints2D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPoints2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPoints2D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPoints2D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPoints2D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.Allocate (vtkIdType sz, vtkIdType ext)</code> -  Allocate initial memory size.
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  Return object to instantiated state.
+ </LI>
+<LI>  <code>obj.SetData (vtkDataArray )</code> -  Set/Get the underlying data array. This function must be implemented
+ in a concrete subclass to check for consistency. (The tuple size must
+ match the type of data. For example, 3-tuple data array can be assigned to
+ a vector, normal, or points object, but not a tensor object, which has a
+ tuple dimension of 9. Scalars, on the other hand, can have tuple dimension
+  from 1-4, depending on the type of scalar.)
+ </LI>
+<LI>  <code>vtkDataArray = obj.GetData ()</code> -  Return the underlying data type. An integer indicating data type is
+ returned as specified in vtkSetGet.h.
+ </LI>
+<LI>  <code>int = obj.GetDataType ()</code> -  Return the underlying data type. An integer indicating data type is
+ returned as specified in vtkSetGet.h.
+ </LI>
+<LI>  <code>obj.SetDataType (int dataType)</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToBit ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToChar ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToUnsignedChar ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToShort ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToUnsignedShort ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToInt ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToUnsignedInt ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToLong ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToUnsignedLong ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToFloat ()</code> -  Specify the underlying data type of the object.
+ </LI>
+<LI>  <code>obj.SetDataTypeToDouble ()</code> -  Return a void pointer. For image pipeline interface and other
+ special pointer manipulation.
+ </LI>
+<LI>  <code>obj.Squeeze ()</code> -  Reclaim any extra memory.
+ </LI>
+<LI>  <code>obj.Reset ()</code> -  Make object look empty but do not delete memory.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkPoints2D ad)</code> -  Different ways to copy data. Shallow copy does reference count (i.e.,
+ assigns pointers and updates reference count); deep copy runs through
+ entire data array assigning values.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkPoints2D ad)</code> -  Different ways to copy data. Shallow copy does reference count (i.e.,
+ assigns pointers and updates reference count); deep copy runs through
+ entire data array assigning values.
+ </LI>
+<LI>  <code>long = obj.GetActualMemorySize ()</code> -  Return the memory in kilobytes consumed by this attribute data.
+ Used to support streaming and reading/writing data. The value
+ returned is guaranteed to be greater than or equal to the
+ memory required to actually represent the data represented
+ by this object. The information returned is valid only after
+ the pipeline has been updated.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPoints ()</code> -  Return a pointer to a double point x[2] for a specific id.
+ WARNING: Just don't use this error-prone method, the returned pointer
+ and its values are only valid as long as another method invocation is not
+ performed. Prefer GetPoint() with the return value in argument.
+ </LI>
+<LI>  <code>obj.GetPoint (vtkIdType id, double x[2])</code> -  Insert point into object. No range checking performed (fast!).
+ Make sure you use SetNumberOfPoints() to allocate memory prior
+ to using SetPoint().
+ </LI>
+<LI>  <code>obj.SetPoint (vtkIdType id, float x[2])</code> -  Insert point into object. No range checking performed (fast!).
+ Make sure you use SetNumberOfPoints() to allocate memory prior
+ to using SetPoint().
+ </LI>
+<LI>  <code>obj.SetPoint (vtkIdType id, double x[2])</code> -  Insert point into object. No range checking performed (fast!).
+ Make sure you use SetNumberOfPoints() to allocate memory prior
+ to using SetPoint().
+ </LI>
+<LI>  <code>obj.SetPoint (vtkIdType id, double x, double y)</code> -  Insert point into object. No range checking performed (fast!).
+ Make sure you use SetNumberOfPoints() to allocate memory prior
+ to using SetPoint().
+ </LI>
+<LI>  <code>obj.InsertPoint (vtkIdType id, float x[2])</code> -  Insert point into object. Range checking performed and memory
+ allocated as necessary.
+ </LI>
+<LI>  <code>obj.InsertPoint (vtkIdType id, double x[2])</code> -  Insert point into object. Range checking performed and memory
+ allocated as necessary.
+ </LI>
+<LI>  <code>obj.InsertPoint (vtkIdType id, double x, double y)</code> -  Insert point into object. Range checking performed and memory
+ allocated as necessary.
+ </LI>
+<LI>  <code>vtkIdType = obj.InsertNextPoint (float x[2])</code> -  Insert point into next available slot. Returns id of slot.
+ </LI>
+<LI>  <code>vtkIdType = obj.InsertNextPoint (double x[2])</code> -  Insert point into next available slot. Returns id of slot.
+ </LI>
+<LI>  <code>vtkIdType = obj.InsertNextPoint (double x, double y)</code> -  Insert point into next available slot. Returns id of slot.
+ </LI>
+<LI>  <code>obj.SetNumberOfPoints (vtkIdType number)</code> -  Specify the number of points for this object to hold. Does an
+ allocation as well as setting the MaxId ivar. Used in conjunction with
+ SetPoint() method for fast insertion.
+ </LI>
+<LI>  <code>obj.GetPoints (vtkIdList ptId, vtkPoints2D fp)</code> -  Given a list of pt ids, return an array of points.
+ </LI>
+<LI>  <code>obj.ComputeBounds ()</code> -  Determine (xmin,xmax, ymin,ymax) bounds of points.
+ </LI>
+<LI>  <code>obj.GetBounds (double bounds[4])</code> -  Return the bounds of the points.
+ </LI>
+</UL>
+</BODY>
+</HTML>

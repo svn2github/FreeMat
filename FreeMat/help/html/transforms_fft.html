@@ -26,12 +26,12 @@ then <code>x</code> is zero-padded (by appending zeros) prior to calculation
 of the DFT.  If <code>n</code> is smaller than the length of <code>x</code>  along
 the given dimension, then <code>x</code> is truncated (by removing elements
 at the end) to length <code>n</code>.  
-
+<P>
 If <code>d</code> is omitted, then the DFT is taken along the first 
 non-singleton dimension of <code>x</code>.  If <code>n</code> is omitted, then
 the DFT length is chosen to match of the length of <code>x</code> along
 dimension <code>d</code>.  
-
+<P>
 Note that FFT support on Linux builds requires availability
 of the FFTW libraries at compile time.  On Windows and Mac OS
 X, single and double precision FFTs are available by default.
@@ -42,7 +42,7 @@ The output is computed via
 <IMG SRC="fft_eqn1.png">
 </DIV>
 <P>
-
+<P>
 For the inverse DFT, the calculation is similar, and the arguments
 have the same meanings as the DFT:
 <P>
@@ -76,14 +76,13 @@ The following piece of code plots the FFT for a sinusoidal signal:
 --&gt; y = fft(x);
 --&gt; plot(t,abs(y));
 </PRE>
-<P>
 The resulting plot is:
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="fft1.png">
 </DIV>
 <P>
-
+<P>
 The FFT can also be taken along different dimensions, and with padding 
 and/or truncation.  The following example demonstrates the Fourier
 Transform being computed along each column, and then along each row.
@@ -106,7 +105,6 @@ ans =
   7 -3 
   9 -3 
 </PRE>
-<P>
 Fourier transforms can also be padded using the <code>n</code> argument.  This
 pads the signal with zeros prior to taking the Fourier transform.  Zero
 padding in the time domain results in frequency interpolation.  The
@@ -118,7 +116,6 @@ with (red line) and without (green circles) padding.
 --&gt; hold on
 --&gt; plot((0:9)/10*pi*2,real(fft(delta)),'go');
 </PRE>
-<P>
 The resulting plot is:
 <P>
 <DIV ALIGN="CENTER">

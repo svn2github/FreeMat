@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkParallelCoordinatesView
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkParallelCoordinatesView
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+<P>
+ This class manages interaction with the vtkParallelCoordinatesRepresentation.  There are 
+ two inspection modes: axis manipulation and line selection.  In axis manipulation mode,
+ PC axes can be dragged and reordered with the LMB, axis ranges can be increased/decreased
+ by dragging up/down with the LMB, and RMB controls zoom and pan.  
+ 
+ In line selection mode, there are three subclasses of selections: lasso, angle, and 
+ function selection.  Lasso selection lets the user brush a line and select all PC lines 
+ that pass nearby.  Angle selection lets the user draw a representative line between axes 
+ and select all lines that have similar orientation.  Function selection lets the user 
+ draw two  representative lines between a pair of axes and select all lines that match
+ the linear interpolation of those lines.  
+<P>
+ There are several self-explanatory operators for combining selections: ADD, SUBTRACT
+ REPLACE, and INTERSECT.  
+<P>
+To create an instance of class vtkParallelCoordinatesView, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkParallelCoordinatesView
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkParallelCoordinatesView has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkParallelCoordinatesView class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkParallelCoordinatesView = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkParallelCoordinatesView = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetBrushMode (int )</code>
+ </LI>
+<LI>  <code>obj.SetBrushModeToLasso ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushModeToAngle ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushModeToFunction ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushModeToAxisThreshold ()</code>
+ </LI>
+<LI>  <code>int = obj.GetBrushMode ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushOperator (int )</code>
+ </LI>
+<LI>  <code>obj.SetBrushOperatorToAdd ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushOperatorToSubtract ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushOperatorToIntersect ()</code>
+ </LI>
+<LI>  <code>obj.SetBrushOperatorToReplace ()</code>
+ </LI>
+<LI>  <code>int = obj.GetBrushOperator ()</code>
+ </LI>
+<LI>  <code>obj.SetInspectMode (int )</code>
+ </LI>
+<LI>  <code>obj.SetInspectModeToManipulateAxes ()</code>
+ </LI>
+<LI>  <code>obj.SetInpsectModeToSelectData ()</code>
+ </LI>
+<LI>  <code>int = obj.GetInspectMode ()</code>
+ </LI>
+<LI>  <code>obj.SetMaximumNumberOfBrushPoints (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetMaximumNumberOfBrushPoints ()</code>
+ </LI>
+<LI>  <code>obj.SetCurrentBrushClass (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetCurrentBrushClass ()</code>
+ </LI>
+<LI>  <code>obj.ApplyViewTheme (vtkViewTheme theme)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

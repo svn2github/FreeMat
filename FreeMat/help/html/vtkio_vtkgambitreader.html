@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGAMBITReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGAMBITReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkGAMBITReader creates an unstructured grid dataset. It reads ASCII files
+ stored in GAMBIT neutral format, with optional data stored at the nodes or
+ at the cells of the model. A cell-based fielddata stores the material id.
+<P>
+To create an instance of class vtkGAMBITReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGAMBITReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGAMBITReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGAMBITReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGAMBITReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGAMBITReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Specify the file name of the GAMBIT data file to read.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Specify the file name of the GAMBIT data file to read.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfCells ()</code> -  Get the total number of cells. The number of cells is only valid after a
+ successful read of the data file is performed.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfNodes ()</code> -  Get the total number of nodes. The number of nodes is only valid after a
+ successful read of the data file is performed.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfNodeFields ()</code> -  Get the number of data components at the nodes and cells.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfCellFields ()</code> -  Get the number of data components at the nodes and cells.
+ </LI>
+</UL>
+</BODY>
+</HTML>

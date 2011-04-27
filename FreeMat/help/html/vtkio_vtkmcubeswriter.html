@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMCubesWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMCubesWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkMCubesWriter is a polydata writer that writes binary marching cubes
+ files. (Marching cubes is an isosurfacing technique that generates many
+ triangles.) The binary format is supported by W. Lorensen's marching cubes
+ program (and the vtkSliceCubes object). Each triangle is represented by
+ three records, with each record consisting of six single precision
+ floating point numbers representing the a triangle vertex coordinate and
+ vertex normal.
+<P>
+To create an instance of class vtkMCubesWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMCubesWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMCubesWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMCubesWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMCubesWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMCubesWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLimitsFileName (string )</code> -  Set/get file name of marching cubes limits file.
+ </LI>
+<LI>  <code>string = obj.GetLimitsFileName ()</code> -  Set/get file name of marching cubes limits file.
+ </LI>
+</UL>
+</BODY>
+</HTML>

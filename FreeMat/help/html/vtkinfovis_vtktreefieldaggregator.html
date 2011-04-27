@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTreeFieldAggregator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTreeFieldAggregator
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkTreeFieldAggregator may be used to assign sizes to all the vertices in the
+ tree, based on the sizes of the leaves.  The size of a vertex will equal
+ the sum of the sizes of the child vertices.  If you have a data array with
+ values for all leaves, you may specify that array, and the values will
+ be filled in for interior tree vertices.  If you do not yet have an array,
+ you may tell the filter to create a new array, assuming that the size
+ of each leaf vertex is 1.  You may optionally set a flag to first take the
+ log of all leaf values before aggregating.
+<P>
+To create an instance of class vtkTreeFieldAggregator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTreeFieldAggregator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTreeFieldAggregator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTreeFieldAggregator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTreeFieldAggregator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTreeFieldAggregator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>string = obj.GetField ()</code> -  The field to aggregate.  If this is a string array, the entries are converted to double.
+ TODO: Remove this field and use the ArrayToProcess in vtkAlgorithm.
+ </LI>
+<LI>  <code>obj.SetField (string )</code> -  The field to aggregate.  If this is a string array, the entries are converted to double.
+ TODO: Remove this field and use the ArrayToProcess in vtkAlgorithm.
+ </LI>
+<LI>  <code>double = obj.GetMinValue ()</code> -  If the value of the vertex is less than MinValue then consider it's value to be minVal.
+ </LI>
+<LI>  <code>obj.SetMinValue (double )</code> -  If the value of the vertex is less than MinValue then consider it's value to be minVal.
+ </LI>
+<LI>  <code>obj.SetLeafVertexUnitSize (bool )</code> -  If set, the algorithm will assume a size of 1 for each leaf vertex.
+ </LI>
+<LI>  <code>bool = obj.GetLeafVertexUnitSize ()</code> -  If set, the algorithm will assume a size of 1 for each leaf vertex.
+ </LI>
+<LI>  <code>obj.LeafVertexUnitSizeOn ()</code> -  If set, the algorithm will assume a size of 1 for each leaf vertex.
+ </LI>
+<LI>  <code>obj.LeafVertexUnitSizeOff ()</code> -  If set, the algorithm will assume a size of 1 for each leaf vertex.
+ </LI>
+<LI>  <code>obj.SetLogScale (bool )</code> -  If set, the leaf values in the tree will be logarithmically scaled (base 10).
+ </LI>
+<LI>  <code>bool = obj.GetLogScale ()</code> -  If set, the leaf values in the tree will be logarithmically scaled (base 10).
+ </LI>
+<LI>  <code>obj.LogScaleOn ()</code> -  If set, the leaf values in the tree will be logarithmically scaled (base 10).
+ </LI>
+<LI>  <code>obj.LogScaleOff ()</code> -  If set, the leaf values in the tree will be logarithmically scaled (base 10).
+ </LI>
+</UL>
+</BODY>
+</HTML>

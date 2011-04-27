@@ -20,16 +20,13 @@ operators, all of which have the same general syntax:
 where <code>A</code> and <code>B</code> are arrays of numerical type.  The result <code>Y</code> depends
 on which of the following three situations applies to the arguments
 <code>A</code> and <code>B</code>:
-<OL>
-<LI>  <code>A</code> is a scalar, <code>B</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is the scalar <code>A</code> divided into each element of <code>B</code>.
- </LI>
-<LI>  <code>B</code> is a scalar, <code>A</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is each element of <code>A</code> divided by the scalar <code>B</code>.
- </LI>
-<LI>  <code>A,B</code> are matrices with the same number of columns, i.e., <code>A</code> is of size <code>K x M</code>, and <code>B</code> is of size <code>L x M</code>, in which case the output is of size <code>K x L</code>.
- </LI>
-</OL>
+\begin{enumerate}
+  \item <code>A</code> is a scalar, <code>B</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is the scalar <code>A</code> divided into each element of <code>B</code>.
+  \item <code>B</code> is a scalar, <code>A</code> is an arbitrary <code>n</code>-dimensional numerical array, in which case the output is each element of <code>A</code> divided by the scalar <code>B</code>.
+  \item <code>A,B</code> are matrices with the same number of columns, i.e., <code>A</code> is of size <code>K x M</code>, and <code>B</code> is of size <code>L x M</code>, in which case the output is of size <code>K x L</code>.
+\end{enumerate}
 The output follows the standard type promotion rules, although in the first two cases, if <code>A</code> and <code>B</code> are integers, the output is an integer also, while in the third case if <code>A</code> and <code>B</code> are integers, the output is of type <code>double</code>.
-
+<P>
 <H3>Function Internals</H3>
 There are three formulae for the times operator.  For the first form
 <P>
@@ -64,6 +61,5 @@ A =
 ans = 
  4 1 
 </PRE>
-<P>
 </BODY>
 </HTML>

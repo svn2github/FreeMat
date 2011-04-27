@@ -2,21 +2,28 @@
 
 <HTML>
 <HEAD>
-<TITLE>VERTCAT Horizontal Array Concatenation
+<TITLE>VERTCAT Overloaded Vertical Concatenation
 </TITLE>
 </HEAD>
 <BODY>
-<H2>VERTCAT Horizontal Array Concatenation
+<H2>VERTCAT Overloaded Vertical Concatenation
 </H2>
 <P>
 Section: <A HREF=sec_class.html> Object Oriented Programming </A>
 <H3>Usage</H3>
-This function concatenates arrays vertically (along the row
-dimension).  The syntax for its use is
+This is a method for a class that is invoked to concatenate two or more
+variables of the same class type together.  Besides being called when
+you invoke
 <PRE>
-   d = vertcat(a,b,c)
+   c = vertcat(a,b,c)
 </PRE>
 <P>
-which is equivalent to the statement <code>d = [a;b;c]</code>.
+when <code>a</code> is a class, it is also called for
+<PRE>
+   c = [a;b;c]
+</PRE>
+<P>
+when one of the variables is a class.  The exact meaning of 
+vertical concatenation depends on the class you have designed.
 </BODY>
 </HTML>

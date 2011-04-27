@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImplicitDataSet
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImplicitDataSet
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkImplicitDataSet treats any type of dataset as if it were an
+ implicit function. This means it computes a function value and 
+ gradient. vtkImplicitDataSet is a concrete implementation of 
+ vtkImplicitFunction.
+<P>
+ vtkImplicitDataSet computes the function (at the point x) by performing 
+ cell interpolation. That is, it finds the cell containing x, and then
+ uses the cell's interpolation functions to compute an interpolated
+ scalar value at x. (A similar approach is used to find the
+ gradient, if requested.) Points outside of the dataset are assigned 
+ the value of the ivar OutValue, and the gradient value OutGradient.
+<P>
+To create an instance of class vtkImplicitDataSet, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImplicitDataSet
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImplicitDataSet has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImplicitDataSet class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImplicitDataSet = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImplicitDataSet = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return the MTime also considering the DataSet dependency.
+ </LI>
+<LI>  <code>double = obj.EvaluateFunction (double x[3])</code>
+ </LI>
+<LI>  <code>double = obj.EvaluateFunction (double x, double y, double z)</code>
+ </LI>
+<LI>  <code>obj.EvaluateGradient (double x[3], double n[3])</code>
+ </LI>
+<LI>  <code>obj.SetDataSet (vtkDataSet )</code> -  Set / get the dataset used for the implicit function evaluation.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetDataSet ()</code> -  Set / get the dataset used for the implicit function evaluation.
+ </LI>
+<LI>  <code>obj.SetOutValue (double )</code> -  Set / get the function value to use for points outside of the dataset.
+ </LI>
+<LI>  <code>double = obj.GetOutValue ()</code> -  Set / get the function value to use for points outside of the dataset.
+ </LI>
+<LI>  <code>obj.SetOutGradient (double , double , double )</code> -  Set / get the function gradient to use for points outside of the dataset.
+ </LI>
+<LI>  <code>obj.SetOutGradient (double  a[3])</code> -  Set / get the function gradient to use for points outside of the dataset.
+ </LI>
+<LI>  <code>double = obj. GetOutGradient ()</code> -  Set / get the function gradient to use for points outside of the dataset.
+ </LI>
+</UL>
+</BODY>
+</HTML>

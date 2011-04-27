@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageShrink3D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageShrink3D
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageShrink3D shrinks an image by sub sampling on a 
+ uniform grid (integer multiples).  
+<P>
+To create an instance of class vtkImageShrink3D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageShrink3D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageShrink3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageShrink3D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageShrink3D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageShrink3D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetShrinkFactors (int , int , int )</code> -  Set/Get the shrink factors
+ </LI>
+<LI>  <code>obj.SetShrinkFactors (int  a[3])</code> -  Set/Get the shrink factors
+ </LI>
+<LI>  <code>int = obj. GetShrinkFactors ()</code> -  Set/Get the shrink factors
+ </LI>
+<LI>  <code>obj.SetShift (int , int , int )</code> -  Set/Get the pixel to use as origin.
+ </LI>
+<LI>  <code>obj.SetShift (int  a[3])</code> -  Set/Get the pixel to use as origin.
+ </LI>
+<LI>  <code>int = obj. GetShift ()</code> -  Set/Get the pixel to use as origin.
+ </LI>
+<LI>  <code>obj.SetAveraging (int )</code> -  Choose Mean, Minimum, Maximum, Median or sub sampling.
+ The neighborhood operations are not centered on the sampled pixel.
+ This may cause a half pixel shift in your output image.
+ You can changed "Shift" to get around this.
+ vtkImageGaussianSmooth or vtkImageMean with strides.
+ </LI>
+<LI>  <code>int = obj.GetAveraging ()</code> -  Choose Mean, Minimum, Maximum, Median or sub sampling.
+ The neighborhood operations are not centered on the sampled pixel.
+ This may cause a half pixel shift in your output image.
+ You can changed "Shift" to get around this.
+ vtkImageGaussianSmooth or vtkImageMean with strides.
+ </LI>
+<LI>  <code>obj.AveragingOn ()</code> -  Choose Mean, Minimum, Maximum, Median or sub sampling.
+ The neighborhood operations are not centered on the sampled pixel.
+ This may cause a half pixel shift in your output image.
+ You can changed "Shift" to get around this.
+ vtkImageGaussianSmooth or vtkImageMean with strides.
+ </LI>
+<LI>  <code>obj.AveragingOff ()</code> -  Choose Mean, Minimum, Maximum, Median or sub sampling.
+ The neighborhood operations are not centered on the sampled pixel.
+ This may cause a half pixel shift in your output image.
+ You can changed "Shift" to get around this.
+ vtkImageGaussianSmooth or vtkImageMean with strides.
+ </LI>
+<LI>  <code>obj.SetMean (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetMean ()</code>
+ </LI>
+<LI>  <code>obj.MeanOn ()</code>
+ </LI>
+<LI>  <code>obj.MeanOff ()</code>
+ </LI>
+<LI>  <code>obj.SetMinimum (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetMinimum ()</code>
+ </LI>
+<LI>  <code>obj.MinimumOn ()</code>
+ </LI>
+<LI>  <code>obj.MinimumOff ()</code>
+ </LI>
+<LI>  <code>obj.SetMaximum (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetMaximum ()</code>
+ </LI>
+<LI>  <code>obj.MaximumOn ()</code>
+ </LI>
+<LI>  <code>obj.MaximumOff ()</code>
+ </LI>
+<LI>  <code>obj.SetMedian (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetMedian ()</code>
+ </LI>
+<LI>  <code>obj.MedianOn ()</code>
+ </LI>
+<LI>  <code>obj.MedianOff ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

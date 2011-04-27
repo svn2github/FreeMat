@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVertex
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVertex
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkVertex is a concrete implementation of vtkCell to represent a 3D point.
+<P>
+To create an instance of class vtkVertex, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVertex
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVertex has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVertex class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVertex = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVertex = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetCellType ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetCellDimension ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFaces ()</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetEdge (int )</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetFace (int )</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray pts, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)</code> -  See the vtkCell API for descriptions of these methods.
+ </LI>
+<LI>  <code>int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)</code> -  Given parametric coordinates of a point, return the closest cell
+ boundary, and whether the point is inside or outside of the cell. The
+ cell boundary is defined by a list of points (pts) that specify a vertex
+ (1D cell).  If the return value of the method is != 0, then the point is
+ inside the cell.
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts1, vtkCellArray lines, vtkCellArray verts2, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code> -  Generate contouring primitives. The scalar list cellScalars are
+ scalar values at each cell point. The point locator is essentially a
+ points list that merges points as they are inserted (i.e., prevents
+ duplicates).
+ </LI>
+<LI>  <code>int = obj.GetParametricCenter (double pcoords[3])</code> -  Return the center of the triangle in parametric coordinates.
+ </LI>
+<LI>  <code>int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)</code> -  Triangulate the vertex. This method fills pts and ptIds with information
+ from the only point in the vertex.
+ </LI>
+<LI>  <code>obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)</code> -  Get the derivative of the vertex. Returns (0.0, 0.0, 0.0) for all
+ dimensions.
+ </LI>
+<LI>  <code>obj.InterpolateFunctions (double pcoords[3], double weights[1])</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.InterpolateDerivs (double pcoords[3], double derivs[3])</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

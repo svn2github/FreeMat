@@ -23,10 +23,10 @@ output <code>y</code> is the same size as the inputs, and is the element-wise
 difference of <code>a</code> and <code>b</code>.  In the second case, either <code>a</code> or <code>b</code> is a scalar, 
 in which case <code>y</code> is the same size as the larger argument,
 and is the difference of the scalar to each element of the other argument.
-
+<P>
 The rules for manipulating types has changed in FreeMat 4.0.  See <code>typerules</code>
 for more details.
-
+<P>
 <H3>Function Internals</H3>
 There are three formulae for the subtraction operator, depending on the
 sizes of the three arguments.  In the most general case, in which 
@@ -58,7 +58,6 @@ is straightforward:
 ans = 
  -5 
 </PRE>
-<P>
 Next, we subtract a vector of values from a scalar:
 <PRE>
 --&gt; 3.1 - [2,4,5,6,7]
@@ -66,7 +65,6 @@ Next, we subtract a vector of values from a scalar:
 ans = 
     1.1000   -0.9000   -1.9000   -2.9000   -3.9000 
 </PRE>
-<P>
 With complex values
 <PRE>
 --&gt; a = 3 - 4*i
@@ -79,7 +77,6 @@ a =
 b = 
    1.0000 -  4.0000i 
 </PRE>
-<P>
 Finally, the element-wise version:
 <PRE>
 --&gt; a = [1,2;3,4]
@@ -100,6 +97,5 @@ c =
  -1 -1 
  -3 -3 
 </PRE>
-<P>
 </BODY>
 </HTML>

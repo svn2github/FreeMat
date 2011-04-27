@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCornerAnnotation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCornerAnnotation
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ This is an annotation object that manages four text actors / mappers
+ to provide annotation in the four corners of a viewport
+<P>
+<P>
+To create an instance of class vtkCornerAnnotation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCornerAnnotation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCornerAnnotation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCornerAnnotation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCornerAnnotation = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCornerAnnotation = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Draw the scalar bar and annotation text to the screen.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )</code> -  Draw the scalar bar and annotation text to the screen.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport viewport)</code> -  Draw the scalar bar and annotation text to the screen.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Does this prop have some translucent polygonal geometry?
+ </LI>
+<LI>  <code>obj.SetMaximumLineHeight (double )</code> -  Set/Get the maximum height of a line of text as a 
+ percentage of the vertical area allocated to this
+ scaled text actor. Defaults to 1.0
+ </LI>
+<LI>  <code>double = obj.GetMaximumLineHeight ()</code> -  Set/Get the maximum height of a line of text as a 
+ percentage of the vertical area allocated to this
+ scaled text actor. Defaults to 1.0
+ </LI>
+<LI>  <code>obj.SetMinimumFontSize (int )</code> -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+ </LI>
+<LI>  <code>int = obj.GetMinimumFontSize ()</code> -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+ </LI>
+<LI>  <code>obj.SetMaximumFontSize (int )</code> -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+ </LI>
+<LI>  <code>int = obj.GetMaximumFontSize ()</code> -  Set/Get the minimum/maximum size font that will be shown.
+ If the font drops below the minimum size it will not be rendered.
+ </LI>
+<LI>  <code>obj.SetLinearFontScaleFactor (double )</code> -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+ </LI>
+<LI>  <code>double = obj.GetLinearFontScaleFactor ()</code> -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+ </LI>
+<LI>  <code>obj.SetNonlinearFontScaleFactor (double )</code> -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+ </LI>
+<LI>  <code>double = obj.GetNonlinearFontScaleFactor ()</code> -  Set/Get font scaling factors
+ The font size, f, is calculated as the largest possible value
+ such that the annotations for the given viewport do not overlap. 
+ This font size is scaled non-linearly with the viewport size,
+ to maintain an acceptable readable size at larger viewport sizes, 
+ without being too big.
+ f' = linearScale * pow(f,nonlinearScale)
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>obj.SetText (int i, string text)</code> -  Set/Get the text to be displayed for each corner
+ </LI>
+<LI>  <code>string = obj.GetText (int i)</code> -  Set/Get the text to be displayed for each corner
+ </LI>
+<LI>  <code>obj.ClearAllTexts ()</code> -  Set/Get the text to be displayed for each corner
+ </LI>
+<LI>  <code>obj.CopyAllTextsFrom (vtkCornerAnnotation ca)</code> -  Set/Get the text to be displayed for each corner
+ </LI>
+<LI>  <code>obj.SetImageActor (vtkImageActor )</code> -  Set an image actor to look at for slice information
+ </LI>
+<LI>  <code>vtkImageActor = obj.GetImageActor ()</code> -  Set an image actor to look at for slice information
+ </LI>
+<LI>  <code>obj.SetWindowLevel (vtkImageMapToWindowLevelColors )</code> -  Set an instance of vtkImageMapToWindowLevelColors to use for
+ looking at window level changes
+ </LI>
+<LI>  <code>vtkImageMapToWindowLevelColors = obj.GetWindowLevel ()</code> -  Set an instance of vtkImageMapToWindowLevelColors to use for
+ looking at window level changes
+ </LI>
+<LI>  <code>obj.SetLevelShift (double )</code> -  Set the value to shift the level by.
+ </LI>
+<LI>  <code>double = obj.GetLevelShift ()</code> -  Set the value to shift the level by.
+ </LI>
+<LI>  <code>obj.SetLevelScale (double )</code> -  Set the value to scale the level by.
+ </LI>
+<LI>  <code>double = obj.GetLevelScale ()</code> -  Set the value to scale the level by.
+ </LI>
+<LI>  <code>obj.SetTextProperty (vtkTextProperty p)</code> -  Set/Get the text property of all corners.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetTextProperty ()</code> -  Set/Get the text property of all corners.
+ </LI>
+<LI>  <code>obj.ShowSliceAndImageOn ()</code> -  Even if there is an image actor, should `slice' and `image' be displayed?
+ </LI>
+<LI>  <code>obj.ShowSliceAndImageOff ()</code> -  Even if there is an image actor, should `slice' and `image' be displayed?
+ </LI>
+<LI>  <code>obj.SetShowSliceAndImage (int )</code> -  Even if there is an image actor, should `slice' and `image' be displayed?
+ </LI>
+<LI>  <code>int = obj.GetShowSliceAndImage ()</code> -  Even if there is an image actor, should `slice' and `image' be displayed?
+ </LI>
+</UL>
+</BODY>
+</HTML>

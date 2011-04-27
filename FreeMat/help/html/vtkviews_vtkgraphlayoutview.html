@@ -1,0 +1,488 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGraphLayoutView
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGraphLayoutView
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+ vtkGraphLayoutView performs graph layout and displays a vtkGraph.
+ You may color and label the vertices and edges using fields in the graph.
+ If coordinates are already assigned to the graph vertices in your graph,
+ set the layout strategy to PassThrough in this view. The default layout
+ is Fast2D which is fast but not that good, for better layout set the
+ layout to Simple2D or ForceDirected. There are also tree and circle
+ layout strategies. :)
+ 
+ .SEE ALSO
+ vtkFast2DLayoutStrategy
+ vtkSimple2DLayoutStrategy
+ vtkForceDirectedLayoutStrategy
+<P>
+ .SECTION Thanks
+ Thanks a bunch to the holographic unfolding pattern.
+<P>
+To create an instance of class vtkGraphLayoutView, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGraphLayoutView
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGraphLayoutView has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGraphLayoutView class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGraphLayoutView = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGraphLayoutView = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetVertexLabelArrayName (string name)</code> -  The array to use for vertex labeling.  Default is "label".
+ </LI>
+<LI>  <code>string = obj.GetVertexLabelArrayName ()</code> -  The array to use for vertex labeling.  Default is "label".
+ </LI>
+<LI>  <code>obj.SetEdgeLabelArrayName (string name)</code> -  The array to use for edge labeling.  Default is "label".
+ </LI>
+<LI>  <code>string = obj.GetEdgeLabelArrayName ()</code> -  The array to use for edge labeling.  Default is "label".
+ </LI>
+<LI>  <code>obj.SetVertexLabelVisibility (bool vis)</code> -  Whether to show vertex labels.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetVertexLabelVisibility ()</code> -  Whether to show vertex labels.  Default is off.
+ </LI>
+<LI>  <code>obj.VertexLabelVisibilityOn ()</code> -  Whether to show vertex labels.  Default is off.
+ </LI>
+<LI>  <code>obj.VertexLabelVisibilityOff ()</code> -  Whether to show vertex labels.  Default is off.
+ </LI>
+<LI>  <code>obj.SetHideVertexLabelsOnInteraction (bool vis)</code> -  Whether to hide vertex labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetHideVertexLabelsOnInteraction ()</code> -  Whether to hide vertex labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>obj.HideVertexLabelsOnInteractionOn ()</code> -  Whether to hide vertex labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>obj.HideVertexLabelsOnInteractionOff ()</code> -  Whether to hide vertex labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>obj.SetEdgeVisibility (bool vis)</code> -  Whether to show the edges at all. Default is on
+ </LI>
+<LI>  <code>bool = obj.GetEdgeVisibility ()</code> -  Whether to show the edges at all. Default is on
+ </LI>
+<LI>  <code>obj.EdgeVisibilityOn ()</code> -  Whether to show the edges at all. Default is on
+ </LI>
+<LI>  <code>obj.EdgeVisibilityOff ()</code> -  Whether to show the edges at all. Default is on
+ </LI>
+<LI>  <code>obj.SetEdgeLabelVisibility (bool vis)</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetEdgeLabelVisibility ()</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>obj.EdgeLabelVisibilityOn ()</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>obj.EdgeLabelVisibilityOff ()</code> -  Whether to show edge labels.  Default is off.
+ </LI>
+<LI>  <code>obj.SetHideEdgeLabelsOnInteraction (bool vis)</code> -  Whether to hide edge labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetHideEdgeLabelsOnInteraction ()</code> -  Whether to hide edge labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>obj.HideEdgeLabelsOnInteractionOn ()</code> -  Whether to hide edge labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>obj.HideEdgeLabelsOnInteractionOff ()</code> -  Whether to hide edge labels during mouse interactions.  Default is off.
+ </LI>
+<LI>  <code>obj.SetVertexColorArrayName (string name)</code> -  The array to use for coloring vertices.  Default is "color".
+ </LI>
+<LI>  <code>string = obj.GetVertexColorArrayName ()</code> -  The array to use for coloring vertices.  Default is "color".
+ </LI>
+<LI>  <code>obj.SetColorVertices (bool vis)</code> -  Whether to color vertices.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetColorVertices ()</code> -  Whether to color vertices.  Default is off.
+ </LI>
+<LI>  <code>obj.ColorVerticesOn ()</code> -  Whether to color vertices.  Default is off.
+ </LI>
+<LI>  <code>obj.ColorVerticesOff ()</code> -  Whether to color vertices.  Default is off.
+ </LI>
+<LI>  <code>obj.SetEdgeColorArrayName (string name)</code> -  The array to use for coloring edges.  Default is "color".
+ </LI>
+<LI>  <code>string = obj.GetEdgeColorArrayName ()</code> -  The array to use for coloring edges.  Default is "color".
+ </LI>
+<LI>  <code>obj.SetColorEdges (bool vis)</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetColorEdges ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.ColorEdgesOn ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.ColorEdgesOff ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.SetEnabledEdgesArrayName (string name)</code> -  The array to use for coloring edges.
+ </LI>
+<LI>  <code>string = obj.GetEnabledEdgesArrayName ()</code> -  The array to use for coloring edges.
+ </LI>
+<LI>  <code>obj.SetEnableEdgesByArray (bool vis)</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>int = obj.GetEnableEdgesByArray ()</code> -  Whether to color edges.  Default is off.
+ </LI>
+<LI>  <code>obj.SetEnabledVerticesArrayName (string name)</code> -  The array to use for coloring vertices. 
+ </LI>
+<LI>  <code>string = obj.GetEnabledVerticesArrayName ()</code> -  The array to use for coloring vertices. 
+ </LI>
+<LI>  <code>obj.SetEnableVerticesByArray (bool vis)</code> -  Whether to color vertices.  Default is off.
+ </LI>
+<LI>  <code>int = obj.GetEnableVerticesByArray ()</code> -  Whether to color vertices.  Default is off.
+ </LI>
+<LI>  <code>obj.SetScalingArrayName (string name)</code> -  The array used for scaling (if ScaledGlyphs is ON)
+ </LI>
+<LI>  <code>string = obj.GetScalingArrayName ()</code> -  The array used for scaling (if ScaledGlyphs is ON)
+ </LI>
+<LI>  <code>obj.SetScaledGlyphs (bool arg)</code> -  Whether to use scaled glyphs or not.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetScaledGlyphs ()</code> -  Whether to use scaled glyphs or not.  Default is off.
+ </LI>
+<LI>  <code>obj.ScaledGlyphsOn ()</code> -  Whether to use scaled glyphs or not.  Default is off.
+ </LI>
+<LI>  <code>obj.ScaledGlyphsOff ()</code> -  Whether to use scaled glyphs or not.  Default is off.
+ </LI>
+<LI>  <code>obj.SetLayoutStrategy (string name)</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToRandom ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToForceDirected ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToSimple2D ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToClustering2D ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToCommunity2D ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToFast2D ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToPassThrough ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToCircular ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToTree ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToCosmicTree ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToCone ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>obj.SetLayoutStrategyToSpanTree ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>string = obj.GetLayoutStrategyName ()</code> -  The layout strategy to use when performing the graph layout.
+ The possible strings are:
+  - "Random"         Randomly places vertices in a box.
+  - "Force Directed" A layout in 3D or 2D simulating forces on edges.
+  - "Simple 2D"      A simple 2D force directed layout.
+  - "Clustering 2D"  A 2D force directed layout that's just like
+                     simple 2D but uses some techniques to cluster better.
+  - "Community 2D"   A linear-time 2D layout that's just like
+                    Fast 2D but looks for and uses a community 
+                    array to 'accentuate' clusters.
+  - "Fast 2D"       A linear-time 2D layout.
+  - "Pass Through"  Use locations assigned to the input.
+  - "Circular"      Places vertices uniformly on a circle.
+  - "Cone"          Cone tree layout.
+  - "Span Tree"     Span Tree Layout.
+ Default is "Simple 2D".
+ </LI>
+<LI>  <code>vtkGraphLayoutStrategy = obj.GetLayoutStrategy ()</code> -  The layout strategy to use when performing the graph layout.
+ This signature allows an application to create a layout
+ object directly and simply set the pointer through this method.
+ </LI>
+<LI>  <code>obj.SetLayoutStrategy (vtkGraphLayoutStrategy s)</code> -  The layout strategy to use when performing the graph layout.
+ This signature allows an application to create a layout
+ object directly and simply set the pointer through this method.
+ </LI>
+<LI>  <code>obj.SetEdgeLayoutStrategy (string name)</code> -  The layout strategy to use when performing the edge layout.
+ The possible strings are:
+   "Arc Parallel"   - Arc parallel edges and self loops.
+   "Pass Through"   - Use edge routes assigned to the input.
+ Default is "Arc Parallel".
+ </LI>
+<LI>  <code>obj.SetEdgeLayoutStrategyToArcParallel ()</code> -  The layout strategy to use when performing the edge layout.
+ The possible strings are:
+   "Arc Parallel"   - Arc parallel edges and self loops.
+   "Pass Through"   - Use edge routes assigned to the input.
+ Default is "Arc Parallel".
+ </LI>
+<LI>  <code>obj.SetEdgeLayoutStrategyToPassThrough ()</code> -  The layout strategy to use when performing the edge layout.
+ The possible strings are:
+   "Arc Parallel"   - Arc parallel edges and self loops.
+   "Pass Through"   - Use edge routes assigned to the input.
+ Default is "Arc Parallel".
+ </LI>
+<LI>  <code>string = obj.GetEdgeLayoutStrategyName ()</code> -  The layout strategy to use when performing the edge layout.
+ The possible strings are:
+   "Arc Parallel"   - Arc parallel edges and self loops.
+   "Pass Through"   - Use edge routes assigned to the input.
+ Default is "Arc Parallel".
+ </LI>
+<LI>  <code>vtkEdgeLayoutStrategy = obj.GetEdgeLayoutStrategy ()</code> -  The layout strategy to use when performing the edge layout.
+ This signature allows an application to create a layout
+ object directly and simply set the pointer through this method.
+ </LI>
+<LI>  <code>obj.SetEdgeLayoutStrategy (vtkEdgeLayoutStrategy s)</code> -  The layout strategy to use when performing the edge layout.
+ This signature allows an application to create a layout
+ object directly and simply set the pointer through this method.
+ </LI>
+<LI>  <code>obj.AddIconType (string type, int index)</code> -  Associate the icon at index "index" in the vtkTexture to all vertices
+ containing "type" as a value in the vertex attribute array specified by
+ IconArrayName.
+ </LI>
+<LI>  <code>obj.ClearIconTypes ()</code> -  Clear all icon mappings.
+ </LI>
+<LI>  <code>obj.SetIconAlignment (int alignment)</code> -  Specify where the icons should be placed in relation to the vertex.
+ See vtkIconGlyphFilter.h for possible values.
+ </LI>
+<LI>  <code>obj.SetIconVisibility (bool b)</code> -  Whether icons are visible (default off).
+ </LI>
+<LI>  <code>bool = obj.GetIconVisibility ()</code> -  Whether icons are visible (default off).
+ </LI>
+<LI>  <code>obj.IconVisibilityOn ()</code> -  Whether icons are visible (default off).
+ </LI>
+<LI>  <code>obj.IconVisibilityOff ()</code> -  Whether icons are visible (default off).
+ </LI>
+<LI>  <code>obj.SetIconArrayName (string name)</code> -  The array used for assigning icons
+ </LI>
+<LI>  <code>string = obj.GetIconArrayName ()</code> -  The array used for assigning icons
+ </LI>
+<LI>  <code>obj.SetGlyphType (int type)</code> -  The type of glyph to use for the vertices
+ </LI>
+<LI>  <code>int = obj.GetGlyphType ()</code> -  The type of glyph to use for the vertices
+ </LI>
+<LI>  <code>obj.SetVertexLabelFontSize (int size)</code> -  The size of the font used for vertex labeling
+ </LI>
+<LI>  <code>int = obj.GetVertexLabelFontSize ()</code> -  The size of the font used for vertex labeling
+ </LI>
+<LI>  <code>obj.SetEdgeLabelFontSize (int size)</code> -  The size of the font used for edge labeling
+ </LI>
+<LI>  <code>int = obj.GetEdgeLabelFontSize ()</code> -  The size of the font used for edge labeling
+ </LI>
+<LI>  <code>obj.SetEdgeScalarBarVisibility (bool vis)</code> -  Whether the scalar bar for edges is visible.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetEdgeScalarBarVisibility ()</code> -  Whether the scalar bar for edges is visible.  Default is off.
+ </LI>
+<LI>  <code>obj.SetVertexScalarBarVisibility (bool vis)</code> -  Whether the scalar bar for vertices is visible.  Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetVertexScalarBarVisibility ()</code> -  Whether the scalar bar for vertices is visible.  Default is off.
+ </LI>
+<LI>  <code>obj.ZoomToSelection ()</code> -  Reset the camera based on the bounds of the selected region.
+ </LI>
+<LI>  <code>int = obj.IsLayoutComplete ()</code> -  Is the graph layout complete? This method is useful
+ for when the strategy is iterative and the application
+ wants to show the iterative progress of the graph layout
+ See Also: UpdateLayout();
+ </LI>
+<LI>  <code>obj.UpdateLayout ()</code> -  This method is useful for when the strategy is iterative 
+ and the application wants to show the iterative progress 
+ of the graph layout. The application would have something like
+ while(!IsLayoutComplete())
+   {
+   UpdateLayout();
+   }
+ See Also: IsLayoutComplete();
+ </LI>
+</UL>
+</BODY>
+</HTML>

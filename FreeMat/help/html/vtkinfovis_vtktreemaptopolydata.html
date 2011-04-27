@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTreeMapToPolyData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTreeMapToPolyData
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ This algorithm requires that the vtkTreeMapLayout filter has already applied to the
+ data in order to create the quadruple array (min x, max x, min y, max y) of
+ bounds for each vertex of the tree.
+<P>
+To create an instance of class vtkTreeMapToPolyData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTreeMapToPolyData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTreeMapToPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTreeMapToPolyData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTreeMapToPolyData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTreeMapToPolyData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetRectanglesArrayName (string name)</code> -  The field containing the level of each tree node.
+ This can be added using vtkTreeLevelsFilter before this filter.
+ If this is not present, the filter simply calls tree-&gt;GetLevel(v) for
+ each vertex, which will produce the same result, but
+ may not be as efficient.
+ </LI>
+<LI>  <code>obj.SetLevelArrayName (string name)</code> -  The spacing along the z-axis between tree map levels.
+ </LI>
+<LI>  <code>double = obj.GetLevelDeltaZ ()</code> -  The spacing along the z-axis between tree map levels.
+ </LI>
+<LI>  <code>obj.SetLevelDeltaZ (double )</code> -  The spacing along the z-axis between tree map levels.
+ </LI>
+<LI>  <code>bool = obj.GetAddNormals ()</code> -  The spacing along the z-axis between tree map levels.
+ </LI>
+<LI>  <code>obj.SetAddNormals (bool )</code> -  The spacing along the z-axis between tree map levels.
+ </LI>
+<LI>  <code>int = obj.FillInputPortInformation (int port, vtkInformation info)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

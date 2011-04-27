@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkIcicleView
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkIcicleView
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+ vtkIcicleView shows a vtkTree in horizontal layers
+ where each vertex in the tree is represented by a bar.
+ Child sectors are below (or above) parent sectors, and may be
+ colored and sized by various parameters.
+<P>
+To create an instance of class vtkIcicleView, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkIcicleView
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkIcicleView has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkIcicleView class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkIcicleView = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkIcicleView = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetTopToBottom (bool value)</code> -  Sets whether the stacks go from top to bottom or bottom to top.
+ </LI>
+<LI>  <code>bool = obj.GetTopToBottom ()</code> -  Sets whether the stacks go from top to bottom or bottom to top.
+ </LI>
+<LI>  <code>obj.TopToBottomOn ()</code> -  Sets whether the stacks go from top to bottom or bottom to top.
+ </LI>
+<LI>  <code>obj.TopToBottomOff ()</code> -  Sets whether the stacks go from top to bottom or bottom to top.
+ </LI>
+<LI>  <code>obj.SetRootWidth (double width)</code> -  Set the width of the root node
+ </LI>
+<LI>  <code>double = obj.GetRootWidth ()</code> -  Set the width of the root node
+ </LI>
+<LI>  <code>obj.SetLayerThickness (double thickness)</code> -  Set the thickness of each layer
+ </LI>
+<LI>  <code>double = obj.GetLayerThickness ()</code> -  Set the thickness of each layer
+ </LI>
+<LI>  <code>obj.SetUseGradientColoring (bool value)</code> -  Turn on/off gradient coloring.
+ </LI>
+<LI>  <code>bool = obj.GetUseGradientColoring ()</code> -  Turn on/off gradient coloring.
+ </LI>
+<LI>  <code>obj.UseGradientColoringOn ()</code> -  Turn on/off gradient coloring.
+ </LI>
+<LI>  <code>obj.UseGradientColoringOff ()</code> -  Turn on/off gradient coloring.
+ </LI>
+</UL>
+</BODY>
+</HTML>

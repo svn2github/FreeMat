@@ -57,45 +57,40 @@ Some simple examples of logical operators.  Suppose we want to calculate the exc
 --&gt; a = (randn(1,6)&gt;0)
 
 a = 
- 0 1 1 1 0 1 
+ 0 0 0 0 1 0 
 
 --&gt; b = (randn(1,6)&gt;0)
 
 b = 
- 0 1 0 0 1 0 
+ 1 1 0 1 0 1 
 </PRE>
-<P>
 Next, we can compute the OR of <code>a</code> and <code>b</code>:
 <PRE>
 --&gt; c = a | b
 
 c = 
- 0 1 1 1 1 1 
+ 1 1 0 1 1 1 
 </PRE>
-<P>
 However, the XOR and OR operations differ on the fifth entry - the XOR would be false, since it is true if and only if exactly one of the two inputs is true.  To isolate this case, we can AND the two vectors, to find exactly those entries that appear as true in both <code>a</code> and <code>b</code>:
 <PRE>
 --&gt; d = a &amp; b
 
 d = 
- 0 1 0 0 0 0 
+ 0 0 0 0 0 0 
 </PRE>
-<P>
 At this point, we can modify the contents of <code>c</code> in two ways -- the Boolean way is to AND <code>\sim d</code> with <code>c</code>, like so
 <PRE>
 --&gt; xor = c &amp; (~d)
 
 xor = 
- 0 0 1 1 1 1 
+ 1 1 0 1 1 1 
 </PRE>
-<P>
 The other way to do this is simply force <code>c(d) = 0</code>, which uses the logical indexing mode of FreeMat (see the chapter on indexing for more details).  This, however, will cause <code>c</code> to become an <code>int32</code> type, as opposed to a logical type.
 <PRE>
 --&gt; c(d) = 0
 
 c = 
- 0 0 1 1 1 1 
+ 1 1 0 1 1 1 
 </PRE>
-<P>
 </BODY>
 </HTML>

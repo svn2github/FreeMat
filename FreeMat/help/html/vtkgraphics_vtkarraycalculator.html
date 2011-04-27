@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkArrayCalculator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkArrayCalculator
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkArrayCalculator performs operations on vectors or scalars in field
+ data arrays.  It uses vtkFunctionParser to do the parsing and to
+ evaluate the function for each entry in the input arrays.  The arrays
+ used in a given function must be all in point data or all in cell data.
+ The resulting array will be stored as a field data array.  The result
+ array can either be stored in a new array or it can overwrite an existing
+ array.
+<P>
+ The functions that this array calculator understands is:
+ &lt;pre&gt;
+ standard operations: + - * / ^ .
+ build unit vectors: iHat, jHat, kHat (ie (1,0,0), (0,1,0), (0,0,1))
+ abs
+ acos
+ asin
+ atan
+ ceil
+ cos
+ cosh
+ exp
+ floor
+ log
+ mag
+ min
+ max
+ norm
+ sign
+ sin
+ sinh
+ sqrt
+ tan
+ tanh
+ &lt;/pre&gt;
+ Note that some of these operations work on scalars, some on vectors, and some on
+ both (e.g., you can multiply a scalar times a vector). The operations are performed
+ tuple-wise (i.e., tuple-by-tuple). The user must specify which arrays to use as
+ vectors and/or scalars, and the name of the output data array.
+<P>
+<P>
+To create an instance of class vtkArrayCalculator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkArrayCalculator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkArrayCalculator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkArrayCalculator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkArrayCalculator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkArrayCalculator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFunction (string function)</code> -  Set/Get the function to be evaluated.
+ </LI>
+<LI>  <code>string = obj.GetFunction ()</code> -  Set/Get the function to be evaluated.
+ </LI>
+<LI>  <code>obj.AddScalarArrayName (string arrayName, int component)</code> -  Add an array name to the list of arrays used in the function and specify
+ which components of the array to use in evaluating the function.  The
+ array name must match the name in the function.  Use AddScalarVariable or
+ AddVectorVariable to use a variable name different from the array name.
+ </LI>
+<LI>  <code>obj.AddVectorArrayName (string arrayName, int component0, int component1, int component2)</code> -  Add an array name to the list of arrays used in the function and specify
+ which components of the array to use in evaluating the function.  The
+ array name must match the name in the function.  Use AddScalarVariable or
+ AddVectorVariable to use a variable name different from the array name.
+ </LI>
+<LI>  <code>obj.AddScalarVariable (string variableName, string arrayName, int component)</code> -  Add a variable name, a corresponding array name, and which components of
+ the array to use.
+ </LI>
+<LI>  <code>obj.AddVectorVariable (string variableName, string arrayName, int component0, int component1, int component2)</code> -  Add a variable name, a corresponding array name, and which components of
+ the array to use.
+ </LI>
+<LI>  <code>obj.AddCoordinateScalarVariable (string variableName, int component)</code> -  Add a variable name, a corresponding array name, and which components of
+ the array to use.
+ </LI>
+<LI>  <code>obj.AddCoordinateVectorVariable (string variableName, int component0, int component1, int component2)</code> -  Add a variable name, a corresponding array name, and which components of
+ the array to use.
+ </LI>
+<LI>  <code>obj.SetResultArrayName (string name)</code> -  Set the name of the array in which to store the result of
+ evaluating this function.  If this is the name of an existing array,
+ that array will be overwritten.  Otherwise a new array will be
+ created with the specified name.
+ </LI>
+<LI>  <code>string = obj.GetResultArrayName ()</code> -  Set the name of the array in which to store the result of
+ evaluating this function.  If this is the name of an existing array,
+ that array will be overwritten.  Otherwise a new array will be
+ created with the specified name.
+ </LI>
+<LI>  <code>int = obj.GetResultArrayType ()</code> -  Type of the result array. It is ignored if CoordinateResults is true.
+ Initial value is VTK_DOUBLE.
+ </LI>
+<LI>  <code>obj.SetResultArrayType (int )</code> -  Type of the result array. It is ignored if CoordinateResults is true.
+ Initial value is VTK_DOUBLE.
+ </LI>
+<LI>  <code>int = obj.GetCoordinateResults ()</code> -  Set whether to output results as coordinates.  ResultArrayName will be
+ ignored.  Outputing as coordinates is only valid with vector results and
+ if the AttributeMode is AttributeModeToUsePointData.
+ If a valid output can't be made, an error will occur.
+ </LI>
+<LI>  <code>obj.SetCoordinateResults (int )</code> -  Set whether to output results as coordinates.  ResultArrayName will be
+ ignored.  Outputing as coordinates is only valid with vector results and
+ if the AttributeMode is AttributeModeToUsePointData.
+ If a valid output can't be made, an error will occur.
+ </LI>
+<LI>  <code>obj.CoordinateResultsOn ()</code> -  Set whether to output results as coordinates.  ResultArrayName will be
+ ignored.  Outputing as coordinates is only valid with vector results and
+ if the AttributeMode is AttributeModeToUsePointData.
+ If a valid output can't be made, an error will occur.
+ </LI>
+<LI>  <code>obj.CoordinateResultsOff ()</code> -  Set whether to output results as coordinates.  ResultArrayName will be
+ ignored.  Outputing as coordinates is only valid with vector results and
+ if the AttributeMode is AttributeModeToUsePointData.
+ If a valid output can't be made, an error will occur.
+ </LI>
+<LI>  <code>obj.SetAttributeMode (int )</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>int = obj.GetAttributeMode ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>obj.SetAttributeModeToDefault ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>obj.SetAttributeModeToUsePointData ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>obj.SetAttributeModeToUseCellData ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>obj.SetAttributeModeToUseVertexData ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>obj.SetAttributeModeToUseEdgeData ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>string = obj.GetAttributeModeAsString ()</code> -  Control whether the filter operates on point data or cell data.
+ By default (AttributeModeToDefault), the filter uses point
+ data. Alternatively you can explicitly set the filter to use point data
+ (AttributeModeToUsePointData) or cell data (AttributeModeToUseCellData).
+ For graphs you can set the filter to use vertex data
+ (AttributeModeToUseVertexData) or edge data (AttributeModeToUseEdgeData).
+ </LI>
+<LI>  <code>obj.RemoveAllVariables ()</code> -  Remove all the variable names and their associated array names.
+ </LI>
+<LI>  <code>obj.RemoveScalarVariables ()</code> -  Remove all the scalar variable names and their associated array names.
+ </LI>
+<LI>  <code>obj.RemoveVectorVariables ()</code> -  Remove all the scalar variable names and their associated array names.
+ </LI>
+<LI>  <code>obj.RemoveCoordinateScalarVariables ()</code> -  Remove all the coordinate variables.
+ </LI>
+<LI>  <code>obj.RemoveCoordinateVectorVariables ()</code> -  Remove all the coordinate variables.
+ </LI>
+<LI>  <code>string = obj.GetScalarArrayName (int i)</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>string = obj.GetVectorArrayName (int i)</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>string = obj.GetScalarVariableName (int i)</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>string = obj.GetVectorVariableName (int i)</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>int = obj.GetSelectedScalarComponent (int i)</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfScalarArrays ()</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVectorArrays ()</code> -  Methods to get information about the current variables.
+ </LI>
+<LI>  <code>obj.SetReplaceInvalidValues (int )</code> -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+ </LI>
+<LI>  <code>int = obj.GetReplaceInvalidValues ()</code> -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+ </LI>
+<LI>  <code>obj.ReplaceInvalidValuesOn ()</code> -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+ </LI>
+<LI>  <code>obj.ReplaceInvalidValuesOff ()</code> -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+ </LI>
+<LI>  <code>obj.SetReplacementValue (double )</code> -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+ </LI>
+<LI>  <code>double = obj.GetReplacementValue ()</code> -  When ReplaceInvalidValues is on, all invalid values (such as
+ sqrt(-2), note that function parser does not handle complex
+ numbers) will be replaced by ReplacementValue. Otherwise an
+ error will be reported
+ </LI>
+</UL>
+</BODY>
+</HTML>

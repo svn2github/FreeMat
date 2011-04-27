@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMergeTables
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMergeTables
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Combines the columns of two tables into one larger table.
+ The number of rows in the resulting table is the sum of the number of
+ rows in each of the input tables.
+ The number of columns in the output is generally the sum of the number
+ of columns in each input table, except in the case where column names
+ are duplicated in both tables.
+ In this case, if MergeColumnsByName is on (the default), the two columns
+ will be merged into a single column of the same name.
+ If MergeColumnsByName is off, both columns will exist in the output.
+ You may set the FirstTablePrefix and SecondTablePrefix to define how
+ the columns named are modified.  One of these prefixes may be the empty
+ string, but they must be different.
+<P>
+To create an instance of class vtkMergeTables, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMergeTables
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMergeTables has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMergeTables class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMergeTables = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMergeTables = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFirstTablePrefix (string )</code> -  The prefix to give to same-named fields from the first table.
+ Default is "Table1.".
+ </LI>
+<LI>  <code>string = obj.GetFirstTablePrefix ()</code> -  The prefix to give to same-named fields from the first table.
+ Default is "Table1.".
+ </LI>
+<LI>  <code>obj.SetSecondTablePrefix (string )</code> -  The prefix to give to same-named fields from the second table.
+ Default is "Table2.".
+ </LI>
+<LI>  <code>string = obj.GetSecondTablePrefix ()</code> -  The prefix to give to same-named fields from the second table.
+ Default is "Table2.".
+ </LI>
+<LI>  <code>obj.SetMergeColumnsByName (bool )</code> -  If on, merges columns with the same name.
+ If off, keeps both columns, but calls one
+ FirstTablePrefix + name, and the other SecondTablePrefix + name.
+ Default is on.
+ </LI>
+<LI>  <code>bool = obj.GetMergeColumnsByName ()</code> -  If on, merges columns with the same name.
+ If off, keeps both columns, but calls one
+ FirstTablePrefix + name, and the other SecondTablePrefix + name.
+ Default is on.
+ </LI>
+<LI>  <code>obj.MergeColumnsByNameOn ()</code> -  If on, merges columns with the same name.
+ If off, keeps both columns, but calls one
+ FirstTablePrefix + name, and the other SecondTablePrefix + name.
+ Default is on.
+ </LI>
+<LI>  <code>obj.MergeColumnsByNameOff ()</code> -  If on, merges columns with the same name.
+ If off, keeps both columns, but calls one
+ FirstTablePrefix + name, and the other SecondTablePrefix + name.
+ Default is on.
+ </LI>
+<LI>  <code>obj.SetPrefixAllButMerged (bool )</code> -  If on, all columns will have prefixes except merged columns.
+ If off, only unmerged columns with the same name will have prefixes.
+ Default is off.
+ </LI>
+<LI>  <code>bool = obj.GetPrefixAllButMerged ()</code> -  If on, all columns will have prefixes except merged columns.
+ If off, only unmerged columns with the same name will have prefixes.
+ Default is off.
+ </LI>
+<LI>  <code>obj.PrefixAllButMergedOn ()</code> -  If on, all columns will have prefixes except merged columns.
+ If off, only unmerged columns with the same name will have prefixes.
+ Default is off.
+ </LI>
+<LI>  <code>obj.PrefixAllButMergedOff ()</code> -  If on, all columns will have prefixes except merged columns.
+ If off, only unmerged columns with the same name will have prefixes.
+ Default is off.
+ </LI>
+</UL>
+</BODY>
+</HTML>

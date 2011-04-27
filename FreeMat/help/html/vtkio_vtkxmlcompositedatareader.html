@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLCompositeDataReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLCompositeDataReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkXMLCompositeDataReader reads the VTK XML multi-group data file
+ format. XML multi-group data files are meta-files that point to a list
+ of serial VTK XML files. When reading in parallel, it will distribute
+ sub-blocks among processor. If the number of sub-blocks is less than
+ the number of processors, some processors will not have any sub-blocks
+ for that group. If the number of sub-blocks is larger than the
+ number of processors, each processor will possibly have more than
+ 1 sub-block.
+<P>
+To create an instance of class vtkXMLCompositeDataReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLCompositeDataReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLCompositeDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLCompositeDataReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLCompositeDataReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLCompositeDataReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkCompositeDataSet = obj.GetOutput ()</code> -  Get the output data object for a port on this algorithm.
+ </LI>
+<LI>  <code>vtkCompositeDataSet = obj.GetOutput (int )</code> -  Get the output data object for a port on this algorithm.
+ </LI>
+</UL>
+</BODY>
+</HTML>

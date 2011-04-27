@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkFeatureEdges
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkFeatureEdges
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkFeatureEdges is a filter to extract special types of edges from
+ input polygonal data. These edges are either 1) boundary (used by 
+ one polygon) or a line cell; 2) non-manifold (used by three or more 
+ polygons); 3) feature edges (edges used by two triangles and whose
+ dihedral angle &gt; FeatureAngle); or 4) manifold edges (edges used by
+ exactly two polygons). These edges may be extracted in any
+ combination. Edges may also be "colored" (i.e., scalar values assigned)
+ based on edge type. The cell coloring is assigned to the cell data of
+ the extracted edges.
+<P>
+To create an instance of class vtkFeatureEdges, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkFeatureEdges
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkFeatureEdges has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkFeatureEdges class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkFeatureEdges = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkFeatureEdges = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetBoundaryEdges (int )</code> -  Turn on/off the extraction of boundary edges.
+ </LI>
+<LI>  <code>int = obj.GetBoundaryEdges ()</code> -  Turn on/off the extraction of boundary edges.
+ </LI>
+<LI>  <code>obj.BoundaryEdgesOn ()</code> -  Turn on/off the extraction of boundary edges.
+ </LI>
+<LI>  <code>obj.BoundaryEdgesOff ()</code> -  Turn on/off the extraction of boundary edges.
+ </LI>
+<LI>  <code>obj.SetFeatureEdges (int )</code> -  Turn on/off the extraction of feature edges.
+ </LI>
+<LI>  <code>int = obj.GetFeatureEdges ()</code> -  Turn on/off the extraction of feature edges.
+ </LI>
+<LI>  <code>obj.FeatureEdgesOn ()</code> -  Turn on/off the extraction of feature edges.
+ </LI>
+<LI>  <code>obj.FeatureEdgesOff ()</code> -  Turn on/off the extraction of feature edges.
+ </LI>
+<LI>  <code>obj.SetFeatureAngle (double )</code> -  Specify the feature angle for extracting feature edges.
+ </LI>
+<LI>  <code>double = obj.GetFeatureAngleMinValue ()</code> -  Specify the feature angle for extracting feature edges.
+ </LI>
+<LI>  <code>double = obj.GetFeatureAngleMaxValue ()</code> -  Specify the feature angle for extracting feature edges.
+ </LI>
+<LI>  <code>double = obj.GetFeatureAngle ()</code> -  Specify the feature angle for extracting feature edges.
+ </LI>
+<LI>  <code>obj.SetNonManifoldEdges (int )</code> -  Turn on/off the extraction of non-manifold edges.
+ </LI>
+<LI>  <code>int = obj.GetNonManifoldEdges ()</code> -  Turn on/off the extraction of non-manifold edges.
+ </LI>
+<LI>  <code>obj.NonManifoldEdgesOn ()</code> -  Turn on/off the extraction of non-manifold edges.
+ </LI>
+<LI>  <code>obj.NonManifoldEdgesOff ()</code> -  Turn on/off the extraction of non-manifold edges.
+ </LI>
+<LI>  <code>obj.SetManifoldEdges (int )</code> -  Turn on/off the extraction of manifold edges.
+ </LI>
+<LI>  <code>int = obj.GetManifoldEdges ()</code> -  Turn on/off the extraction of manifold edges.
+ </LI>
+<LI>  <code>obj.ManifoldEdgesOn ()</code> -  Turn on/off the extraction of manifold edges.
+ </LI>
+<LI>  <code>obj.ManifoldEdgesOff ()</code> -  Turn on/off the extraction of manifold edges.
+ </LI>
+<LI>  <code>obj.SetColoring (int )</code> -  Turn on/off the coloring of edges by type.
+ </LI>
+<LI>  <code>int = obj.GetColoring ()</code> -  Turn on/off the coloring of edges by type.
+ </LI>
+<LI>  <code>obj.ColoringOn ()</code> -  Turn on/off the coloring of edges by type.
+ </LI>
+<LI>  <code>obj.ColoringOff ()</code> -  Turn on/off the coloring of edges by type.
+ </LI>
+<LI>  <code>obj.SetLocator (vtkIncrementalPointLocator locator)</code> -  Set / get a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+ </LI>
+<LI>  <code>vtkIncrementalPointLocator = obj.GetLocator ()</code> -  Set / get a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+ </LI>
+<LI>  <code>obj.CreateDefaultLocator ()</code> -  Create default locator. Used to create one when none is specified.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return MTime also considering the locator.
+ </LI>
+</UL>
+</BODY>
+</HTML>

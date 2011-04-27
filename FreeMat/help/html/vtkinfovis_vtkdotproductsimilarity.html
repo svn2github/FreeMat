@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDotProductSimilarity
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDotProductSimilarity
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Treats matrices as collections of vectors and computes dot-product similarity
+ metrics between vectors.
+<P>
+ The results are returned as an edge-table that lists the index of each vector
+ and their computed similarity.  The output edge-table is typically used with
+ vtkTableToGraph to create a similarity graph.
+<P>
+ This filter can be used with one or two input matrices.  If you provide a single
+ matrix as input, every vector in the matrix is compared with every other vector. If
+ you provide two matrices, every vector in the first matrix is compared with every
+ vector in the second matrix.
+<P>
+ Note that this filter *only* computes the dot-product between each pair of vectors;
+ if you want to compute the cosine of the angles between vectors, you will need to
+ normalize the inputs yourself.
+<P>
+ Inputs:
+   Input port 0: (required) A vtkDenseArray&lt;double&gt; with two dimensions (a matrix).
+   Input port 1: (optional) A vtkDenseArray&lt;double&gt; with two dimensions (a matrix).
+<P>
+ Outputs:
+   Output port 0: A vtkTable containing "source", "target", and "similarity" columns.
+<P>
+<P>
+To create an instance of class vtkDotProductSimilarity, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDotProductSimilarity
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDotProductSimilarity has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDotProductSimilarity class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDotProductSimilarity = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDotProductSimilarity = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkIdType = obj.GetVectorDimension ()</code> -  Controls whether to compute similarities for row-vectors or column-vectors.
+ 0 = rows, 1 = columns.
+ </LI>
+<LI>  <code>obj.SetVectorDimension (vtkIdType )</code> -  Controls whether to compute similarities for row-vectors or column-vectors.
+ 0 = rows, 1 = columns.
+ </LI>
+<LI>  <code>int = obj.GetUpperDiagonal ()</code> -  When computing similarities for a single input matrix, controls whether the
+ results will include the upper diagonal of the similarity matrix.  Default: true.
+ </LI>
+<LI>  <code>obj.SetUpperDiagonal (int )</code> -  When computing similarities for a single input matrix, controls whether the
+ results will include the upper diagonal of the similarity matrix.  Default: true.
+ </LI>
+<LI>  <code>int = obj.GetDiagonal ()</code> -  When computing similarities for a single input matrix, controls whether the
+ results will include the diagonal of the similarity matrix.  Default: false.
+ </LI>
+<LI>  <code>obj.SetDiagonal (int )</code> -  When computing similarities for a single input matrix, controls whether the
+ results will include the diagonal of the similarity matrix.  Default: false.
+ </LI>
+<LI>  <code>int = obj.GetLowerDiagonal ()</code> -  When computing similarities for a single input matrix, controls whether the
+ results will include the lower diagonal of the similarity matrix.  Default: false.
+ </LI>
+<LI>  <code>obj.SetLowerDiagonal (int )</code> -  When computing similarities for a single input matrix, controls whether the
+ results will include the lower diagonal of the similarity matrix.  Default: false.
+ </LI>
+<LI>  <code>int = obj.GetFirstSecond ()</code> -  When computing similarities for two input matrices, controls whether the results
+ will include comparisons from the first matrix to the second matrix.
+ </LI>
+<LI>  <code>obj.SetFirstSecond (int )</code> -  When computing similarities for two input matrices, controls whether the results
+ will include comparisons from the first matrix to the second matrix.
+ </LI>
+<LI>  <code>int = obj.GetSecondFirst ()</code> -  When computing similarities for two input matrices, controls whether the results
+ will include comparisons from the second matrix to the first matrix.
+ </LI>
+<LI>  <code>obj.SetSecondFirst (int )</code> -  When computing similarities for two input matrices, controls whether the results
+ will include comparisons from the second matrix to the first matrix.
+ </LI>
+<LI>  <code>double = obj.GetMinimumThreshold ()</code> -  Specifies a minimum threshold that a similarity must exceed to be included in
+ the output.
+ </LI>
+<LI>  <code>obj.SetMinimumThreshold (double )</code> -  Specifies a minimum threshold that a similarity must exceed to be included in
+ the output.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetMinimumCount ()</code> -  Specifies a minimum number of edges to include for each vector.
+ </LI>
+<LI>  <code>obj.SetMinimumCount (vtkIdType )</code> -  Specifies a minimum number of edges to include for each vector.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetMaximumCount ()</code> -  Specifies a maximum number of edges to include for each vector.
+ </LI>
+<LI>  <code>obj.SetMaximumCount (vtkIdType )</code> -  Specifies a maximum number of edges to include for each vector.
+ </LI>
+</UL>
+</BODY>
+</HTML>

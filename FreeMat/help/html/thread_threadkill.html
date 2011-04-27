@@ -24,7 +24,7 @@ where <code>handle</code> is the value returned by a <code>threadnew</code> call
 Note that the <code>threadkill</code> function returns immediately.  It 
 is still your responsibility to call <code>threadfree</code> to free
 the thread you have halted.
-
+<P>
 You cannot kill the main thread (thread id <code>1</code>).
 <H3>Example</H3>
 Here is an example of stopping a runaway thread using <code>threadkill</code>.
@@ -53,13 +53,13 @@ stop it:
 --&gt; count                          % it is counting
 
 ans = 
- 7145 
+ 0 
 
 --&gt; sleep(1)                       % Wait a bit
 --&gt; count                          % it is still counting
 
 ans = 
- 485030 
+ 265571 
 
 --&gt; threadkill(a)                  % kill the counter
 --&gt; threadwait(a,1000)             % wait for it to finish
@@ -70,16 +70,15 @@ ans =
 --&gt; count                          % The count will no longer increase
 
 ans = 
- 485031 
+ 265572 
 
 --&gt; sleep(1)
 --&gt; count
 
 ans = 
- 485031 
+ 265572 
 
 --&gt; threadfree(a)
 </PRE>
-<P>
 </BODY>
 </HTML>

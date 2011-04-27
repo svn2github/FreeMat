@@ -28,18 +28,16 @@ matrix
 --&gt; rcond(A)
 
 ans = 
- 3.5040e-04 
+ 4.4279e-04 
 </PRE>
-<P>
 And here we calculate the same value using the definition of
 (reciprocal) condition number
 <PRE>
 --&gt; 1/(norm(A,1)*norm(inv(A),1))
 
 ans = 
- 3.5040e-04 
+ 4.3595e-04 
 </PRE>
-<P>
 Note that the values are very similar.  LAPACKs <code>rcond</code>
 function is far more efficient than the explicit calculation
 (which is also used by the <code>cond</code> function.

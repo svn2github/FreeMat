@@ -46,17 +46,16 @@ x =
 --&gt; y = sprandn(x)
 
 y = 
- 1 1 0.770419
- 3 1 0.332694
- 2 3 -0.589851
+ 1 1 -0.498012
+ 3 1 0.813313
+ 2 3 -1.10282
 --&gt; full(y)
 
 ans = 
-    0.7704         0         0 
-         0         0   -0.5899 
-    0.3327         0         0 
+   -0.4980         0         0 
+         0         0   -1.1028 
+    0.8133         0         0 
 </PRE>
-<P>
 The more generic version with a density of <code>0.001</code>.  On many systems the
 following is impossible using full matrices
 <PRE>
@@ -64,8 +63,7 @@ following is impossible using full matrices
 --&gt; nnz(y)/10000^2
 
 ans = 
- 9.9953e-04 
+ 9.9952e-04 
 </PRE>
-<P>
 </BODY>
 </HTML>

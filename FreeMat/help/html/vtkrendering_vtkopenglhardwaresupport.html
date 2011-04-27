@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkOpenGLHardwareSupport
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkOpenGLHardwareSupport
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkOpenGLHardwareSupport is an implementation of methods used
+ to query OpenGL and the hardware of what kind of graphics support
+ is available. When VTK supports more than one Graphics API an
+ abstract super class vtkHardwareSupport should be implemented
+ for this class to derive from.
+<P>
+To create an instance of class vtkOpenGLHardwareSupport, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkOpenGLHardwareSupport
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkOpenGLHardwareSupport has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkOpenGLHardwareSupport class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkOpenGLHardwareSupport = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkOpenGLHardwareSupport = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFixedTextureUnits ()</code> -  Return the number of fixed-function texture units.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfTextureUnits ()</code> -  Return the total number of texture image units accessible by a shader
+ program.
+ </LI>
+<LI>  <code>bool = obj.GetSupportsMultiTexturing ()</code> -  Test if MultiTexturing is supported.
+ </LI>
+<LI>  <code>vtkOpenGLExtensionManager = obj.GetExtensionManager ()</code> -  Set/Get a reference to a vtkRenderWindow which is Required
+ for most methods of this class to work.
+ </LI>
+<LI>  <code>obj.SetExtensionManager (vtkOpenGLExtensionManager extensionManager)</code> -  Set/Get a reference to a vtkRenderWindow which is Required
+ for most methods of this class to work.
+ </LI>
+</UL>
+</BODY>
+</HTML>

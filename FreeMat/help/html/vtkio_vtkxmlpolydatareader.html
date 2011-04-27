@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLPolyDataReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLPolyDataReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkXMLPolyDataReader reads the VTK XML PolyData file format.  One
+ polygonal data file can be read to produce one output.  Streaming
+ is supported.  The standard extension for this reader's file format
+ is "vtp".  This reader is also used to read a single piece of the
+ parallel file format.
+<P>
+To create an instance of class vtkXMLPolyDataReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLPolyDataReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLPolyDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLPolyDataReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLPolyDataReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLPolyDataReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkPolyData = obj.GetOutput ()</code> -  Get the reader's output.
+ </LI>
+<LI>  <code>vtkPolyData = obj.GetOutput (int idx)</code> -  Get the reader's output.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfVerts ()</code> -  Get the number of verts/lines/strips/polys in the output.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfLines ()</code> -  Get the number of verts/lines/strips/polys in the output.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfStrips ()</code> -  Get the number of verts/lines/strips/polys in the output.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPolys ()</code> -  Get the number of verts/lines/strips/polys in the output.
+ </LI>
+</UL>
+</BODY>
+</HTML>

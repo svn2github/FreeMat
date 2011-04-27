@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDistanceToCamera
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDistanceToCamera
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ This filter adds a double array containing the distance from each point
+ to the camera. If Scaling is on, it will use the values in the input
+ array to process in order to scale the size of the points. ScreenSize
+ sets the size in screen pixels that you would want a rendered rectangle
+ at that point to be, if it was scaled by the output array.
+<P>
+To create an instance of class vtkDistanceToCamera, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDistanceToCamera
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDistanceToCamera has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDistanceToCamera class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDistanceToCamera = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDistanceToCamera = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetRenderer (vtkRenderer ren)</code> -  The renderer which will ultimately render these points.
+ </LI>
+<LI>  <code>vtkRenderer = obj.GetRenderer ()</code> -  The renderer which will ultimately render these points.
+ </LI>
+<LI>  <code>obj.SetScreenSize (double )</code> -  The desired screen size obtained by scaling glyphs by the distance
+ array. It assumes the glyph at each point will be unit size.
+ </LI>
+<LI>  <code>double = obj.GetScreenSize ()</code> -  The desired screen size obtained by scaling glyphs by the distance
+ array. It assumes the glyph at each point will be unit size.
+ </LI>
+<LI>  <code>obj.SetScaling (bool )</code> -  Whether to scale the distance by the input array to process.
+ </LI>
+<LI>  <code>bool = obj.GetScaling ()</code> -  Whether to scale the distance by the input array to process.
+ </LI>
+<LI>  <code>obj.ScalingOn ()</code> -  Whether to scale the distance by the input array to process.
+ </LI>
+<LI>  <code>obj.ScalingOff ()</code> -  Whether to scale the distance by the input array to process.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  The modified time of this filter.
+ </LI>
+</UL>
+</BODY>
+</HTML>

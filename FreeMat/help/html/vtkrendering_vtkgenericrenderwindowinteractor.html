@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGenericRenderWindowInteractor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGenericRenderWindowInteractor
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkGenericRenderWindowInteractor provides a way to translate native
+ mouse and keyboard events into vtk Events.   By calling the methods on
+ this class, vtk events will be invoked.   This will allow scripting
+ languages to use vtkInteractorStyles and 3D widgets.
+<P>
+To create an instance of class vtkGenericRenderWindowInteractor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGenericRenderWindowInteractor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGenericRenderWindowInteractor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGenericRenderWindowInteractor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGenericRenderWindowInteractor = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGenericRenderWindowInteractor = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.MouseMoveEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.RightButtonPressEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.RightButtonReleaseEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.LeftButtonPressEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.LeftButtonReleaseEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.MiddleButtonPressEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.MiddleButtonReleaseEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.MouseWheelForwardEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.MouseWheelBackwardEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.ExposeEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.ConfigureEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.EnterEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.LeaveEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.TimerEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.KeyPressEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.KeyReleaseEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.CharEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.ExitEvent ()</code> -  Fire various events. SetEventInformation should be called just prior
+ to calling any of these methods. These methods will Invoke the
+ corresponding vtk event.
+ </LI>
+<LI>  <code>obj.SetTimerEventResetsTimer (int )</code> -  Flag that indicates whether the TimerEvent method should call ResetTimer
+ to simulate repeating timers with an endless stream of one shot timers.
+ By default this flag is on and all repeating timers are implemented as a
+ stream of sequential one shot timers. If the observer of
+ CreateTimerEvent actually creates a "natively repeating" timer, setting
+ this flag to off will prevent (perhaps many many) unnecessary calls to
+ ResetTimer. Having the flag on by default means that "natively one
+ shot" timers can be either one shot or repeating timers with no
+ additional work. Also, "natively repeating" timers still work with the
+ default setting, but with potentially many create and destroy calls.
+ </LI>
+<LI>  <code>int = obj.GetTimerEventResetsTimer ()</code> -  Flag that indicates whether the TimerEvent method should call ResetTimer
+ to simulate repeating timers with an endless stream of one shot timers.
+ By default this flag is on and all repeating timers are implemented as a
+ stream of sequential one shot timers. If the observer of
+ CreateTimerEvent actually creates a "natively repeating" timer, setting
+ this flag to off will prevent (perhaps many many) unnecessary calls to
+ ResetTimer. Having the flag on by default means that "natively one
+ shot" timers can be either one shot or repeating timers with no
+ additional work. Also, "natively repeating" timers still work with the
+ default setting, but with potentially many create and destroy calls.
+ </LI>
+<LI>  <code>obj.TimerEventResetsTimerOn ()</code> -  Flag that indicates whether the TimerEvent method should call ResetTimer
+ to simulate repeating timers with an endless stream of one shot timers.
+ By default this flag is on and all repeating timers are implemented as a
+ stream of sequential one shot timers. If the observer of
+ CreateTimerEvent actually creates a "natively repeating" timer, setting
+ this flag to off will prevent (perhaps many many) unnecessary calls to
+ ResetTimer. Having the flag on by default means that "natively one
+ shot" timers can be either one shot or repeating timers with no
+ additional work. Also, "natively repeating" timers still work with the
+ default setting, but with potentially many create and destroy calls.
+ </LI>
+<LI>  <code>obj.TimerEventResetsTimerOff ()</code> -  Flag that indicates whether the TimerEvent method should call ResetTimer
+ to simulate repeating timers with an endless stream of one shot timers.
+ By default this flag is on and all repeating timers are implemented as a
+ stream of sequential one shot timers. If the observer of
+ CreateTimerEvent actually creates a "natively repeating" timer, setting
+ this flag to off will prevent (perhaps many many) unnecessary calls to
+ ResetTimer. Having the flag on by default means that "natively one
+ shot" timers can be either one shot or repeating timers with no
+ additional work. Also, "natively repeating" timers still work with the
+ default setting, but with potentially many create and destroy calls.
+ </LI>
+</UL>
+</BODY>
+</HTML>

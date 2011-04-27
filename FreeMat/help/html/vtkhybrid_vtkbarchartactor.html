@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBarChartActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBarChartActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkBarChartActor generates a bar chart from an array of numbers defined in
+ field data (a vtkDataObject). To use this class, you must specify an input
+ data object. You'll probably also want to specify the position of the plot
+ be setting the Position and Position2 instance variables, which define a
+ rectangle in which the plot lies.  There are also many other instance
+ variables that control the look of the plot includes its title and legend.
+<P>
+ Set the text property/attributes of the title and the labels through the 
+ vtkTextProperty objects associated with these components.
+<P>
+To create an instance of class vtkBarChartActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBarChartActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBarChartActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBarChartActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>vtkBarChartActor = obj.NewInstance ()</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>vtkBarChartActor = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>obj.SetInput (vtkDataObject )</code> -  Set the input to the bar chart actor.
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetInput ()</code> -  Get the input data object to this actor.
+ </LI>
+<LI>  <code>obj.SetTitleVisibility (int )</code> -  Enable/Disable the display of a plot title.
+ </LI>
+<LI>  <code>int = obj.GetTitleVisibility ()</code> -  Enable/Disable the display of a plot title.
+ </LI>
+<LI>  <code>obj.TitleVisibilityOn ()</code> -  Enable/Disable the display of a plot title.
+ </LI>
+<LI>  <code>obj.TitleVisibilityOff ()</code> -  Enable/Disable the display of a plot title.
+ </LI>
+<LI>  <code>obj.SetTitle (string )</code> -  Set/Get the title of the bar chart.
+ </LI>
+<LI>  <code>string = obj.GetTitle ()</code> -  Set/Get the title of the bar chart.
+ </LI>
+<LI>  <code>obj.SetTitleTextProperty (vtkTextProperty p)</code> -  Set/Get the title text property. The property controls the
+ appearance of the plot title.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetTitleTextProperty ()</code> -  Set/Get the title text property. The property controls the
+ appearance of the plot title.
+ </LI>
+<LI>  <code>obj.SetLabelVisibility (int )</code> -  Enable/Disable the display of bar labels.
+ </LI>
+<LI>  <code>int = obj.GetLabelVisibility ()</code> -  Enable/Disable the display of bar labels.
+ </LI>
+<LI>  <code>obj.LabelVisibilityOn ()</code> -  Enable/Disable the display of bar labels.
+ </LI>
+<LI>  <code>obj.LabelVisibilityOff ()</code> -  Enable/Disable the display of bar labels.
+ </LI>
+<LI>  <code>obj.SetLabelTextProperty (vtkTextProperty p)</code> -  Set/Get the labels text property. This controls the appearance
+ of all bar bar labels.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLabelTextProperty ()</code> -  Set/Get the labels text property. This controls the appearance
+ of all bar bar labels.
+ </LI>
+<LI>  <code>obj.SetBarColor (int i, double r, double g, double b)</code> -  Specify colors for each bar. If not specified, they are 
+ automatically generated.
+ </LI>
+<LI>  <code>obj.SetBarColor (int i, double color[3])</code> -  Specify colors for each bar. If not specified, they are 
+ automatically generated.
+ </LI>
+<LI>  <code>obj.SetBarLabel (int i, string )</code> -  Specify the names of each bar. If
+ not specified, then an integer number is automatically generated.
+ </LI>
+<LI>  <code>string = obj.GetBarLabel (int i)</code> -  Specify the names of each bar. If
+ not specified, then an integer number is automatically generated.
+ </LI>
+<LI>  <code>obj.SetYTitle (string )</code> -  Specify the title of the y-axis.
+ </LI>
+<LI>  <code>string = obj.GetYTitle ()</code> -  Specify the title of the y-axis.
+ </LI>
+<LI>  <code>obj.SetLegendVisibility (int )</code> -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+ </LI>
+<LI>  <code>int = obj.GetLegendVisibility ()</code> -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+ </LI>
+<LI>  <code>obj.LegendVisibilityOn ()</code> -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+ </LI>
+<LI>  <code>obj.LegendVisibilityOff ()</code> -  Enable/Disable the creation of a legend. If on, the legend labels will
+ be created automatically unless the per plot legend symbol has been
+ set.
+ </LI>
+<LI>  <code>vtkLegendBoxActor = obj.GetLegendActor ()</code> -  Retrieve handles to the legend box. This is useful if you would like 
+ to manually control the legend appearance.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport )</code> -  Draw the bar plot.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code> -  Draw the bar plot.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )</code> -  Does this prop have some translucent polygonal geometry?
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Does this prop have some translucent polygonal geometry?
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+</UL>
+</BODY>
+</HTML>

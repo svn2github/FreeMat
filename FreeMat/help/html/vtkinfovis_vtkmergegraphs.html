@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMergeGraphs
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMergeGraphs
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkMergeGraphs combines information from two graphs into one.
+ Both graphs must have pedigree ids assigned to the vertices.
+ The output will contain the vertices/edges in the first graph, in
+ addition to:
+<P>
+  - vertices in the second graph whose pedigree id does not
+    match a vertex in the first input
+<P>
+  - edges in the second graph
+<P>
+ The output will contain the same attribute structure as the input;
+ fields associated only with the second input graph will not be passed
+ to the output. When possible, the vertex/edge data for new vertices and
+ edges will be populated with matching attributes on the second graph.
+ To be considered a matching attribute, the array must have the same name,
+ type, and number of components.
+<P>
+<P>
+To create an instance of class vtkMergeGraphs, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMergeGraphs
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMergeGraphs has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMergeGraphs class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMergeGraphs = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMergeGraphs = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.ExtendGraph (vtkMutableGraphHelper g1, vtkGraph g2)</code> -  This is the core functionality of the algorithm. Adds edges
+ and vertices from g2 into g1.
+ </LI>
+<LI>  <code>obj.SetMaxEdges (vtkIdType )</code> -  The maximum number of edges in the combined graph. Default is -1,
+ which specifies that there should be no limit on the number
+ of edges.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetMaxEdges ()</code> -  The maximum number of edges in the combined graph. Default is -1,
+ which specifies that there should be no limit on the number
+ of edges.
+ </LI>
+</UL>
+</BODY>
+</HTML>

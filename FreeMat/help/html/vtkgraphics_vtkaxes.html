@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAxes
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAxes
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkAxes creates three lines that form an x-y-z axes. The origin of the
+ axes is user specified (0,0,0 is default), and the size is specified with
+ a scale factor. Three scalar values are generated for the three lines and
+ can be used (via color map) to indicate a particular coordinate axis.
+<P>
+To create an instance of class vtkAxes, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAxes
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAxes has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAxes class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAxes = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAxes = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetOrigin (double , double , double )</code> -  Set the origin of the axes.
+ </LI>
+<LI>  <code>obj.SetOrigin (double  a[3])</code> -  Set the origin of the axes.
+ </LI>
+<LI>  <code>double = obj. GetOrigin ()</code> -  Set the origin of the axes.
+ </LI>
+<LI>  <code>obj.SetScaleFactor (double )</code> -  Set the scale factor of the axes. Used to control size.
+ </LI>
+<LI>  <code>double = obj.GetScaleFactor ()</code> -  Set the scale factor of the axes. Used to control size.
+ </LI>
+<LI>  <code>obj.SetSymmetric (int )</code> -  If Symetric is on, the the axis continue to negative values.
+ </LI>
+<LI>  <code>int = obj.GetSymmetric ()</code> -  If Symetric is on, the the axis continue to negative values.
+ </LI>
+<LI>  <code>obj.SymmetricOn ()</code> -  If Symetric is on, the the axis continue to negative values.
+ </LI>
+<LI>  <code>obj.SymmetricOff ()</code> -  If Symetric is on, the the axis continue to negative values.
+ </LI>
+<LI>  <code>obj.SetComputeNormals (int )</code> -  Option for computing normals.  By default they are computed.
+ </LI>
+<LI>  <code>int = obj.GetComputeNormals ()</code> -  Option for computing normals.  By default they are computed.
+ </LI>
+<LI>  <code>obj.ComputeNormalsOn ()</code> -  Option for computing normals.  By default they are computed.
+ </LI>
+<LI>  <code>obj.ComputeNormalsOff ()</code> -  Option for computing normals.  By default they are computed.
+ </LI>
+</UL>
+</BODY>
+</HTML>

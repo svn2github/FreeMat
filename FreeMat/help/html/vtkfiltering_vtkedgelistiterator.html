@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkEdgeListIterator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkEdgeListIterator
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkEdgeListIterator iterates through all the edges in a graph, by traversing
+ the adjacency list for each vertex. You may instantiate this class directly
+ and call SetGraph() to traverse a certain graph. You may also call the graph's
+ GetEdges() method to set up the iterator for a certain graph.
+<P>
+ Note that this class does NOT guarantee that the edges will be processed in
+ order of their ids (i.e. it will not necessarily return edge 0, then edge 1,
+ etc.).
+<P>
+<P>
+To create an instance of class vtkEdgeListIterator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkEdgeListIterator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkEdgeListIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkEdgeListIterator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkEdgeListIterator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkEdgeListIterator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkGraph = obj.GetGraph ()</code>
+ </LI>
+<LI>  <code>obj.SetGraph (vtkGraph graph)</code>
+ </LI>
+<LI>  <code>vtkGraphEdge = obj.NextGraphEdge ()</code> -  Just like Next(), but
+ returns heavy-weight vtkGraphEdge object instead of
+ the vtkEdgeType struct, for use with wrappers.
+ The graph edge is owned by this iterator, and changes
+ after each call to NextGraphEdge().
+ </LI>
+<LI>  <code>bool = obj.HasNext ()</code> -  Whether this iterator has more edges.
+ </LI>
+</UL>
+</BODY>
+</HTML>

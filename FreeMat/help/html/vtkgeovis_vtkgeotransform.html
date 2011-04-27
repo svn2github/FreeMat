@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoTransform
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoTransform
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ This class takes two geographic projections and transforms point
+ coordinates between them.
+<P>
+To create an instance of class vtkGeoTransform, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoTransform
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoTransform class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoTransform = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoTransform = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSourceProjection (vtkGeoProjection source)</code> -  The source geographic projection.
+ </LI>
+<LI>  <code>vtkGeoProjection = obj.GetSourceProjection ()</code> -  The source geographic projection.
+ </LI>
+<LI>  <code>obj.SetDestinationProjection (vtkGeoProjection dest)</code> -  The target geographic projection.
+ </LI>
+<LI>  <code>vtkGeoProjection = obj.GetDestinationProjection ()</code> -  The target geographic projection.
+ </LI>
+<LI>  <code>obj.TransformPoints (vtkPoints src, vtkPoints dst)</code> -  Transform many points at once.
+ </LI>
+<LI>  <code>obj.Inverse ()</code> -  Invert the transformation.
+ </LI>
+<LI>  <code>obj.InternalTransformPoint (float in[3], float out[3])</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+<LI>  <code>obj.InternalTransformPoint (double in[3], double out[3])</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.MakeTransform ()</code> -  Make another transform of the same type.
+ </LI>
+</UL>
+</BODY>
+</HTML>

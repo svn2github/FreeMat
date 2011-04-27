@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkUndirectedGraph
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkUndirectedGraph
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkUndirectedGraph is a collection of vertices along with a collection of
+ undirected edges (they connect two vertices in no particular order). 
+ ShallowCopy(), DeepCopy(), CheckedShallowCopy(), CheckedDeepCopy()
+ accept instances of vtkUndirectedGraph and vtkMutableUndirectedGraph.
+ GetOutEdges(v, it) and GetInEdges(v, it) return the same list of edges, 
+ which is the list of all edges which have a v as an endpoint.
+ GetInDegree(v), GetOutDegree(v) and GetDegree(v) all return the full
+ degree of vertex v.
+<P>
+ vtkUndirectedGraph is read-only. To create an undirected graph,
+ use an instance of vtkMutableUndirectedGraph, then you may set the
+ structure to a vtkUndirectedGraph using ShallowCopy().
+<P>
+<P>
+To create an instance of class vtkUndirectedGraph, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkUndirectedGraph
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkUndirectedGraph has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkUndirectedGraph class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkUndirectedGraph = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkUndirectedGraph = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDataObjectType ()</code> -  Returns the full degree of the vertex.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetInDegree (vtkIdType v)</code> -  Returns the full degree of the vertex.
+ </LI>
+<LI>  <code>obj.GetInEdge (vtkIdType v, vtkIdType i, vtkGraphEdge e)</code> -  Initialize the iterator to get the incoming edges to a vertex.
+ For an undirected graph, this is all incident edges.
+ </LI>
+<LI>  <code>obj.GetInEdges (vtkIdType v, vtkInEdgeIterator it)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

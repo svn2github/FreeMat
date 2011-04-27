@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSplineGraphEdges
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSplineGraphEdges
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkSplineGraphEdges uses a vtkSpline to make edges into nicely sampled
+ splines. By default, the filter will use an optimized b-spline.
+ Otherwise, it will use a custom vtkSpline instance set by the user.
+<P>
+To create an instance of class vtkSplineGraphEdges, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSplineGraphEdges
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSplineGraphEdges has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSplineGraphEdges class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSplineGraphEdges = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSplineGraphEdges = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSpline (vtkSpline s)</code> -  If SplineType is CUSTOM, uses this spline.
+ </LI>
+<LI>  <code>vtkSpline = obj.GetSpline ()</code> -  If SplineType is CUSTOM, uses this spline.
+ </LI>
+<LI>  <code>obj.SetSplineType (int )</code> -  Spline type used by the filter.
+ BSPLINE (0) - Use optimized b-spline (default).
+ CUSTOM (1) - Use spline set with SetSpline.
+ </LI>
+<LI>  <code>int = obj.GetSplineType ()</code> -  Spline type used by the filter.
+ BSPLINE (0) - Use optimized b-spline (default).
+ CUSTOM (1) - Use spline set with SetSpline.
+ </LI>
+<LI>  <code>obj.SetNumberOfSubdivisions (vtkIdType )</code> -  The number of subdivisions in the spline.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfSubdivisions ()</code> -  The number of subdivisions in the spline.
+ </LI>
+</UL>
+</BODY>
+</HTML>

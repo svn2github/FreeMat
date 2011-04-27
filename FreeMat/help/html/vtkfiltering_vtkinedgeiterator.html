@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInEdgeIterator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInEdgeIterator
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkInEdgeIterator iterates through all edges whose target is a particular
+ vertex. Instantiate this class directly and call Initialize() to traverse
+ the vertex of a graph. Alternately, use GetInEdges() on the graph to
+ initialize the iterator. it-&gt;Next() returns a vtkInEdgeType structure,
+ which contains Id, the edge's id, and Source, the edge's source vertex.
+<P>
+<P>
+To create an instance of class vtkInEdgeIterator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInEdgeIterator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInEdgeIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInEdgeIterator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInEdgeIterator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInEdgeIterator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Initialize (vtkGraph g, vtkIdType v)</code> -  Initialize the iterator with a graph and vertex.
+ </LI>
+<LI>  <code>vtkGraph = obj.GetGraph ()</code> -  Get the graph and vertex associated with this iterator.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetVertex ()</code> -  Get the graph and vertex associated with this iterator.
+ </LI>
+<LI>  <code>vtkGraphEdge = obj.NextGraphEdge ()</code> -  Just like Next(), but
+ returns heavy-weight vtkGraphEdge object instead of
+ the vtkEdgeType struct, for use with wrappers.
+ The graph edge is owned by this iterator, and changes
+ after each call to NextGraphEdge().
+ </LI>
+<LI>  <code>bool = obj.HasNext ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

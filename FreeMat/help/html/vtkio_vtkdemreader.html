@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDEMReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDEMReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkDEMReader reads digital elevation files and creates image data.
+ Digital elevation files are produced by the
+ &lt;A HREF="http://www.usgs.gov"&gt;US Geological Survey&lt;/A&gt;. 
+ A complete description of the DEM file is located at the USGS site.
+ The reader reads the entire dem file and create a vtkImageData that
+ contains a single scalar component that is the elevation in meters.
+ The spacing is also expressed in meters. A number of get methods
+ provide access to fields on the header.
+<P>
+To create an instance of class vtkDEMReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDEMReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDEMReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDEMReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDEMReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDEMReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Specify file name of Digital Elevation Model (DEM) file
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Specify file name of Digital Elevation Model (DEM) file
+ </LI>
+<LI>  <code>obj.SetElevationReference (int )</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>int = obj.GetElevationReferenceMinValue ()</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>int = obj.GetElevationReferenceMaxValue ()</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>int = obj.GetElevationReference ()</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>obj.SetElevationReferenceToSeaLevel ()</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>obj.SetElevationReferenceToElevationBounds ()</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>string = obj.GetElevationReferenceAsString (void )</code> -  Specify the elevation origin to use. By default, the elevation origin
+ is equal to ElevationBounds[0]. A more convenient origin is to use sea
+ level (i.e., a value of 0.0).
+ </LI>
+<LI>  <code>string = obj.GetMapLabel ()</code> -  An ASCII description of the map
+ </LI>
+<LI>  <code>int = obj.GetDEMLevel ()</code> -  Code 1=DEM-1, 2=DEM_2, ...
+ </LI>
+<LI>  <code>int = obj.GetElevationPattern ()</code> -  Code 1=regular, 2=random, reserved for future use
+ </LI>
+<LI>  <code>int = obj.GetGroundSystem ()</code> -  Ground planimetric reference system
+ </LI>
+<LI>  <code>int = obj.GetGroundZone ()</code> -  Zone in ground planimetric reference system
+ </LI>
+<LI>  <code>float = obj. GetProjectionParameters ()</code> -  Map Projection parameters. All are zero.
+ </LI>
+<LI>  <code>int = obj.GetPlaneUnitOfMeasure ()</code> -  Defining unit of measure for ground planimetric coordinates throughout
+ the file. 0 = radians, 1 = feet, 2 = meters, 3 = arc-seconds.
+ </LI>
+<LI>  <code>int = obj.GetElevationUnitOfMeasure ()</code> -  Defining unit of measure for elevation coordinates throughout
+ the file. 1 = feet, 2 = meters
+ </LI>
+<LI>  <code>int = obj.GetPolygonSize ()</code> -  Number of sides in the polygon which defines the coverage of
+ the DEM file. Set to 4.
+ </LI>
+<LI>  <code>float = obj. GetElevationBounds ()</code> -  Minimum and maximum elevation for the DEM. The units in the file
+ are in ElevationUnitOfMeasure. This class converts them to meters.
+ </LI>
+<LI>  <code>float = obj.GetLocalRotation ()</code> -  Counterclockwise angle (in radians) from the primary axis of the planimetric
+ reference to the primary axis of the DEM local reference system.
+ IGNORED BY THIS IMPLEMENTATION.
+ </LI>
+<LI>  <code>int = obj.GetAccuracyCode ()</code> -  Accuracy code for elevations. 0=unknown accuracy
+ </LI>
+<LI>  <code>float = obj. GetSpatialResolution ()</code> -  DEM spatial resolution for x,y,z. Values are expressed in units of resolution.
+ Since elevations are read as integers, this permits fractional elevations.
+ </LI>
+<LI>  <code>int = obj. GetProfileDimension ()</code> -  The number of rows and columns in the DEM.
+ </LI>
+</UL>
+</BODY>
+</HTML>

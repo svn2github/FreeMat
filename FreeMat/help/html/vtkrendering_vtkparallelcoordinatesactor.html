@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkParallelCoordinatesActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkParallelCoordinatesActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkParallelCoordinatesActor generates a parallel coordinates plot from an
+ input field (i.e., vtkDataObject). Parallel coordinates represent
+ N-dimensional data by using a set of N parallel axes (not orthogonal like
+ the usual x-y-z Cartesian axes). Each N-dimensional point is plotted as a
+ polyline, were each of the N components of the point lie on one of the
+ N axes, and the components are connected by straight lines.
+<P>
+ To use this class, you must specify an input data object. You'll probably
+ also want to specify the position of the plot be setting the Position and
+ Position2 instance variables, which define a rectangle in which the plot
+ lies. Another important parameter is the IndependentVariables ivar, which
+ tells the instance how to interpret the field data (independent variables
+ as the rows or columns of the field). There are also many other instance
+ variables that control the look of the plot includes its title, 
+ attributes, number of ticks on the axes, etc.
+<P>
+ Set the text property/attributes of the title and the labels through the 
+ vtkTextProperty objects associated to this actor.
+<P>
+To create an instance of class vtkParallelCoordinatesActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkParallelCoordinatesActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkParallelCoordinatesActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkParallelCoordinatesActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkParallelCoordinatesActor = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkParallelCoordinatesActor = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetIndependentVariables (int )</code> -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+ </LI>
+<LI>  <code>int = obj.GetIndependentVariablesMinValue ()</code> -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+ </LI>
+<LI>  <code>int = obj.GetIndependentVariablesMaxValue ()</code> -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+ </LI>
+<LI>  <code>int = obj.GetIndependentVariables ()</code> -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+ </LI>
+<LI>  <code>obj.SetIndependentVariablesToColumns ()</code> -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+ </LI>
+<LI>  <code>obj.SetIndependentVariablesToRows ()</code> -  Specify whether to use the rows or columns as independent variables.
+ If columns, then each row represents a separate point. If rows, then 
+ each column represents a separate point.
+ </LI>
+<LI>  <code>obj.SetTitle (string )</code> -  Set/Get the title of the parallel coordinates plot.
+ </LI>
+<LI>  <code>string = obj.GetTitle ()</code> -  Set/Get the title of the parallel coordinates plot.
+ </LI>
+<LI>  <code>obj.SetNumberOfLabels (int )</code> -  Set/Get the number of annotation labels to show along each axis.
+ This values is a suggestion: the number of labels may vary depending
+ on the particulars of the data.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfLabelsMinValue ()</code> -  Set/Get the number of annotation labels to show along each axis.
+ This values is a suggestion: the number of labels may vary depending
+ on the particulars of the data.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfLabelsMaxValue ()</code> -  Set/Get the number of annotation labels to show along each axis.
+ This values is a suggestion: the number of labels may vary depending
+ on the particulars of the data.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfLabels ()</code> -  Set/Get the number of annotation labels to show along each axis.
+ This values is a suggestion: the number of labels may vary depending
+ on the particulars of the data.
+ </LI>
+<LI>  <code>obj.SetLabelFormat (string )</code> -  Set/Get the format with which to print the labels on the axes.
+ </LI>
+<LI>  <code>string = obj.GetLabelFormat ()</code> -  Set/Get the format with which to print the labels on the axes.
+ </LI>
+<LI>  <code>obj.SetTitleTextProperty (vtkTextProperty p)</code> -  Set/Get the title text property.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetTitleTextProperty ()</code> -  Set/Get the title text property.
+ </LI>
+<LI>  <code>obj.SetLabelTextProperty (vtkTextProperty p)</code> -  Set/Get the labels text property.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLabelTextProperty ()</code> -  Set/Get the labels text property.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code> -  Draw the parallel coordinates plot.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport )</code> -  Draw the parallel coordinates plot.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )</code> -  Does this prop have some translucent polygonal geometry?
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Does this prop have some translucent polygonal geometry?
+ </LI>
+<LI>  <code>obj.SetInput (vtkDataObject )</code> -  Set the input to the parallel coordinates actor.
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetInput ()</code> -  Remove a dataset from the list of data to append.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+</UL>
+</BODY>
+</HTML>

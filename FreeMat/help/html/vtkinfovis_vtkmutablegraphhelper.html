@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMutableGraphHelper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMutableGraphHelper
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkMutableGraphHelper has helper methods AddVertex and AddEdge which
+ add vertices/edges to the underlying mutable graph. This is helpful in
+ filters which need to (re)construct graphs which may be either directed
+ or undirected.
+<P>
+<P>
+To create an instance of class vtkMutableGraphHelper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMutableGraphHelper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMutableGraphHelper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMutableGraphHelper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMutableGraphHelper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMutableGraphHelper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGraph (vtkGraph g)</code> -  Set the underlying graph that you want to modify with this helper.
+ The graph must be an instance of vtkMutableDirectedGraph or
+ vtkMutableUndirectedGraph.
+ </LI>
+<LI>  <code>vtkGraph = obj.GetGraph ()</code> -  Set the underlying graph that you want to modify with this helper.
+ The graph must be an instance of vtkMutableDirectedGraph or
+ vtkMutableUndirectedGraph.
+ </LI>
+<LI>  <code>vtkGraphEdge = obj.AddGraphEdge (vtkIdType u, vtkIdType v)</code> -  Add an edge to the underlying mutable graph.
+ </LI>
+<LI>  <code>vtkIdType = obj.AddVertex ()</code> -  Add a vertex to the underlying mutable graph.
+ </LI>
+<LI>  <code>obj.RemoveVertex (vtkIdType v)</code> -  Remove a vertex from the underlying mutable graph.
+ </LI>
+<LI>  <code>obj.RemoveVertices (vtkIdTypeArray verts)</code> -  Remove a collection of vertices from the underlying mutable graph.
+ </LI>
+<LI>  <code>obj.RemoveEdge (vtkIdType e)</code> -  Remove an edge from the underlying mutable graph.
+ </LI>
+<LI>  <code>obj.RemoveEdges (vtkIdTypeArray edges)</code> -  Remove a collection of edges from the underlying mutable graph.
+ </LI>
+</UL>
+</BODY>
+</HTML>

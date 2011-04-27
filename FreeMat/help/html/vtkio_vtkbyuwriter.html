@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBYUWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBYUWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkBYUWriter writes MOVIE.BYU polygonal files. These files consist 
+ of a geometry file (.g), a scalar file (.s), a displacement or 
+ vector file (.d), and a 2D texture coordinate file (.t). These files 
+ must be specified to the object, the appropriate boolean 
+ variables must be true, and data must be available from the input
+ for the files to be written.
+ WARNING: this writer does not currently write triangle strips. Use
+ vtkTriangleFilter to convert strips to triangles.
+<P>
+To create an instance of class vtkBYUWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBYUWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBYUWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBYUWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkBYUWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkBYUWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGeometryFileName (string )</code> -  Specify the name of the geometry file to write.
+ </LI>
+<LI>  <code>string = obj.GetGeometryFileName ()</code> -  Specify the name of the geometry file to write.
+ </LI>
+<LI>  <code>obj.SetDisplacementFileName (string )</code> -  Specify the name of the displacement file to write.
+ </LI>
+<LI>  <code>string = obj.GetDisplacementFileName ()</code> -  Specify the name of the displacement file to write.
+ </LI>
+<LI>  <code>obj.SetScalarFileName (string )</code> -  Specify the name of the scalar file to write.
+ </LI>
+<LI>  <code>string = obj.GetScalarFileName ()</code> -  Specify the name of the scalar file to write.
+ </LI>
+<LI>  <code>obj.SetTextureFileName (string )</code> -  Specify the name of the texture file to write.
+ </LI>
+<LI>  <code>string = obj.GetTextureFileName ()</code> -  Specify the name of the texture file to write.
+ </LI>
+<LI>  <code>obj.SetWriteDisplacement (int )</code> -  Turn on/off writing the displacement file.
+ </LI>
+<LI>  <code>int = obj.GetWriteDisplacement ()</code> -  Turn on/off writing the displacement file.
+ </LI>
+<LI>  <code>obj.WriteDisplacementOn ()</code> -  Turn on/off writing the displacement file.
+ </LI>
+<LI>  <code>obj.WriteDisplacementOff ()</code> -  Turn on/off writing the displacement file.
+ </LI>
+<LI>  <code>obj.SetWriteScalar (int )</code> -  Turn on/off writing the scalar file.
+ </LI>
+<LI>  <code>int = obj.GetWriteScalar ()</code> -  Turn on/off writing the scalar file.
+ </LI>
+<LI>  <code>obj.WriteScalarOn ()</code> -  Turn on/off writing the scalar file.
+ </LI>
+<LI>  <code>obj.WriteScalarOff ()</code> -  Turn on/off writing the scalar file.
+ </LI>
+<LI>  <code>obj.SetWriteTexture (int )</code> -  Turn on/off writing the texture file.
+ </LI>
+<LI>  <code>int = obj.GetWriteTexture ()</code> -  Turn on/off writing the texture file.
+ </LI>
+<LI>  <code>obj.WriteTextureOn ()</code> -  Turn on/off writing the texture file.
+ </LI>
+<LI>  <code>obj.WriteTextureOff ()</code> -  Turn on/off writing the texture file.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMassProperties
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMassProperties
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkMassProperties estimates the volume, the surface area, and the
+ normalized shape index of a triangle mesh.  The algorithm
+ implemented here is based on the discrete form of the divergence
+ theorem.  The general assumption here is that the model is of
+ closed surface.  For more details see the following reference
+ (Alyassin A.M. et al, "Evaluation of new algorithms for the
+ interactive measurement of surface area and volume", Med Phys 21(6)
+ 1994.).
+<P>
+To create an instance of class vtkMassProperties, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMassProperties
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMassProperties has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMassProperties class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMassProperties = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMassProperties = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>double = obj.GetVolume ()</code> -  Compute and return the projected volume.
+ Typically you should compare this volume to the value returned by GetVolume
+ if you get an error (GetVolume()-GetVolumeProjected())*10000 that is greater
+ than GetVolume() this should identify a problem:
+ * Either the polydata is not closed
+ * Or the polydata contains triangle that are flipped
+ </LI>
+<LI>  <code>double = obj.GetVolumeProjected ()</code> -  Compute and return the volume projected on to each axis aligned plane.
+ </LI>
+<LI>  <code>double = obj.GetVolumeX ()</code> -  Compute and return the volume projected on to each axis aligned plane.
+ </LI>
+<LI>  <code>double = obj.GetVolumeY ()</code> -  Compute and return the volume projected on to each axis aligned plane.
+ </LI>
+<LI>  <code>double = obj.GetVolumeZ ()</code> -  Compute and return the weighting factors for the maximum unit
+ normal component (MUNC).
+ </LI>
+<LI>  <code>double = obj.GetKx ()</code> -  Compute and return the weighting factors for the maximum unit
+ normal component (MUNC).
+ </LI>
+<LI>  <code>double = obj.GetKy ()</code> -  Compute and return the weighting factors for the maximum unit
+ normal component (MUNC).
+ </LI>
+<LI>  <code>double = obj.GetKz ()</code> -  Compute and return the area.
+ </LI>
+<LI>  <code>double = obj.GetSurfaceArea ()</code> -  Compute and return the min cell area.
+ </LI>
+<LI>  <code>double = obj.GetMinCellArea ()</code> -  Compute and return the max cell area.
+ </LI>
+<LI>  <code>double = obj.GetMaxCellArea ()</code> -  Compute and return the normalized shape index. This characterizes the
+ deviation of the shape of an object from a sphere. A sphere's NSI
+ is one. This number is always &gt;= 1.0.
+ </LI>
+<LI>  <code>double = obj.GetNormalizedShapeIndex ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

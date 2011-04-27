@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTensorProbeRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTensorProbeRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ The class serves as an abstract geometrical representation for the
+ vtkTensorProbeWidget. It is left to the concrete implementation to render
+ the tensors as it desires. For instance, 
+ vtkEllipsoidTensorProbeRepresentation renders the tensors as ellipsoids.
+<P>
+<P>
+To create an instance of class vtkTensorProbeRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTensorProbeRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTensorProbeRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTensorProbeRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>vtkTensorProbeRepresentation = obj.NewInstance ()</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>vtkTensorProbeRepresentation = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  See vtkWidgetRepresentation for details.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code> -  See vtkWidgetRepresentation for details.
+ </LI>
+<LI>  <code>obj.SetProbePosition (double , double , double )</code> -  Set the position of the Tensor probe.
+ </LI>
+<LI>  <code>obj.SetProbePosition (double  a[3])</code> -  Set the position of the Tensor probe.
+ </LI>
+<LI>  <code>double = obj. GetProbePosition ()</code> -  Set the position of the Tensor probe.
+ </LI>
+<LI>  <code>obj.SetProbeCellId (vtkIdType )</code> -  Set the position of the Tensor probe.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetProbeCellId ()</code> -  Set the position of the Tensor probe.
+ </LI>
+<LI>  <code>obj.SetTrajectory (vtkPolyData )</code> -  Set the trajectory that we are trying to probe tensors on
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  Set the probe position to a reasonable location on the trajectory.
+ </LI>
+<LI>  <code>int = obj.SelectProbe (int pos[2])</code> -  This method is invoked by the widget during user interaction.
+ Can we pick the tensor glyph at the current cursor pos
+ </LI>
+<LI>  <code>int = obj.Move (double motionVector[2])</code> -  INTERNAL - Do not use
+ This method is invoked by the widget during user interaction.
+ Move probe based on the position and the motion vector.
+ </LI>
+<LI>  <code>obj.GetActors (vtkPropCollection )</code> -  See vtkProp for details.  
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  See vtkProp for details.  
+ </LI>
+</UL>
+</BODY>
+</HTML>

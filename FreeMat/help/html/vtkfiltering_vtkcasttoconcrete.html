@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCastToConcrete
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCastToConcrete
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkCastToConcrete is a filter that works around type-checking limitations
+ in the filter classes. Some filters generate abstract types on output, 
+ and cannot be connected to the input of filters requiring a concrete
+ input type. For example, vtkElevationFilter generates vtkDataSet for output,
+ and cannot be connected to vtkDecimate, because vtkDecimate requires 
+ vtkPolyData as input. This is true even though (in this example) the input 
+ to vtkElevationFilter is of type vtkPolyData, and you know the output of 
+ vtkElevationFilter is the same type as its input.
+<P>
+ vtkCastToConcrete performs run-time checking to insure that output type
+ is of the right type. An error message will result if you try to cast
+ an input type improperly. Otherwise, the filter performs the appropriate
+ cast and returns the data.
+<P>
+To create an instance of class vtkCastToConcrete, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCastToConcrete
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCastToConcrete has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCastToConcrete class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCastToConcrete = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCastToConcrete = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

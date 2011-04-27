@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTransmitImageDataPiece
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTransmitImageDataPiece
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ This filter updates the appropriate piece by requesting the piece from 
+ process 0.  Process 0 always updates all of the data.  It is important that 
+ Execute get called on all processes, otherwise the filter will deadlock.
+<P>
+To create an instance of class vtkTransmitImageDataPiece, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTransmitImageDataPiece
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTransmitImageDataPiece has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTransmitImageDataPiece class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTransmitImageDataPiece = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTransmitImageDataPiece = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetController (vtkMultiProcessController )</code> -  By defualt this filter uses the global controller,
+ but this method can be used to set another instead.
+ </LI>
+<LI>  <code>vtkMultiProcessController = obj.GetController ()</code> -  By defualt this filter uses the global controller,
+ but this method can be used to set another instead.
+ </LI>
+<LI>  <code>obj.SetCreateGhostCells (int )</code> -  Turn on/off creating ghost cells (on by default).
+ </LI>
+<LI>  <code>int = obj.GetCreateGhostCells ()</code> -  Turn on/off creating ghost cells (on by default).
+ </LI>
+<LI>  <code>obj.CreateGhostCellsOn ()</code> -  Turn on/off creating ghost cells (on by default).
+ </LI>
+<LI>  <code>obj.CreateGhostCellsOff ()</code> -  Turn on/off creating ghost cells (on by default).
+ </LI>
+</UL>
+</BODY>
+</HTML>

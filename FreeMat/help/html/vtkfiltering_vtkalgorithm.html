@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAlgorithm
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAlgorithm
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkAlgorithm is the superclass for all sources, filters, and sinks
+ in VTK.  It defines a generalized interface for executing data
+ processing algorithms.  Pipeline connections are associated with
+ input and output ports that are independent of the type of data
+ passing through the connections.
+<P>
+ Instances may be used independently or within pipelines with a
+ variety of architectures and update mechanisms.  Pipelines are
+ controlled by instances of vtkExecutive.  Every vtkAlgorithm
+ instance has an associated vtkExecutive when it is used in a
+ pipeline.  The executive is responsible for data flow.
+<P>
+To create an instance of class vtkAlgorithm, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAlgorithm
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAlgorithm has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAlgorithm class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAlgorithm = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAlgorithm = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.HasExecutive ()</code> -  Check whether this algorithm has an assigned executive.  This
+ will NOT create a default executive.
+ </LI>
+<LI>  <code>vtkExecutive = obj.GetExecutive ()</code> -  Get this algorithm's executive.  If it has none, a default
+ executive will be created.
+ </LI>
+<LI>  <code>obj.SetExecutive (vtkExecutive executive)</code> -  Set this algorithm's executive.  This algorithm is removed from
+ any executive to which it has previously been assigned and then
+ assigned to the given executive.
+ </LI>
+<LI>  <code>int = obj.ModifyRequest (vtkInformation request, int when)</code> -  This method gives the algorithm a chance to modify the contents of a
+ request before or after (specified in the when argument) it is
+ forwarded. The default implementation is empty. Returns 1 on success,
+ 0 on failure. When can be either vtkExecutive::BeforeForward or
+ vtkExecutive::AfterForward.
+ </LI>
+<LI>  <code>vtkInformation = obj.GetInputPortInformation (int port)</code> -  Get the information object associated with an input port.  There
+ is one input port per kind of input to the algorithm.  Each input
+ port tells executives what kind of data and downstream requests
+ this algorithm can handle for that input.
+ </LI>
+<LI>  <code>vtkInformation = obj.GetOutputPortInformation (int port)</code> -  Get the information object associated with an output port.  There
+ is one output port per output from the algorithm.  Each output
+ port tells executives what kind of upstream requests this
+ algorithm can handle for that output.
+ </LI>
+<LI>  <code>vtkInformation = obj.GetInformation ()</code> -  Set/Get the information object associated with this algorithm.
+ </LI>
+<LI>  <code>obj.SetInformation (vtkInformation )</code> -  Set/Get the information object associated with this algorithm.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfInputPorts ()</code> -  Get the number of input ports used by the algorithm.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfOutputPorts ()</code> -  Get the number of output ports provided by the algorithm.
+ </LI>
+<LI>  <code>obj.Register (vtkObjectBase o)</code> -  Participate in garbage collection.
+ </LI>
+<LI>  <code>obj.UnRegister (vtkObjectBase o)</code> -  Participate in garbage collection.
+ </LI>
+<LI>  <code>obj.SetAbortExecute (int )</code> -  Set/Get the AbortExecute flag for the process object. Process objects
+ may handle premature termination of execution in different ways.
+ </LI>
+<LI>  <code>int = obj.GetAbortExecute ()</code> -  Set/Get the AbortExecute flag for the process object. Process objects
+ may handle premature termination of execution in different ways.
+ </LI>
+<LI>  <code>obj.AbortExecuteOn ()</code> -  Set/Get the AbortExecute flag for the process object. Process objects
+ may handle premature termination of execution in different ways.
+ </LI>
+<LI>  <code>obj.AbortExecuteOff ()</code> -  Set/Get the AbortExecute flag for the process object. Process objects
+ may handle premature termination of execution in different ways.
+ </LI>
+<LI>  <code>obj.SetProgress (double )</code> -  Set/Get the execution progress of a process object.
+ </LI>
+<LI>  <code>double = obj.GetProgressMinValue ()</code> -  Set/Get the execution progress of a process object.
+ </LI>
+<LI>  <code>double = obj.GetProgressMaxValue ()</code> -  Set/Get the execution progress of a process object.
+ </LI>
+<LI>  <code>double = obj.GetProgress ()</code> -  Set/Get the execution progress of a process object.
+ </LI>
+<LI>  <code>obj.UpdateProgress (double amount)</code> -  Update the progress of the process object. If a ProgressMethod exists,
+ executes it.  Then set the Progress ivar to amount. The parameter amount
+ should range between (0,1).
+ </LI>
+<LI>  <code>obj.SetProgressText (string ptext)</code> -  Set the current text message associated with the progress state.
+ This may be used by a calling process/GUI.
+ Note: Because SetProgressText() is called from inside RequestData()
+ it does not modify the algorithm object. Algorithms are not 
+ allowed to modify themselves from inside RequestData().
+ </LI>
+<LI>  <code>string = obj.GetProgressText ()</code> -  Set the current text message associated with the progress state.
+ This may be used by a calling process/GUI.
+ Note: Because SetProgressText() is called from inside RequestData()
+ it does not modify the algorithm object. Algorithms are not 
+ allowed to modify themselves from inside RequestData().
+ </LI>
+<LI>  <code>long = obj.GetErrorCode ()</code> -  The error code contains a possible error that occured while
+ reading or writing the file.
+ </LI>
+<LI>  <code>obj.SetInputArrayToProcess (int idx, int port, int connection, int fieldAssociation, string name)</code> -  Set the input data arrays that this algorithm will
+ process. Specifically the idx array that this algorithm will process
+ (starting from 0) is the array on port, connection with the specified
+ association and name or attribute type (such as SCALARS). The
+ fieldAssociation refers to which field in the data object the array is
+ stored. See vtkDataObject::FieldAssociations for detail.
+ </LI>
+<LI>  <code>obj.SetInputArrayToProcess (int idx, int port, int connection, int fieldAssociation, int fieldAttributeType)</code> -  Set the input data arrays that this algorithm will
+ process. Specifically the idx array that this algorithm will process
+ (starting from 0) is the array on port, connection with the specified
+ association and name or attribute type (such as SCALARS). The
+ fieldAssociation refers to which field in the data object the array is
+ stored. See vtkDataObject::FieldAssociations for detail.
+ </LI>
+<LI>  <code>obj.SetInputArrayToProcess (int idx, vtkInformation info)</code> -  Set the input data arrays that this algorithm will
+ process. Specifically the idx array that this algorithm will process
+ (starting from 0) is the array on port, connection with the specified
+ association and name or attribute type (such as SCALARS). The
+ fieldAssociation refers to which field in the data object the array is
+ stored. See vtkDataObject::FieldAssociations for detail.
+ </LI>
+<LI>  <code>obj.SetInputArrayToProcess (int idx, int port, int connection, string fieldAssociation, string attributeTypeorName)</code> -  String based versions of SetInputArrayToProcess(). Because
+ fieldAssociation and fieldAttributeType are enums, they cannot be
+ easily accessed from scripting language. These methods provides an
+ easy and safe way of passing association and attribute type
+ information. Field association is one of the following:
+ @verbatim
+ vtkDataObject::FIELD_ASSOCIATION_POINTS
+ vtkDataObject::FIELD_ASSOCIATION_CELLS
+ vtkDataObject::FIELD_ASSOCIATION_NONE
+ vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS
+ @endverbatim
+ Attribute type is one of the following:
+ @verbatim
+ vtkDataSetAttributes::SCALARS
+ vtkDataSetAttributes::VECTORS
+ vtkDataSetAttributes::NORMALS
+ vtkDataSetAttributes::TCOORDS
+ vtkDataSetAttributes::TENSORS
+ @endverbatim
+ If the last argument is not an attribute type, it is assumed to
+ be an array name.
+ </LI>
+<LI>  <code>vtkInformation = obj.GetInputArrayInformation (int idx)</code> -  Get the info object for the specified input array to this algorithm
+ </LI>
+<LI>  <code>obj.RemoveAllInputs ()</code> -  Remove all the input data.
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetOutputDataObject (int port)</code> -  Get the data object that will contain the algorithm output for
+ the given port.
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetInputDataObject (int port, int connection)</code> -  Get the data object that will contain the algorithm input for the given
+ port and given connection.
+ </LI>
+<LI>  <code>obj.SetInputConnection (int port, vtkAlgorithmOutput input)</code> -  Set the connection for the given input port index.  Each input
+ port of a filter has a specific purpose.  A port may have zero or
+ more connections and the required number is specified by each
+ filter.  Setting the connection with this method removes all
+ other connections from the port.  To add more than one connection
+ use AddInputConnection().
+
+ The input for the connection is the output port of another
+ filter, which is obtained with GetOutputPort().  Typical usage is
+
+   filter2-&gt;SetInputConnection(0, filter1-&gt;GetOutputPort(0)).
+ </LI>
+<LI>  <code>obj.SetInputConnection (vtkAlgorithmOutput input)</code> -  Set the connection for the given input port index.  Each input
+ port of a filter has a specific purpose.  A port may have zero or
+ more connections and the required number is specified by each
+ filter.  Setting the connection with this method removes all
+ other connections from the port.  To add more than one connection
+ use AddInputConnection().
+
+ The input for the connection is the output port of another
+ filter, which is obtained with GetOutputPort().  Typical usage is
+
+   filter2-&gt;SetInputConnection(0, filter1-&gt;GetOutputPort(0)).
+ </LI>
+<LI>  <code>obj.AddInputConnection (int port, vtkAlgorithmOutput input)</code> -  Add a connection to the given input port index.  See
+ SetInputConnection() for details on input connections.  This
+ method is the complement to RemoveInputConnection() in that it
+ adds only the connection specified without affecting other
+ connections.  Typical usage is
+
+   filter2-&gt;AddInputConnection(0, filter1-&gt;GetOutputPort(0)).
+ </LI>
+<LI>  <code>obj.AddInputConnection (vtkAlgorithmOutput input)</code> -  Add a connection to the given input port index.  See
+ SetInputConnection() for details on input connections.  This
+ method is the complement to RemoveInputConnection() in that it
+ adds only the connection specified without affecting other
+ connections.  Typical usage is
+
+   filter2-&gt;AddInputConnection(0, filter1-&gt;GetOutputPort(0)).
+ </LI>
+<LI>  <code>obj.RemoveInputConnection (int port, vtkAlgorithmOutput input)</code> -  Remove a connection from the given input port index.  See
+ SetInputConnection() for details on input connection.  This
+ method is the complement to AddInputConnection() in that it
+ removes only the connection specified without affecting other
+ connections.  Typical usage is
+
+   filter2-&gt;RemoveInputConnection(0, filter1-&gt;GetOutputPort(0)).
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetOutputPort (int index)</code> -  Get a proxy object corresponding to the given output port of this
+ algorithm.  The proxy object can be passed to another algorithm's
+ SetInputConnection(), AddInputConnection(), and
+ RemoveInputConnection() methods to modify pipeline connectivity.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetOutputPort ()</code> -  Get the number of inputs currently connected to a port.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfInputConnections (int port)</code> -  Get the number of inputs currently connected to a port.
+ </LI>
+<LI>  <code>int = obj.GetTotalNumberOfInputConnections ()</code> -  Get the total number of inputs for this algorithm
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInputConnection (int port, int index)</code> -  Get the algorithm output port connected to an input port.
+ </LI>
+<LI>  <code>obj.Update ()</code> -  Bring this algorithm's outputs up-to-date.
+ </LI>
+<LI>  <code>obj.UpdateInformation ()</code> -  Backward compatibility method to invoke UpdateInformation on executive.
+ </LI>
+<LI>  <code>obj.UpdateWholeExtent ()</code> -  Bring this algorithm's outputs up-to-date.
+ </LI>
+<LI>  <code>obj.SetReleaseDataFlag (int )</code> -  Turn release data flag on or off for all output ports.
+ </LI>
+<LI>  <code>int = obj.GetReleaseDataFlag ()</code> -  Turn release data flag on or off for all output ports.
+ </LI>
+<LI>  <code>obj.ReleaseDataFlagOn ()</code> -  Turn release data flag on or off for all output ports.
+ </LI>
+<LI>  <code>obj.ReleaseDataFlagOff ()</code> -  Turn release data flag on or off for all output ports.
+ </LI>
+<LI>  <code>int = obj.UpdateExtentIsEmpty (vtkDataObject output)</code> -  This detects when the UpdateExtent will generate no data
+ This condition is satisfied when the UpdateExtent has 
+ zero volume (0,-1,...) or the UpdateNumberOfPieces is 0.
+ The source uses this call to determine whether to call Execute.
+ </LI>
+<LI>  <code>int = obj.UpdateExtentIsEmpty (vtkInformation pinfo, int extentType)</code> -  This detects when the UpdateExtent will generate no data
+ This condition is satisfied when the UpdateExtent has 
+ zero volume (0,-1,...) or the UpdateNumberOfPieces is 0.
+ The source uses this call to determine whether to call Execute.
+ </LI>
+<LI>  <code>double = obj.ComputePriority ()</code> -  Returns the priority of the piece described by the current update 
+ extent. The priority is a number between 0.0 and 1.0 with 0 meaning 
+ skippable (REQUEST_DATA not needed) and 1.0 meaning important. 
+ </LI>
+</UL>
+</BODY>
+</HTML>

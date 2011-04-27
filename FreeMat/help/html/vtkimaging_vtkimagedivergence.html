@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageDivergence
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageDivergence
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageDivergence takes a 3D vector field 
+ and creates a scalar field which 
+ which represents the rate of change of the vector field.
+ The definition of Divergence:
+ Given V = P(x,y,z), Q(x,y,z), R(x,y,z),
+ Divergence = dP/dx + dQ/dy + dR/dz.
+<P>
+To create an instance of class vtkImageDivergence, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageDivergence
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageDivergence has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageDivergence class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageDivergence = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageDivergence = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkComputeHistogram2DOutliers
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkComputeHistogram2DOutliers
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+  This class takes a table and one or more vtkImageData histograms as input
+  and computes the outliers in that data.  In general it does so by 
+  identifying histogram bins that are removed by a median (salt and pepper)
+  filter and below a threshold.  This threshold is automatically identified
+  to retrieve a number of outliers close to a user-determined value.  This
+  value is set by calling SetPreferredNumberOfOutliers(int).
+<P>
+  The image data input can come either as a multiple vtkImageData via the 
+  repeatable INPUT_HISTOGRAM_IMAGE_DATA port, or as a single 
+  vtkMultiBlockDataSet containing vtkImageData objects as blocks.  One
+  or the other must be set, not both (or neither).
+ 
+  The output can be retrieved as a set of row ids in a vtkSelection or
+  as a vtkTable containing the actual outlier row data.
+<P>
+<P>
+To create an instance of class vtkComputeHistogram2DOutliers, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkComputeHistogram2DOutliers
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkComputeHistogram2DOutliers has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkComputeHistogram2DOutliers class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkComputeHistogram2DOutliers = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkComputeHistogram2DOutliers = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPreferredNumberOfOutliers (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetPreferredNumberOfOutliers ()</code>
+ </LI>
+<LI>  <code>vtkTable = obj.GetOutputTable ()</code>
+ </LI>
+<LI>  <code>obj.SetInputTableConnection (vtkAlgorithmOutput cxn)</code> -  Set the input histogram data as a (repeatable) vtkImageData
+ </LI>
+<LI>  <code>obj.SetInputHistogramImageDataConnection (vtkAlgorithmOutput cxn)</code> -  Set the input histogram data as a vtkMultiBlockData set
+ containing multiple vtkImageData objects.
+ </LI>
+<LI>  <code>obj.SetInputHistogramMultiBlockConnection (vtkAlgorithmOutput cxn)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

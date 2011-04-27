@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAdjacencyMatrixToEdgeTable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAdjacencyMatrixToEdgeTable
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Treats a dense 2-way array of doubles as an adacency matrix and converts it into a
+ vtkTable suitable for use as an edge table with vtkTableToGraph.
+<P>
+To create an instance of class vtkAdjacencyMatrixToEdgeTable, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAdjacencyMatrixToEdgeTable
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAdjacencyMatrixToEdgeTable has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAdjacencyMatrixToEdgeTable class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAdjacencyMatrixToEdgeTable = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAdjacencyMatrixToEdgeTable = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkIdType = obj.GetSourceDimension ()</code> -  Specifies whether rows or columns become the "source" in the output edge table.
+ 0 = rows, 1 = columns.  Default: 0
+ </LI>
+<LI>  <code>obj.SetSourceDimension (vtkIdType )</code> -  Specifies whether rows or columns become the "source" in the output edge table.
+ 0 = rows, 1 = columns.  Default: 0
+ </LI>
+<LI>  <code>string = obj.GetValueArrayName ()</code> -  Controls the name of the output table column that contains edge weights.
+ Default: "value"
+ </LI>
+<LI>  <code>obj.SetValueArrayName (string )</code> -  Controls the name of the output table column that contains edge weights.
+ Default: "value"
+ </LI>
+<LI>  <code>vtkIdType = obj.GetMinimumCount ()</code> -  Specifies the minimum number of adjacent edges to include for each source vertex.
+ Default: 0
+ </LI>
+<LI>  <code>obj.SetMinimumCount (vtkIdType )</code> -  Specifies the minimum number of adjacent edges to include for each source vertex.
+ Default: 0
+ </LI>
+<LI>  <code>double = obj.GetMinimumThreshold ()</code> -  Specifies a minimum threshold that an edge weight must exceed to be included in
+ the output.
+ Default: 0.5
+ </LI>
+<LI>  <code>obj.SetMinimumThreshold (double )</code> -  Specifies a minimum threshold that an edge weight must exceed to be included in
+ the output.
+ Default: 0.5
+ </LI>
+</UL>
+</BODY>
+</HTML>

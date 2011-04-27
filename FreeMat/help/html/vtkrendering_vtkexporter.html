@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExporter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExporter
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkExporter is an abstract class that exports a scene to a file. It
+ is very similar to vtkWriter except that a writer only writes out
+ the geometric and topological data for an object, where an exporter
+ can write out material properties, lighting, camera parameters etc.
+ The concrete subclasses of this class may not write out all of this
+ information. For example vtkOBJExporter writes out Wavefront obj files
+ which do not include support for camera parameters.
+<P>
+ vtkExporter provides the convenience methods StartWrite() and EndWrite().
+ These methods are executed before and after execution of the Write() 
+ method. You can also specify arguments to these methods.
+ This class defines SetInput and GetInput methods which take or return
+ a vtkRenderWindow.  
+<P>
+To create an instance of class vtkExporter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExporter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExporter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExporter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExporter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExporter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Write ()</code> -  Write data to output. Method executes subclasses WriteData() method, as 
+ well as StartWrite() and EndWrite() methods.
+ </LI>
+<LI>  <code>obj.Update ()</code> -  Convenient alias for Write() method.
+ </LI>
+<LI>  <code>obj.SetRenderWindow (vtkRenderWindow )</code> -  Set/Get the rendering window that contains the scene to be written.
+ </LI>
+<LI>  <code>vtkRenderWindow = obj.GetRenderWindow ()</code> -  Set/Get the rendering window that contains the scene to be written.
+ </LI>
+<LI>  <code>obj.SetInput (vtkRenderWindow renWin)</code> -  These methods are provided for backward compatibility. Will disappear
+ soon.
+ </LI>
+<LI>  <code>vtkRenderWindow = obj.GetInput ()</code> -  These methods are provided for backward compatibility. Will disappear
+ soon.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Returns the MTime also considering the RenderWindow.
+ </LI>
+</UL>
+</BODY>
+</HTML>

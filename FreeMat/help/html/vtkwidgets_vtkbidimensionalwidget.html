@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBiDimensionalWidget
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBiDimensionalWidget
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ The vtkBiDimensionalWidget is used to measure the bi-dimensional length of
+ an object. The bi-dimensional measure is defined by two finite,
+ orthogonal lines that intersect within the finite extent of both lines.
+ The lengths of these two lines gives the bi-dimensional measure. Each line
+ is defined by two handle widgets at the end points of each line.
+<P>
+ The orthognal constraint on the two lines limits how the four end points
+ can be positioned. The first two points can be placed arbitrarily to
+ define the first line (similar to vtkDistanceWidget). The placement of the
+ third point is limited by the finite extent of the first line. As the
+ third point is placed, the fourth point is placed on the opposite side of
+ the first line. Once the third point is placed, the second line is defined
+ since the fourth point is defined at the same time, but the fourth point
+ can be moved along the second line (i.e., maintaining the orthogonal
+ relationship between the two lines). Onced defined, any of the four points
+ can be moved along their constraint lines. Also, each line can be translated
+ along the other line (in an orthogonal direction), and the whole
+ bi-dimensional widget can be rotated about its center point (see the description
+ of the event bindings). Finally, selecting the point where the two orthogonal
+ axes intersect, the entire widget can be translated in any direction.
+<P>
+ Placement of any point results in a special PlacePointEvent invocation so
+ that special operations may be performed to reposition the point. Motion
+ of any point, moving the lines, or rotating the widget cause
+ InteractionEvents to be invoked. Note that the widget has two fundamental
+ modes: a define mode (when initially placing the points) and a manipulate
+ mode (after the points are placed). Line translation and rotation are only
+ possible in manipulate mode.
+ 
+ To use this widget, specify an instance of vtkBiDimensionalWidget and a
+ representation (e.g., vtkBiDimensionalRepresentation2D). The widget is
+ implemented using four instances of vtkHandleWidget which are used to
+ position the end points of the two intersecting lines. The representations
+ for these handle widgets are provided by the
+ vtkBiDimensionalRepresentation2D class.
+<P>
+ .SECTION Event Bindings
+ By default, the widget responds to the following VTK events (i.e., it
+ watches the vtkRenderWindowInteractor for these events):
+ &lt;pre&gt;
+   LeftButtonPressEvent - define a point or manipulate a handle, line,
+                          perform rotation or translate the widget.
+   MouseMoveEvent - position the points, move a line, rotate or translate the widget
+   LeftButtonReleaseEvent - release the selected handle and end interaction
+ &lt;/pre&gt;
+<P>
+ Note that the event bindings described above can be changed using this
+ class's vtkWidgetEventTranslator. This class translates VTK events 
+ into the vtkBiDimensionalWidget's widget events:
+ &lt;pre&gt;
+   vtkWidgetEvent::AddPoint -- (In Define mode:) Add one point; depending on the 
+                               state it may the first, second, third or fourth 
+                               point added. (In Manipulate mode:) If near a handle, 
+                               select the handle. Or if near a line, select the line.
+   vtkWidgetEvent::Move -- (In Define mode:) Position the second, third or fourth 
+                           point. (In Manipulate mode:) Move the handle, line or widget.
+   vtkWidgetEvent::EndSelect -- the manipulation process has completed.
+ &lt;/pre&gt;
+<P>
+ This widget invokes the following VTK events on itself (which observers
+ can listen for):
+ &lt;pre&gt;
+   vtkCommand::StartInteractionEvent (beginning to interact)
+   vtkCommand::EndInteractionEvent (completing interaction)
+   vtkCommand::InteractionEvent (moving a handle, line or performing rotation)
+   vtkCommand::PlacePointEvent (after a point is positioned; 
+                                call data includes handle id (0,1,2,4))
+ &lt;/pre&gt;
+<P>
+To create an instance of class vtkBiDimensionalWidget, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBiDimensionalWidget
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBiDimensionalWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBiDimensionalWidget class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for a VTK class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for a VTK class.
+ </LI>
+<LI>  <code>vtkBiDimensionalWidget = obj.NewInstance ()</code> -  Standard methods for a VTK class.
+ </LI>
+<LI>  <code>vtkBiDimensionalWidget = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for a VTK class.
+ </LI>
+<LI>  <code>obj.SetEnabled (int )</code> -  The method for activiating and deactiviating this widget. This method
+ must be overridden because it is a composite widget and does more than
+ its superclasses' vtkAbstractWidget::SetEnabled() method.
+ </LI>
+<LI>  <code>obj.SetRepresentation (vtkBiDimensionalRepresentation2D r)</code> -  Create the default widget representation if one is not set. 
+ </LI>
+<LI>  <code>obj.CreateDefaultRepresentation ()</code> -  Create the default widget representation if one is not set. 
+ </LI>
+<LI>  <code>int = obj.IsMeasureValid ()</code> -  A flag indicates whether the bi-dimensional measure is valid. The widget
+ becomes valid after two of the four points are placed.
+ </LI>
+<LI>  <code>obj.SetProcessEvents (int )</code> -  Methods to change the whether the widget responds to interaction.
+ Overridden to pass the state to component widgets.
+ </LI>
+</UL>
+</BODY>
+</HTML>

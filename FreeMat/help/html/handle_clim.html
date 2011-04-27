@@ -28,7 +28,7 @@ The third and fourth form set the mode for the limit to <code>auto</code> and <c
 respectively.  In <code>auto</code> mode, FreeMat chooses the range for the axis 
 automatically.  The <code>clim('mode')</code> form returns the current mode for the axis
 (either <code>'auto'</code> or <code>'manual'</code>).  
-
+<P>
 Switching to <code>manual</code> mode does not change the limits, it simply allows
  you to modify them (and disables the automatic adjustment of the limits
 as more objects are added to the plot).  Also, if you specify a set of 
@@ -54,7 +54,6 @@ ans =
 ans = 
     0.9998 
 </PRE>
-<P>
 which results in
 <P>
 <DIV ALIGN="CENTER">
@@ -67,7 +66,6 @@ Next, we change the colorscale of the image using the
 --&gt; image(z);
 --&gt; clim([0,0.2]);
 </PRE>
-<P>
 which results in
 <P>
 <DIV ALIGN="CENTER">

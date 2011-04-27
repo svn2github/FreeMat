@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataSetGradientPrecompute
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataSetGradientPrecompute
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ Computes a geometry based vector field that the DataSetGradient filter uses to accelerate
+ gradient computation. This vector field is added to FieldData since it has a different
+ value for each vertex of each cell (a vertex shared by two cell has two differents values).
+<P>
+ .SECTION Thanks
+ This file is part of the generalized Youngs material interface reconstruction algorithm contributed by
+ CEA/DIF - Commissariat a l'Energie Atomique, Centre DAM Ile-De-France &lt;br&gt;
+ BP12, F-91297 Arpajon, France. &lt;br&gt;
+ Implementation by Thierry Carrard (CEA)
+<P>
+To create an instance of class vtkDataSetGradientPrecompute, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataSetGradientPrecompute
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataSetGradientPrecompute has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataSetGradientPrecompute class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataSetGradientPrecompute = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataSetGradientPrecompute = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

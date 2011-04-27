@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLDataReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLDataReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkXMLDataReader provides functionality common to all VTK XML file
+ readers.  Concrete subclasses call upon this functionality when
+ needed.
+<P>
+To create an instance of class vtkXMLDataReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLDataReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLDataReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLDataReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLDataReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPoints ()</code> -  Get the number of points in the output.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfCells ()</code> -  Get the number of cells in the output.
+ </LI>
+<LI>  <code>obj.CopyOutputInformation (vtkInformation outInfo, int port)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

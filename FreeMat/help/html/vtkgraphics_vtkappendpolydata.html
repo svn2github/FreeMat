@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAppendPolyData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAppendPolyData
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ 
+ vtkAppendPolyData is a filter that appends one of more polygonal datasets
+ into a single polygonal dataset. All geometry is extracted and appended,
+ but point and cell attributes (i.e., scalars, vectors, normals) are
+ extracted and appended only if all datasets have the point and/or cell
+ attributes available.  (For example, if one dataset has point scalars but
+ another does not, point scalars will not be appended.)
+<P>
+To create an instance of class vtkAppendPolyData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAppendPolyData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAppendPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAppendPolyData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAppendPolyData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAppendPolyData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetUserManagedInputs (int )</code> -  UserManagedInputs allows the user to set inputs by number instead of
+ using the AddInput/RemoveInput functions. Calls to
+ SetNumberOfInputs/SetInputByNumber should not be mixed with calls
+ to AddInput/RemoveInput. By default, UserManagedInputs is false.
+ </LI>
+<LI>  <code>int = obj.GetUserManagedInputs ()</code> -  UserManagedInputs allows the user to set inputs by number instead of
+ using the AddInput/RemoveInput functions. Calls to
+ SetNumberOfInputs/SetInputByNumber should not be mixed with calls
+ to AddInput/RemoveInput. By default, UserManagedInputs is false.
+ </LI>
+<LI>  <code>obj.UserManagedInputsOn ()</code> -  UserManagedInputs allows the user to set inputs by number instead of
+ using the AddInput/RemoveInput functions. Calls to
+ SetNumberOfInputs/SetInputByNumber should not be mixed with calls
+ to AddInput/RemoveInput. By default, UserManagedInputs is false.
+ </LI>
+<LI>  <code>obj.UserManagedInputsOff ()</code> -  UserManagedInputs allows the user to set inputs by number instead of
+ using the AddInput/RemoveInput functions. Calls to
+ SetNumberOfInputs/SetInputByNumber should not be mixed with calls
+ to AddInput/RemoveInput. By default, UserManagedInputs is false.
+ </LI>
+<LI>  <code>obj.AddInput (vtkPolyData )</code> -  Add a dataset to the list of data to append. Should not be
+ used when UserManagedInputs is true, use SetInputByNumber instead.
+ </LI>
+<LI>  <code>obj.RemoveInput (vtkPolyData )</code> -  Remove a dataset from the list of data to append. Should not be
+ used when UserManagedInputs is true, use SetInputByNumber (NULL) instead.
+ </LI>
+<LI>  <code>obj.SetNumberOfInputs (int num)</code> -  Directly set(allocate) number of inputs, should only be used
+ when UserManagedInputs is true.
+ </LI>
+<LI>  <code>obj.SetInputByNumber (int num, vtkPolyData input)</code>
+ </LI>
+<LI>  <code>obj.SetParallelStreaming (int )</code> -  ParallelStreaming is for a particular application.
+ It causes this filter to ask for a different piece
+ from each of its inputs.  If all the inputs are the same,
+ then the output of this append filter is the whole dataset
+ pieced back together.  Duplicate points are create 
+ along the seams.  The purpose of this feature is to get 
+ data parallelism at a course scale.  Each of the inputs
+ can be generated in a different process at the same time.
+ </LI>
+<LI>  <code>int = obj.GetParallelStreaming ()</code> -  ParallelStreaming is for a particular application.
+ It causes this filter to ask for a different piece
+ from each of its inputs.  If all the inputs are the same,
+ then the output of this append filter is the whole dataset
+ pieced back together.  Duplicate points are create 
+ along the seams.  The purpose of this feature is to get 
+ data parallelism at a course scale.  Each of the inputs
+ can be generated in a different process at the same time.
+ </LI>
+<LI>  <code>obj.ParallelStreamingOn ()</code> -  ParallelStreaming is for a particular application.
+ It causes this filter to ask for a different piece
+ from each of its inputs.  If all the inputs are the same,
+ then the output of this append filter is the whole dataset
+ pieced back together.  Duplicate points are create 
+ along the seams.  The purpose of this feature is to get 
+ data parallelism at a course scale.  Each of the inputs
+ can be generated in a different process at the same time.
+ </LI>
+<LI>  <code>obj.ParallelStreamingOff ()</code> -  ParallelStreaming is for a particular application.
+ It causes this filter to ask for a different piece
+ from each of its inputs.  If all the inputs are the same,
+ then the output of this append filter is the whole dataset
+ pieced back together.  Duplicate points are create 
+ along the seams.  The purpose of this feature is to get 
+ data parallelism at a course scale.  Each of the inputs
+ can be generated in a different process at the same time.
+ </LI>
+</UL>
+</BODY>
+</HTML>

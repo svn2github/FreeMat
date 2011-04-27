@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAnnotatedCubeActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAnnotatedCubeActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkAnnotatedCubeActor is a hybrid 3D actor used to represent an anatomical
+ orientation marker in a scene.  The class consists of a 3D unit cube centered
+ on the origin with each face labelled in correspondance to a particular
+ coordinate direction.  For example, with Cartesian directions, the user
+ defined text labels could be: +X, -X, +Y, -Y, +Z, -Z, while for anatomical
+ directions: A, P, L, R, S, I.  Text is automatically centered on each cube
+ face and is not restriceted to single characters. In addition to or in
+ replace of a solid text label representation, the outline edges of the labels
+ can be displayed.  The individual properties of the cube, face labels
+ and text outlines can be manipulated as can their visibility.
+<P>
+To create an instance of class vtkAnnotatedCubeActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAnnotatedCubeActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAnnotatedCubeActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAnnotatedCubeActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAnnotatedCubeActor = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAnnotatedCubeActor = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.GetActors (vtkPropCollection )</code> -  For some exporters and other other operations we must be
+ able to collect all the actors or volumes. These methods
+ are used in that process.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Does this prop have some translucent polygonal geometry?
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkProp prop)</code> -  Shallow copy of an axes actor. Overloads the virtual vtkProp method.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>obj.GetBounds (double bounds[6])</code> -  Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax). (The
+ method GetBounds(double bounds[6]) is available from the superclass.)
+ </LI>
+<LI>  <code>double = obj.GetBounds ()</code> -  Get the bounds for this Actor as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax). (The
+ method GetBounds(double bounds[6]) is available from the superclass.)
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Get the actors mtime plus consider its properties and texture if set.
+ </LI>
+<LI>  <code>obj.SetFaceTextScale (double )</code> -  Set/Get the scale factor for the face text
+ </LI>
+<LI>  <code>double = obj.GetFaceTextScale ()</code> -  Set/Get the scale factor for the face text
+ </LI>
+<LI>  <code>vtkProperty = obj.GetXPlusFaceProperty ()</code> -  Get the individual face text properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetXMinusFaceProperty ()</code> -  Get the individual face text properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetYPlusFaceProperty ()</code> -  Get the individual face text properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetYMinusFaceProperty ()</code> -  Get the individual face text properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetZPlusFaceProperty ()</code> -  Get the individual face text properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetZMinusFaceProperty ()</code> -  Get the individual face text properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetCubeProperty ()</code> -  Get the cube properties.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetTextEdgesProperty ()</code> -  Get the text edges properties.
+ </LI>
+<LI>  <code>obj.SetXPlusFaceText (string )</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>string = obj.GetXPlusFaceText ()</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>obj.SetXMinusFaceText (string )</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>string = obj.GetXMinusFaceText ()</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>obj.SetYPlusFaceText (string )</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>string = obj.GetYPlusFaceText ()</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>obj.SetYMinusFaceText (string )</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>string = obj.GetYMinusFaceText ()</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>obj.SetZPlusFaceText (string )</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>string = obj.GetZPlusFaceText ()</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>obj.SetZMinusFaceText (string )</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>string = obj.GetZMinusFaceText ()</code> -  Set/get the face text.
+ </LI>
+<LI>  <code>obj.SetTextEdgesVisibility (int )</code> -  Enable/disable drawing the vector text edges.
+ </LI>
+<LI>  <code>int = obj.GetTextEdgesVisibility ()</code> -  Enable/disable drawing the vector text edges.
+ </LI>
+<LI>  <code>obj.SetCubeVisibility (int )</code> -  Enable/disable drawing the cube.
+ </LI>
+<LI>  <code>int = obj.GetCubeVisibility ()</code> -  Enable/disable drawing the cube.
+ </LI>
+<LI>  <code>obj.SetFaceTextVisibility (int )</code> -  Enable/disable drawing the vector text.
+ </LI>
+<LI>  <code>int = obj.GetFaceTextVisibility ()</code> -  Enable/disable drawing the vector text.
+ </LI>
+<LI>  <code>obj.SetXFaceTextRotation (double )</code> -  Augment individual face text orientations.
+ </LI>
+<LI>  <code>double = obj.GetXFaceTextRotation ()</code> -  Augment individual face text orientations.
+ </LI>
+<LI>  <code>obj.SetYFaceTextRotation (double )</code> -  Augment individual face text orientations.
+ </LI>
+<LI>  <code>double = obj.GetYFaceTextRotation ()</code> -  Augment individual face text orientations.
+ </LI>
+<LI>  <code>obj.SetZFaceTextRotation (double )</code> -  Augment individual face text orientations.
+ </LI>
+<LI>  <code>double = obj.GetZFaceTextRotation ()</code> -  Augment individual face text orientations.
+ </LI>
+<LI>  <code>vtkAssembly = obj.GetAssembly ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

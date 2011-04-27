@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTriangularTexture
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTriangularTexture
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkTriangularTexture is a filter that generates a 2D texture map based on 
+ the paper "Opacity-modulating Triangular Textures for Irregular Surfaces,"
+ by Penny Rheingans, IEEE Visualization '96, pp. 219-225.
+ The textures assume texture coordinates of (0,0), (1.0) and
+ (.5, sqrt(3)/2). The sequence of texture values is the same along each
+ edge of the triangular texture map. So, the assignment order of texture
+ coordinates is arbitrary.
+<P>
+To create an instance of class vtkTriangularTexture, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTriangularTexture
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTriangularTexture has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTriangularTexture class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTriangularTexture = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTriangularTexture = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetScaleFactor (double )</code> -  Set a Scale Factor.
+ </LI>
+<LI>  <code>double = obj.GetScaleFactor ()</code> -  Set a Scale Factor.
+ </LI>
+<LI>  <code>obj.SetXSize (int )</code> -  Set the X texture map dimension. Default is 64.
+ </LI>
+<LI>  <code>int = obj.GetXSize ()</code> -  Set the X texture map dimension. Default is 64.
+ </LI>
+<LI>  <code>obj.SetYSize (int )</code> -  Set the Y texture map dimension. Default is 64.
+ </LI>
+<LI>  <code>int = obj.GetYSize ()</code> -  Set the Y texture map dimension. Default is 64.
+ </LI>
+<LI>  <code>obj.SetTexturePattern (int )</code> -  Set the texture pattern.
+    1 = opaque at centroid (default)
+    2 = opaque at vertices
+    3 = opaque in rings around vertices
+ </LI>
+<LI>  <code>int = obj.GetTexturePatternMinValue ()</code> -  Set the texture pattern.
+    1 = opaque at centroid (default)
+    2 = opaque at vertices
+    3 = opaque in rings around vertices
+ </LI>
+<LI>  <code>int = obj.GetTexturePatternMaxValue ()</code> -  Set the texture pattern.
+    1 = opaque at centroid (default)
+    2 = opaque at vertices
+    3 = opaque in rings around vertices
+ </LI>
+<LI>  <code>int = obj.GetTexturePattern ()</code> -  Set the texture pattern.
+    1 = opaque at centroid (default)
+    2 = opaque at vertices
+    3 = opaque in rings around vertices
+ </LI>
+</UL>
+</BODY>
+</HTML>

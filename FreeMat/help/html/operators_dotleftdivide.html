@@ -24,10 +24,10 @@ output <code>y</code> is the same size as the inputs, and is the element-wise
 division of <code>b</code> by <code>a</code>.  In the second case, either <code>a</code> or <code>b</code> is a scalar, 
 in which case <code>y</code> is the same size as the larger argument,
 and is the division of the scalar with each element of the other argument.
-
+<P>
 The rules for manipulating types has changed in FreeMat 4.0.  See <code>typerules</code>
 for more details.
-
+<P>
 <H3>Function Internals</H3>
 There are three formulae for the dot-left-divide operator, depending on the
 sizes of the three arguments.  In the most general case, in which 
@@ -60,7 +60,6 @@ ans =
     2.6667 
 </PRE>
 <P>
-
 We can also divide complex arguments:
 <PRE>
 --&gt; a = 3 + 4*i
@@ -78,7 +77,6 @@ b =
 c = 
    0.5281 -  0.0449i 
 </PRE>
-<P>
 We can also demonstrate the three forms of the dot-left-divide operator.  First
 the element-wise version:
 <PRE>
@@ -100,7 +98,6 @@ c =
     2.0000    1.5000 
     2.0000    1.7500 
 </PRE>
-<P>
 Then the scalar versions
 <PRE>
 --&gt; c = a .\ 3
@@ -115,6 +112,5 @@ c =
     0.3333    0.6667 
     1.0000    1.3333 
 </PRE>
-<P>
 </BODY>
 </HTML>

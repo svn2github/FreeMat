@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkNetCDFPOPReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkNetCDFPOPReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkNetCDFPOPReader is a source object that reads NetCDF files.
+ It should be able to read most any NetCDF file that wants to output rectilinear grid
+<P>
+<P>
+To create an instance of class vtkNetCDFPOPReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkNetCDFPOPReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkNetCDFPOPReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkNetCDFPOPReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkNetCDFPOPReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkNetCDFPOPReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFilename (string )</code>
+ </LI>
+<LI>  <code>string = obj.GetFilename ()</code>
+ </LI>
+<LI>  <code>obj.SetWholeExtent (int , int , int , int , int , int )</code>
+ </LI>
+<LI>  <code>obj.SetWholeExtent (int  a[6])</code>
+ </LI>
+<LI>  <code>int = obj. GetWholeExtent ()</code>
+ </LI>
+<LI>  <code>obj.SetSubExtent (int , int , int , int , int , int )</code>
+ </LI>
+<LI>  <code>obj.SetSubExtent (int  a[6])</code>
+ </LI>
+<LI>  <code>int = obj. GetSubExtent ()</code>
+ </LI>
+<LI>  <code>obj.SetOrigin (double , double , double )</code>
+ </LI>
+<LI>  <code>obj.SetOrigin (double  a[3])</code>
+ </LI>
+<LI>  <code>double = obj. GetOrigin ()</code>
+ </LI>
+<LI>  <code>obj.SetSpacing (double , double , double )</code>
+ </LI>
+<LI>  <code>obj.SetSpacing (double  a[3])</code>
+ </LI>
+<LI>  <code>double = obj. GetSpacing ()</code>
+ </LI>
+<LI>  <code>obj.SetStride (int , int , int )</code>
+ </LI>
+<LI>  <code>obj.SetStride (int  a[3])</code>
+ </LI>
+<LI>  <code>int = obj. GetStride ()</code>
+ </LI>
+<LI>  <code>obj.SetBlockReadSize (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetBlockReadSize ()</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVariableArrays ()</code> -  Variable array selection.
+ </LI>
+<LI>  <code>string = obj.GetVariableArrayName (int idx)</code> -  Variable array selection.
+ </LI>
+<LI>  <code>int = obj.GetVariableArrayStatus (string name)</code> -  Variable array selection.
+ </LI>
+<LI>  <code>obj.SetVariableArrayStatus (string name, int status)</code> -  Variable array selection.
+ </LI>
+</UL>
+</BODY>
+</HTML>

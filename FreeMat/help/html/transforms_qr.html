@@ -26,7 +26,7 @@ such that the columns of <code>Q</code> are orthonormal, and <code>R</code> is u
 triangular.  The decomposition is computed using the LAPACK 
 routine <code>xgeqrf</code>, where <code>x</code> is the precision of the matrix.  
 FreeMat supports decompositions of <code>single</code> and <code>double</code> types.
-
+<P>
 The second form of the non-pivot decomposition omits the second <code>0</code>
 argument:
 <PRE>
@@ -40,7 +40,7 @@ a matrix <code>R</code> of size <code>M x N</code>.  The full decomposition is c
 using the same LAPACK routines as the compact decomposition, but
 on an augmented matrix <code>[a 0]</code>, where enough columns are added to
 form a square matrix.
-
+<P>
 Generally, the QR decomposition will not return a matrix <code>R</code> with
 diagonal elements in any specific order.  The remaining two forms 
 of the <code>qr</code> command utilize permutations of the columns of <code>a</code>

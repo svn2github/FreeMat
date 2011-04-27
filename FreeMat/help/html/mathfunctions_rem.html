@@ -22,16 +22,13 @@ to the vector <code>x</code> so that each element <code>x_i</code> is between <c
 (strictly).  Note that <code>n</code> does not have to be an integer.  Also,
 <code>n</code> can either be a scalar (same base for all elements of <code>x</code>), or a
 vector (different base for each element of <code>x</code>).
-
+<P>
 Note that the following are defined behaviors:
-<OL>
-<LI>  <code>rem(x,0) = nan</code>@
- </LI>
-<LI>  <code>rem(x,x) = 0</code>@ for nonzero <code>x</code>
- </LI>
-<LI>  <code>rem(x,n)</code>@ has the same sign as <code>x</code> for all other cases.
- </LI>
-</OL>
+\begin{enumerate}
+\item <code>rem(x,0) = nan</code>@
+\item <code>rem(x,x) = 0</code>@ for nonzero <code>x</code>
+\item <code>rem(x,n)</code>@ has the same sign as <code>x</code> for all other cases.
+\end{enumerate}
 Note that <code>rem</code> and <code>mod</code> return the same value if <code>x</code> and <code>n</code>
 are of the same sign.  But differ by <code>n</code> if <code>x</code> and <code>y</code> have 
 different signs.
@@ -54,7 +51,6 @@ ans =
 ans = 
  0 
 </PRE>
-<P>
 Here is an example of using <code>rem</code> to determine if integers are even
  or odd:
 <PRE>
@@ -63,7 +59,6 @@ Here is an example of using <code>rem</code> to determine if integers are even
 ans = 
  1 1 1 0 
 </PRE>
-<P>
 Here we use the second form of <code>rem</code>, with each element using a 
 separate base.
 <PRE>
@@ -72,6 +67,5 @@ separate base.
 ans = 
          0 NaN         0         0 
 </PRE>
-<P>
 </BODY>
 </HTML>

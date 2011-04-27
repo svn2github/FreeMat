@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkImageWriter writes images to files with any data type. The data type of
+ the file is the same scalar type as the input.  The dimensionality
+ determines whether the data will be written in one or multiple files.
+ This class is used as the superclass of most image writing classes 
+ such as vtkBMPWriter etc. It supports streaming.
+<P>
+To create an instance of class vtkImageWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Specify file name for the image file. You should specify either
+ a FileName or a FilePrefix. Use FilePrefix if the data is stored 
+ in multiple files.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Specify file name for the image file. You should specify either
+ a FileName or a FilePrefix. Use FilePrefix if the data is stored 
+ in multiple files.
+ </LI>
+<LI>  <code>obj.SetFilePrefix (string )</code> -  Specify file prefix for the image file(s).You should specify either
+ a FileName or FilePrefix. Use FilePrefix if the data is stored
+ in multiple files.
+ </LI>
+<LI>  <code>string = obj.GetFilePrefix ()</code> -  Specify file prefix for the image file(s).You should specify either
+ a FileName or FilePrefix. Use FilePrefix if the data is stored
+ in multiple files.
+ </LI>
+<LI>  <code>obj.SetFilePattern (string )</code> -  The sprintf format used to build filename from FilePrefix and number.
+ </LI>
+<LI>  <code>string = obj.GetFilePattern ()</code> -  The sprintf format used to build filename from FilePrefix and number.
+ </LI>
+<LI>  <code>obj.SetFileDimensionality (int )</code> -  What dimension are the files to be written. Usually this is 2, or 3.
+ If it is 2 and the input is a volume then the volume will be 
+ written as a series of 2d slices.
+ </LI>
+<LI>  <code>int = obj.GetFileDimensionality ()</code> -  What dimension are the files to be written. Usually this is 2, or 3.
+ If it is 2 and the input is a volume then the volume will be 
+ written as a series of 2d slices.
+ </LI>
+<LI>  <code>obj.Write ()</code> -  The main interface which triggers the writer to start.
+ </LI>
+<LI>  <code>obj.DeleteFiles ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

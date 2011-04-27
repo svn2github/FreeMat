@@ -25,7 +25,7 @@ matrices (the eigenvalues are stored in a diagonal matrix):
 <P>
 where <code>D</code> is the diagonal matrix of eigenvalues, and <code>V</code> is the
 matrix of eigenvectors.
-
+<P>
 Eigenvalues and eigenvectors for asymmetric matrices <code>A</code> normally
 are computed with balancing applied.  Balancing is a scaling step
 that normaly improves the quality of the eigenvalues and eigenvectors.
@@ -44,7 +44,7 @@ the matrix prior to computation.  Similarly,
 <P>
 recovers both the eigenvectors and eigenvalues of <code>A</code> without balancing.
 Note that the 'nobalance' option has no affect on symmetric matrices.
-
+<P>
 FreeMat also provides the ability to calculate generalized eigenvalues
 and eigenvectors.  Similarly to the regular case, there are two forms
 for <code>eig</code> when computing generalized eigenvector (see the Function
@@ -87,13 +87,13 @@ to compute the eigenvalue decomposition for non-symmetric
  and <code>DSYEV</code> are used for <code>float</code> and <code>double</code> matrices (respectively).
 For Hermitian matrices, <code>CHEEV</code> and <code>ZHEEV</code> are used for <code>complex</code>
 and <code>dcomplex</code> matrices.
-
+<P>
 For some matrices, the process of balancing (in which the rows and
 columns of the matrix are pre-scaled to facilitate the search for
 eigenvalues) is detrimental to the quality of the final solution.
 This is particularly true if the matrix contains some elements on
 the order of round off error.  See the Example section for an example.
-
+<P>
 A generalized eigenvector of the matrix pair <code>A,B</code> is simply a 
 vector <code>v</code> with associated eigenvalue <code>d</code> such that
 <P>
@@ -140,7 +140,6 @@ ans =
     1.5300 
     3.0400 
 </PRE>
-<P>
 Next, we compute the eigenvalues of an upper triangular matrix, 
 where the eigenvalues are again the diagonal elements.
 <PRE>
@@ -158,34 +157,32 @@ ans =
  2 
  1 
 </PRE>
-<P>
 Next, we compute the complete eigenvalue decomposition of
 a random matrix, and then demonstrate the accuracy of the solution
 <PRE>
 --&gt; A = float(randn(2))
 
 A = 
-    0.0501    0.1608 
-    2.1808   -2.4972 
+    0.3747   -1.5129 
+   -0.6283   -1.1096 
 
 --&gt; [V,D] = eig(A)
 V = 
-    0.7754   -0.0599 
-    0.6314    0.9982 
+    0.9526    0.6096 
+   -0.3042    0.7927 
 
 D = 
-    0.1811         0 
-         0   -2.6282 
+    0.8578         0 
+         0   -1.5928 
 
 --&gt; A*V - V*D
 
 ans = 
 
-   1.0e-07 * 
-    1.0431   -0.2980 
-   -1.5646         0 
+   1.0e-08 * 
+   -5.9605         0 
+   -2.9802         0 
 </PRE>
-<P>
 Now, we consider a matrix that requires the nobalance option
 to compute the eigenvalues and eigenvectors properly.  Here is
 an example from MATLAB's manual.
@@ -200,10 +197,10 @@ B =
 
 --&gt; [VB,DB] = eig(B)
 VB = 
-    0.6153   -0.4176   -0.0000   -0.1530 
-   -0.7881   -0.3261   -0.0000    0.1346 
-   -0.0000   -0.0000    0.0000   -0.9790 
-    0.0189    0.8481    1.0000   -0.0097 
+    0.6153   -0.4176   -0.0000   -0.1495 
+   -0.7881   -0.3261   -0.0000    0.1316 
+   -0.0000   -0.0000    0.0000   -0.9570 
+    0.0189    0.8481    1.0000   -0.2110 
 
 DB = 
     5.5616         0         0         0 
@@ -214,15 +211,15 @@ DB =
 --&gt; B*VB - VB*DB
 
 ans = 
-    0.0000   -0.0000   -0.0000    0.0000 
-   -0.0000   -0.0000    0.0000    0.0000 
-   -0.0000   -0.0000   -0.0000         0 
-   -0.0000    0.0000         0   -0.1081 
+         0         0    0.0000   -0.0000 
+         0    0.0000   -0.0000    0.0000 
+   -0.0000   -0.0000   -0.0000   -0.0000 
+    0.0000    0.0000    0.0000   -0.5088 
 
 --&gt; [VN,DN] = eig(B,'nobalance')
 VN = 
-    0.6153   -0.4176    0.0000   -0.1528 
-   -0.7881   -0.3261    0.0000    0.1345 
+    0.6153   -0.4176   -0.0000   -0.1528 
+   -0.7881   -0.3261         0    0.1345 
    -0.0000   -0.0000   -0.0000   -0.9781 
     0.0189    0.8481   -1.0000    0.0443 
 
@@ -236,12 +233,11 @@ DN =
 
 ans = 
 
-   1.0e-16 * 
-    8.8818   -1.1102   -1.6722   -1.1102 
-   -8.8818    2.7756    0.1811    0.8327 
-    0.1718    0.0154    0.0663         0 
-   -0.6939         0         0    0.8327 
+   1.0e-15 * 
+   -1.7764   -0.1110   -0.5587   -0.1665 
+    3.5527    1.0547    0.3364   -0.1943 
+    0.0172    0.0015    0.0066         0 
+    0.1527   -0.2220    0.2220    0.0833 
 </PRE>
-<P>
 </BODY>
 </HTML>

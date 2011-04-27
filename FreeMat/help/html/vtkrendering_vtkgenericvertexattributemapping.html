@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGenericVertexAttributeMapping
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGenericVertexAttributeMapping
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkGenericVertexAttributeMapping stores mapping between data arrays and
+ generic vertex attributes. It is used by vtkPainterPolyDataMapper to pass the
+ mappings to the painter which rendering the attributes.
+ .SECTION Thanks
+ Support for generic vertex attributes in VTK was contributed in
+ collaboration with Stephane Ploix at EDF.
+<P>
+To create an instance of class vtkGenericVertexAttributeMapping, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGenericVertexAttributeMapping
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGenericVertexAttributeMapping has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGenericVertexAttributeMapping class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGenericVertexAttributeMapping = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGenericVertexAttributeMapping = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.AddMapping (string attributeName, string arrayName, int fieldAssociation, int component)</code> -  Select a data array from the point/cell data
+ and map it to a generic vertex attribute.
+ Note that indices change when a mapping is added/removed.
+ </LI>
+<LI>  <code>obj.AddMapping (int unit, string arrayName, int fieldAssociation, int component)</code> -  Select a data array and use it as multitexture texture
+ coordinates.
+ Note the texture unit parameter should correspond to the texture
+ unit set on the texture.
+ </LI>
+<LI>  <code>bool = obj.RemoveMapping (string attributeName)</code> -  Remove a vertex attribute mapping.
+ </LI>
+<LI>  <code>obj.RemoveAllMappings ()</code> -  Remove all mappings.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfMappings ()</code> -  Get number of mapppings.
+ </LI>
+<LI>  <code>string = obj.GetAttributeName (int index)</code> -  Get the attribute name at the given index.
+ </LI>
+<LI>  <code>string = obj.GetArrayName (int index)</code> -  Get the array name at the given index.
+ </LI>
+<LI>  <code>int = obj.GetFieldAssociation (int index)</code> -  Get the field association at the given index.
+ </LI>
+<LI>  <code>int = obj.GetComponent (int index)</code> -  Get the component no. at the given index.
+ </LI>
+<LI>  <code>int = obj.GetTextureUnit (int index)</code> -  Get the component no. at the given index.
+ </LI>
+</UL>
+</BODY>
+</HTML>

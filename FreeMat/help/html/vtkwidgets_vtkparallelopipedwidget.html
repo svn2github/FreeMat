@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkParallelopipedWidget
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkParallelopipedWidget
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This widget was designed with the aim of visualizing / probing cuts on
+ a skewed image data / structured grid. 
+<P>
+ .SECTION Interaction
+ The widget allows you to create a parallelopiped (defined by 8 handles).
+ The widget is initially placed by using the "PlaceWidget" method in the
+ representation class. After the widget has been created, the following
+ interactions may be used to manipulate it :
+ 1) Click on a handle and drag it around moves the handle in space, while
+    keeping the same axis alignment of the parallelopiped
+ 2) Dragging a handle with the shift button pressed resizes the piped
+    along an axis.
+ 3) Control-click on a handle creates a chair at that position. (A chair
+    is a depression in the piped that allows you to visualize cuts in the
+    volume). 
+ 4) Clicking on a chair and dragging it around moves the chair within the
+    piped.
+ 5) Shift-click on the piped enables you to translate it.
+<P>
+<P>
+To create an instance of class vtkParallelopipedWidget, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkParallelopipedWidget
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkParallelopipedWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkParallelopipedWidget class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkParallelopipedWidget = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkParallelopipedWidget = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetEnabled (int )</code> -  Override the superclass method. This is a composite widget, (it internally
+ consists of handle widgets). We will override the superclass method, so
+ that we can pass the enabled state to the internal widgets as well.
+ </LI>
+<LI>  <code>obj.SetRepresentation (vtkParallelopipedRepresentation r)</code> -  Enable/disable the creation of a chair on this widget. If off,
+ chairs cannot be created.
+ </LI>
+<LI>  <code>obj.SetEnableChairCreation (int )</code> -  Enable/disable the creation of a chair on this widget. If off,
+ chairs cannot be created.
+ </LI>
+<LI>  <code>int = obj.GetEnableChairCreation ()</code> -  Enable/disable the creation of a chair on this widget. If off,
+ chairs cannot be created.
+ </LI>
+<LI>  <code>obj.EnableChairCreationOn ()</code> -  Enable/disable the creation of a chair on this widget. If off,
+ chairs cannot be created.
+ </LI>
+<LI>  <code>obj.EnableChairCreationOff ()</code> -  Enable/disable the creation of a chair on this widget. If off,
+ chairs cannot be created.
+ </LI>
+<LI>  <code>obj.CreateDefaultRepresentation ()</code> -  Create the default widget representation if one is not set. 
+ </LI>
+<LI>  <code>obj.SetProcessEvents (int )</code> -  Methods to change the whether the widget responds to interaction.
+ Overridden to pass the state to component widgets.
+ </LI>
+</UL>
+</BODY>
+</HTML>

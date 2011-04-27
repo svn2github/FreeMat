@@ -29,34 +29,5 @@ respectively.  In <code>auto</code> mode, FreeMat chooses the range for the axis
 automatically.  The <code>zlim('mode')</code> form returns the current mode for the axis
 (either <code>'auto'</code> or <code>'manual'</code>).  Finally, you can specify the handle of an
 axis to manipulate instead of using the current one.
-<H3>Example</H3>
-<PRE>
---&gt; x = linspace(-1,1);
---&gt; y = sin(2*pi*x);
---&gt; plot(x,y,'r-');
---&gt; zlim  % what are the current limits?
-
-ans = 
-   -0.5000    0.5000 
-</PRE>
-<P>
-which results in
-<P>
-<DIV ALIGN="CENTER">
-<IMG SRC="zlim1.png">
-</DIV>
-<P>
-Next, we zoom in on the plot using the <code>zlim</code> function
-<PRE>
---&gt; plot(x,y,'r-')
---&gt; zlim([-0.2,0.2])
-</PRE>
-<P>
-which results in
-<P>
-<DIV ALIGN="CENTER">
-<IMG SRC="zlim2.png">
-</DIV>
-<P>
 </BODY>
 </HTML>

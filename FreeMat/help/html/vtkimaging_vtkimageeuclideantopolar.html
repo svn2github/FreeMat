@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageEuclideanToPolar
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageEuclideanToPolar
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ For each pixel with vector components x,y, this filter outputs 
+ theta in component0, and radius in component1.
+<P>
+To create an instance of class vtkImageEuclideanToPolar, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageEuclideanToPolar
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageEuclideanToPolar has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageEuclideanToPolar class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageEuclideanToPolar = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageEuclideanToPolar = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetThetaMaximum (double )</code> -  Theta is an angle. Maximum specifies when it maps back to 0.
+ ThetaMaximum defaults to 255 instead of 2PI, because unsigned char
+ is expected as input. The output type must be the same as input type.
+ </LI>
+<LI>  <code>double = obj.GetThetaMaximum ()</code> -  Theta is an angle. Maximum specifies when it maps back to 0.
+ ThetaMaximum defaults to 255 instead of 2PI, because unsigned char
+ is expected as input. The output type must be the same as input type.
+ </LI>
+</UL>
+</BODY>
+</HTML>

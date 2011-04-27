@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSQLiteDatabase
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSQLiteDatabase
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+<P>
+ SQLite (http://www.sqlite.org) is a public-domain SQL database
+ written in C++.  It's small, fast, and can be easily embedded
+ inside other applications.  Its databases are stored in files.
+<P>
+ This class provides a VTK interface to SQLite.  You do not need to
+ download any external libraries: we include a copy of SQLite 3.3.16
+ in VTK/Utilities/vtksqlite.  
+<P>
+ If you want to open a database that stays in memory and never gets
+ written to disk, pass in the URL 'sqlite://:memory:'; otherwise,
+ specifiy the file path by passing the URL 'sqlite://&lt;file_path&gt;'.
+<P>
+ .SECTION Thanks
+ Thanks to Andrew Wilson and Philippe Pebay from Sandia National 
+ Laboratories for implementing this class.
+<P>
+<P>
+To create an instance of class vtkSQLiteDatabase, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSQLiteDatabase
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSQLiteDatabase has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSQLiteDatabase class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSQLiteDatabase = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSQLiteDatabase = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>bool = obj.Open (string password)</code> -  Open a new connection to the database.  You need to set the
+ filename before calling this function.  Returns true if the
+ database was opened successfully; false otherwise.
+ - USE_EXISTING (default) - Fail if the file does not exist.
+ - USE_EXISTING_OR_CREATE - Create a new file if necessary.
+ - CREATE_OR_CLEAR - Create new or clear existing file.
+ - CREATE - Create new, fail if file exists.
+ </LI>
+<LI>  <code>bool = obj.Open (string password, int mode)</code> -  Open a new connection to the database.  You need to set the
+ filename before calling this function.  Returns true if the
+ database was opened successfully; false otherwise.
+ - USE_EXISTING (default) - Fail if the file does not exist.
+ - USE_EXISTING_OR_CREATE - Create a new file if necessary.
+ - CREATE_OR_CLEAR - Create new or clear existing file.
+ - CREATE - Create new, fail if file exists.
+ </LI>
+<LI>  <code>obj.Close ()</code> -  Close the connection to the database.
+ </LI>
+<LI>  <code>bool = obj.IsOpen ()</code> -  Return whether the database has an open connection
+ </LI>
+<LI>  <code>vtkSQLQuery = obj.GetQueryInstance ()</code> -  Return an empty query on this database.
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetTables ()</code> -  Get the list of tables from the database
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetRecord (string table)</code> -  Get the list of fields for a particular table
+ </LI>
+<LI>  <code>bool = obj.IsSupported (int feature)</code> -  Return whether a feature is supported by the database.
+ </LI>
+<LI>  <code>bool = obj.HasError ()</code> -  Did the last operation generate an error
+ </LI>
+<LI>  <code>string = obj.GetLastErrorText ()</code> -  Get the last error text from the database
+ </LI>
+<LI>  <code>string = obj.GetDatabaseType ()</code> -  String representing database type (e.g. "sqlite").
+ </LI>
+<LI>  <code>string = obj.GetDatabaseFileName ()</code> -  String representing the database filename.
+ </LI>
+<LI>  <code>obj.SetDatabaseFileName (string )</code> -  String representing the database filename.
+ </LI>
+<LI>  <code>vtkStdString = obj.GetURL ()</code> -  Get the URL of the database.
+ </LI>
+<LI>  <code>vtkStdString = obj.GetColumnSpecification (vtkSQLDatabaseSchema schema, int tblHandle, int colHandle)</code> -  Return the SQL string with the syntax to create a column inside a
+ "CREATE TABLE" SQL statement.
+ NB: this method implements the SQLite-specific syntax:
+ &lt;column name&gt; &lt;column type&gt; &lt;column attributes&gt;
+ </LI>
+</UL>
+</BODY>
+</HTML>

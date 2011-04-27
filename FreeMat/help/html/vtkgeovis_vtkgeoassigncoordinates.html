@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoAssignCoordinates
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoAssignCoordinates
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ Givem latitude and longitude arrays, 
+ take the values in those arrays and convert them to x,y,z world coordinates.
+ Uses a spherical model of the earth to do the conversion.
+ The position is in meters relative to the center of the earth.
+<P>
+ If a transform is given, use the transform to convert latitude and longitude
+ to the world coordinate.
+<P>
+To create an instance of class vtkGeoAssignCoordinates, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoAssignCoordinates
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoAssignCoordinates has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoAssignCoordinates class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoAssignCoordinates = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoAssignCoordinates = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLongitudeArrayName (string )</code> -  Set the longitude coordinate array name. 
+ </LI>
+<LI>  <code>string = obj.GetLongitudeArrayName ()</code> -  Set the longitude coordinate array name. 
+ </LI>
+<LI>  <code>obj.SetLatitudeArrayName (string )</code> -  Set the latitude coordinate array name. 
+ </LI>
+<LI>  <code>string = obj.GetLatitudeArrayName ()</code> -  Set the latitude coordinate array name. 
+ </LI>
+<LI>  <code>obj.SetGlobeRadius (double )</code> -  The base radius to use in GLOBAL mode.
+ Default is the earth's radius.
+ </LI>
+<LI>  <code>double = obj.GetGlobeRadius ()</code> -  The base radius to use in GLOBAL mode.
+ Default is the earth's radius.
+ </LI>
+<LI>  <code>obj.SetTransform (vtkAbstractTransform trans)</code> -  The transform to use to convert coordinates of the form
+ (lat, long, 0) to (x, y z). If this is NULL (the default),
+ use GlobeRadius to perform a spherical embedding.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.GetTransform ()</code> -  The transform to use to convert coordinates of the form
+ (lat, long, 0) to (x, y z). If this is NULL (the default),
+ use GlobeRadius to perform a spherical embedding.
+ </LI>
+<LI>  <code>obj.SetCoordinatesInArrays (bool )</code> -  If on, uses LatitudeArrayName and LongitudeArrayName to
+ move values in data arrays into the points of the data set.
+ Turn off if the lattitude and longitude are already in
+ the points.
+ </LI>
+<LI>  <code>bool = obj.GetCoordinatesInArrays ()</code> -  If on, uses LatitudeArrayName and LongitudeArrayName to
+ move values in data arrays into the points of the data set.
+ Turn off if the lattitude and longitude are already in
+ the points.
+ </LI>
+<LI>  <code>obj.CoordinatesInArraysOn ()</code> -  If on, uses LatitudeArrayName and LongitudeArrayName to
+ move values in data arrays into the points of the data set.
+ Turn off if the lattitude and longitude are already in
+ the points.
+ </LI>
+<LI>  <code>obj.CoordinatesInArraysOff ()</code> -  If on, uses LatitudeArrayName and LongitudeArrayName to
+ move values in data arrays into the points of the data set.
+ Turn off if the lattitude and longitude are already in
+ the points.
+ </LI>
+</UL>
+</BODY>
+</HTML>

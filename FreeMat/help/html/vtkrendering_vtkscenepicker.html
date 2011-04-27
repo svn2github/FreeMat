@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkScenePicker
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkScenePicker
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ The Scene picker, unline conventional pickers picks an entire viewport at
+ one shot and caches the result, which can be retrieved later. 
+    The utility of the class arises during &lt;b&gt;Actor Selection&lt;/b&gt;. Let's 
+ say you have a couple of polygonal objects in your scene and you wish to 
+ have a status bar that indicates the object your mouse is over. Picking
+ repeatedly every time your mouse moves would be very slow. The 
+ scene picker automatically picks your viewport every time the camera is
+ changed and caches the information. Additionally, it observes the 
+ vtkRenderWindowInteractor to avoid picking during interaction, so that
+ you still maintain your interactivity. In effect, the picker does an
+ additional pick-render of your scene every time you stop interacting with
+ your scene. As an example, see Rendering/TestScenePicker.
+ 
+<P>
+To create an instance of class vtkScenePicker, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkScenePicker
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkScenePicker has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkScenePicker class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkScenePicker = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkScenePicker = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetRenderer (vtkRenderer )</code> -  Set the renderer. Scene picks are restricted to the viewport.
+ </LI>
+<LI>  <code>vtkRenderer = obj.GetRenderer ()</code> -  Set the renderer. Scene picks are restricted to the viewport.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetCellId (int displayPos[2])</code> -  Get cell id at the pick position. 
+ Returns -1 if no cell was picked. 
+ Makes sense only after Pick has been called.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetVertexId (int displayPos[2])</code> -  Get cell id at the pick position. 
+ Returns -1 if no cell was picked. 
+ Makes sense only after Pick has been called.
+ </LI>
+<LI>  <code>vtkProp = obj.GetViewProp (int displayPos[2])</code> -  Get actor at the pick position. 
+ Returns NULL if none. 
+ Makes sense only after Pick has been called.
+ </LI>
+<LI>  <code>obj.SetEnableVertexPicking (int )</code> -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+ </LI>
+<LI>  <code>int = obj.GetEnableVertexPicking ()</code> -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+ </LI>
+<LI>  <code>obj.EnableVertexPickingOn ()</code> -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+ </LI>
+<LI>  <code>obj.EnableVertexPickingOff ()</code> -  Vertex picking (using the method GetVertexId()), required 
+ additional resources and can slow down still render time by
+ 5-10%. Enabled by default.
+ </LI>
+</UL>
+</BODY>
+</HTML>

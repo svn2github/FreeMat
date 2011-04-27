@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBMPReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBMPReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkBMPReader is a source object that reads Windows BMP files.
+ This includes indexed and 24bit bitmaps
+ Usually, all BMPs are converted to 24bit RGB, but BMPs may be output
+ as 8bit images with a LookupTable if the Allow8BitBMP flag is set.
+<P>
+ BMPReader creates structured point datasets. The dimension of the 
+ dataset depends upon the number of files read. Reading a single file 
+ results in a 2D image, while reading more than one file results in a 
+ 3D volume.
+<P>
+ To read a volume, files must be of the form "FileName.&lt;number&gt;"
+ (e.g., foo.bmp.0, foo.bmp.1, ...). You must also specify the image 
+ range. This range specifies the beginning and ending files to read (range
+ can be any pair of non-negative numbers). 
+<P>
+ The default behavior is to read a single file. In this case, the form
+ of the file is simply "FileName" (e.g., foo.bmp).
+<P>
+To create an instance of class vtkBMPReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBMPReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBMPReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBMPReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkBMPReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkBMPReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDepth ()</code> -  Returns the depth of the BMP, either 8 or 24.
+ </LI>
+<LI>  <code>int = obj.CanReadFile (string fname)</code> -  Is the given file a BMP file?
+ </LI>
+<LI>  <code>string = obj.GetFileExtensions ()</code> -  Return a descriptive name for the file format that might be useful in a GUI.
+ </LI>
+<LI>  <code>string = obj.GetDescriptiveName ()</code> -  If this flag is set and the BMP reader encounters an 8bit file,
+ the data will be kept as unsigned chars and a lookuptable will be
+ exported
+ </LI>
+<LI>  <code>obj.SetAllow8BitBMP (int )</code> -  If this flag is set and the BMP reader encounters an 8bit file,
+ the data will be kept as unsigned chars and a lookuptable will be
+ exported
+ </LI>
+<LI>  <code>int = obj.GetAllow8BitBMP ()</code> -  If this flag is set and the BMP reader encounters an 8bit file,
+ the data will be kept as unsigned chars and a lookuptable will be
+ exported
+ </LI>
+<LI>  <code>obj.Allow8BitBMPOn ()</code> -  If this flag is set and the BMP reader encounters an 8bit file,
+ the data will be kept as unsigned chars and a lookuptable will be
+ exported
+ </LI>
+<LI>  <code>obj.Allow8BitBMPOff ()</code> -  If this flag is set and the BMP reader encounters an 8bit file,
+ the data will be kept as unsigned chars and a lookuptable will be
+ exported
+ </LI>
+<LI>  <code>vtkLookupTable = obj.GetLookupTable ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

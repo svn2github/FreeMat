@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPieceScalars
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPieceScalars
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkPieceScalars is meant to display which piece is being requested
+ as scalar values.  It is usefull for visualizing the partitioning for
+ streaming or distributed pipelines.
+<P>
+<P>
+To create an instance of class vtkPieceScalars, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPieceScalars
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPieceScalars has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPieceScalars class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPieceScalars = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPieceScalars = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetScalarModeToCellData ()</code> -  Option to centerate cell scalars of points scalars.  Default is point scalars.
+ </LI>
+<LI>  <code>obj.SetScalarModeToPointData ()</code> -  Option to centerate cell scalars of points scalars.  Default is point scalars.
+ </LI>
+<LI>  <code>int = obj.GetScalarMode ()</code>
+ </LI>
+<LI>  <code>obj.SetRandomMode (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetRandomMode ()</code>
+ </LI>
+<LI>  <code>obj.RandomModeOn ()</code>
+ </LI>
+<LI>  <code>obj.RandomModeOff ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

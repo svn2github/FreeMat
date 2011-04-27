@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLongLongArray
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLongLongArray
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkLongLongArray is an array of values of type long long.
+ It provides methods for insertion and retrieval of values and will
+ automatically resize itself to hold new data.
+<P>
+To create an instance of class vtkLongLongArray, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLongLongArray
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLongLongArray has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLongLongArray class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLongLongArray = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLongLongArray = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDataType ()</code> -  Copy the tuple value into a user-provided array.
+ </LI>
+<LI>  <code>long = obj.long GetValue (vtkIdType id)</code> -  Set the data at a particular index. Does not do range checking. Make sure
+ you use the method SetNumberOfValues() before inserting data.
+ </LI>
+<LI>  <code>obj.SetValue (vtkIdType id, long long value)</code> -  Specify the number of values for this object to hold. Does an
+ allocation as well as setting the MaxId ivar. Used in conjunction with
+ SetValue() method for fast insertion.
+ </LI>
+<LI>  <code>obj.SetNumberOfValues (vtkIdType number)</code> -  Insert data at a specified position in the array.
+ </LI>
+<LI>  <code>obj.InsertValue (vtkIdType id, long long f)</code> -  Insert data at the end of the array. Return its location in the array.
+ </LI>
+<LI>  <code>vtkIdType = obj.InsertNextValue (long long f)</code> -  Get the address of a particular data index. Make sure data is allocated
+ for the number of items requested. Set MaxId according to the number of
+ data values requested.
+ </LI>
+<LI>  <code>long = obj.long WritePointer (vtkIdType id, vtkIdType number)</code> -  Get the address of a particular data index. Performs no checks
+ to verify that the memory has been allocated etc.
+ </LI>
+<LI>  <code>long = obj.long GetPointer (vtkIdType id)</code> -  This method lets the user specify data to be held by the array.  The
+ array argument is a pointer to the data.  size is the size of
+ the array supplied by the user.  Set save to 1 to keep the class
+ from deleting the array when it cleans up or reallocates memory.
+ The class uses the actual array provided; it does not copy the data
+ from the suppled array. 
+ </LI>
+</UL>
+</BODY>
+</HTML>

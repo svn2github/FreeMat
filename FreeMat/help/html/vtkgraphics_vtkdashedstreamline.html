@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDashedStreamLine
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDashedStreamLine
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkDashedStreamLine is a filter that generates a "dashed" streamline for 
+ an arbitrary dataset. The streamline consists of a series of dashes, each 
+ of which represents (approximately) a constant time increment. Thus, in the
+ resulting visual representation, relatively long dashes represent areas of 
+ high velocity, and small dashes represent areas of low velocity.
+<P>
+ vtkDashedStreamLine introduces the instance variable DashFactor. 
+ DashFactor interacts with its superclass' instance variable StepLength to
+ create the dashes. DashFactor is the percentage of the StepLength line 
+ segment that is visible. Thus, if the DashFactor=0.75, the dashes will be 
+ "three-quarters on" and "one-quarter off".
+<P>
+To create an instance of class vtkDashedStreamLine, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDashedStreamLine
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDashedStreamLine has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDashedStreamLine class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDashedStreamLine = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDashedStreamLine = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetDashFactor (double )</code> -  For each dash, specify the fraction of the dash that is "on". A factor
+ of 1.0 will result in a continuous line, a factor of 0.5 will result in 
+ dashed that are half on and half off.
+ </LI>
+<LI>  <code>double = obj.GetDashFactorMinValue ()</code> -  For each dash, specify the fraction of the dash that is "on". A factor
+ of 1.0 will result in a continuous line, a factor of 0.5 will result in 
+ dashed that are half on and half off.
+ </LI>
+<LI>  <code>double = obj.GetDashFactorMaxValue ()</code> -  For each dash, specify the fraction of the dash that is "on". A factor
+ of 1.0 will result in a continuous line, a factor of 0.5 will result in 
+ dashed that are half on and half off.
+ </LI>
+<LI>  <code>double = obj.GetDashFactor ()</code> -  For each dash, specify the fraction of the dash that is "on". A factor
+ of 1.0 will result in a continuous line, a factor of 0.5 will result in 
+ dashed that are half on and half off.
+ </LI>
+</UL>
+</BODY>
+</HTML>

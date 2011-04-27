@@ -55,8 +55,8 @@ The next example seeks forward by 2048 bytes from the files current position, an
 --&gt; y = fread(fp,[1,1024],'float');
 --&gt; who x y
   Variable Name       Type   Flags             Size
-              x    double                    [1 4096]
-              y    double                    [1 1024]
+              x    double                    [1x4096]
+              y    double                    [1x1024]
 --&gt; % Seek 2048 bytes into the file
 --&gt; fseek(fp,2048,'cof');
 --&gt; % Read 512 floats from the file
@@ -64,6 +64,5 @@ The next example seeks forward by 2048 bytes from the files current position, an
 --&gt; % Close the file
 --&gt; fclose(fp);
 </PRE>
-<P>
 </BODY>
 </HTML>

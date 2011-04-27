@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPixelBufferObject
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPixelBufferObject
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ Provides low-level access to GPU memory. Used to pass raw data to GPU. 
+ The data is uploaded into a pixel buffer.
+<P>
+To create an instance of class vtkPixelBufferObject, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPixelBufferObject
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPixelBufferObject has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPixelBufferObject class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPixelBufferObject = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPixelBufferObject = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetContext (vtkRenderWindow context)</code> -  Get/Set the context. Context must be a vtkOpenGLRenderWindow. 
+ This does not increase the reference count of the 
+ context to avoid reference loops.
+ SetContext() may raise an error is the OpenGL context does not support the
+ required OpenGL extensions.
+ </LI>
+<LI>  <code>vtkRenderWindow = obj.GetContext ()</code> -  Get/Set the context. Context must be a vtkOpenGLRenderWindow. 
+ This does not increase the reference count of the 
+ context to avoid reference loops.
+ SetContext() may raise an error is the OpenGL context does not support the
+ required OpenGL extensions.
+ </LI>
+<LI>  <code>int = obj.GetUsage ()</code> -  Usage is a performance hint.
+ Valid values are:
+ - StreamDraw specified once by A, used few times S
+ - StreamRead specified once by R, queried a few times by A
+ - StreamCopy specified once by R, used a few times S
+ - StaticDraw specified once by A, used many times S
+ - StaticRead specificed once by R, queried many times by A
+ - StaticCopy specified once by R, used many times S
+ - DynamicDraw respecified repeatedly by A, used many times S
+ - DynamicRead respecified repeatedly by R, queried many times by A
+ - DynamicCopy respecified repeatedly by R, used many times S
+ A: the application
+ S: as the source for GL drawing and image specification commands.
+ R: reading data from the GL
+ Initial value is StaticDraw, as in OpenGL spec.
+ </LI>
+<LI>  <code>obj.SetUsage (int )</code> -  Usage is a performance hint.
+ Valid values are:
+ - StreamDraw specified once by A, used few times S
+ - StreamRead specified once by R, queried a few times by A
+ - StreamCopy specified once by R, used a few times S
+ - StaticDraw specified once by A, used many times S
+ - StaticRead specificed once by R, queried many times by A
+ - StaticCopy specified once by R, used many times S
+ - DynamicDraw respecified repeatedly by A, used many times S
+ - DynamicRead respecified repeatedly by R, queried many times by A
+ - DynamicCopy respecified repeatedly by R, used many times S
+ A: the application
+ S: as the source for GL drawing and image specification commands.
+ R: reading data from the GL
+ Initial value is StaticDraw, as in OpenGL spec.
+ </LI>
+<LI>  <code>int = obj.GetType ()</code> -  Get the type with which the data is loaded into the GPU.
+ eg. VTK_FLOAT for float32, VTK_CHAR for byte, VTK_UNSIGNED_CHAR for
+ unsigned byte etc.
+ </LI>
+<LI>  <code>int = obj.GetSize ()</code> -  Get the size of the data loaded into the GPU. Size is in the number of
+ elements of the uploaded Type.
+ </LI>
+<LI>  <code>int = obj.GetHandle ()</code> -  Get the openGL buffer handle.
+ </LI>
+<LI>  <code>obj.BindToPackedBuffer ()</code>
+ </LI>
+<LI>  <code>obj.BindToUnPackedBuffer ()</code> -  Inactivate the buffer.
+ </LI>
+<LI>  <code>obj.UnBind ()</code> -  Inactivate the buffer.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAbstractPolygonalHandleRepresentation3D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAbstractPolygonalHandleRepresentation3D
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This class serves as the geometrical representation of a vtkHandleWidget. 
+ The handle can be represented by an arbitrary polygonal data (vtkPolyData),
+ set via SetHandle(vtkPolyData *). The actual position of the handle 
+ will be initially assumed to be (0,0,0). You can specify an offset from
+ this position if desired. This class differs from 
+ vtkPolygonalHandleRepresentation3D in that the handle will always remain
+ front facing, ie it maintains a fixed orientation with respect to the 
+ camera. This is done by using vtkFollowers internally to render the actors.
+<P>
+To create an instance of class vtkAbstractPolygonalHandleRepresentation3D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAbstractPolygonalHandleRepresentation3D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAbstractPolygonalHandleRepresentation3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAbstractPolygonalHandleRepresentation3D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>vtkAbstractPolygonalHandleRepresentation3D = obj.NewInstance ()</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>vtkAbstractPolygonalHandleRepresentation3D = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>obj.SetWorldPosition (double p[3])</code> -  Set the position of the point in world and display coordinates.
+ </LI>
+<LI>  <code>obj.SetDisplayPosition (double p[3])</code> -  Set the position of the point in world and display coordinates.
+ </LI>
+<LI>  <code>obj.SetHandle (vtkPolyData )</code> -  Set/get the handle polydata.
+ </LI>
+<LI>  <code>vtkPolyData = obj.GetHandle ()</code> -  Set/get the handle polydata.
+ </LI>
+<LI>  <code>obj.SetProperty (vtkProperty )</code> -  Set/Get the handle properties when unselected and selected.
+ </LI>
+<LI>  <code>obj.SetSelectedProperty (vtkProperty )</code> -  Set/Get the handle properties when unselected and selected.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetProperty ()</code> -  Set/Get the handle properties when unselected and selected.
+ </LI>
+<LI>  <code>vtkProperty = obj.GetSelectedProperty ()</code> -  Set/Get the handle properties when unselected and selected.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.GetTransform ()</code> -  Get the transform used to transform the generic handle polydata before
+ placing it in the render window
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  Methods to make this class properly act like a vtkWidgetRepresentation.
+ </LI>
+<LI>  <code>obj.StartWidgetInteraction (double eventPos[2])</code> -  Methods to make this class properly act like a vtkWidgetRepresentation.
+ </LI>
+<LI>  <code>obj.WidgetInteraction (double eventPos[2])</code> -  Methods to make this class properly act like a vtkWidgetRepresentation.
+ </LI>
+<LI>  <code>int = obj.ComputeInteractionState (int X, int Y, int modify)</code> -  Methods to make this class properly act like a vtkWidgetRepresentation.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkProp prop)</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkProp prop)</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>obj.GetActors (vtkPropCollection )</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport viewport)</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Methods to make this class behave as a vtkProp.
+ </LI>
+<LI>  <code>obj.SetLabelVisibility (int )</code> -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+ </LI>
+<LI>  <code>int = obj.GetLabelVisibility ()</code> -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+ </LI>
+<LI>  <code>obj.LabelVisibilityOn ()</code> -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+ </LI>
+<LI>  <code>obj.LabelVisibilityOff ()</code> -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+ </LI>
+<LI>  <code>obj.SetLabelText (string label)</code> -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+ </LI>
+<LI>  <code>string = obj.GetLabelText ()</code> -  A label may be associated with the seed. The string can be set via
+ SetLabelText. The visibility of the label can be turned on / off.
+ </LI>
+<LI>  <code>obj.SetLabelTextScale (double scale[3])</code> -  Scale text (font size along each dimension).
+ </LI>
+<LI>  <code>vtkFollower = obj.GetLabelTextActor ()</code> -  Get the label text actor
+ </LI>
+<LI>  <code>obj.SetUniformScale (double scale)</code> -  The handle may be scaled uniformly in all three dimensions using this 
+ API. The handle can also be scaled interactively using the right 
+ mouse button.
+ </LI>
+<LI>  <code>obj.SetHandleVisibility (int )</code> -  Toogle the visibility of the handle on and off
+ </LI>
+<LI>  <code>int = obj.GetHandleVisibility ()</code> -  Toogle the visibility of the handle on and off
+ </LI>
+<LI>  <code>obj.HandleVisibilityOn ()</code> -  Toogle the visibility of the handle on and off
+ </LI>
+<LI>  <code>obj.HandleVisibilityOff ()</code> -  Toogle the visibility of the handle on and off
+ </LI>
+</UL>
+</BODY>
+</HTML>

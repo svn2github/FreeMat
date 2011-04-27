@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkYoungsMaterialInterface
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkYoungsMaterialInterface
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ Reconstructs material interfaces from a mesh containing mixed cells (where several materials are mixed)
+ this implementation is based on the youngs algorithm, generalized to arbitrary cell types and works
+ on both 2D and 3D meshes. the main advantage of the youngs algorithm is it guarantees the material volume correctness.
+ for 2D meshes, the AxisSymetric flag allows to switch between a pure 2D (plannar) algorithm and an axis symetric 2D algorithm
+ handling volumes of revolution.
+<P>
+ .SECTION Thanks
+ This file is part of the generalized Youngs material interface reconstruction algorithm contributed by &lt;br&gt;
+ CEA/DIF - Commissariat a l'Energie Atomique, Centre DAM Ile-De-France &lt;br&gt;
+ BP12, F-91297 Arpajon, France. &lt;br&gt;
+ Implementation by Thierry Carrard (thierry.carrard@cea.fr)
+<P>
+To create an instance of class vtkYoungsMaterialInterface, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkYoungsMaterialInterface
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkYoungsMaterialInterface has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkYoungsMaterialInterface class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkYoungsMaterialInterface = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkYoungsMaterialInterface = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInverseNormal (int )</code> -  Set/Get wether the normal vector has to be flipped.
+ </LI>
+<LI>  <code>int = obj.GetInverseNormal ()</code> -  Set/Get wether the normal vector has to be flipped.
+ </LI>
+<LI>  <code>obj.InverseNormalOn ()</code> -  Set/Get wether the normal vector has to be flipped.
+ </LI>
+<LI>  <code>obj.InverseNormalOff ()</code> -  Set/Get wether the normal vector has to be flipped.
+ </LI>
+<LI>  <code>obj.SetReverseMaterialOrder (int )</code> -  If this flag is on, material order in reversed. 
+ Otherwise, materials are sorted in ascending order depending on the given ordering array.
+ </LI>
+<LI>  <code>int = obj.GetReverseMaterialOrder ()</code> -  If this flag is on, material order in reversed. 
+ Otherwise, materials are sorted in ascending order depending on the given ordering array.
+ </LI>
+<LI>  <code>obj.ReverseMaterialOrderOn ()</code> -  If this flag is on, material order in reversed. 
+ Otherwise, materials are sorted in ascending order depending on the given ordering array.
+ </LI>
+<LI>  <code>obj.ReverseMaterialOrderOff ()</code> -  If this flag is on, material order in reversed. 
+ Otherwise, materials are sorted in ascending order depending on the given ordering array.
+ </LI>
+<LI>  <code>obj.SetOnionPeel (int )</code> -  Set/Get OnionPeel flag. if this flag is on, the normal vector of the first 
+ material (which depends on material ordering) is used for all materials.
+ </LI>
+<LI>  <code>int = obj.GetOnionPeel ()</code> -  Set/Get OnionPeel flag. if this flag is on, the normal vector of the first 
+ material (which depends on material ordering) is used for all materials.
+ </LI>
+<LI>  <code>obj.OnionPeelOn ()</code> -  Set/Get OnionPeel flag. if this flag is on, the normal vector of the first 
+ material (which depends on material ordering) is used for all materials.
+ </LI>
+<LI>  <code>obj.OnionPeelOff ()</code> -  Set/Get OnionPeel flag. if this flag is on, the normal vector of the first 
+ material (which depends on material ordering) is used for all materials.
+ </LI>
+<LI>  <code>obj.SetAxisSymetric (int )</code> -  Turns on/off AxisSymetric computation of 2D interfaces. 
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>int = obj.GetAxisSymetric ()</code> -  Turns on/off AxisSymetric computation of 2D interfaces. 
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>obj.AxisSymetricOn ()</code> -  Turns on/off AxisSymetric computation of 2D interfaces. 
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>obj.AxisSymetricOff ()</code> -  Turns on/off AxisSymetric computation of 2D interfaces. 
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>obj.SetUseFractionAsDistance (int )</code> -  when UseFractionAsDistance is true, the volume fraction is interpreted as the distance
+ of the cutting plane from the origin.
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>int = obj.GetUseFractionAsDistance ()</code> -  when UseFractionAsDistance is true, the volume fraction is interpreted as the distance
+ of the cutting plane from the origin.
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>obj.UseFractionAsDistanceOn ()</code> -  when UseFractionAsDistance is true, the volume fraction is interpreted as the distance
+ of the cutting plane from the origin.
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>obj.UseFractionAsDistanceOff ()</code> -  when UseFractionAsDistance is true, the volume fraction is interpreted as the distance
+ of the cutting plane from the origin.
+ in axis symetric mode, 2D meshes are understood as volumes of revolution.
+ </LI>
+<LI>  <code>obj.SetFillMaterial (int )</code> -  When FillMaterial is set to 1, the volume containing material is output and not only the interface surface.
+ </LI>
+<LI>  <code>int = obj.GetFillMaterial ()</code> -  When FillMaterial is set to 1, the volume containing material is output and not only the interface surface.
+ </LI>
+<LI>  <code>obj.FillMaterialOn ()</code> -  When FillMaterial is set to 1, the volume containing material is output and not only the interface surface.
+ </LI>
+<LI>  <code>obj.FillMaterialOff ()</code> -  When FillMaterial is set to 1, the volume containing material is output and not only the interface surface.
+ </LI>
+<LI>  <code>obj.SetTwoMaterialsOptimization (int )</code> -  Triggers some additional optimizations for cells containing only two materials. This option might produce different result than expected if the sum of volume fractions is not 1.
+ </LI>
+<LI>  <code>int = obj.GetTwoMaterialsOptimization ()</code> -  Triggers some additional optimizations for cells containing only two materials. This option might produce different result than expected if the sum of volume fractions is not 1.
+ </LI>
+<LI>  <code>obj.TwoMaterialsOptimizationOn ()</code> -  Triggers some additional optimizations for cells containing only two materials. This option might produce different result than expected if the sum of volume fractions is not 1.
+ </LI>
+<LI>  <code>obj.TwoMaterialsOptimizationOff ()</code> -  Triggers some additional optimizations for cells containing only two materials. This option might produce different result than expected if the sum of volume fractions is not 1.
+ </LI>
+<LI>  <code>obj.SetVolumeFractionRange (double , double )</code> -  Set/Get minimum and maximum volume fraction value. if a material fills a volume above the minimum value, the material is considered to be void. if a material fills a volume fraction beyond the maximum value it is considered as filling the whole volume.
+ </LI>
+<LI>  <code>obj.SetVolumeFractionRange (double  a[2])</code> -  Set/Get minimum and maximum volume fraction value. if a material fills a volume above the minimum value, the material is considered to be void. if a material fills a volume fraction beyond the maximum value it is considered as filling the whole volume.
+ </LI>
+<LI>  <code>double = obj. GetVolumeFractionRange ()</code> -  Set/Get minimum and maximum volume fraction value. if a material fills a volume above the minimum value, the material is considered to be void. if a material fills a volume fraction beyond the maximum value it is considered as filling the whole volume.
+ </LI>
+<LI>  <code>obj.SetNumberOfMaterials (int n)</code> -  Sets/Gets the number of materials.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfMaterials ()</code> -  Sets/Gets the number of materials.
+ </LI>
+<LI>  <code>obj.SetMaterialArrays (int i, string volumeFraction, string interfaceNormal, string materialOrdering)</code> -  Set ith Material arrays to be used as volume fraction, interface normal and material ordering. Each parameter name a cell array.
+ </LI>
+<LI>  <code>obj.SetMaterialVolumeFractionArray (int i, string volume)</code> -  Set ith Material arrays to be used as volume fraction, interface normal and material ordering. Each parameter name a cell array.
+ </LI>
+<LI>  <code>obj.SetMaterialNormalArray (int i, string normal)</code> -  Set ith Material arrays to be used as volume fraction, interface normal and material ordering. Each parameter name a cell array.
+ </LI>
+<LI>  <code>obj.SetMaterialOrderingArray (int i, string ordering)</code> -  Set ith Material arrays to be used as volume fraction, interface normal and material ordering. Each parameter name a cell array.
+ </LI>
+<LI>  <code>obj.RemoveAllMaterials ()</code> -  Removes all meterials previously added.
+ </LI>
+</UL>
+</BODY>
+</HTML>

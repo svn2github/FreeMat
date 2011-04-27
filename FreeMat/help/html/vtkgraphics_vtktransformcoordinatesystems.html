@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTransformCoordinateSystems
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTransformCoordinateSystems
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ This filter transforms points from one coordinate system to another. The user
+ must specify the coordinate systems in which the input and output are
+ specified. The user must also specify the VTK viewport (i.e., renderer) in
+ which the transformation occurs.
+<P>
+<P>
+To create an instance of class vtkTransformCoordinateSystems, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTransformCoordinateSystems
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTransformCoordinateSystems has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTransformCoordinateSystems class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>vtkTransformCoordinateSystems = obj.NewInstance ()</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>vtkTransformCoordinateSystems = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for type information and printing.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystem (int )</code> -  Set/get the coordinate system in which the input is specified.
+ The current options are World, Viewport, and Display. By default the
+ input coordinate system is World.
+ </LI>
+<LI>  <code>int = obj.GetInputCoordinateSystem ()</code> -  Set/get the coordinate system in which the input is specified.
+ The current options are World, Viewport, and Display. By default the
+ input coordinate system is World.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystemToDisplay ()</code> -  Set/get the coordinate system in which the input is specified.
+ The current options are World, Viewport, and Display. By default the
+ input coordinate system is World.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystemToViewport ()</code> -  Set/get the coordinate system in which the input is specified.
+ The current options are World, Viewport, and Display. By default the
+ input coordinate system is World.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystemToWorld ()</code> -  Set/get the coordinate system to which to transform the output.
+ The current options are World, Viewport, and Display. By default the
+ output coordinate system is Display.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystem (int )</code> -  Set/get the coordinate system to which to transform the output.
+ The current options are World, Viewport, and Display. By default the
+ output coordinate system is Display.
+ </LI>
+<LI>  <code>int = obj.GetOutputCoordinateSystem ()</code> -  Set/get the coordinate system to which to transform the output.
+ The current options are World, Viewport, and Display. By default the
+ output coordinate system is Display.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystemToDisplay ()</code> -  Set/get the coordinate system to which to transform the output.
+ The current options are World, Viewport, and Display. By default the
+ output coordinate system is Display.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystemToViewport ()</code> -  Set/get the coordinate system to which to transform the output.
+ The current options are World, Viewport, and Display. By default the
+ output coordinate system is Display.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystemToWorld ()</code> -  Return the MTime also considering the instance of vtkCoordinate.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return the MTime also considering the instance of vtkCoordinate.
+ </LI>
+<LI>  <code>obj.SetViewport (vtkViewport viewport)</code> -  In order for successful coordinate transformation to occur, an
+ instance of vtkViewport (e.g., a VTK renderer) must be specified.
+ NOTE: this is a raw pointer, not a weak pointer not a reference counted
+ object to avoid reference cycle loop between rendering classes and filter
+ classes.
+ </LI>
+<LI>  <code>vtkViewport = obj.GetViewport ()</code> -  In order for successful coordinate transformation to occur, an
+ instance of vtkViewport (e.g., a VTK renderer) must be specified.
+ NOTE: this is a raw pointer, not a weak pointer not a reference counted
+ object to avoid reference cycle loop between rendering classes and filter
+ classes.
+ </LI>
+</UL>
+</BODY>
+</HTML>

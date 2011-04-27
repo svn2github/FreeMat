@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExplicitCell
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExplicitCell
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkExplicitCell is an abstract superclass for cells that cannot be
+ represented implicitly. An implicit representation requires only a
+ cell type and connectivity list (e.g., triangle). Explicit cells
+ require information beyond this; e.g., a NURBS surface or cells that
+ require explicit face/edge descriptions. Most cells in VTK are
+ implicitly represented.
+<P>
+To create an instance of class vtkExplicitCell, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExplicitCell
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExplicitCell has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExplicitCell class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExplicitCell = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExplicitCell = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.IsExplicitCell ()</code> -  Set/Get the cell id. This is necessary for explicit cells because they
+ often need to keep extra information (typically contained in the
+ cell data of a point set). This information might be things like
+ knot points/weights, boundaries, etc.
+ </LI>
+<LI>  <code>obj.SetCellId (vtkIdType )</code> -  Set/Get the cell id. This is necessary for explicit cells because they
+ often need to keep extra information (typically contained in the
+ cell data of a point set). This information might be things like
+ knot points/weights, boundaries, etc.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetCellId ()</code> -  Set/Get the cell id. This is necessary for explicit cells because they
+ often need to keep extra information (typically contained in the
+ cell data of a point set). This information might be things like
+ knot points/weights, boundaries, etc.
+ </LI>
+<LI>  <code>obj.SetDataSet (vtkDataSet )</code> -  Set/Get the mesh that owns this cell. This is necessary for explicit
+ cells because they often need to keep extra information (typically
+ contained in the cell data of a point set). This information might be
+ things like knot points/weights, boundaries, etc.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetDataSet ()</code> -  Set/Get the mesh that owns this cell. This is necessary for explicit
+ cells because they often need to keep extra information (typically
+ contained in the cell data of a point set). This information might be
+ things like knot points/weights, boundaries, etc.
+ </LI>
+</UL>
+</BODY>
+</HTML>

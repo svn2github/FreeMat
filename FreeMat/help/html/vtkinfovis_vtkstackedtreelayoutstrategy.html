@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkStackedTreeLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkStackedTreeLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Performs a tree ring layout or "icicle" layout on a tree.
+ This involves assigning a sector region to each vertex in the tree,
+ and placing that information in a data array with four components per
+ tuple representing (innerRadius, outerRadius, startAngle, endAngle).
+<P>
+ This class may be assigned as the layout strategy to vtkAreaLayout.
+<P>
+ .SECTION Thanks
+ Thanks to Jason Shepherd from Sandia National Laboratories
+ for help developing this class.
+<P>
+To create an instance of class vtkStackedTreeLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkStackedTreeLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkStackedTreeLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkStackedTreeLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkStackedTreeLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkStackedTreeLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Layout (vtkTree inputTree, vtkDataArray sectorArray, vtkDataArray sizeArray)</code> -  Perform the layout of the input tree, and store the sector
+ bounds of each vertex as a tuple
+ (innerRadius, outerRadius, startAngle, endAngle)
+ in a data array.
+ </LI>
+<LI>  <code>obj.LayoutEdgePoints (vtkTree inputTree, vtkDataArray sectorArray, vtkDataArray sizeArray, vtkTree edgeRoutingTree)</code> -  Fill edgeRoutingTree with points suitable for routing edges of
+ an overlaid graph.
+ </LI>
+<LI>  <code>obj.SetInteriorRadius (double )</code> -  Define the tree ring's interior radius.
+ </LI>
+<LI>  <code>double = obj.GetInteriorRadius ()</code> -  Define the tree ring's interior radius.
+ </LI>
+<LI>  <code>obj.SetRingThickness (double )</code> -  Define the thickness of each of the tree rings.
+ </LI>
+<LI>  <code>double = obj.GetRingThickness ()</code> -  Define the thickness of each of the tree rings.
+ </LI>
+<LI>  <code>obj.SetRootStartAngle (double )</code> -  Define the start angle for the root node.
+ NOTE: It is assumed that the root end angle is greater than the
+ root start angle and subtends no more than 360 degrees.
+ </LI>
+<LI>  <code>double = obj.GetRootStartAngle ()</code> -  Define the start angle for the root node.
+ NOTE: It is assumed that the root end angle is greater than the
+ root start angle and subtends no more than 360 degrees.
+ </LI>
+<LI>  <code>obj.SetRootEndAngle (double )</code> -  Define the end angle for the root node.
+ NOTE: It is assumed that the root end angle is greater than the
+ root start angle and subtends no more than 360 degrees.
+ </LI>
+<LI>  <code>double = obj.GetRootEndAngle ()</code> -  Define the end angle for the root node.
+ NOTE: It is assumed that the root end angle is greater than the
+ root start angle and subtends no more than 360 degrees.
+ </LI>
+<LI>  <code>obj.SetUseRectangularCoordinates (bool )</code> -  Define whether or not rectangular coordinates are being used
+ (as opposed to polar coordinates).
+ </LI>
+<LI>  <code>bool = obj.GetUseRectangularCoordinates ()</code> -  Define whether or not rectangular coordinates are being used
+ (as opposed to polar coordinates).
+ </LI>
+<LI>  <code>obj.UseRectangularCoordinatesOn ()</code> -  Define whether or not rectangular coordinates are being used
+ (as opposed to polar coordinates).
+ </LI>
+<LI>  <code>obj.UseRectangularCoordinatesOff ()</code> -  Define whether or not rectangular coordinates are being used
+ (as opposed to polar coordinates).
+ </LI>
+<LI>  <code>obj.SetReverse (bool )</code> -  Define whether to reverse the order of the tree stacks from
+ low to high.
+ </LI>
+<LI>  <code>bool = obj.GetReverse ()</code> -  Define whether to reverse the order of the tree stacks from
+ low to high.
+ </LI>
+<LI>  <code>obj.ReverseOn ()</code> -  Define whether to reverse the order of the tree stacks from
+ low to high.
+ </LI>
+<LI>  <code>obj.ReverseOff ()</code> -  Define whether to reverse the order of the tree stacks from
+ low to high.
+ </LI>
+<LI>  <code>obj.SetInteriorLogSpacingValue (double )</code> -  The spacing of tree levels in the edge routing tree.
+ Levels near zero give more space
+ to levels near the root, while levels near one (the default)
+ create evenly-spaced levels. Levels above one give more space
+ to levels near the leaves.
+ </LI>
+<LI>  <code>double = obj.GetInteriorLogSpacingValue ()</code> -  The spacing of tree levels in the edge routing tree.
+ Levels near zero give more space
+ to levels near the root, while levels near one (the default)
+ create evenly-spaced levels. Levels above one give more space
+ to levels near the leaves.
+ </LI>
+<LI>  <code>vtkIdType = obj.FindVertex (vtkTree tree, vtkDataArray array, float pnt[2])</code> -  Returns the vertex id that contains pnt (or -1 if no one contains it).
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSliderRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSliderRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This abstract class is used to specify how the vtkSliderWidget should
+ interact with representations of the vtkSliderWidget. This class may be
+ subclassed so that alternative representations can be created. The class
+ defines an API, and a default implementation, that the vtkSliderWidget
+ interacts with to render itself in the scene.
+<P>
+To create an instance of class vtkSliderRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSliderRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSliderRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSliderRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkSliderRepresentation = obj.NewInstance ()</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkSliderRepresentation = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>obj.SetValue (double value)</code> -  Specify the current value for the widget. The value should lie between
+ the minimum and maximum values.
+ </LI>
+<LI>  <code>double = obj.GetValue ()</code> -  Specify the current value for the widget. The value should lie between
+ the minimum and maximum values.
+ </LI>
+<LI>  <code>obj.SetMinimumValue (double value)</code> -  Set the current minimum value that the slider can take. Setting the
+ minimum value greater than the maximum value will cause the maximum
+ value to grow to (minimum value + 1).
+ </LI>
+<LI>  <code>double = obj.GetMinimumValue ()</code> -  Set the current minimum value that the slider can take. Setting the
+ minimum value greater than the maximum value will cause the maximum
+ value to grow to (minimum value + 1).
+ </LI>
+<LI>  <code>obj.SetMaximumValue (double value)</code> -  Set the current maximum value that the slider can take. Setting the
+ maximum value less than the minimum value will cause the minimum
+ value to change to (maximum value - 1).
+ </LI>
+<LI>  <code>double = obj.GetMaximumValue ()</code> -  Set the current maximum value that the slider can take. Setting the
+ maximum value less than the minimum value will cause the minimum
+ value to change to (maximum value - 1).
+ </LI>
+<LI>  <code>obj.SetSliderLength (double )</code> -  Specify the length of the slider shape (in normalized display coordinates
+ [0.01,0.5]). The slider length by default is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetSliderLengthMinValue ()</code> -  Specify the length of the slider shape (in normalized display coordinates
+ [0.01,0.5]). The slider length by default is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetSliderLengthMaxValue ()</code> -  Specify the length of the slider shape (in normalized display coordinates
+ [0.01,0.5]). The slider length by default is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetSliderLength ()</code> -  Specify the length of the slider shape (in normalized display coordinates
+ [0.01,0.5]). The slider length by default is 0.05.
+ </LI>
+<LI>  <code>obj.SetSliderWidth (double )</code> -  Set the width of the slider in the directions orthogonal to the
+ slider axis. Using this it is possible to create ellipsoidal and hockey
+ puck sliders (in some subclasses). By default the width is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetSliderWidthMinValue ()</code> -  Set the width of the slider in the directions orthogonal to the
+ slider axis. Using this it is possible to create ellipsoidal and hockey
+ puck sliders (in some subclasses). By default the width is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetSliderWidthMaxValue ()</code> -  Set the width of the slider in the directions orthogonal to the
+ slider axis. Using this it is possible to create ellipsoidal and hockey
+ puck sliders (in some subclasses). By default the width is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetSliderWidth ()</code> -  Set the width of the slider in the directions orthogonal to the
+ slider axis. Using this it is possible to create ellipsoidal and hockey
+ puck sliders (in some subclasses). By default the width is 0.05.
+ </LI>
+<LI>  <code>obj.SetTubeWidth (double )</code> -  Set the width of the tube (in normalized display coordinates) on which
+ the slider moves. By default the width is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetTubeWidthMinValue ()</code> -  Set the width of the tube (in normalized display coordinates) on which
+ the slider moves. By default the width is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetTubeWidthMaxValue ()</code> -  Set the width of the tube (in normalized display coordinates) on which
+ the slider moves. By default the width is 0.05.
+ </LI>
+<LI>  <code>double = obj.GetTubeWidth ()</code> -  Set the width of the tube (in normalized display coordinates) on which
+ the slider moves. By default the width is 0.05.
+ </LI>
+<LI>  <code>obj.SetEndCapLength (double )</code> -  Specify the length of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the length is 0.025. If the end cap length
+ is set to 0.0, then the end cap will not display at all.
+ </LI>
+<LI>  <code>double = obj.GetEndCapLengthMinValue ()</code> -  Specify the length of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the length is 0.025. If the end cap length
+ is set to 0.0, then the end cap will not display at all.
+ </LI>
+<LI>  <code>double = obj.GetEndCapLengthMaxValue ()</code> -  Specify the length of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the length is 0.025. If the end cap length
+ is set to 0.0, then the end cap will not display at all.
+ </LI>
+<LI>  <code>double = obj.GetEndCapLength ()</code> -  Specify the length of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the length is 0.025. If the end cap length
+ is set to 0.0, then the end cap will not display at all.
+ </LI>
+<LI>  <code>obj.SetEndCapWidth (double )</code> -  Specify the width of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the width is twice the tube width. 
+ </LI>
+<LI>  <code>double = obj.GetEndCapWidthMinValue ()</code> -  Specify the width of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the width is twice the tube width. 
+ </LI>
+<LI>  <code>double = obj.GetEndCapWidthMaxValue ()</code> -  Specify the width of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the width is twice the tube width. 
+ </LI>
+<LI>  <code>double = obj.GetEndCapWidth ()</code> -  Specify the width of each end cap (in normalized coordinates
+ [0.0,0.25]). By default the width is twice the tube width. 
+ </LI>
+<LI>  <code>obj.SetTitleText (string )</code> -  Specify the label text for this widget. If the value is not set, or set
+ to the empty string "", then the label text is not displayed.
+ </LI>
+<LI>  <code>string = obj.GetTitleText ()</code> -  Set/Get the format with which to print the slider value.
+ </LI>
+<LI>  <code>obj.SetLabelFormat (string )</code> -  Set/Get the format with which to print the slider value.
+ </LI>
+<LI>  <code>string = obj.GetLabelFormat ()</code> -  Set/Get the format with which to print the slider value.
+ </LI>
+<LI>  <code>obj.SetLabelHeight (double )</code> -  Specify the relative height of the label as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>double = obj.GetLabelHeightMinValue ()</code> -  Specify the relative height of the label as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>double = obj.GetLabelHeightMaxValue ()</code> -  Specify the relative height of the label as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>double = obj.GetLabelHeight ()</code> -  Specify the relative height of the label as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>obj.SetTitleHeight (double )</code> -  Specify the relative height of the title as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>double = obj.GetTitleHeightMinValue ()</code> -  Specify the relative height of the title as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>double = obj.GetTitleHeightMaxValue ()</code> -  Specify the relative height of the title as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>double = obj.GetTitleHeight ()</code> -  Specify the relative height of the title as compared to the length of the
+ slider. 
+ </LI>
+<LI>  <code>obj.SetShowSliderLabel (int )</code> -  Indicate whether the slider text label should be displayed. This is
+ a number corresponding to the current Value of this widget.
+ </LI>
+<LI>  <code>int = obj.GetShowSliderLabel ()</code> -  Indicate whether the slider text label should be displayed. This is
+ a number corresponding to the current Value of this widget.
+ </LI>
+<LI>  <code>obj.ShowSliderLabelOn ()</code> -  Indicate whether the slider text label should be displayed. This is
+ a number corresponding to the current Value of this widget.
+ </LI>
+<LI>  <code>obj.ShowSliderLabelOff ()</code> -  Indicate whether the slider text label should be displayed. This is
+ a number corresponding to the current Value of this widget.
+ </LI>
+<LI>  <code>double = obj.GetCurrentT ()</code> -  Methods to interface with the vtkSliderWidget. Subclasses of this class 
+ actually do something.
+ </LI>
+<LI>  <code>double = obj.GetPickedT ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

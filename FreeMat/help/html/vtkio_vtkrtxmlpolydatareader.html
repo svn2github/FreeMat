@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRTXMLPolyDataReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRTXMLPolyDataReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkRTXMLPolyDataReader reads the VTK XML PolyData file format in real time.  
+<P>
+To create an instance of class vtkRTXMLPolyDataReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRTXMLPolyDataReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRTXMLPolyDataReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRTXMLPolyDataReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRTXMLPolyDataReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRTXMLPolyDataReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLocation (string dataLocation)</code>
+ </LI>
+<LI>  <code>string = obj.GetDataLocation ()</code>
+ </LI>
+<LI>  <code>obj.UpdateToNextFile ()</code> -  Reader will read in the next available data file
+ The filename is this-&gt;NextFileName maintained internally 
+ </LI>
+<LI>  <code>int = obj.NewDataAvailable ()</code> -  check if there is new data file available in the 
+ given DataLocation
+ </LI>
+<LI>  <code>obj.ResetReader ()</code> -  ResetReader check the data directory specified in 
+ this-&gt;DataLocation, and reset the Internal data structure
+ specifically: this-&gt;Internal-&gt;ProcessedFileList
+ for monitoring the arriving new data files
+ if SetDataLocation(char*) is set by the user, 
+ this ResetReader() should also be invoked. 
+ </LI>
+<LI>  <code>string = obj.GetNextFileName ()</code> -  Return the name of the next available data file
+ assume NewDataAvailable() return VTK_OK
+ </LI>
+</UL>
+</BODY>
+</HTML>

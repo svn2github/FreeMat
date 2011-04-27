@@ -32,7 +32,7 @@ For other filenames, FreeMat first tries to open the file as a
 FreeMat binary format file (as created by the <code>save</code> function).  
 If the file fails to open as a FreeMat binary file, then FreeMat 
 attempts to read it as an ASCII file.  
-
+<P>
 You can force FreeMat to assume a particular format for the file
 by using alternate forms of the <code>load</code> command.  In particular,
 <PRE>
@@ -42,7 +42,7 @@ by using alternate forms of the <code>load</code> command.  In particular,
 will load the data in file <code>filename</code> as an ASCII file (space delimited
 numeric text) loaded into a single variable in the current workspace
 with the name <code>filename</code> (without the extension).
-
+<P>
 For MATLAB-formatted data files, you can use
 <PRE>
   load -mat filename
@@ -50,7 +50,7 @@ For MATLAB-formatted data files, you can use
 <P>
 which forces FreeMat to assume that <code>filename</code> is a MAT-file, regardless
 of the extension on the filename.
-
+<P>
 You can also specify which variables to load from a file (not from 
 an ASCII file - only single 2-D variables can be successfully saved and
 retrieved from ASCII files) using the additional syntaxes of the <code>load</code>
@@ -68,7 +68,7 @@ Alternately, you can use the regular expression syntax
 where <code>expr_n</code> is a regular expression (roughly as expected by <code>regexp</code>).
 Note that a simpler regular expression mechanism is used for this syntax
 than the full mechanism used by the <code>regexp</code> command.
-
+<P>
 Finally, you can use <code>load</code> to create a variable containing the 
 contents of the file, instead of automatically inserting the variables
 into the curent workspace.  For this form of <code>load</code> you must use the
@@ -80,7 +80,7 @@ function syntax, and capture the output:
 which returns a structure <code>V</code> with one field for each variable
 retrieved from the file.  For ASCII files, <code>V</code> is a double precision
 matrix.
-
+<P>
 <H3>Example</H3>
 Here is a simple example of <code>save</code>/<code>load</code>.  First, we save some variables to a file.
 <PRE>
@@ -90,28 +90,26 @@ Here is a simple example of <code>save</code>/<code>load</code>.  First, we save
 --&gt; z = zeros(512);
 --&gt; who
   Variable Name       Type   Flags             Size
-              D      cell                    [1 3]
-              s      char                    [1 11]
-              x    double                    [512 1]
-              z    double                    [512 512]
+              D      cell                    [1x3]
+              s      char                    [1x11]
+              x    double                    [512x1]
+              z    double                    [512x512]
 --&gt; save loadsave.dat
 </PRE>
-<P>
 Next, we clear the variables, and then load them back from the file.
 <PRE>
 --&gt; clear D s x z
 --&gt; who
   Variable Name       Type   Flags             Size
-            ans    double                    [0 0]
+            ans    double                    [0x0]
 --&gt; load loadsave.dat
 --&gt; who
   Variable Name       Type   Flags             Size
-              D      cell                    [1 3]
-            ans    double                    [0 0]
-              s      char                    [1 11]
-              x    double                    [512 1]
-              z    double                    [512 512]
+              D      cell                    [1x3]
+            ans    double                    [0x0]
+              s      char                    [1x11]
+              x    double                    [512x1]
+              z    double                    [512x512]
 </PRE>
-<P>
 </BODY>
 </HTML>

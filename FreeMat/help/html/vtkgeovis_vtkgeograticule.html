@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoGraticule
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoGraticule
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ This filter generates polydata to illustrate the distortions introduced
+ by a map projection. The level parameter specifies the number of lines
+ to be drawn. Poles are treated differently than other regions; hence the
+ use of a Level parameter instead of a NumberOfLines parameter.
+ The latitude and longitude are specified as half-open intervals with units
+ of degrees. By default the latitude bounds are [-90,90[ and the longitude
+ bounds are [0,180[.
+<P>
+To create an instance of class vtkGeoGraticule, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoGraticule
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoGraticule has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoGraticule class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoGraticule = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoGraticule = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLatitudeBounds (double , double )</code> -  The latitude bounds of the graticule.
+ </LI>
+<LI>  <code>obj.SetLatitudeBounds (double  a[2])</code> -  The latitude bounds of the graticule.
+ </LI>
+<LI>  <code>double = obj. GetLatitudeBounds ()</code> -  The latitude bounds of the graticule.
+ </LI>
+<LI>  <code>obj.SetLongitudeBounds (double , double )</code> -  The longitude bounds of the graticule.
+ </LI>
+<LI>  <code>obj.SetLongitudeBounds (double  a[2])</code> -  The longitude bounds of the graticule.
+ </LI>
+<LI>  <code>double = obj. GetLongitudeBounds ()</code> -  The longitude bounds of the graticule.
+ </LI>
+<LI>  <code>obj.SetLatitudeLevel (int )</code> -  The frequency level of latitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLatitudeLevelMinValue ()</code> -  The frequency level of latitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLatitudeLevelMaxValue ()</code> -  The frequency level of latitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLatitudeLevel ()</code> -  The frequency level of latitude lines.
+ </LI>
+<LI>  <code>obj.SetLongitudeLevel (int )</code> -  The frequency level of longitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLongitudeLevelMinValue ()</code> -  The frequency level of longitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLongitudeLevelMaxValue ()</code> -  The frequency level of longitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLongitudeLevel ()</code> -  The frequency level of longitude lines.
+ </LI>
+<LI>  <code>obj.SetGeometryType (int )</code> -  Set//get the type(s) of cells that will be
+ output by the filter. By default, polylines
+ are output. You may also request quadrilaterals. 
+ This is a bit vector of GeometryType enums.
+ </LI>
+<LI>  <code>int = obj.GetGeometryType ()</code> -  Set//get the type(s) of cells that will be
+ output by the filter. By default, polylines
+ are output. You may also request quadrilaterals. 
+ This is a bit vector of GeometryType enums.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkWindowLevelLookupTable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkWindowLevelLookupTable
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkWindowLevelLookupTable is an object that is used by mapper objects
+ to map scalar values into rgba (red-green-blue-alpha transparency)
+ color specification, or rgba into scalar values. The color table can
+ be created by direct insertion of color values, or by specifying a
+ window and level. Window / Level is used in medical imaging to specify
+ a linear greyscale ramp. The Level is the center of the ramp.  The
+ Window is the width of the ramp.
+<P>
+To create an instance of class vtkWindowLevelLookupTable, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkWindowLevelLookupTable
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkWindowLevelLookupTable has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkWindowLevelLookupTable class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkWindowLevelLookupTable = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkWindowLevelLookupTable = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Build ()</code> -  Generate lookup table as a linear ramp between MinimumTableValue
+ and MaximumTableValue.
+ </LI>
+<LI>  <code>obj.SetWindow (double window)</code> -  Set the window for the lookup table.  The window is the difference
+ between TableRange[0] and TableRange[1].
+ </LI>
+<LI>  <code>double = obj.GetWindow ()</code> -  Set the window for the lookup table.  The window is the difference
+ between TableRange[0] and TableRange[1].
+ </LI>
+<LI>  <code>obj.SetLevel (double level)</code> -  Set the Level for the lookup table.  The level is the average of
+ TableRange[0] and TableRange[1].
+ </LI>
+<LI>  <code>double = obj.GetLevel ()</code> -  Set the Level for the lookup table.  The level is the average of
+ TableRange[0] and TableRange[1].
+ </LI>
+<LI>  <code>obj.SetInverseVideo (int iv)</code> -  Set inverse video on or off.  You can achieve the same effect by
+ switching the MinimumTableValue and the MaximumTableValue.
+ </LI>
+<LI>  <code>int = obj.GetInverseVideo ()</code> -  Set inverse video on or off.  You can achieve the same effect by
+ switching the MinimumTableValue and the MaximumTableValue.
+ </LI>
+<LI>  <code>obj.InverseVideoOn ()</code> -  Set inverse video on or off.  You can achieve the same effect by
+ switching the MinimumTableValue and the MaximumTableValue.
+ </LI>
+<LI>  <code>obj.InverseVideoOff ()</code> -  Set inverse video on or off.  You can achieve the same effect by
+ switching the MinimumTableValue and the MaximumTableValue.
+ </LI>
+<LI>  <code>obj.SetMinimumTableValue (double , double , double , double )</code> -  Set the minimum table value.  All lookup table entries below the
+ start of the ramp will be set to this color.  After you change
+ this value, you must re-build the lookup table.
+ </LI>
+<LI>  <code>obj.SetMinimumTableValue (double  a[4])</code> -  Set the minimum table value.  All lookup table entries below the
+ start of the ramp will be set to this color.  After you change
+ this value, you must re-build the lookup table.
+ </LI>
+<LI>  <code>double = obj. GetMinimumTableValue ()</code> -  Set the minimum table value.  All lookup table entries below the
+ start of the ramp will be set to this color.  After you change
+ this value, you must re-build the lookup table.
+ </LI>
+<LI>  <code>obj.SetMaximumTableValue (double , double , double , double )</code> -  Set the maximum table value. All lookup table entries above the
+ end of the ramp will be set to this color.  After you change
+ this value, you must re-build the lookup table.
+ </LI>
+<LI>  <code>obj.SetMaximumTableValue (double  a[4])</code> -  Set the maximum table value. All lookup table entries above the
+ end of the ramp will be set to this color.  After you change
+ this value, you must re-build the lookup table.
+ </LI>
+<LI>  <code>double = obj. GetMaximumTableValue ()</code> -  Set the maximum table value. All lookup table entries above the
+ end of the ramp will be set to this color.  After you change
+ this value, you must re-build the lookup table.
+ </LI>
+<LI>  <code>obj.SetMinimumColor (int r, int g, int b, int a)</code> -  @deprecated For backwards compatibility: specify the color using 
+ integers in the range [0,255].  
+ </LI>
+<LI>  <code>obj.SetMinimumColor (char rgba[4])</code> -  @deprecated For backwards compatibility: specify the color using 
+ integers in the range [0,255].  
+ </LI>
+<LI>  <code>obj.GetMinimumColor (char rgba[4])</code> -  @deprecated For backwards compatibility: specify the color using 
+ integers in the range [0,255].  
+ </LI>
+<LI>  <code>obj.SetMaximumColor (int r, int g, int b, int a)</code> -  @deprecated For backwards compatibility: specify the color using 
+ integers in the range [0,255].  
+ </LI>
+<LI>  <code>obj.SetMaximumColor (char rgba[4])</code> -  @deprecated For backwards compatibility: specify the color using 
+ integers in the range [0,255].  
+ </LI>
+<LI>  <code>obj.GetMaximumColor (char rgba[4])</code> -  @deprecated For backwards compatibility: specify the color using 
+ integers in the range [0,255].  
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInteractorStyleRubberBand3D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInteractorStyleRubberBand3D
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkInteractorStyleRubberBand3D manages interaction in a 3D view.
+ The style also allows draws a rubber band using the left button.
+ All camera changes invoke InteractionBeginEvent when the button
+ is pressed, InteractionEvent when the mouse (or wheel) is moved,
+ and InteractionEndEvent when the button is released.  The bindings
+ are as follows:
+ Left mouse - Select (invokes a SelectionChangedEvent).
+ Right mouse - Rotate.
+ Shift + right mouse - Zoom.
+ Middle mouse - Pan.
+ Scroll wheel - Zoom.
+<P>
+To create an instance of class vtkInteractorStyleRubberBand3D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInteractorStyleRubberBand3D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInteractorStyleRubberBand3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInteractorStyleRubberBand3D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInteractorStyleRubberBand3D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInteractorStyleRubberBand3D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.OnLeftButtonDown ()</code>
+ </LI>
+<LI>  <code>obj.OnLeftButtonUp ()</code>
+ </LI>
+<LI>  <code>obj.OnMiddleButtonDown ()</code>
+ </LI>
+<LI>  <code>obj.OnMiddleButtonUp ()</code>
+ </LI>
+<LI>  <code>obj.OnRightButtonDown ()</code>
+ </LI>
+<LI>  <code>obj.OnRightButtonUp ()</code>
+ </LI>
+<LI>  <code>obj.OnMouseMove ()</code>
+ </LI>
+<LI>  <code>obj.OnMouseWheelForward ()</code>
+ </LI>
+<LI>  <code>obj.OnMouseWheelBackward ()</code>
+ </LI>
+<LI>  <code>obj.SetRenderOnMouseMove (bool )</code> -  Whether to invoke a render when the mouse moves.
+ </LI>
+<LI>  <code>bool = obj.GetRenderOnMouseMove ()</code> -  Whether to invoke a render when the mouse moves.
+ </LI>
+<LI>  <code>obj.RenderOnMouseMoveOn ()</code> -  Whether to invoke a render when the mouse moves.
+ </LI>
+<LI>  <code>obj.RenderOnMouseMoveOff ()</code> -  Whether to invoke a render when the mouse moves.
+ </LI>
+<LI>  <code>int = obj.GetInteraction ()</code> -  Current interaction state
+ </LI>
+</UL>
+</BODY>
+</HTML>

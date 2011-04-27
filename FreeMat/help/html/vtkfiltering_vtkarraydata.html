@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkArrayData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkArrayData
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ Because vtkArray cannot be stored as attributes of data objects (yet), a "carrier"
+ object is needed to pass vtkArray through the pipeline.  vtkArrayData acts as a
+ container of zero-to-many vtkArray instances, which can be retrieved via a zero-based
+ index.  Note that a collection of arrays stored in vtkArrayData may-or-may-not have related
+ types, dimensions, or extents.
+<P>
+<P>
+To create an instance of class vtkArrayData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkArrayData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkArrayData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkArrayData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkArrayData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkArrayData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.AddArray (vtkArray )</code> -  Adds a vtkArray to the collection
+ </LI>
+<LI>  <code>obj.ClearArrays ()</code> -  Clears the contents of the collection
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfArrays ()</code> -  Returns the number of vtkArray instances in the collection
+ </LI>
+<LI>  <code>vtkArray = obj.GetArray (vtkIdType index)</code> -  Returns the n-th vtkArray in the collection
+ </LI>
+<LI>  <code>vtkArray = obj.GetArrayByName (string name)</code> -  Returns the array having called name from the collection
+ </LI>
+<LI>  <code>int = obj.GetDataObjectType ()</code>
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkDataObject other)</code>
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkDataObject other)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

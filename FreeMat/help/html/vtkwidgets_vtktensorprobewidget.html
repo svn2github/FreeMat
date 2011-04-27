@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTensorProbeWidget
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTensorProbeWidget
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ The class is used to probe tensors on a trajectory. The representation
+ (vtkTensorProbeRepresentation) is free to choose its own method of 
+ rendering the tensors. For instance vtkEllipsoidTensorProbeRepresentation
+ renders the tensors as ellipsoids. The interactions of the widget are 
+ controlled by the left mouse button. A left click on the tensor selects
+ it. It can dragged around the trajectory to probe the tensors on it.
+ 
+ For instance dragging the ellipsoid around with 
+ vtkEllipsoidTensorProbeRepresentation will manifest itself with the 
+ ellipsoid shape changing as needed along the trajectory.
+<P>
+To create an instance of class vtkTensorProbeWidget, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTensorProbeWidget
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTensorProbeWidget has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTensorProbeWidget class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard VTK class macros.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard VTK class macros.
+ </LI>
+<LI>  <code>vtkTensorProbeWidget = obj.NewInstance ()</code> -  Standard VTK class macros.
+ </LI>
+<LI>  <code>vtkTensorProbeWidget = obj.SafeDownCast (vtkObject o)</code> -  Standard VTK class macros.
+ </LI>
+<LI>  <code>obj.SetRepresentation (vtkTensorProbeRepresentation r)</code> -  See vtkWidgetRepresentation for details.
+ </LI>
+<LI>  <code>obj.CreateDefaultRepresentation ()</code> -  See vtkWidgetRepresentation for details.
+ </LI>
+</UL>
+</BODY>
+</HTML>

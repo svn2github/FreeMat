@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkActorCollection
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkActorCollection
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkActorCollection represents and provides methods to manipulate a list of
+ actors (i.e., vtkActor and subclasses). The list is unsorted and duplicate
+ entries are not prevented.
+<P>
+To create an instance of class vtkActorCollection, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkActorCollection
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkActorCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkActorCollection class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkActorCollection = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkActorCollection = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.AddItem (vtkActor a)</code> -  Add an actor to the list.
+ </LI>
+<LI>  <code>vtkActor = obj.GetNextActor ()</code> -  Get the next actor in the list.
+ </LI>
+<LI>  <code>vtkActor = obj.GetLastActor ()</code> -  Get the last actor in the list.
+ </LI>
+<LI>  <code>vtkActor = obj.GetNextItem ()</code> -  Access routines that are provided for compatibility with previous
+ version of VTK.  Please use the GetNextActor(), GetLastActor() variants
+ where possible.
+ </LI>
+<LI>  <code>vtkActor = obj.GetLastItem ()</code> -  Access routines that are provided for compatibility with previous
+ version of VTK.  Please use the GetNextActor(), GetLastActor() variants
+ where possible.
+ </LI>
+<LI>  <code>obj.ApplyProperties (vtkProperty p)</code> -  Apply properties to all actors in this collection.
+ </LI>
+</UL>
+</BODY>
+</HTML>

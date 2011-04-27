@@ -44,7 +44,7 @@ Functions that return only a single value can omit the brackets
   function out_1 = fname(in_1,...,in_N)
 </PRE>
 <P>
-
+<P>
 In the body of the function <code>in_i</code> are initialized with the
 values passed when the function is called.  Also, the function
 must assign values for <code>out_i</code> to pass values to the caller.
@@ -76,7 +76,7 @@ all arguments passed to the function that have not already
 been accounted for.  Similarly, the function can create a
 cell array named <code>varargout</code> for variable length output lists.
 See help <code>varargin</code> and <code>varargout</code> for more details.
-
+<P>
 The function name <code>fname</code> can be any legal FreeMat identifier.
 Functions are stored in files with the <code>.m</code> extension.  Note
 that the name of the file (and not the function name <code>fname</code> 
@@ -91,7 +91,7 @@ can only be called by other functions in the same <code>.m</code> file.  Further
 the names of these helper functions are determined by their declaration
 and not by the name of the <code>.m</code> file.  An example of using
 helper functions is included in the examples.
-
+<P>
 Another important feature of functions, as opposed to, say <code>scripts</code>,
 is that they have their own <code>scope</code>.  That means that variables
 defined or modified inside a function do not affect the scope of the
@@ -123,7 +123,6 @@ ans =
 ans = 
  3 
 </PRE>
-<P>
 Suppose, however, we want to replace the value of the first 
 argument by the computed sum.  A first attempt at doing so
 has no effect:
@@ -157,7 +156,6 @@ ans =
 ans = 
  3 
 </PRE>
-<P>
 The values of <code>arg1</code> and <code>arg2</code> are unchanged, because they are
 passed by value, so that any changes to <code>a</code> and <code>b</code> inside 
 the function do not affect <code>arg1</code> and <code>arg2</code>.  We can change
@@ -194,13 +192,12 @@ ans =
 ans = 
  3 
 </PRE>
-<P>
 The first example fails because we cannot pass a literal like the
 number <code>3</code> by reference.  However, the second call succeeds, and
 note that <code>arg1</code> has now changed.  Note: please be careful when
 passing by reference - this feature is not available in MATLAB
 and you must be clear that you are using it.
-
+<P>
 As variable argument and return functions are covered elsewhere,
 as are keywords, we include one final example that demonstrates
 the use of helper functions, or local functions, where
@@ -229,6 +226,5 @@ ans =
 ans = 
  2 
 </PRE>
-<P>
 </BODY>
 </HTML>

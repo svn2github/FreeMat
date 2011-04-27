@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkWidgetEvent
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkWidgetEvent
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ vtkWidgetEvent defines widget events. These events are processed by
+ subclasses of vtkInteractorObserver.
+<P>
+To create an instance of class vtkWidgetEvent, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkWidgetEvent
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkWidgetEvent has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkWidgetEvent class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard macros.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard macros.
+ </LI>
+<LI>  <code>vtkWidgetEvent = obj.NewInstance ()</code> -  Standard macros.
+ </LI>
+<LI>  <code>vtkWidgetEvent = obj.SafeDownCast (vtkObject o)</code> -  Standard macros.
+ </LI>
+</UL>
+</BODY>
+</HTML>

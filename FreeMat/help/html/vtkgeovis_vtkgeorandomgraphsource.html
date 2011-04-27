@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoRandomGraphSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoRandomGraphSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ Generates a graph with a specified number of vertices, with the density of
+ edges specified by either an exact number of edges or the probability of
+ an edge.  You may additionally specify whether to begin with a random
+ tree (which enforces graph connectivity).
+<P>
+ The filter also adds random vertex attributes called latitude and longitude.
+ The latitude is distributed uniformly from -90 to 90, while longitude is
+ distributed uniformly from -180 to 180.
+<P>
+<P>
+To create an instance of class vtkGeoRandomGraphSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoRandomGraphSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoRandomGraphSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoRandomGraphSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoRandomGraphSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoRandomGraphSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

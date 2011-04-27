@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDelimitedTextReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDelimitedTextReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkDelimitedTextReader is an interface for pulling in data from a
+ flat, delimited ascii or unicode text file (delimiter can be any character).
+<P>
+ The behavior of the reader with respect to ascii or unicode input is controlled
+ by the SetUnicodeCharacterSet() method.  By default (without calling SetUnicodeCharacterSet()),
+ the reader will expect to read ascii text and will output vtkStdString columns.  Use 
+ the Set and Get methods to set delimiters that do not contain UTF8 in the name when operating 
+ the reader in default ascii mode.  If the SetUnicodeCharacterSet() method is called, the reader 
+ will output vtkUnicodeString columns in the output table.  In addition, it is necessary to use 
+ the Set and Get methods that contain UTF8 in the name to specify delimiters when operating in 
+ unicode mode.
+<P>
+ This class emits ProgressEvent for every 100 lines it reads.
+<P>
+ .SECTION Thanks
+ Thanks to Andy Wilson, Brian Wylie, Tim Shead, and Thomas Otahal
+ from Sandia National Laboratories for implementing this class.
+ 
+<P>
+To create an instance of class vtkDelimitedTextReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDelimitedTextReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDelimitedTextReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDelimitedTextReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDelimitedTextReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDelimitedTextReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code>
+ </LI>
+<LI>  <code>string = obj.GetUnicodeCharacterSet ()</code> -  Specifies the character set used in the input file.  Valid character set
+ names will be drawn from the list maintained by the Internet Assigned Name
+ Authority at
+
+   http://www.iana.org/assignments/character-sets
+
+ Where multiple aliases are provided for a character set, the preferred MIME name
+ will be used.  vtkUnicodeDelimitedTextReader currently supports "US-ASCII", "UTF-8",
+ "UTF-16", "UTF-16BE", and "UTF-16LE" character sets.
+ </LI>
+<LI>  <code>obj.SetUnicodeCharacterSet (string )</code> -  Specifies the character set used in the input file.  Valid character set
+ names will be drawn from the list maintained by the Internet Assigned Name
+ Authority at
+
+   http://www.iana.org/assignments/character-sets
+
+ Where multiple aliases are provided for a character set, the preferred MIME name
+ will be used.  vtkUnicodeDelimitedTextReader currently supports "US-ASCII", "UTF-8",
+ "UTF-16", "UTF-16BE", and "UTF-16LE" character sets.
+ </LI>
+<LI>  <code>obj.SetUTF8RecordDelimiters (string delimiters)</code> -  Specify the character(s) that will be used to separate records.
+ The order of characters in the string does not matter.  Defaults
+ to "\r\n".
+ </LI>
+<LI>  <code>string = obj.GetUTF8RecordDelimiters ()</code> -  Specify the character(s) that will be used to separate records.
+ The order of characters in the string does not matter.  Defaults
+ to "\r\n".
+ </LI>
+<LI>  <code>obj.SetFieldDelimiterCharacters (string )</code> -  Specify the character(s) that will be used to separate fields.  For
+ example, set this to "," for a comma-separated value file.  Set
+ it to ".:;" for a file where columns can be separated by a
+ period, colon or semicolon.  The order of the characters in the
+ string does not matter.  Defaults to a comma.
+ </LI>
+<LI>  <code>string = obj.GetFieldDelimiterCharacters ()</code> -  Specify the character(s) that will be used to separate fields.  For
+ example, set this to "," for a comma-separated value file.  Set
+ it to ".:;" for a file where columns can be separated by a
+ period, colon or semicolon.  The order of the characters in the
+ string does not matter.  Defaults to a comma.
+ </LI>
+<LI>  <code>obj.SetUTF8FieldDelimiters (string delimiters)</code>
+ </LI>
+<LI>  <code>string = obj.GetUTF8FieldDelimiters ()</code>
+ </LI>
+<LI>  <code>char = obj.GetStringDelimiter ()</code> -  Get/set the character that will begin and end strings.  Microsoft
+ Excel, for example, will export the following format:
+
+ "First Field","Second Field","Field, With, Commas","Fourth Field"
+
+ The third field has a comma in it.  By using a string delimiter,
+ this will be correctly read.  The delimiter defaults to '"'.
+ </LI>
+<LI>  <code>obj.SetStringDelimiter (char )</code> -  Get/set the character that will begin and end strings.  Microsoft
+ Excel, for example, will export the following format:
+
+ "First Field","Second Field","Field, With, Commas","Fourth Field"
+
+ The third field has a comma in it.  By using a string delimiter,
+ this will be correctly read.  The delimiter defaults to '"'.
+ </LI>
+<LI>  <code>obj.SetUTF8StringDelimiters (string delimiters)</code>
+ </LI>
+<LI>  <code>string = obj.GetUTF8StringDelimiters ()</code>
+ </LI>
+<LI>  <code>obj.SetUseStringDelimiter (bool )</code> -  Set/get whether to use the string delimiter.  Defaults to on.
+ </LI>
+<LI>  <code>bool = obj.GetUseStringDelimiter ()</code> -  Set/get whether to use the string delimiter.  Defaults to on.
+ </LI>
+<LI>  <code>obj.UseStringDelimiterOn ()</code> -  Set/get whether to use the string delimiter.  Defaults to on.
+ </LI>
+<LI>  <code>obj.UseStringDelimiterOff ()</code> -  Set/get whether to use the string delimiter.  Defaults to on.
+ </LI>
+<LI>  <code>bool = obj.GetHaveHeaders ()</code> -  Set/get whether to treat the first line of the file as headers.
+ </LI>
+<LI>  <code>obj.SetHaveHeaders (bool )</code> -  Set/get whether to treat the first line of the file as headers.
+ </LI>
+<LI>  <code>obj.SetMergeConsecutiveDelimiters (bool )</code> -  Set/get whether to merge successive delimiters.  Use this if (for
+ example) your fields are separated by spaces but you don't know
+ exactly how many.
+ </LI>
+<LI>  <code>bool = obj.GetMergeConsecutiveDelimiters ()</code> -  Set/get whether to merge successive delimiters.  Use this if (for
+ example) your fields are separated by spaces but you don't know
+ exactly how many.
+ </LI>
+<LI>  <code>obj.MergeConsecutiveDelimitersOn ()</code> -  Set/get whether to merge successive delimiters.  Use this if (for
+ example) your fields are separated by spaces but you don't know
+ exactly how many.
+ </LI>
+<LI>  <code>obj.MergeConsecutiveDelimitersOff ()</code> -  Set/get whether to merge successive delimiters.  Use this if (for
+ example) your fields are separated by spaces but you don't know
+ exactly how many.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetMaxRecords ()</code> -  Specifies the maximum number of records to read from the file.  Limiting the
+ number of records to read is useful for previewing the contents of a file.
+ </LI>
+<LI>  <code>obj.SetMaxRecords (vtkIdType )</code> -  Specifies the maximum number of records to read from the file.  Limiting the
+ number of records to read is useful for previewing the contents of a file.
+ </LI>
+<LI>  <code>obj.SetDetectNumericColumns (bool )</code> -  When set to true, the reader will detect numeric columns and create
+ vtkDoubleArray or vtkIntArray for those instead of vtkStringArray. Default
+ is off.
+ </LI>
+<LI>  <code>bool = obj.GetDetectNumericColumns ()</code> -  When set to true, the reader will detect numeric columns and create
+ vtkDoubleArray or vtkIntArray for those instead of vtkStringArray. Default
+ is off.
+ </LI>
+<LI>  <code>obj.DetectNumericColumnsOn ()</code> -  When set to true, the reader will detect numeric columns and create
+ vtkDoubleArray or vtkIntArray for those instead of vtkStringArray. Default
+ is off.
+ </LI>
+<LI>  <code>obj.DetectNumericColumnsOff ()</code> -  When set to true, the reader will detect numeric columns and create
+ vtkDoubleArray or vtkIntArray for those instead of vtkStringArray. Default
+ is off.
+ </LI>
+<LI>  <code>obj.SetPedigreeIdArrayName (string )</code> -  The name of the array for generating or assigning pedigree ids
+ (default "id").
+ </LI>
+<LI>  <code>string = obj.GetPedigreeIdArrayName ()</code> -  The name of the array for generating or assigning pedigree ids
+ (default "id").
+ </LI>
+<LI>  <code>obj.SetGeneratePedigreeIds (bool )</code> -  If on (default), generates pedigree ids automatically.
+ If off, assign one of the arrays to be the pedigree id.
+ </LI>
+<LI>  <code>bool = obj.GetGeneratePedigreeIds ()</code> -  If on (default), generates pedigree ids automatically.
+ If off, assign one of the arrays to be the pedigree id.
+ </LI>
+<LI>  <code>obj.GeneratePedigreeIdsOn ()</code> -  If on (default), generates pedigree ids automatically.
+ If off, assign one of the arrays to be the pedigree id.
+ </LI>
+<LI>  <code>obj.GeneratePedigreeIdsOff ()</code> -  If on (default), generates pedigree ids automatically.
+ If off, assign one of the arrays to be the pedigree id.
+ </LI>
+<LI>  <code>obj.SetOutputPedigreeIds (bool )</code> -  If on, assigns pedigree ids to output. Defaults to off.
+ </LI>
+<LI>  <code>bool = obj.GetOutputPedigreeIds ()</code> -  If on, assigns pedigree ids to output. Defaults to off.
+ </LI>
+<LI>  <code>obj.OutputPedigreeIdsOn ()</code> -  If on, assigns pedigree ids to output. Defaults to off.
+ </LI>
+<LI>  <code>obj.OutputPedigreeIdsOff ()</code> -  If on, assigns pedigree ids to output. Defaults to off.
+ </LI>
+<LI>  <code>vtkStdString = obj.GetLastError ()</code> -  Returns a human-readable description of the most recent error, if any.
+ Otherwise, returns an empty string.  Note that the result is only valid
+ after calling Update().
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkProgrammableGlyphFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkProgrammableGlyphFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkProgrammableGlyphFilter is a filter that allows you to place a glyph at
+ each input point in the dataset. In addition, the filter is programmable
+ which means the user has control over the generation of the glyph. The
+ glyphs can be controlled via the point data attributes (e.g., scalars,
+ vectors, etc.) or any other information in the input dataset.
+<P>
+ This is the way the filter works. You must define an input dataset which
+ at a minimum contains points with associated attribute values. Also, the
+ Source instance variable must be set which is of type vtkPolyData. Then,
+ for each point in the input, the PointId is set to the current point id,
+ and a user-defined function is called (i.e., GlyphMethod). In this method
+ you can manipulate the Source data (including changing to a different
+ Source object). After the GlyphMethod is called,
+ vtkProgrammableGlyphFilter will invoke an Update() on its Source object,
+ and then copy its data to the output of the
+ vtkProgrammableGlyphFilter. Therefore the output of this filter is of type
+ vtkPolyData.
+<P>
+ Another option to this filter is the way you color the glyphs. You can use
+ the scalar data from the input or the source. The instance variable
+ ColorMode controls this behavior.
+<P>
+To create an instance of class vtkProgrammableGlyphFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkProgrammableGlyphFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkProgrammableGlyphFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkProgrammableGlyphFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkProgrammableGlyphFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkProgrammableGlyphFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSource (vtkPolyData source)</code> -  Set/Get the source to use for this glyph. 
+ Note: you can change the source during execution of this filter.
+ </LI>
+<LI>  <code>vtkPolyData = obj.GetSource ()</code> -  Set/Get the source to use for this glyph. 
+ Note: you can change the source during execution of this filter.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetPointId ()</code> -  Get the current point id during processing. Value only valid during the
+ Execute() method of this filter. (Meant to be called by the GlyphMethod().)
+ </LI>
+<LI>  <code>double = obj. GetPoint ()</code> -  Get the current point coordinates during processing. Value only valid during the
+ Execute() method of this filter. (Meant to be called by the GlyphMethod().)
+ </LI>
+<LI>  <code>vtkPointData = obj.GetPointData ()</code> -  Get the set of point data attributes for the input. A convenience to the
+ programmer to be used in the GlyphMethod(). Only valid during the Execute()
+ method of this filter.
+ </LI>
+<LI>  <code>obj.SetColorMode (int )</code> -  Either color by the input or source scalar data.
+ </LI>
+<LI>  <code>int = obj.GetColorMode ()</code> -  Either color by the input or source scalar data.
+ </LI>
+<LI>  <code>obj.SetColorModeToColorByInput ()</code> -  Either color by the input or source scalar data.
+ </LI>
+<LI>  <code>obj.SetColorModeToColorBySource ()</code> -  Either color by the input or source scalar data.
+ </LI>
+<LI>  <code>string = obj.GetColorModeAsString ()</code> -  Either color by the input or source scalar data.
+ </LI>
+</UL>
+</BODY>
+</HTML>

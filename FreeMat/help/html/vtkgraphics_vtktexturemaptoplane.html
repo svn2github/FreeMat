@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTextureMapToPlane
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTextureMapToPlane
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkTextureMapToPlane is a filter that generates 2D texture coordinates
+ by mapping input dataset points onto a plane. The plane can either be
+ user specified or generated automatically. (A least squares method is
+ used to generate the plane automatically.)
+<P>
+ There are two ways you can specify the plane. The first is to provide a
+ plane normal. In this case the points are projected to a plane, and the
+ points are then mapped into the user specified s-t coordinate range. For
+ more control, you can specify a plane with three points: an origin and two
+ points defining the two axes of the plane. (This is compatible with the
+ vtkPlaneSource.) Using the second method, the SRange and TRange vectors
+ are ignored, since the presumption is that the user does not want to scale
+ the texture coordinates; and you can adjust the origin and axes points to
+ achieve the texture coordinate scaling you need. Note also that using the
+ three point method the axes do not have to be orthogonal.
+<P>
+To create an instance of class vtkTextureMapToPlane, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTextureMapToPlane
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTextureMapToPlane has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTextureMapToPlane class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTextureMapToPlane = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTextureMapToPlane = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetOrigin (double , double , double )</code> -  Specify a point defining the origin of the plane. Used in conjunction with
+ the Point1 and Point2 ivars to specify a map plane.
+ </LI>
+<LI>  <code>obj.SetOrigin (double  a[3])</code> -  Specify a point defining the origin of the plane. Used in conjunction with
+ the Point1 and Point2 ivars to specify a map plane.
+ </LI>
+<LI>  <code>double = obj. GetOrigin ()</code> -  Specify a point defining the origin of the plane. Used in conjunction with
+ the Point1 and Point2 ivars to specify a map plane.
+ </LI>
+<LI>  <code>obj.SetPoint1 (double , double , double )</code> -  Specify a point defining the first axis of the plane.
+ </LI>
+<LI>  <code>obj.SetPoint1 (double  a[3])</code> -  Specify a point defining the first axis of the plane.
+ </LI>
+<LI>  <code>double = obj. GetPoint1 ()</code> -  Specify a point defining the first axis of the plane.
+ </LI>
+<LI>  <code>obj.SetPoint2 (double , double , double )</code> -  Specify a point defining the second axis of the plane.
+ </LI>
+<LI>  <code>obj.SetPoint2 (double  a[3])</code> -  Specify a point defining the second axis of the plane.
+ </LI>
+<LI>  <code>double = obj. GetPoint2 ()</code> -  Specify a point defining the second axis of the plane.
+ </LI>
+<LI>  <code>obj.SetNormal (double , double , double )</code> -  Specify plane normal. An alternative way to specify a map plane. Using
+ this method, the object will scale the resulting texture coordinate
+ between the SRange and TRange specified.
+ </LI>
+<LI>  <code>obj.SetNormal (double  a[3])</code> -  Specify plane normal. An alternative way to specify a map plane. Using
+ this method, the object will scale the resulting texture coordinate
+ between the SRange and TRange specified.
+ </LI>
+<LI>  <code>double = obj. GetNormal ()</code> -  Specify plane normal. An alternative way to specify a map plane. Using
+ this method, the object will scale the resulting texture coordinate
+ between the SRange and TRange specified.
+ </LI>
+<LI>  <code>obj.SetSRange (double , double )</code> -  Specify s-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetSRange (double  a[2])</code> -  Specify s-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>double = obj. GetSRange ()</code> -  Specify s-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetTRange (double , double )</code> -  Specify t-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetTRange (double  a[2])</code> -  Specify t-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>double = obj. GetTRange ()</code> -  Specify t-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetAutomaticPlaneGeneration (int )</code> -  Turn on/off automatic plane generation.
+ </LI>
+<LI>  <code>int = obj.GetAutomaticPlaneGeneration ()</code> -  Turn on/off automatic plane generation.
+ </LI>
+<LI>  <code>obj.AutomaticPlaneGenerationOn ()</code> -  Turn on/off automatic plane generation.
+ </LI>
+<LI>  <code>obj.AutomaticPlaneGenerationOff ()</code> -  Turn on/off automatic plane generation.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -20,10 +20,10 @@ The syntax of <code>feval</code> is
 where <code>f</code> is the name of the function to evaluate, and
 <code>xi</code> are the arguments to the function, and <code>yi</code> are the
 return values.
-
+<P>
 Alternately, <code>f</code> can be a function handle to a function
 (see the section on <code>function handles</code> for more information).
-
+<P>
 Finally, FreeMat also supports <code>f</code> being a user defined class
 in which case it will atttempt to invoke the <code>subsref</code> method
 of the class.
@@ -36,7 +36,6 @@ function indirectly.
 ans = 
     0.7071 
 </PRE>
-<P>
 Now, we call it through a function handle
 <PRE>
 --&gt; c = @cos
@@ -48,7 +47,6 @@ c =
 ans = 
     0.7071 
 </PRE>
-<P>
 Here we construct an inline object (which is a user-defined class)
 and use <code>feval</code> to call it
 <PRE>
@@ -67,7 +65,6 @@ ans =
 ans = 
    -1.0000 
 </PRE>
-<P>
 In both cases, (the <code>feval</code> call and the direct invokation), FreeMat
 calls the <code>subsref</code> method of the class, which computes the requested 
 function.

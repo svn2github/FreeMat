@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolumeRayCastFunction
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolumeRayCastFunction
+</H2>
+<P>
+Section: <A HREF=sec_vtkvolumerendering.html> Visualization Toolkit Volume Rendering Classes </A>
+<H3>Usage</H3>
+ vtkVolumeRayCastFunction is a superclass for ray casting functions that 
+ can be used within a vtkVolumeRayCastMapper. This includes for example,
+ vtkVolumeRayCastCompositeFunction, vtkVolumeRayCastMIPFunction, and
+ vtkVolumeRayCastIsosurfaceFunction.
+<P>
+To create an instance of class vtkVolumeRayCastFunction, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolumeRayCastFunction
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolumeRayCastFunction has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolumeRayCastFunction class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolumeRayCastFunction = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolumeRayCastFunction = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>float = obj.GetZeroOpacityThreshold (vtkVolume vol)</code> -  Get the value below which all scalar values are considered to
+ have 0 opacity.
+ </LI>
+</UL>
+</BODY>
+</HTML>

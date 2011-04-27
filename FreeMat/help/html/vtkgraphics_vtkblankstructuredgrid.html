@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBlankStructuredGrid
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBlankStructuredGrid
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkBlankStructuredGrid is a filter that sets the blanking field in a 
+ vtkStructuredGrid dataset. The blanking field is set by examining a
+ specified point attribute data array (e.g., scalars) and converting
+ values in the data array to either a "1" (visible) or "0" (blanked) value
+ in the blanking array. The values to be blanked are specified by giving
+ a min/max range. All data values in the data array indicated and laying
+ within the range specified (inclusive on both ends) are translated to 
+ a "off" blanking value.
+<P>
+To create an instance of class vtkBlankStructuredGrid, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBlankStructuredGrid
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBlankStructuredGrid has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBlankStructuredGrid class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkBlankStructuredGrid = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkBlankStructuredGrid = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMinBlankingValue (double )</code> -  Specify the lower data value in the data array specified which will be
+ converted into a "blank" (or off) value in the blanking array.
+ </LI>
+<LI>  <code>double = obj.GetMinBlankingValue ()</code> -  Specify the lower data value in the data array specified which will be
+ converted into a "blank" (or off) value in the blanking array.
+ </LI>
+<LI>  <code>obj.SetMaxBlankingValue (double )</code> -  Specify the upper data value in the data array specified which will be
+ converted into a "blank" (or off) value in the blanking array.
+ </LI>
+<LI>  <code>double = obj.GetMaxBlankingValue ()</code> -  Specify the upper data value in the data array specified which will be
+ converted into a "blank" (or off) value in the blanking array.
+ </LI>
+<LI>  <code>obj.SetArrayName (string )</code> -  Specify the data array name to use to generate the blanking
+ field. Alternatively, you can specify the array id. (If both are set,
+ the array name takes precedence.)
+ </LI>
+<LI>  <code>string = obj.GetArrayName ()</code> -  Specify the data array name to use to generate the blanking
+ field. Alternatively, you can specify the array id. (If both are set,
+ the array name takes precedence.)
+ </LI>
+<LI>  <code>obj.SetArrayId (int )</code> -  Specify the data array id to use to generate the blanking
+ field. Alternatively, you can specify the array name. (If both are set,
+ the array name takes precedence.)
+ </LI>
+<LI>  <code>int = obj.GetArrayId ()</code> -  Specify the data array id to use to generate the blanking
+ field. Alternatively, you can specify the array name. (If both are set,
+ the array name takes precedence.)
+ </LI>
+<LI>  <code>obj.SetComponent (int )</code> -  Specify the component in the data array to use to generate the blanking
+ field.
+ </LI>
+<LI>  <code>int = obj.GetComponentMinValue ()</code> -  Specify the component in the data array to use to generate the blanking
+ field.
+ </LI>
+<LI>  <code>int = obj.GetComponentMaxValue ()</code> -  Specify the component in the data array to use to generate the blanking
+ field.
+ </LI>
+<LI>  <code>int = obj.GetComponent ()</code> -  Specify the component in the data array to use to generate the blanking
+ field.
+ </LI>
+</UL>
+</BODY>
+</HTML>

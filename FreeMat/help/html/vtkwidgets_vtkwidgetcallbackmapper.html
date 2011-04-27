@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkWidgetCallbackMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkWidgetCallbackMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ vtkWidgetCallbackMapper maps widget events (defined in vtkWidgetEvent.h)
+ into static class methods, and provides facilities to invoke the methods.
+ This class is templated and meant to be used as an internal helper class
+ by the widget classes. The class works in combination with the class
+ vtkWidgetEventTranslator, which translates VTK events into widget events.
+<P>
+<P>
+To create an instance of class vtkWidgetCallbackMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkWidgetCallbackMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkWidgetCallbackMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkWidgetCallbackMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard macros.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard macros.
+ </LI>
+<LI>  <code>vtkWidgetCallbackMapper = obj.NewInstance ()</code> -  Standard macros.
+ </LI>
+<LI>  <code>vtkWidgetCallbackMapper = obj.SafeDownCast (vtkObject o)</code> -  Standard macros.
+ </LI>
+<LI>  <code>obj.SetEventTranslator (vtkWidgetEventTranslator t)</code> -  Specify the vtkWidgetEventTranslator to coordinate with.
+ </LI>
+<LI>  <code>vtkWidgetEventTranslator = obj.GetEventTranslator ()</code> -  Specify the vtkWidgetEventTranslator to coordinate with.
+ </LI>
+<LI>  <code>obj.InvokeCallback (long widgetEvent)</code> -  This method invokes the callback given a widget event. A non-zero value
+ is returned if the listed event is registered.
+ </LI>
+</UL>
+</BODY>
+</HTML>

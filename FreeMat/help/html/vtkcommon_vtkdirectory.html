@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDirectory
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDirectory
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkDirectory provides a portable way of finding the names of the files
+ in a system directory.  It also provides methods of manipulating directories.
+<P>
+To create an instance of class vtkDirectory, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDirectory
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDirectory has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDirectory class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Return the class name as a string.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Return the class name as a string.
+ </LI>
+<LI>  <code>vtkDirectory = obj.NewInstance ()</code> -  Return the class name as a string.
+ </LI>
+<LI>  <code>vtkDirectory = obj.SafeDownCast (vtkObject o)</code> -  Return the class name as a string.
+ </LI>
+<LI>  <code>int = obj.Open (string dir)</code> -  Open the specified directory and load the names of the files
+ in that directory. 0 is returned if the directory can not be 
+ opened, 1 if it is opened.   
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfFiles ()</code> -  Return the number of files in the current directory.
+ </LI>
+<LI>  <code>string = obj.GetFile (vtkIdType index)</code> -  Return the file at the given index, the indexing is 0 based
+ </LI>
+<LI>  <code>int = obj.FileIsDirectory (string name)</code> -  Return true if the file is a directory.  If the file is not an
+ absolute path, it is assumed to be relative to the opened
+ directory. If no directory has been opened, it is assumed to
+ be relative to the current working directory.
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetFiles ()</code> -  Get an array that contains all the file names.
+ </LI>
+</UL>
+</BODY>
+</HTML>

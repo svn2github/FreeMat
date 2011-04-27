@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>GETENV Get the Value of an Environment Variable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>GETENV Get the Value of an Environment Variable
+</H2>
+<P>
+Section: <A HREF=sec_os.html> Operating System Functions </A>
+<H3>Usage</H3>
+The <code>getenv</code> function returns the value for an environment
+variable from the underlying OS.  The syntax for the <code>getenv</code>
+function is 
+<PRE>
+   y = getenv(environment_variable)
+</PRE>
+<P>
+where <code>environment_variable</code> is the name of the environment
+variable to return.  The return is a string.
+<H3>Example</H3>
+Here is an example of using the <code>getenv</code> function to
+get the value for the <code>HOME</code> variable
+<PRE>
+--&gt; getenv('HOME')
+
+ans = 
+/home/sbasu
+</PRE>
+</BODY>
+</HTML>

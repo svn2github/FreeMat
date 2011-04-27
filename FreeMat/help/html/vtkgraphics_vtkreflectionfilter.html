@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkReflectionFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkReflectionFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ The vtkReflectionFilter reflects a data set across one of the
+ planes formed by the data set's bounding box.
+ Since it converts data sets into unstructured grids, it is not effeicient
+ for structured data sets.
+<P>
+To create an instance of class vtkReflectionFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkReflectionFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkReflectionFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkReflectionFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkReflectionFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkReflectionFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPlane (int )</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>int = obj.GetPlaneMinValue ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>int = obj.GetPlaneMaxValue ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>int = obj.GetPlane ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToX ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToY ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToZ ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToXMin ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToYMin ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToZMin ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToXMax ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToYMax ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetPlaneToZMax ()</code> -  Set the normal of the plane to use as mirror.
+ </LI>
+<LI>  <code>obj.SetCenter (double )</code> -  If the reflection plane is set to X, Y or Z, this variable
+ is use to set the position of the plane.
+ </LI>
+<LI>  <code>double = obj.GetCenter ()</code> -  If the reflection plane is set to X, Y or Z, this variable
+ is use to set the position of the plane.
+ </LI>
+<LI>  <code>obj.SetCopyInput (int )</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the reflection.
+ </LI>
+<LI>  <code>int = obj.GetCopyInput ()</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the reflection.
+ </LI>
+<LI>  <code>obj.CopyInputOn ()</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the reflection.
+ </LI>
+<LI>  <code>obj.CopyInputOff ()</code> -  If on (the default), copy the input geometry to the output. If off,
+ the output will only contain the reflection.
+ </LI>
+</UL>
+</BODY>
+</HTML>

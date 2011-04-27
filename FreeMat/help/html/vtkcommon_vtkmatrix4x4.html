@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMatrix4x4
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMatrix4x4
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkMatrix4x4 is a class to represent and manipulate 4x4 matrices. 
+ Specifically, it is designed to work on 4x4 transformation matrices
+ found in 3D rendering using homogeneous coordinates [x y z w].
+<P>
+To create an instance of class vtkMatrix4x4, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMatrix4x4
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMatrix4x4 has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMatrix4x4 class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMatrix4x4 = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMatrix4x4 = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkMatrix4x4 source)</code> -  Non-static member function. Assigns *from* elements array
+ </LI>
+<LI>  <code>obj.DeepCopy (double Elements[16])</code> -  Set all of the elements to zero.
+ </LI>
+<LI>  <code>obj.Zero ()</code> -  Set equal to Identity matrix
+ </LI>
+<LI>  <code>obj.Identity ()</code> -  Matrix Inversion (adapted from Richard Carling in "Graphics Gems," 
+ Academic Press, 1990).
+ </LI>
+<LI>  <code>obj.Invert ()</code> -  Transpose the matrix and put it into out. 
+ </LI>
+<LI>  <code>obj.Transpose ()</code> -  Multiply a homogeneous coordinate by this matrix, i.e. out = A*in.
+ The in[4] and out[4] can be the same array.
+ </LI>
+<LI>  <code>obj.MultiplyPoint (float in[4], float out[4])</code> -  Multiply a homogeneous coordinate by this matrix, i.e. out = A*in.
+ The in[4] and out[4] can be the same array.
+ </LI>
+<LI>  <code>obj.MultiplyPoint (double in[4], double out[4])</code> -  For use in Java, Python or Tcl.  The default MultiplyPoint() uses
+ a single-precision point.
+ </LI>
+<LI>  <code>float = obj.MultiplyPoint (float in[4])</code> -  For use in Java, Python or Tcl.  The default MultiplyPoint() uses
+ a single-precision point.
+ </LI>
+<LI>  <code>float = obj.MultiplyFloatPoint (float in[4])</code> -  For use in Java, Python or Tcl.  The default MultiplyPoint() uses
+ a single-precision point.
+ </LI>
+<LI>  <code>double = obj.MultiplyDoublePoint (double in[4])</code> -  Multiplies matrices a and b and stores the result in c.
+ </LI>
+<LI>  <code>obj.Adjoint (vtkMatrix4x4 in, vtkMatrix4x4 out)</code> -  Compute the determinant of the matrix and return it.
+ </LI>
+<LI>  <code>double = obj.Determinant ()</code> -  Sets the element i,j in the matrix.
+ </LI>
+<LI>  <code>obj.SetElement (int i, int j, double value)</code> -  Sets the element i,j in the matrix.
+ </LI>
+<LI>  <code>double = obj.GetElement (int i, int j) const</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

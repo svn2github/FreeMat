@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMergeFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMergeFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkMergeFilter is a filter that extracts separate components of data from
+ different datasets and merges them into a single dataset. The output from
+ this filter is of the same type as the input (i.e., vtkDataSet.) It treats 
+ both cell and point data set attributes.
+<P>
+To create an instance of class vtkMergeFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMergeFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMergeFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMergeFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMergeFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMergeFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGeometry (vtkDataSet input)</code> -  Specify object from which to extract geometry information.
+ Old style. Use SetGeometryConnection() instead.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetGeometry ()</code> -  Specify object from which to extract geometry information.
+ Old style. Use SetGeometryConnection() instead.
+ </LI>
+<LI>  <code>obj.SetGeometryConnection (vtkAlgorithmOutput algOutput)</code> -  Specify object from which to extract scalar information.
+ Old style. Use SetScalarsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetScalars (vtkDataSet )</code> -  Specify object from which to extract scalar information.
+ Old style. Use SetScalarsConnection() instead.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetScalars ()</code> -  Specify object from which to extract scalar information.
+ Old style. Use SetScalarsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetScalarsConnection (vtkAlgorithmOutput algOutput)</code> -  Set / get the object from which to extract vector information.
+ Old style. Use SetVectorsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetVectors (vtkDataSet )</code> -  Set / get the object from which to extract vector information.
+ Old style. Use SetVectorsConnection() instead.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetVectors ()</code> -  Set / get the object from which to extract vector information.
+ Old style. Use SetVectorsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetVectorsConnection (vtkAlgorithmOutput algOutput)</code> -  Set / get the object from which to extract normal information.
+ Old style. Use SetNormalsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetNormals (vtkDataSet )</code> -  Set / get the object from which to extract normal information.
+ Old style. Use SetNormalsConnection() instead.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetNormals ()</code> -  Set / get the object from which to extract normal information.
+ Old style. Use SetNormalsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetNormalsConnection (vtkAlgorithmOutput algOutput)</code> -  Set / get the object from which to extract texture coordinates
+ information.
+ Old style. Use SetTCoordsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetTCoords (vtkDataSet )</code> -  Set / get the object from which to extract texture coordinates
+ information.
+ Old style. Use SetTCoordsConnection() instead.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetTCoords ()</code> -  Set / get the object from which to extract texture coordinates
+ information.
+ Old style. Use SetTCoordsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetTCoordsConnection (vtkAlgorithmOutput algOutput)</code> -  Set / get the object from which to extract tensor data.
+ Old style. Use SetTensorsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetTensors (vtkDataSet )</code> -  Set / get the object from which to extract tensor data.
+ Old style. Use SetTensorsConnection() instead.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetTensors ()</code> -  Set / get the object from which to extract tensor data.
+ Old style. Use SetTensorsConnection() instead.
+ </LI>
+<LI>  <code>obj.SetTensorsConnection (vtkAlgorithmOutput algOutput)</code> -  Set the object from which to extract a field and the name
+ of the field. Note that this does not create pipeline
+ connectivity.
+ </LI>
+<LI>  <code>obj.AddField (string name, vtkDataSet input)</code> -  Set the object from which to extract a field and the name
+ of the field. Note that this does not create pipeline
+ connectivity.
+ </LI>
+</UL>
+</BODY>
+</HTML>

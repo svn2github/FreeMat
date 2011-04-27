@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractPiece
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractPiece
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkExtractPiece returns the appropriate piece of each
+ sub-dataset in the vtkCompositeDataSet.
+ This filter can handle sub-datasets of type vtkImageData, vtkPolyData,
+ vtkRectilinearGrid, vtkStructuredGrid, and vtkUnstructuredGrid; it does
+ not handle sub-grids of type vtkCompositeDataSet.
+<P>
+To create an instance of class vtkExtractPiece, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractPiece
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractPiece has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractPiece class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractPiece = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractPiece = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

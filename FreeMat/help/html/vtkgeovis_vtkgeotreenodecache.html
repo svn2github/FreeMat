@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoTreeNodeCache
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoTreeNodeCache
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ vtkGeoTreeNodeCache keeps track of a linked list of vtkGeoTreeNodes,
+ and has operations to move nodes to the front of the list and to
+ delete data from the least used nodes. This is used to recover memory
+ from nodes that store data that hasn't been used in a while.
+<P>
+To create an instance of class vtkGeoTreeNodeCache, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoTreeNodeCache
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoTreeNodeCache has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoTreeNodeCache class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoTreeNodeCache = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoTreeNodeCache = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCacheMaximumLimit (int )</code> -  The size of the cache of geospatial nodes.
+ When the size reaches this limit, the list of non-empty
+ nodes will be shortened to CacheMinimumLimit.
+ </LI>
+<LI>  <code>int = obj.GetCacheMaximumLimit ()</code> -  The size of the cache of geospatial nodes.
+ When the size reaches this limit, the list of non-empty
+ nodes will be shortened to CacheMinimumLimit.
+ </LI>
+<LI>  <code>obj.SetCacheMinimumLimit (int )</code> -  The cache is reduced to this size when the maximum limit is reached.
+ </LI>
+<LI>  <code>int = obj.GetCacheMinimumLimit ()</code> -  The cache is reduced to this size when the maximum limit is reached.
+ </LI>
+<LI>  <code>obj.SendToFront (vtkGeoTreeNode node)</code> -  Send a node to the front of the list.
+ Perform this whenever a node is accessed, so that the most
+ recently accessed nodes' data are not deleted.
+ </LI>
+<LI>  <code>obj.RemoveNode (vtkGeoTreeNode node)</code> -  Remove the node from the list.
+ </LI>
+<LI>  <code>int = obj.GetSize ()</code> -  The current size of the list.
+ </LI>
+</UL>
+</BODY>
+</HTML>

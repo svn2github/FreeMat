@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkProjectedTexture
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkProjectedTexture
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkProjectedTexture assigns texture coordinates to a dataset as if
+ the texture was projected from a slide projected located somewhere in the
+ scene.  Methods are provided to position the projector and aim it at a 
+ location, to set the width of the projector's frustum, and to set the
+ range of texture coordinates assigned to the dataset.  
+<P>
+ Objects in the scene that appear behind the projector are also assigned
+ texture coordinates; the projected image is left-right and top-bottom 
+ flipped, much as a lens' focus flips the rays of light that pass through
+ it.  A warning is issued if a point in the dataset falls at the focus
+ of the projector.
+<P>
+To create an instance of class vtkProjectedTexture, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkProjectedTexture
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkProjectedTexture has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkProjectedTexture class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkProjectedTexture = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkProjectedTexture = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPosition (double , double , double )</code> -  Set/Get the position of the focus of the projector.
+ </LI>
+<LI>  <code>obj.SetPosition (double  a[3])</code> -  Set/Get the position of the focus of the projector.
+ </LI>
+<LI>  <code>double = obj. GetPosition ()</code> -  Set/Get the position of the focus of the projector.
+ </LI>
+<LI>  <code>obj.SetFocalPoint (double focalPoint[3])</code> -  Set/Get the focal point of the projector (a point that lies along
+ the center axis of the projector's frustum).
+ </LI>
+<LI>  <code>obj.SetFocalPoint (double x, double y, double z)</code> -  Set/Get the focal point of the projector (a point that lies along
+ the center axis of the projector's frustum).
+ </LI>
+<LI>  <code>double = obj. GetFocalPoint ()</code> -  Set/Get the focal point of the projector (a point that lies along
+ the center axis of the projector's frustum).
+ </LI>
+<LI>  <code>obj.SetCameraMode (int )</code> -  Set/Get the camera mode of the projection -- pinhole projection or
+ two mirror projection.
+ </LI>
+<LI>  <code>int = obj.GetCameraMode ()</code> -  Set/Get the camera mode of the projection -- pinhole projection or
+ two mirror projection.
+ </LI>
+<LI>  <code>obj.SetCameraModeToPinhole ()</code> -  Set/Get the camera mode of the projection -- pinhole projection or
+ two mirror projection.
+ </LI>
+<LI>  <code>obj.SetCameraModeToTwoMirror ()</code> -  Set/Get the mirror separation for the two mirror system.
+ </LI>
+<LI>  <code>obj.SetMirrorSeparation (double )</code> -  Set/Get the mirror separation for the two mirror system.
+ </LI>
+<LI>  <code>double = obj.GetMirrorSeparation ()</code> -  Set/Get the mirror separation for the two mirror system.
+ </LI>
+<LI>  <code>double = obj. GetOrientation ()</code> -  Get the normalized orientation vector of the projector.
+ </LI>
+<LI>  <code>obj.SetUp (double , double , double )</code>
+ </LI>
+<LI>  <code>obj.SetUp (double  a[3])</code>
+ </LI>
+<LI>  <code>double = obj. GetUp ()</code>
+ </LI>
+<LI>  <code>obj.SetAspectRatio (double , double , double )</code>
+ </LI>
+<LI>  <code>obj.SetAspectRatio (double  a[3])</code>
+ </LI>
+<LI>  <code>double = obj. GetAspectRatio ()</code>
+ </LI>
+<LI>  <code>obj.SetSRange (double , double )</code> -  Specify s-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetSRange (double  a[2])</code> -  Specify s-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>double = obj. GetSRange ()</code> -  Specify s-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetTRange (double , double )</code> -  Specify t-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>obj.SetTRange (double  a[2])</code> -  Specify t-coordinate range for texture s-t coordinate pair.
+ </LI>
+<LI>  <code>double = obj. GetTRange ()</code> -  Specify t-coordinate range for texture s-t coordinate pair.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLabelHierarchyCompositeIterator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLabelHierarchyCompositeIterator
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ Iterates over child iterators in a round-robin order. Each iterator may
+ have its own count, which is the number of times it is repeated until
+ moving to the next iterator.
+ 
+ For example, if you initialize the iterator with
+ &lt;pre&gt;
+ it-&gt;AddIterator(A, 1);
+ it-&gt;AddIterator(B, 3);
+ &lt;/pre&gt;
+ The order of iterators will be A,B,B,B,A,B,B,B,...
+<P>
+To create an instance of class vtkLabelHierarchyCompositeIterator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLabelHierarchyCompositeIterator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLabelHierarchyCompositeIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLabelHierarchyCompositeIterator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLabelHierarchyCompositeIterator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLabelHierarchyCompositeIterator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.AddIterator (vtkLabelHierarchyIterator it)</code> -  Adds a label iterator to this composite iterator.
+ The second optional argument is the number of times to repeat the iterator
+ before moving to the next one round-robin style. Default is 1.
+ </LI>
+<LI>  <code>obj.AddIterator (vtkLabelHierarchyIterator it, int count)</code> -  Adds a label iterator to this composite iterator.
+ The second optional argument is the number of times to repeat the iterator
+ before moving to the next one round-robin style. Default is 1.
+ </LI>
+<LI>  <code>obj.ClearIterators ()</code> -  Remove all iterators from this composite iterator.
+ </LI>
+<LI>  <code>obj.Begin (vtkIdTypeArray )</code> -  Initializes the iterator. lastLabels is an array holding labels
+ which should be traversed before any other labels in the hierarchy.
+ This could include labels placed during a previous rendering or
+ a label located under the mouse pointer. You may pass a null pointer.
+ </LI>
+<LI>  <code>obj.Next ()</code> -  Advance the iterator.
+ </LI>
+<LI>  <code>bool = obj.IsAtEnd ()</code> -  Returns true if the iterator is at the end.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetLabelId ()</code> -  Retrieves the current label id.
+ </LI>
+<LI>  <code>vtkLabelHierarchy = obj.GetHierarchy ()</code> -  Retrieve the current label hierarchy.
+ </LI>
+<LI>  <code>obj.BoxNode ()</code> -  Not implemented.
+ </LI>
+<LI>  <code>obj.BoxAllNodes (vtkPolyData )</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

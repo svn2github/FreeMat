@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkScalarBarRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkScalarBarRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+<P>
+ This class represents a scalar bar for a vtkScalarBarWidget.  This class
+ provides support for interactively placing a scalar bar on the 2D overlay
+ plane.  The scalar bar is defined by an instance of vtkScalarBarActor.
+<P>
+ One specialty of this class is that if the scalar bar is moved near enough
+ to an edge, it's orientation is flipped to match that edge.
+<P>
+<P>
+To create an instance of class vtkScalarBarRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkScalarBarRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkScalarBarRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkScalarBarRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkScalarBarRepresentation = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkScalarBarRepresentation = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkScalarBarActor = obj.GetScalarBarActor ()</code> -  The prop that is placed in the renderer.
+ </LI>
+<LI>  <code>obj.SetScalarBarActor (vtkScalarBarActor )</code> -  The prop that is placed in the renderer.
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  Satisfy the superclass' API.
+ </LI>
+<LI>  <code>obj.WidgetInteraction (double eventPos[2])</code> -  Satisfy the superclass' API.
+ </LI>
+<LI>  <code>obj.GetSize (double size[2])</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>obj.GetActors2D (vtkPropCollection collection)</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow window)</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>obj.SetOrientation (int orient)</code> -  Get/Set the orientation.
+ </LI>
+<LI>  <code>int = obj.GetOrientation ()</code> -  Get/Set the orientation.
+ </LI>
+</UL>
+</BODY>
+</HTML>

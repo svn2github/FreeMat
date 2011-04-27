@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTerrainDataPointPlacer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTerrainDataPointPlacer
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ vtkTerrainDataPointPlacer dictates the placement of points on height field 
+ data. The class takes as input the list of props that represent the terrain
+ in a rendered scene. A height offset can be specified to dicatate the 
+ placement of points at a certain height above the surface. 
+<P>
+ .SECTION Usage
+ A typical usage of this class is as follows:
+ \begin{verbatim}
+ pointPlacer-&gt;AddProp(demActor);    // the actor(s) containing the terrain.
+ rep-&gt;SetPointPlacer(pointPlacer);
+ pointPlacer-&gt;SetHeightOffset( 100 );
+ \end{verbatim}
+<P>
+<P>
+To create an instance of class vtkTerrainDataPointPlacer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTerrainDataPointPlacer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTerrainDataPointPlacer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTerrainDataPointPlacer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>vtkTerrainDataPointPlacer = obj.NewInstance ()</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>vtkTerrainDataPointPlacer = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for instances of this class.
+ </LI>
+<LI>  <code>obj.AddProp (vtkProp )</code>
+ </LI>
+<LI>  <code>obj.RemoveAllProps ()</code>
+ </LI>
+<LI>  <code>obj.SetHeightOffset (double )</code> -  This is the height above (or below) the terrain that the dictated
+ point should be placed. Positive values indicate distances above the 
+ terrain; negative values indicate distances below the terrain. The 
+ default is 0.0. 
+ </LI>
+<LI>  <code>double = obj.GetHeightOffset ()</code> -  This is the height above (or below) the terrain that the dictated
+ point should be placed. Positive values indicate distances above the 
+ terrain; negative values indicate distances below the terrain. The 
+ default is 0.0. 
+ </LI>
+<LI>  <code>int = obj.ComputeWorldPosition (vtkRenderer ren, double displayPos[2], double worldPos[3], double worldOrient[9])</code> -  Given a renderer and a display position in pixel coordinates,
+ compute the world position and orientation where this point
+ will be placed. This method is typically used by the
+ representation to place the point initially.
+ For the Terrain point placer this computes world points that
+ lie at the specified height above the terrain.
+ </LI>
+<LI>  <code>int = obj.ComputeWorldPosition (vtkRenderer ren, double displayPos[2], double refWorldPos[3], double worldPos[3], double worldOrient[9])</code> -  Given a renderer, a display position, and a reference world
+ position, compute the new world position and orientation 
+ of this point. This method is typically used by the 
+ representation to move the point.
+ </LI>
+<LI>  <code>int = obj.ValidateWorldPosition (double worldPos[3])</code> -  Given a world position check the validity of this 
+ position according to the constraints of the placer
+ </LI>
+<LI>  <code>int = obj.ValidateDisplayPosition (vtkRenderer , double displayPos[2])</code> -  Given a display position, check the validity of this position.
+ </LI>
+<LI>  <code>int = obj.ValidateWorldPosition (double worldPos[3], double worldOrient[9])</code> -  Given a world position and a world orientation,
+ validate it according to the constraints of the placer.
+ </LI>
+<LI>  <code>vtkPropPicker = obj.GetPropPicker ()</code> -  Get the Prop picker.
+ </LI>
+</UL>
+</BODY>
+</HTML>

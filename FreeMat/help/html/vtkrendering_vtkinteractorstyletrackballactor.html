@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInteractorStyleTrackballActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInteractorStyleTrackballActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkInteractorStyleTrackballActor allows the user to interact with (rotate,
+ pan, etc.) objects in the scene indendent of each other.  In trackball
+ interaction, the magnitude of the mouse motion is proportional to the
+ actor motion associated with a particular mouse binding. For example,
+ small left-button motions cause small changes in the rotation of the
+ actor around its center point.
+<P>
+ The mouse bindings are as follows. For a 3-button mouse, the left button
+ is for rotation, the right button for zooming, the middle button for
+ panning, and ctrl + left button for spinning.  (With fewer mouse buttons,
+ ctrl + shift + left button is for zooming, and shift + left button is for
+ panning.)
+<P>
+To create an instance of class vtkInteractorStyleTrackballActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInteractorStyleTrackballActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInteractorStyleTrackballActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInteractorStyleTrackballActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInteractorStyleTrackballActor = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInteractorStyleTrackballActor = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.OnMouseMove ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeftButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeftButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnMiddleButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnMiddleButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnRightButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnRightButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.Rotate ()</code>
+ </LI>
+<LI>  <code>obj.Spin ()</code>
+ </LI>
+<LI>  <code>obj.Pan ()</code>
+ </LI>
+<LI>  <code>obj.Dolly ()</code>
+ </LI>
+<LI>  <code>obj.UniformScale ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

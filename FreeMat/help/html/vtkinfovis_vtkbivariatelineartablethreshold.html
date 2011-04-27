@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkBivariateLinearTableThreshold
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkBivariateLinearTableThreshold
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Class for filtering the rows of a two numeric columns of a vtkTable.  The
+ columns are treated as the two variables of a line.  This filter will
+ then iterate through the rows of the table determining if X,Y values pairs
+ are above/below/between/near one or more lines.  
+<P>
+ The "between" mode checks to see if a row is contained within the convex 
+ hull of all of the specified lines.  The "near" mode checks if a row is
+ within a distance threshold two one of the specified lines.  This class
+ is used in conjunction with various plotting classes, so it is useful
+ to rescale the X,Y axes to a particular range of values.  Distance 
+ comparisons can be performed in the scaled space by setting the CustomRanges
+ ivar and enabling UseNormalizedDistance.
+<P>
+To create an instance of class vtkBivariateLinearTableThreshold, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkBivariateLinearTableThreshold
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkBivariateLinearTableThreshold has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkBivariateLinearTableThreshold class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkBivariateLinearTableThreshold = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkBivariateLinearTableThreshold = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInclusive (int )</code> -  Include the line in the threshold.  Essentially whether the threshold operation
+ uses &gt; versus &gt;=.
+ </LI>
+<LI>  <code>int = obj.GetInclusive ()</code> -  Include the line in the threshold.  Essentially whether the threshold operation
+ uses &gt; versus &gt;=.
+ </LI>
+<LI>  <code>obj.AddColumnToThreshold (vtkIdType column, vtkIdType component)</code> -  Add a numeric column to the pair of columns to be thresholded.  Call twice.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfColumnsToThreshold ()</code> -  Return how many columns have been added.  Hopefully 2.
+ </LI>
+<LI>  <code>obj.ClearColumnsToThreshold ()</code> -  Reset the columns to be thresholded.
+ </LI>
+<LI>  <code>vtkIdTypeArray = obj.GetSelectedRowIds (int selection)</code> -  Get the output as a table of row ids.
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  Reset the columns to threshold, column ranges, etc.
+ </LI>
+<LI>  <code>obj.AddLineEquation (double p1, double p2)</code> -  Add a line for thresholding from two x,y points.
+ </LI>
+<LI>  <code>obj.AddLineEquation (double p, double slope)</code> -  Add a line for thresholding in point-slope form.
+ </LI>
+<LI>  <code>obj.AddLineEquation (double a, double b, double c)</code> -  Add a line for thresholding in implicit form (ax + by + c = 0)
+ </LI>
+<LI>  <code>obj.ClearLineEquations ()</code> -  Reset the list of line equations.
+ </LI>
+<LI>  <code>int = obj.GetLinearThresholdType ()</code> -  Set the threshold type.  Above: find all rows that are above the specified
+ lines.  Below: find all rows that are below the specified lines.  Near:
+ find all rows that are near the specified lines.  Between: find all rows
+ that are between the specified lines.
+ </LI>
+<LI>  <code>obj.SetLinearThresholdType (int )</code> -  Set the threshold type.  Above: find all rows that are above the specified
+ lines.  Below: find all rows that are below the specified lines.  Near:
+ find all rows that are near the specified lines.  Between: find all rows
+ that are between the specified lines.
+ </LI>
+<LI>  <code>obj.SetLinearThresholdTypeToAbove ()</code> -  Set the threshold type.  Above: find all rows that are above the specified
+ lines.  Below: find all rows that are below the specified lines.  Near:
+ find all rows that are near the specified lines.  Between: find all rows
+ that are between the specified lines.
+ </LI>
+<LI>  <code>obj.SetLinearThresholdTypeToBelow ()</code> -  Set the threshold type.  Above: find all rows that are above the specified
+ lines.  Below: find all rows that are below the specified lines.  Near:
+ find all rows that are near the specified lines.  Between: find all rows
+ that are between the specified lines.
+ </LI>
+<LI>  <code>obj.SetLinearThresholdTypeToNear ()</code> -  Set the threshold type.  Above: find all rows that are above the specified
+ lines.  Below: find all rows that are below the specified lines.  Near:
+ find all rows that are near the specified lines.  Between: find all rows
+ that are between the specified lines.
+ </LI>
+<LI>  <code>obj.SetLinearThresholdTypeToBetween ()</code> -  Manually access the maximum/minimum x,y values.  This is used in 
+ conjunction with UseNormalizedDistance when determining if a row
+ passes the threshold.
+ </LI>
+<LI>  <code>obj.SetColumnRanges (double , double )</code> -  Manually access the maximum/minimum x,y values.  This is used in 
+ conjunction with UseNormalizedDistance when determining if a row
+ passes the threshold.
+ </LI>
+<LI>  <code>obj.SetColumnRanges (double  a[2])</code> -  Manually access the maximum/minimum x,y values.  This is used in 
+ conjunction with UseNormalizedDistance when determining if a row
+ passes the threshold.
+ </LI>
+<LI>  <code>double = obj. GetColumnRanges ()</code> -  Manually access the maximum/minimum x,y values.  This is used in 
+ conjunction with UseNormalizedDistance when determining if a row
+ passes the threshold.
+ </LI>
+<LI>  <code>obj.SetDistanceThreshold (double )</code> -  The Cartesian distance within which a point will pass the near threshold.
+ </LI>
+<LI>  <code>double = obj.GetDistanceThreshold ()</code> -  The Cartesian distance within which a point will pass the near threshold.
+ </LI>
+<LI>  <code>obj.SetUseNormalizedDistance (int )</code> -  Renormalize the space of the data such that the X and Y axes are
+ "square" over the specified ColumnRanges.  This essentially scales
+ the data space so that ColumnRanges[1]-ColumnRanges[0] = 1.0 and 
+ ColumnRanges[3]-ColumnRanges[2] = 1.0.  Used for scatter plot distance
+ calculations.  Be sure to set DistanceThreshold accordingly, when used.
+ </LI>
+<LI>  <code>int = obj.GetUseNormalizedDistance ()</code> -  Renormalize the space of the data such that the X and Y axes are
+ "square" over the specified ColumnRanges.  This essentially scales
+ the data space so that ColumnRanges[1]-ColumnRanges[0] = 1.0 and 
+ ColumnRanges[3]-ColumnRanges[2] = 1.0.  Used for scatter plot distance
+ calculations.  Be sure to set DistanceThreshold accordingly, when used.
+ </LI>
+<LI>  <code>obj.UseNormalizedDistanceOn ()</code> -  Renormalize the space of the data such that the X and Y axes are
+ "square" over the specified ColumnRanges.  This essentially scales
+ the data space so that ColumnRanges[1]-ColumnRanges[0] = 1.0 and 
+ ColumnRanges[3]-ColumnRanges[2] = 1.0.  Used for scatter plot distance
+ calculations.  Be sure to set DistanceThreshold accordingly, when used.
+ </LI>
+<LI>  <code>obj.UseNormalizedDistanceOff ()</code> -  Renormalize the space of the data such that the X and Y axes are
+ "square" over the specified ColumnRanges.  This essentially scales
+ the data space so that ColumnRanges[1]-ColumnRanges[0] = 1.0 and 
+ ColumnRanges[3]-ColumnRanges[2] = 1.0.  Used for scatter plot distance
+ calculations.  Be sure to set DistanceThreshold accordingly, when used.
+ </LI>
+</UL>
+</BODY>
+</HTML>

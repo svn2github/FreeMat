@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkFileOutputWindow
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkFileOutputWindow
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ Writes debug/warning/error output to a log file instead of the console.
+ To use this class, instantiate it and then call SetInstance(this).
+ 
+<P>
+To create an instance of class vtkFileOutputWindow, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkFileOutputWindow
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkFileOutputWindow has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkFileOutputWindow class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkFileOutputWindow = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkFileOutputWindow = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.DisplayText (string )</code> -  Put the text into the log file.
+ New lines are converted to carriage return new lines.
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Sets the name for the log file.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Sets the name for the log file.
+ </LI>
+<LI>  <code>obj.SetFlush (int )</code> -  Turns on buffer flushing for the output 
+ to the log file.
+ </LI>
+<LI>  <code>int = obj.GetFlush ()</code> -  Turns on buffer flushing for the output 
+ to the log file.
+ </LI>
+<LI>  <code>obj.FlushOn ()</code> -  Turns on buffer flushing for the output 
+ to the log file.
+ </LI>
+<LI>  <code>obj.FlushOff ()</code> -  Turns on buffer flushing for the output 
+ to the log file.
+ </LI>
+<LI>  <code>obj.SetAppend (int )</code> -  Setting append will cause the log file to be
+ opened in append mode.  Otherwise, if the log file exists,
+ it will be overwritten each time the vtkFileOutputWindow
+ is created.
+ </LI>
+<LI>  <code>int = obj.GetAppend ()</code> -  Setting append will cause the log file to be
+ opened in append mode.  Otherwise, if the log file exists,
+ it will be overwritten each time the vtkFileOutputWindow
+ is created.
+ </LI>
+<LI>  <code>obj.AppendOn ()</code> -  Setting append will cause the log file to be
+ opened in append mode.  Otherwise, if the log file exists,
+ it will be overwritten each time the vtkFileOutputWindow
+ is created.
+ </LI>
+<LI>  <code>obj.AppendOff ()</code> -  Setting append will cause the log file to be
+ opened in append mode.  Otherwise, if the log file exists,
+ it will be overwritten each time the vtkFileOutputWindow
+ is created.
+ </LI>
+</UL>
+</BODY>
+</HTML>

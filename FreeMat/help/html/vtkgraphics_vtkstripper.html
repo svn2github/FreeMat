@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkStripper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkStripper
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+<P>
+To create an instance of class vtkStripper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkStripper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkStripper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkStripper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkStripper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkStripper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMaximumLength (int )</code> -  Specify the maximum number of triangles in a triangle strip,
+ and/or the maximum number of lines in a poly-line.
+ </LI>
+<LI>  <code>int = obj.GetMaximumLengthMinValue ()</code> -  Specify the maximum number of triangles in a triangle strip,
+ and/or the maximum number of lines in a poly-line.
+ </LI>
+<LI>  <code>int = obj.GetMaximumLengthMaxValue ()</code> -  Specify the maximum number of triangles in a triangle strip,
+ and/or the maximum number of lines in a poly-line.
+ </LI>
+<LI>  <code>int = obj.GetMaximumLength ()</code> -  Specify the maximum number of triangles in a triangle strip,
+ and/or the maximum number of lines in a poly-line.
+ </LI>
+<LI>  <code>obj.PassCellDataAsFieldDataOn ()</code> -  Enable/Disable passing of the CellData in the input to
+ the output as FieldData. Note the field data is tranformed.
+ </LI>
+<LI>  <code>obj.PassCellDataAsFieldDataOff ()</code> -  Enable/Disable passing of the CellData in the input to
+ the output as FieldData. Note the field data is tranformed.
+ </LI>
+<LI>  <code>obj.SetPassCellDataAsFieldData (int )</code> -  Enable/Disable passing of the CellData in the input to
+ the output as FieldData. Note the field data is tranformed.
+ </LI>
+<LI>  <code>int = obj.GetPassCellDataAsFieldData ()</code> -  Enable/Disable passing of the CellData in the input to
+ the output as FieldData. Note the field data is tranformed.
+ </LI>
+<LI>  <code>obj.SetPassThroughCellIds (int )</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>int = obj.GetPassThroughCellIds ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>obj.PassThroughCellIdsOn ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>obj.PassThroughCellIdsOff ()</code> -  If on, the output polygonal dataset will have a celldata array that 
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>obj.SetPassThroughPointIds (int )</code> -  If on, the output polygonal dataset will have a pointdata array that 
+ holds the point index of the original vertex that produced each output
+ vertex. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>int = obj.GetPassThroughPointIds ()</code> -  If on, the output polygonal dataset will have a pointdata array that 
+ holds the point index of the original vertex that produced each output
+ vertex. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>obj.PassThroughPointIdsOn ()</code> -  If on, the output polygonal dataset will have a pointdata array that 
+ holds the point index of the original vertex that produced each output
+ vertex. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+<LI>  <code>obj.PassThroughPointIdsOff ()</code> -  If on, the output polygonal dataset will have a pointdata array that 
+ holds the point index of the original vertex that produced each output
+ vertex. This is useful for picking. The default is off to conserve 
+ memory.
+ </LI>
+</UL>
+</BODY>
+</HTML>

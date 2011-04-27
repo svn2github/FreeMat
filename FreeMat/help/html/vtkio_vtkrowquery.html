@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRowQuery
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRowQuery
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ The abstract superclass of query classes that return row-oriented (table)
+ results.  A subclass will provide database-specific query parameters and
+ implement the vtkRowQuery API to return query results:
+<P>
+ Execute() - Execute the query.  No results need to be retrieved at this
+             point, unless you are performing caching.
+<P>
+ GetNumberOfFields() - After Execute() is performed, returns the number
+                       of fields in the query results.
+<P>
+ GetFieldName() - The name of the field at an index.
+<P>
+ GetFieldType() - The data type of the field at an index.
+<P>
+ NextRow() - Advances the query results by one row, and returns whether
+             there are more rows left in the query.
+<P>
+ DataValue() - Extract a single data value from the current row.
+<P>
+ .SECTION Thanks
+ Thanks to Andrew Wilson from Sandia National Laboratories for his work
+ on the database classes.
+<P>
+<P>
+To create an instance of class vtkRowQuery, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRowQuery
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRowQuery has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRowQuery class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRowQuery = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRowQuery = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>bool = obj.Execute ()</code> -  Execute the query.  This must be performed
+ before any field name or data access functions
+ are used.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFields ()</code> -  The number of fields in the query result.
+ </LI>
+<LI>  <code>string = obj.GetFieldName (int i)</code> -  Return the name of the specified query field.
+ </LI>
+<LI>  <code>int = obj.GetFieldType (int i)</code> -  Return the type of the field, using the constants defined in vtkType.h.
+ </LI>
+<LI>  <code>int = obj.GetFieldIndex (string name)</code> -  Return the index of the specified query field.
+ Uses GetNumberOfFields() and GetFieldName()
+ to match field name.
+ </LI>
+<LI>  <code>bool = obj.NextRow ()</code> -  Advance row, return false if past end.
+ </LI>
+<LI>  <code>bool = obj.IsActive ()</code> -  Return true if the query is active (i.e. execution was successful
+ and results are ready to be fetched).  Returns false on error or
+ inactive query.
+ </LI>
+<LI>  <code>bool = obj.HasError ()</code> -  Returns true if an error is set, otherwise false.
+ </LI>
+<LI>  <code>string = obj.GetLastErrorText ()</code> -  Get the last error text from the query
+ </LI>
+<LI>  <code>obj.SetCaseSensitiveFieldNames (bool )</code> -  Many databases do not preserve case in field names.  This can
+ cause GetFieldIndex to fail if you search for a field named
+ someFieldName when the database actually stores it as
+ SOMEFIELDNAME.  This ivar controls whether GetFieldIndex()
+ expects field names to be case-sensitive.  The default is OFF,
+ i.e. case is not preserved.
+ </LI>
+<LI>  <code>bool = obj.GetCaseSensitiveFieldNames ()</code> -  Many databases do not preserve case in field names.  This can
+ cause GetFieldIndex to fail if you search for a field named
+ someFieldName when the database actually stores it as
+ SOMEFIELDNAME.  This ivar controls whether GetFieldIndex()
+ expects field names to be case-sensitive.  The default is OFF,
+ i.e. case is not preserved.
+ </LI>
+<LI>  <code>obj.CaseSensitiveFieldNamesOn ()</code> -  Many databases do not preserve case in field names.  This can
+ cause GetFieldIndex to fail if you search for a field named
+ someFieldName when the database actually stores it as
+ SOMEFIELDNAME.  This ivar controls whether GetFieldIndex()
+ expects field names to be case-sensitive.  The default is OFF,
+ i.e. case is not preserved.
+ </LI>
+<LI>  <code>obj.CaseSensitiveFieldNamesOff ()</code> -  Many databases do not preserve case in field names.  This can
+ cause GetFieldIndex to fail if you search for a field named
+ someFieldName when the database actually stores it as
+ SOMEFIELDNAME.  This ivar controls whether GetFieldIndex()
+ expects field names to be case-sensitive.  The default is OFF,
+ i.e. case is not preserved.
+ </LI>
+</UL>
+</BODY>
+</HTML>

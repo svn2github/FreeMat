@@ -40,7 +40,7 @@ The third syntax for the <code>find</code> command also returns the values
 Note that if the argument is a row vector, then the returned vectors
 are also row vectors. This form is particularly useful for converting 
 sparse matrices into IJV form.
-
+<P>
 The <code>find</code> command also supports some additional arguments.  Each of the
 above forms can be combined with an integer indicating how many results
 to return:
@@ -66,7 +66,6 @@ Some simple examples of its usage, and some common uses of <code>find</code> in 
 ans = 
  2 4 
 </PRE>
-<P>
 Here is an example of using find to replace elements of <code>A</code> that are <code>0</code> with the number <code>5</code>.
 <PRE>
 --&gt; A = [1,0,3;0,2,1;3,0,0]
@@ -91,7 +90,6 @@ A =
  5 2 1 
  3 5 5 
 </PRE>
-<P>
 Incidentally, a better way to achieve the same concept is:
 <PRE>
 --&gt; A = [1,0,3;0,2,1;3,0,0]
@@ -108,7 +106,6 @@ A =
  5 2 1 
  3 5 5 
 </PRE>
-<P>
 Now, we can also return the indices as row and column indices using the two argument
 form of <code>find</code>:
 <PRE>
@@ -134,7 +131,6 @@ c =
  3 
  3 
 </PRE>
-<P>
 Or the three argument form of <code>find</code>, which returns the value also:
 <PRE>
 --&gt; [r,c,v] = find(A)
@@ -159,6 +155,5 @@ v =
  3 
  1 
 </PRE>
-<P>
 </BODY>
 </HTML>

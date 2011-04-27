@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCompositePolyDataMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCompositePolyDataMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ This class uses a set of vtkPolyDataMappers to render input data
+ which may be hierarchical. The input to this mapper may be
+ either vtkPolyData or a vtkCompositeDataSet built from 
+ polydata. If something other than vtkPolyData is encountered,
+ an error message will be produced.
+<P>
+To create an instance of class vtkCompositePolyDataMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCompositePolyDataMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCompositePolyDataMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCompositePolyDataMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCompositePolyDataMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCompositePolyDataMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Render (vtkRenderer ren, vtkActor a)</code> -  Standard method for rendering a mapper. This method will be 
+ called by the actor.
+ </LI>
+<LI>  <code>double = obj.GetBounds ()</code> -  Standard vtkProp method to get 3D bounds of a 3D prop
+ </LI>
+<LI>  <code>obj.GetBounds (double bounds[6])</code> -  Standard vtkProp method to get 3D bounds of a 3D prop
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release the underlying resources associated with this mapper  
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoSphereTransform
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoSphereTransform
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ the cartesian coordinate system is the following (if BaseAltitude is 0),
+ - the origin is at the center of the earth
+ - the x axis goes from the origin to (longtitude=-90,latitude=0), intersection of equator and the meridian passing just east of Galapagos Islands
+ - the y axis goes from the origin to the intersection of Greenwitch meridian and equator (longitude=0,latitude=0)
+ - the z axis goes from the origin to the Geographic North Pole (latitude=90)
+ - therefore the frame is right-handed.
+<P>
+To create an instance of class vtkGeoSphereTransform, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoSphereTransform
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoSphereTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoSphereTransform class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoSphereTransform = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoSphereTransform = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Inverse ()</code> -  Invert the transformation.
+ </LI>
+<LI>  <code>obj.InternalTransformPoint (float in[3], float out[3])</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+<LI>  <code>obj.InternalTransformPoint (double in[3], double out[3])</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.MakeTransform ()</code> -  Make another transform of the same type.
+ </LI>
+<LI>  <code>obj.SetToRectangular (bool )</code> -  If on, this transform converts (long,lat,alt) triples to (x,y,z) as an offset
+ from the center of the earth. Alt, x, y, and z are all be in meters.
+ If off, the tranform works in the reverse direction.
+ Initial value is on.
+ </LI>
+<LI>  <code>bool = obj.GetToRectangular ()</code> -  If on, this transform converts (long,lat,alt) triples to (x,y,z) as an offset
+ from the center of the earth. Alt, x, y, and z are all be in meters.
+ If off, the tranform works in the reverse direction.
+ Initial value is on.
+ </LI>
+<LI>  <code>obj.ToRectangularOn ()</code> -  If on, this transform converts (long,lat,alt) triples to (x,y,z) as an offset
+ from the center of the earth. Alt, x, y, and z are all be in meters.
+ If off, the tranform works in the reverse direction.
+ Initial value is on.
+ </LI>
+<LI>  <code>obj.ToRectangularOff ()</code> -  If on, this transform converts (long,lat,alt) triples to (x,y,z) as an offset
+ from the center of the earth. Alt, x, y, and z are all be in meters.
+ If off, the tranform works in the reverse direction.
+ Initial value is on.
+ </LI>
+<LI>  <code>obj.SetBaseAltitude (double )</code> -  The base altitude to transform coordinates to. This can be useful for transforming
+ lines just above the earth's surface. Default is 0.
+ </LI>
+<LI>  <code>double = obj.GetBaseAltitude ()</code> -  The base altitude to transform coordinates to. This can be useful for transforming
+ lines just above the earth's surface. Default is 0.
+ </LI>
+</UL>
+</BODY>
+</HTML>

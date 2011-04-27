@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkArcPlotter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkArcPlotter
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkArcPlotter performs plotting of attribute data along polylines defined
+ with an input vtkPolyData data object. Any type of attribute data can be
+ plotted including scalars, vectors, tensors, normals, texture coordinates,
+ and field data. Either one or multiple data components can be plotted.
+ 
+ To use this class you must specify an input data set that contains one or
+ more polylines, and some attribute data including which component of the
+ attribute data. (By default, this class processes the first component of
+ scalar data.) You will also need to set an offset radius (the distance
+ of the polyline to the median line of the plot), a width for the plot
+ (the distance that the minimum and maximum plot values are mapped into),
+ an possibly an offset (used to offset attribute data with multiple
+ components).
+ 
+ Normally the filter automatically computes normals for generating the
+ offset arc plot. However, you can specify a default normal and use that
+ instead.
+<P>
+To create an instance of class vtkArcPlotter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkArcPlotter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkArcPlotter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkArcPlotter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkArcPlotter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkArcPlotter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCamera (vtkCamera )</code> -  Specify a camera used to orient the plot along the arc. If no camera
+ is specified, then the orientation of the plot is arbitrary.
+ </LI>
+<LI>  <code>vtkCamera = obj.GetCamera ()</code> -  Specify a camera used to orient the plot along the arc. If no camera
+ is specified, then the orientation of the plot is arbitrary.
+ </LI>
+<LI>  <code>obj.SetPlotMode (int )</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>int = obj.GetPlotMode ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotModeToPlotScalars ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotModeToPlotVectors ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotModeToPlotNormals ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotModeToPlotTCoords ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotModeToPlotTensors ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotModeToPlotFieldData ()</code> -  Specify which data to plot: scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetPlotComponent to control which component to plot.
+ </LI>
+<LI>  <code>obj.SetPlotComponent (int )</code> -  Set/Get the component number to plot if the data has more than one 
+ component. If the value of the plot component is == (-1), then all
+ the components will be plotted.
+ </LI>
+<LI>  <code>int = obj.GetPlotComponent ()</code> -  Set/Get the component number to plot if the data has more than one 
+ component. If the value of the plot component is == (-1), then all
+ the components will be plotted.
+ </LI>
+<LI>  <code>obj.SetRadius (double )</code> -  Set the radius of the "median" value of the first plotted component.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMinValue ()</code> -  Set the radius of the "median" value of the first plotted component.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMaxValue ()</code> -  Set the radius of the "median" value of the first plotted component.
+ </LI>
+<LI>  <code>double = obj.GetRadius ()</code> -  Set the radius of the "median" value of the first plotted component.
+ </LI>
+<LI>  <code>obj.SetHeight (double )</code> -  Set the height of the plot. (The radius combined with the height
+ define the location of the plot relative to the generating polyline.)
+ </LI>
+<LI>  <code>double = obj.GetHeightMinValue ()</code> -  Set the height of the plot. (The radius combined with the height
+ define the location of the plot relative to the generating polyline.)
+ </LI>
+<LI>  <code>double = obj.GetHeightMaxValue ()</code> -  Set the height of the plot. (The radius combined with the height
+ define the location of the plot relative to the generating polyline.)
+ </LI>
+<LI>  <code>double = obj.GetHeight ()</code> -  Set the height of the plot. (The radius combined with the height
+ define the location of the plot relative to the generating polyline.)
+ </LI>
+<LI>  <code>obj.SetOffset (double )</code> -  Specify an offset that translates each subsequent plot (if there is
+ more than one component plotted) from the defining arc (i.e., polyline).
+ </LI>
+<LI>  <code>double = obj.GetOffsetMinValue ()</code> -  Specify an offset that translates each subsequent plot (if there is
+ more than one component plotted) from the defining arc (i.e., polyline).
+ </LI>
+<LI>  <code>double = obj.GetOffsetMaxValue ()</code> -  Specify an offset that translates each subsequent plot (if there is
+ more than one component plotted) from the defining arc (i.e., polyline).
+ </LI>
+<LI>  <code>double = obj.GetOffset ()</code> -  Specify an offset that translates each subsequent plot (if there is
+ more than one component plotted) from the defining arc (i.e., polyline).
+ </LI>
+<LI>  <code>obj.SetUseDefaultNormal (int )</code> -  Set a boolean to control whether to use default normals.
+ By default, normals are automatically computed from the generating
+ polyline and camera.
+ </LI>
+<LI>  <code>int = obj.GetUseDefaultNormal ()</code> -  Set a boolean to control whether to use default normals.
+ By default, normals are automatically computed from the generating
+ polyline and camera.
+ </LI>
+<LI>  <code>obj.UseDefaultNormalOn ()</code> -  Set a boolean to control whether to use default normals.
+ By default, normals are automatically computed from the generating
+ polyline and camera.
+ </LI>
+<LI>  <code>obj.UseDefaultNormalOff ()</code> -  Set a boolean to control whether to use default normals.
+ By default, normals are automatically computed from the generating
+ polyline and camera.
+ </LI>
+<LI>  <code>obj.SetDefaultNormal (float , float , float )</code> -  Set the default normal to use if you do not wish automatic normal
+ calculation. The arc plot will be generated using this normal.
+ </LI>
+<LI>  <code>obj.SetDefaultNormal (float  a[3])</code> -  Set the default normal to use if you do not wish automatic normal
+ calculation. The arc plot will be generated using this normal.
+ </LI>
+<LI>  <code>float = obj. GetDefaultNormal ()</code> -  Set the default normal to use if you do not wish automatic normal
+ calculation. The arc plot will be generated using this normal.
+ </LI>
+<LI>  <code>obj.SetFieldDataArray (int )</code> -  Set/Get the field data array to plot. This instance variable is
+ only applicable if field data is plotted.
+ </LI>
+<LI>  <code>int = obj.GetFieldDataArrayMinValue ()</code> -  Set/Get the field data array to plot. This instance variable is
+ only applicable if field data is plotted.
+ </LI>
+<LI>  <code>int = obj.GetFieldDataArrayMaxValue ()</code> -  Set/Get the field data array to plot. This instance variable is
+ only applicable if field data is plotted.
+ </LI>
+<LI>  <code>int = obj.GetFieldDataArray ()</code> -  Set/Get the field data array to plot. This instance variable is
+ only applicable if field data is plotted.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  New GetMTime because of camera dependency.
+ </LI>
+</UL>
+</BODY>
+</HTML>

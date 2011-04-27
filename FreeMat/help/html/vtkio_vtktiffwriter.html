@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTIFFWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTIFFWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkTIFFWriter writes image data as a TIFF data file. Data can be written
+ uncompressed or compressed. Several forms of compression are supported
+ including packed bits, JPEG, deflation, and LZW. (Note: LZW compression
+ is currently under patent in the US and is disabled until the patent
+ expires. However, the mechanism for supporting this compression is available
+ for those with a valid license or to whom the patent does not apply.)
+<P>
+To create an instance of class vtkTIFFWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTIFFWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTIFFWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTIFFWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTIFFWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTIFFWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCompression (int )</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>int = obj.GetCompressionMinValue ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>int = obj.GetCompressionMaxValue ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>int = obj.GetCompression ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>obj.SetCompressionToNoCompression ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>obj.SetCompressionToPackBits ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>obj.SetCompressionToJPEG ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>obj.SetCompressionToDeflate ()</code> -  Set compression type. Sinze LZW compression is patented outside US, the
+ additional work steps have to be taken in order to use that compression.
+ </LI>
+<LI>  <code>obj.SetCompressionToLZW ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAbstractParticleWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAbstractParticleWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkAbstractParticleWriter is an abstract class which is used by
+ vtkTemporalStreamTracer to write particles out during simulations.
+ This class is abstract and provides a TimeStep and FileName.
+ Subclasses of this should provide the necessary IO.
+<P>
+To create an instance of class vtkAbstractParticleWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAbstractParticleWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAbstractParticleWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAbstractParticleWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAbstractParticleWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAbstractParticleWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetTimeStep (int )</code> -  Set/get the TimeStep that is being written
+ </LI>
+<LI>  <code>int = obj.GetTimeStep ()</code> -  Set/get the TimeStep that is being written
+ </LI>
+<LI>  <code>obj.SetTimeValue (double )</code> -  Before writing the current data out, set the TimeValue (optional)
+ The TimeValue is a float/double value that corresonds to the real
+ time of the data, it may not be regular, whereas the TimeSteps 
+ are simple increments.
+ </LI>
+<LI>  <code>double = obj.GetTimeValue ()</code> -  Before writing the current data out, set the TimeValue (optional)
+ The TimeValue is a float/double value that corresonds to the real
+ time of the data, it may not be regular, whereas the TimeSteps 
+ are simple increments.
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Set/get the FileName that is being written to
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Set/get the FileName that is being written to
+ </LI>
+<LI>  <code>obj.SetCollectiveIO (int )</code> -  When running in parallel, this writer may be capable of 
+ Collective IO operations (HDF5). By default, this is off.
+ </LI>
+<LI>  <code>int = obj.GetCollectiveIO ()</code> -  When running in parallel, this writer may be capable of 
+ Collective IO operations (HDF5). By default, this is off.
+ </LI>
+<LI>  <code>obj.SetWriteModeToCollective ()</code> -  When running in parallel, this writer may be capable of 
+ Collective IO operations (HDF5). By default, this is off.
+ </LI>
+<LI>  <code>obj.SetWriteModeToIndependent ()</code> -  When running in parallel, this writer may be capable of 
+ Collective IO operations (HDF5). By default, this is off.
+ </LI>
+<LI>  <code>obj.CloseFile ()</code> -  Close the file after a write. This is optional but
+ may protect against data loss in between steps
+ </LI>
+</UL>
+</BODY>
+</HTML>

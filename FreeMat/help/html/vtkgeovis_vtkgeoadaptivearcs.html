@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoAdaptiveArcs
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoAdaptiveArcs
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+<P>
+To create an instance of class vtkGeoAdaptiveArcs, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoAdaptiveArcs
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoAdaptiveArcs has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoAdaptiveArcs class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoAdaptiveArcs = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoAdaptiveArcs = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGlobeRadius (double )</code> -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+ </LI>
+<LI>  <code>double = obj.GetGlobeRadius ()</code> -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+ </LI>
+<LI>  <code>obj.SetMaximumPixelSeparation (double )</code> -  The maximum number of pixels between points on the arcs.
+ If two adjacent points are farther than the threshold,
+ the line segment will be subdivided such that each point
+ is separated by at most the threshold.
+ </LI>
+<LI>  <code>double = obj.GetMaximumPixelSeparation ()</code> -  The maximum number of pixels between points on the arcs.
+ If two adjacent points are farther than the threshold,
+ the line segment will be subdivided such that each point
+ is separated by at most the threshold.
+ </LI>
+<LI>  <code>obj.SetMinimumPixelSeparation (double )</code> -  The minimum number of pixels between points on the arcs.
+ Points closer than the threshold will be skipped until
+ a point farther than the minimum threshold is reached.
+ </LI>
+<LI>  <code>double = obj.GetMinimumPixelSeparation ()</code> -  The minimum number of pixels between points on the arcs.
+ Points closer than the threshold will be skipped until
+ a point farther than the minimum threshold is reached.
+ </LI>
+<LI>  <code>obj.SetRenderer (vtkRenderer ren)</code> -  The renderer used to estimate the number of pixels between
+ points.
+ </LI>
+<LI>  <code>vtkRenderer = obj.GetRenderer ()</code> -  The renderer used to estimate the number of pixels between
+ points.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return the modified time of this object.
+ </LI>
+</UL>
+</BODY>
+</HTML>

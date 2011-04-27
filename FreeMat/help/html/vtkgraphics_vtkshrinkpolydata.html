@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkShrinkPolyData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkShrinkPolyData
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkShrinkPolyData shrinks cells composing a polygonal dataset (e.g., 
+ vertices, lines, polygons, and triangle strips) towards their centroid. 
+ The centroid of a cell is computed as the average position of the
+ cell points. Shrinking results in disconnecting the cells from
+ one another. The output dataset type of this filter is polygonal data.
+<P>
+ During execution the filter passes its input cell data to its
+ output. Point data attributes are copied to the points created during the
+ shrinking process.
+<P>
+To create an instance of class vtkShrinkPolyData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkShrinkPolyData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkShrinkPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkShrinkPolyData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkShrinkPolyData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkShrinkPolyData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetShrinkFactor (double )</code> -  Set the fraction of shrink for each cell.
+ </LI>
+<LI>  <code>double = obj.GetShrinkFactorMinValue ()</code> -  Set the fraction of shrink for each cell.
+ </LI>
+<LI>  <code>double = obj.GetShrinkFactorMaxValue ()</code> -  Set the fraction of shrink for each cell.
+ </LI>
+<LI>  <code>double = obj.GetShrinkFactor ()</code> -  Get the fraction of shrink for each cell.
+ </LI>
+</UL>
+</BODY>
+</HTML>

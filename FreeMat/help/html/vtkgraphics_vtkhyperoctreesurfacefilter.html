@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHyperOctreeSurfaceFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHyperOctreeSurfaceFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkHyperOctreeSurfaceFilter extracts the surface of an hyperoctree.
+<P>
+To create an instance of class vtkHyperOctreeSurfaceFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHyperOctreeSurfaceFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHyperOctreeSurfaceFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHyperOctreeSurfaceFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHyperOctreeSurfaceFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHyperOctreeSurfaceFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMerging (int )</code> -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+ </LI>
+<LI>  <code>int = obj.GetMerging ()</code> -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+ </LI>
+<LI>  <code>obj.MergingOn ()</code> -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+ </LI>
+<LI>  <code>obj.MergingOff ()</code> -  Turn on/off merging of coincident points. Note that is merging is
+ on, points with different point attributes (e.g., normals) are merged,
+ which may cause rendering artifacts.
+ </LI>
+<LI>  <code>obj.SetLocator (vtkIncrementalPointLocator locator)</code> -  Set / get a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+ </LI>
+<LI>  <code>vtkIncrementalPointLocator = obj.GetLocator ()</code> -  Set / get a spatial locator for merging points. By
+ default an instance of vtkMergePoints is used.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return the MTime also considering the locator.
+ </LI>
+<LI>  <code>obj.SetPassThroughCellIds (int )</code> -  If on, the output polygonal dataset will have a celldata array that
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve
+ memory.
+ </LI>
+<LI>  <code>int = obj.GetPassThroughCellIds ()</code> -  If on, the output polygonal dataset will have a celldata array that
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve
+ memory.
+ </LI>
+<LI>  <code>obj.PassThroughCellIdsOn ()</code> -  If on, the output polygonal dataset will have a celldata array that
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve
+ memory.
+ </LI>
+<LI>  <code>obj.PassThroughCellIdsOff ()</code> -  If on, the output polygonal dataset will have a celldata array that
+ holds the cell index of the original 3D cell that produced each output
+ cell. This is useful for cell picking. The default is off to conserve
+ memory.
+ </LI>
+</UL>
+</BODY>
+</HTML>

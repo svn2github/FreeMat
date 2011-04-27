@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkOpenGLProperty
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkOpenGLProperty
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkOpenGLProperty is a concrete implementation of the abstract class 
+ vtkProperty. vtkOpenGLProperty interfaces to the OpenGL rendering library.
+<P>
+To create an instance of class vtkOpenGLProperty, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkOpenGLProperty
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkOpenGLProperty has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkOpenGLProperty class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkOpenGLProperty = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkOpenGLProperty = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Render (vtkActor a, vtkRenderer ren)</code> -  Implement base class method.
+ </LI>
+<LI>  <code>obj.BackfaceRender (vtkActor a, vtkRenderer ren)</code> -  Implement base class method.
+ </LI>
+<LI>  <code>obj.AddShaderVariable (string name, int numVars, int x)</code> -  Provide values to initialize shader variables.
+ Useful to initialize shader variables that change over time
+ (animation, GUI widgets inputs, etc. )
+ - \p name - hardware name of the uniform variable
+ - \p numVars - number of variables being set
+ - \p x - values
+ </LI>
+<LI>  <code>obj.AddShaderVariable (string name, int numVars, float x)</code> -  Provide values to initialize shader variables.
+ Useful to initialize shader variables that change over time
+ (animation, GUI widgets inputs, etc. )
+ - \p name - hardware name of the uniform variable
+ - \p numVars - number of variables being set
+ - \p x - values
+ </LI>
+<LI>  <code>obj.AddShaderVariable (string name, int numVars, double x)</code> -  Provide values to initialize shader variables.
+ Useful to initialize shader variables that change over time
+ (animation, GUI widgets inputs, etc. )
+ - \p name - hardware name of the uniform variable
+ - \p numVars - number of variables being set
+ - \p x - values
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTextRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTextRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This class represents text for a vtkTextWidget.  This class provides
+ support for interactively placing text on the 2D overlay plane. The text
+ is defined by an instance of vtkTextActor.
+<P>
+To create an instance of class vtkTextRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTextRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTextRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTextRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>vtkTextRepresentation = obj.NewInstance ()</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>vtkTextRepresentation = obj.SafeDownCast (vtkObject o)</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>obj.SetTextActor (vtkTextActor textActor)</code> -  Specify the vtkTextActor to manage. If not specified, then one
+ is automatically created.
+ </LI>
+<LI>  <code>vtkTextActor = obj.GetTextActor ()</code> -  Specify the vtkTextActor to manage. If not specified, then one
+ is automatically created.
+ </LI>
+<LI>  <code>obj.SetText (string text)</code> -  Get/Set the text string display by this representation.
+ </LI>
+<LI>  <code>string = obj.GetText ()</code> -  Get/Set the text string display by this representation.
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  Satisfy the superclasses API.
+ </LI>
+<LI>  <code>obj.GetSize (double size[2])</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>obj.GetActors2D (vtkPropCollection )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.RenderTranslucentPolygonalGeometry (vtkViewport )</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  These methods are necessary to make this representation behave as
+ a vtkProp.
+ </LI>
+<LI>  <code>obj.SetWindowLocation (int enumLocation)</code> -  Set the text position, by enumeration (
+ AnyLocation = 0,
+ LowerLeftCorner,
+ LowerRightCorner,
+ LowerCenter,
+ UpperLeftCorner,
+ UpperRightCorner,
+ UpperCenter)
+ related to the render window
+ </LI>
+<LI>  <code>int = obj.GetWindowLocation ()</code> -  Set the text position, by enumeration (
+ AnyLocation = 0,
+ LowerLeftCorner,
+ LowerRightCorner,
+ LowerCenter,
+ UpperLeftCorner,
+ UpperRightCorner,
+ UpperCenter)
+ related to the render window
+ </LI>
+<LI>  <code>obj.SetPosition (double x, double y)</code> -  Set the text position, by overiding the same function of
+ vtkBorderRepresentation so that the Modified() will be called.
+ </LI>
+<LI>  <code>obj.SetPosition (double pos[2])</code> -  Set the text position, by overiding the same function of
+ vtkBorderRepresentation so that the Modified() will be called.
+ </LI>
+</UL>
+</BODY>
+</HTML>

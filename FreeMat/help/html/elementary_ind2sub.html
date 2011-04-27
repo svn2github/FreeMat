@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>IND2SUB Convert Linear Indexing To Multiple Indexing 
+</TITLE>
+</HEAD>
+<BODY>
+<H2>IND2SUB Convert Linear Indexing To Multiple Indexing 
+</H2>
+<P>
+Section: <A HREF=sec_elementary.html> Elementary Functions </A>
+<H3>Usage</H3>
+The <code>ind2sub</code> function converts linear indexing expression into a multi-dimensional indexing expressionl
+ The syntax for its use
+is
+<PRE>
+   [d1, d2, ..., dn] = ind2sub(sizevec,index)
+</PRE>
+<P>
+where <code>sizevec</code> is the size of the array being indexed into, index is the index value. Each
+<code>di</code> is a vector of the same length, containing index values.  
+<H3>Example</H3>
+Suppose we have a simple <code>3 x 4</code> matrix <code>A</code> containing some random integer
+elements
+<PRE>
+--&gt; A = randi(ones(3,4),10*ones(3,4))
+
+A = 
+  6  6  9  6 
+ 10  1  8  6 
+  9  1  6  2 
+</PRE>
+<PRE>
+--&gt; [d1 d2] = ind2sub(size(A),7)
+d1 = 
+ 1 
+
+d2 = 
+ 3 
+
+--&gt; A(d1,d2)
+
+ans = 
+ 9 
+</PRE>
+</BODY>
+</HTML>

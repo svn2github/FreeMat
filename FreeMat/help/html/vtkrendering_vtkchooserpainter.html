@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkChooserPainter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkChooserPainter
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+<P>
+ This painter does not actually do any painting.  Instead, it picks other
+ painters based on the current state of itself and its poly data.  It then
+ delegates the work to these other painters.
+<P>
+<P>
+To create an instance of class vtkChooserPainter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkChooserPainter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkChooserPainter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkChooserPainter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkChooserPainter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkChooserPainter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetVertPainter (vtkPolyDataPainter )</code>
+ </LI>
+<LI>  <code>obj.SetLinePainter (vtkPolyDataPainter )</code>
+ </LI>
+<LI>  <code>obj.SetPolyPainter (vtkPolyDataPainter )</code>
+ </LI>
+<LI>  <code>obj.SetStripPainter (vtkPolyDataPainter )</code>
+ </LI>
+<LI>  <code>obj.SetUseLinesPainterForWireframes (int )</code> -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+ </LI>
+<LI>  <code>int = obj.GetUseLinesPainterForWireframes ()</code> -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+ </LI>
+<LI>  <code>obj.UseLinesPainterForWireframesOn ()</code> -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+ </LI>
+<LI>  <code>obj.UseLinesPainterForWireframesOff ()</code> -  When set, the lines painter is used for drawing wireframes (off by
+ default, except on Mac, where it's on by default).
+ </LI>
+</UL>
+</BODY>
+</HTML>

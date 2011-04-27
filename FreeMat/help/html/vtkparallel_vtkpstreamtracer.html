@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPStreamTracer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPStreamTracer
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ This class implements some necessary functionality used by distributed
+ and parallel streamline generators. Note that all processes must have
+ access to the WHOLE seed source, i.e. the source must be identical
+ on all processes.
+<P>
+To create an instance of class vtkPStreamTracer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPStreamTracer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPStreamTracer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPStreamTracer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPStreamTracer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPStreamTracer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetController (vtkMultiProcessController controller)</code> -  Set/Get the controller use in compositing (set to
+ the global controller by default)
+ If not using the default, this must be called before any
+ other methods.
+ </LI>
+<LI>  <code>vtkMultiProcessController = obj.GetController ()</code> -  Set/Get the controller use in compositing (set to
+ the global controller by default)
+ If not using the default, this must be called before any
+ other methods.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLegendScaleActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLegendScaleActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ This class is used to annotate the render window. Its basic goal is to
+ provide an indication of the scale of the scene. Four axes surrounding the
+ render window indicate (in a variety of ways) the scale of what the camera
+ is viewing. An option also exists for displaying a scale legend.
+<P>
+ The axes can be programmed either to display distance scales or x-y
+ coordinate values. By default, the scales display a distance. However,
+ if you know that the view is down the z-axis, the scales can be programmed
+ to display x-y coordinate values.
+<P>
+<P>
+To create an instance of class vtkLegendScaleActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLegendScaleActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLegendScaleActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLegendScaleActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkLegendScaleActor = obj.NewInstance ()</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkLegendScaleActor = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>obj.SetLabelMode (int )</code> -  Specify the mode for labeling the scale axes. By default, the axes are
+ labeled with the distance between points (centered at a distance of
+ 0.0). Alternatively if you know that the view is down the z-axis; the
+ axes can be labeled with x-y coordinate values.
+ </LI>
+<LI>  <code>int = obj.GetLabelModeMinValue ()</code> -  Specify the mode for labeling the scale axes. By default, the axes are
+ labeled with the distance between points (centered at a distance of
+ 0.0). Alternatively if you know that the view is down the z-axis; the
+ axes can be labeled with x-y coordinate values.
+ </LI>
+<LI>  <code>int = obj.GetLabelModeMaxValue ()</code> -  Specify the mode for labeling the scale axes. By default, the axes are
+ labeled with the distance between points (centered at a distance of
+ 0.0). Alternatively if you know that the view is down the z-axis; the
+ axes can be labeled with x-y coordinate values.
+ </LI>
+<LI>  <code>int = obj.GetLabelMode ()</code> -  Specify the mode for labeling the scale axes. By default, the axes are
+ labeled with the distance between points (centered at a distance of
+ 0.0). Alternatively if you know that the view is down the z-axis; the
+ axes can be labeled with x-y coordinate values.
+ </LI>
+<LI>  <code>obj.SetLabelModeToDistance ()</code> -  Specify the mode for labeling the scale axes. By default, the axes are
+ labeled with the distance between points (centered at a distance of
+ 0.0). Alternatively if you know that the view is down the z-axis; the
+ axes can be labeled with x-y coordinate values.
+ </LI>
+<LI>  <code>obj.SetLabelModeToXYCoordinates ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.SetRightAxisVisibility (int )</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>int = obj.GetRightAxisVisibility ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.RightAxisVisibilityOn ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.RightAxisVisibilityOff ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.SetTopAxisVisibility (int )</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>int = obj.GetTopAxisVisibility ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.TopAxisVisibilityOn ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.TopAxisVisibilityOff ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.SetLeftAxisVisibility (int )</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>int = obj.GetLeftAxisVisibility ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.LeftAxisVisibilityOn ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.LeftAxisVisibilityOff ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.SetBottomAxisVisibility (int )</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>int = obj.GetBottomAxisVisibility ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.BottomAxisVisibilityOn ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.BottomAxisVisibilityOff ()</code> -  Set/Get the flags that control which of the four axes to display (top,
+ bottom, left and right). By default, all the axes are displayed.
+ </LI>
+<LI>  <code>obj.SetLegendVisibility (int )</code> -  Indicate whether the legend scale should be displayed or not.
+ The default is On.
+ </LI>
+<LI>  <code>int = obj.GetLegendVisibility ()</code> -  Indicate whether the legend scale should be displayed or not.
+ The default is On.
+ </LI>
+<LI>  <code>obj.LegendVisibilityOn ()</code> -  Indicate whether the legend scale should be displayed or not.
+ The default is On.
+ </LI>
+<LI>  <code>obj.LegendVisibilityOff ()</code> -  Indicate whether the legend scale should be displayed or not.
+ The default is On.
+ </LI>
+<LI>  <code>obj.AllAxesOn ()</code> -  Convenience method that turns all the axes either on or off.
+ </LI>
+<LI>  <code>obj.AllAxesOff ()</code> -  Convenience method that turns all the axes either on or off.
+ </LI>
+<LI>  <code>obj.AllAnnotationsOn ()</code> -  Convenience method that turns all the axes and the legend scale.
+ </LI>
+<LI>  <code>obj.AllAnnotationsOff ()</code> -  Convenience method that turns all the axes and the legend scale.
+ </LI>
+<LI>  <code>obj.SetRightBorderOffset (int )</code> -  Set/Get the offset of the right axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>int = obj.GetRightBorderOffsetMinValue ()</code> -  Set/Get the offset of the right axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>int = obj.GetRightBorderOffsetMaxValue ()</code> -  Set/Get the offset of the right axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>int = obj.GetRightBorderOffset ()</code> -  Set/Get the offset of the right axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>obj.SetTopBorderOffset (int )</code> -  Set/Get the offset of the top axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>int = obj.GetTopBorderOffsetMinValue ()</code> -  Set/Get the offset of the top axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>int = obj.GetTopBorderOffsetMaxValue ()</code> -  Set/Get the offset of the top axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>int = obj.GetTopBorderOffset ()</code> -  Set/Get the offset of the top axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>obj.SetLeftBorderOffset (int )</code> -  Set/Get the offset of the left axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>int = obj.GetLeftBorderOffsetMinValue ()</code> -  Set/Get the offset of the left axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>int = obj.GetLeftBorderOffsetMaxValue ()</code> -  Set/Get the offset of the left axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>int = obj.GetLeftBorderOffset ()</code> -  Set/Get the offset of the left axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 50.
+ </LI>
+<LI>  <code>obj.SetBottomBorderOffset (int )</code> -  Set/Get the offset of the bottom axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>int = obj.GetBottomBorderOffsetMinValue ()</code> -  Set/Get the offset of the bottom axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>int = obj.GetBottomBorderOffsetMaxValue ()</code> -  Set/Get the offset of the bottom axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>int = obj.GetBottomBorderOffset ()</code> -  Set/Get the offset of the bottom axis from the border. This number is expressed in
+ pixels, and represents the approximate distance of the axes from the sides
+ of the renderer. The default is 30.
+ </LI>
+<LI>  <code>obj.SetCornerOffsetFactor (double )</code> -  Get/Set the corner offset. This is the offset factor used to offset the
+ axes at the corners. Default value is 2.0.
+ </LI>
+<LI>  <code>double = obj.GetCornerOffsetFactorMinValue ()</code> -  Get/Set the corner offset. This is the offset factor used to offset the
+ axes at the corners. Default value is 2.0.
+ </LI>
+<LI>  <code>double = obj.GetCornerOffsetFactorMaxValue ()</code> -  Get/Set the corner offset. This is the offset factor used to offset the
+ axes at the corners. Default value is 2.0.
+ </LI>
+<LI>  <code>double = obj.GetCornerOffsetFactor ()</code> -  Get/Set the corner offset. This is the offset factor used to offset the
+ axes at the corners. Default value is 2.0.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLegendTitleProperty ()</code> -  Set/Get the labels text properties for the legend title and labels.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLegendLabelProperty ()</code> -  Set/Get the labels text properties for the legend title and labels.
+ </LI>
+<LI>  <code>vtkAxisActor2D = obj.GetRightAxis ()</code> -  These are methods to retrieve the vtkAxisActors used to represent
+ the four axes that form this representation. Users may retrieve and
+ then modify these axes to control their appearance.
+ </LI>
+<LI>  <code>vtkAxisActor2D = obj.GetTopAxis ()</code> -  These are methods to retrieve the vtkAxisActors used to represent
+ the four axes that form this representation. Users may retrieve and
+ then modify these axes to control their appearance.
+ </LI>
+<LI>  <code>vtkAxisActor2D = obj.GetLeftAxis ()</code> -  These are methods to retrieve the vtkAxisActors used to represent
+ the four axes that form this representation. Users may retrieve and
+ then modify these axes to control their appearance.
+ </LI>
+<LI>  <code>vtkAxisActor2D = obj.GetBottomAxis ()</code> -  These are methods to retrieve the vtkAxisActors used to represent
+ the four axes that form this representation. Users may retrieve and
+ then modify these axes to control their appearance.
+ </LI>
+<LI>  <code>obj.BuildRepresentation (vtkViewport viewport)</code>
+ </LI>
+<LI>  <code>obj.GetActors2D (vtkPropCollection )</code>
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code>
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport )</code>
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

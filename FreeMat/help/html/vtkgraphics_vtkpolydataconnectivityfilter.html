@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPolyDataConnectivityFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPolyDataConnectivityFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkPolyDataConnectivityFilter is a filter that extracts cells that
+ share common points and/or satisfy a scalar threshold
+ criterion. (Such a group of cells is called a region.) The filter
+ works in one of six ways: 1) extract the largest connected region
+ in the dataset; 2) extract specified region numbers; 3) extract all
+ regions sharing specified point ids; 4) extract all regions sharing
+ specified cell ids; 5) extract the region closest to the specified
+ point; or 6) extract all regions (used to color regions).
+<P>
+ This filter is specialized for polygonal data. This means it runs a bit 
+ faster and is easier to construct visualization networks that process
+ polygonal data.
+<P>
+ The behavior of vtkPolyDataConnectivityFilter can be modified by turning
+ on the boolean ivar ScalarConnectivity. If this flag is on, the
+ connectivity algorithm is modified so that cells are considered connected
+ only if 1) they are geometrically connected (share a point) and 2) the
+ scalar values of one of the cell's points falls in the scalar range
+ specified. This use of ScalarConnectivity is particularly useful for
+ selecting cells for later processing.
+<P>
+To create an instance of class vtkPolyDataConnectivityFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPolyDataConnectivityFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPolyDataConnectivityFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPolyDataConnectivityFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPolyDataConnectivityFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPolyDataConnectivityFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetScalarConnectivity (int )</code> -  Turn on/off connectivity based on scalar value. If on, cells are connected
+ only if they share points AND one of the cells scalar values falls in the
+ scalar range specified.
+ </LI>
+<LI>  <code>int = obj.GetScalarConnectivity ()</code> -  Turn on/off connectivity based on scalar value. If on, cells are connected
+ only if they share points AND one of the cells scalar values falls in the
+ scalar range specified.
+ </LI>
+<LI>  <code>obj.ScalarConnectivityOn ()</code> -  Turn on/off connectivity based on scalar value. If on, cells are connected
+ only if they share points AND one of the cells scalar values falls in the
+ scalar range specified.
+ </LI>
+<LI>  <code>obj.ScalarConnectivityOff ()</code> -  Turn on/off connectivity based on scalar value. If on, cells are connected
+ only if they share points AND one of the cells scalar values falls in the
+ scalar range specified.
+ </LI>
+<LI>  <code>obj.SetScalarRange (double , double )</code> -  Set the scalar range to use to extract cells based on scalar connectivity.
+ </LI>
+<LI>  <code>obj.SetScalarRange (double  a[2])</code> -  Set the scalar range to use to extract cells based on scalar connectivity.
+ </LI>
+<LI>  <code>double = obj. GetScalarRange ()</code> -  Set the scalar range to use to extract cells based on scalar connectivity.
+ </LI>
+<LI>  <code>obj.SetExtractionMode (int )</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>int = obj.GetExtractionModeMinValue ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>int = obj.GetExtractionModeMaxValue ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>int = obj.GetExtractionMode ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.SetExtractionModeToPointSeededRegions ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.SetExtractionModeToCellSeededRegions ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.SetExtractionModeToLargestRegion ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.SetExtractionModeToSpecifiedRegions ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.SetExtractionModeToClosestPointRegion ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.SetExtractionModeToAllRegions ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>string = obj.GetExtractionModeAsString ()</code> -  Control the extraction of connected surfaces.
+ </LI>
+<LI>  <code>obj.InitializeSeedList ()</code> -  Initialize list of point ids/cell ids used to seed regions.
+ </LI>
+<LI>  <code>obj.AddSeed (int id)</code> -  Add a seed id (point or cell id). Note: ids are 0-offset.
+ </LI>
+<LI>  <code>obj.DeleteSeed (int id)</code> -  Delete a seed id (point or cell id). Note: ids are 0-offset.
+ </LI>
+<LI>  <code>obj.InitializeSpecifiedRegionList ()</code> -  Initialize list of region ids to extract.
+ </LI>
+<LI>  <code>obj.AddSpecifiedRegion (int id)</code> -  Add a region id to extract. Note: ids are 0-offset.
+ </LI>
+<LI>  <code>obj.DeleteSpecifiedRegion (int id)</code> -  Delete a region id to extract. Note: ids are 0-offset.
+ </LI>
+<LI>  <code>obj.SetClosestPoint (double , double , double )</code> -  Use to specify x-y-z point coordinates when extracting the region 
+ closest to a specified point.
+ </LI>
+<LI>  <code>obj.SetClosestPoint (double  a[3])</code> -  Use to specify x-y-z point coordinates when extracting the region 
+ closest to a specified point.
+ </LI>
+<LI>  <code>double = obj. GetClosestPoint ()</code> -  Use to specify x-y-z point coordinates when extracting the region 
+ closest to a specified point.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfExtractedRegions ()</code> -  Obtain the number of connected regions.
+ </LI>
+<LI>  <code>obj.SetColorRegions (int )</code> -  Turn on/off the coloring of connected regions.
+ </LI>
+<LI>  <code>int = obj.GetColorRegions ()</code> -  Turn on/off the coloring of connected regions.
+ </LI>
+<LI>  <code>obj.ColorRegionsOn ()</code> -  Turn on/off the coloring of connected regions.
+ </LI>
+<LI>  <code>obj.ColorRegionsOff ()</code> -  Turn on/off the coloring of connected regions.
+ </LI>
+</UL>
+</BODY>
+</HTML>

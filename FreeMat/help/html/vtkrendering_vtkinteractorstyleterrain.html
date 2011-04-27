@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInteractorStyleTerrain
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInteractorStyleTerrain
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkInteractorStyleTerrain is used to manipulate a camera which is viewing
+ a scene with a natural view up, e.g., terrain. The camera in such a
+ scene is manipulated by specifying azimuth (angle around the view
+ up vector) and elevation (the angle from the horizon).
+<P>
+ The mouse binding for this class is as follows. Left mouse click followed
+ rotates the camera around the focal point using both elevation and azimuth
+ invocations on the camera. Left mouse motion in the horizontal direction
+ results in azimuth motion; left mouse motion in the vertical direction
+ results in elevation motion. Therefore, diagonal motion results in a
+ combination of azimuth and elevation. (If the shift key is held during
+ motion, then only one of elevation or azimuth is invoked, depending on the
+ whether the mouse motion is primarily horizontal or vertical.) Middle
+ mouse button pans the camera across the scene (again the shift key has a
+ similar effect on limiting the motion to the vertical or horizontal
+ direction. The right mouse is used to dolly (e.g., a type of zoom) towards
+ or away from the focal point.
+<P>
+ The class also supports some keypress events. The "r" key resets the
+ camera.  The "e" key invokes the exit callback and by default exits the
+ program. The "f" key sets a new camera focal point and flys towards that
+ point. The "u" key invokes the user event. The "3" key toggles between 
+ stereo and non-stero mode. The "l" key toggles on/off a latitude/longitude
+ markers that can be used to estimate/control position.
+ 
+<P>
+To create an instance of class vtkInteractorStyleTerrain, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInteractorStyleTerrain
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInteractorStyleTerrain has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInteractorStyleTerrain class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInteractorStyleTerrain = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInteractorStyleTerrain = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.OnMouseMove ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeftButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnLeftButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnMiddleButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnMiddleButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnRightButtonDown ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnRightButtonUp ()</code> -  Event bindings controlling the effects of pressing mouse buttons
+ or moving the mouse.
+ </LI>
+<LI>  <code>obj.OnChar ()</code> -  Override the "fly-to" (f keypress) for images.
+ </LI>
+<LI>  <code>obj.Rotate ()</code>
+ </LI>
+<LI>  <code>obj.Pan ()</code>
+ </LI>
+<LI>  <code>obj.Dolly ()</code>
+ </LI>
+<LI>  <code>obj.SetLatLongLines (int )</code> -  Turn on/off the latitude/longitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLatLongLines ()</code> -  Turn on/off the latitude/longitude lines.
+ </LI>
+<LI>  <code>obj.LatLongLinesOn ()</code> -  Turn on/off the latitude/longitude lines.
+ </LI>
+<LI>  <code>obj.LatLongLinesOff ()</code> -  Turn on/off the latitude/longitude lines.
+ </LI>
+</UL>
+</BODY>
+</HTML>

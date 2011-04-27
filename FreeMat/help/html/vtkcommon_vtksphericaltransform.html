@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSphericalTransform
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSphericalTransform
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkSphericalTransform will convert (r,phi,theta) coordinates to 
+ (x,y,z) coordinates and back again.  The angles are given in radians.
+ By default, it converts spherical coordinates to rectangular, but
+ GetInverse() returns a transform that will do the opposite.  The equation
+ that is used is x = r*sin(phi)*cos(theta), y = r*sin(phi)*sin(theta),
+ z = r*cos(phi).
+<P>
+To create an instance of class vtkSphericalTransform, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSphericalTransform
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSphericalTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSphericalTransform class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSphericalTransform = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSphericalTransform = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkAbstractTransform = obj.MakeTransform ()</code> -  Make another transform of the same type.
+ </LI>
+</UL>
+</BODY>
+</HTML>

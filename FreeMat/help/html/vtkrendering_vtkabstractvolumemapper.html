@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAbstractVolumeMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAbstractVolumeMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkAbstractVolumeMapper is the abstract definition of a volume mapper.  
+ Specific subclasses deal with different specific types of data input
+<P>
+To create an instance of class vtkAbstractVolumeMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAbstractVolumeMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAbstractVolumeMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAbstractVolumeMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAbstractVolumeMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAbstractVolumeMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInput (vtkDataSet )</code> -  Set/Get the input data
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetDataSetInput ()</code> -  Set/Get the input data
+ </LI>
+<LI>  <code>vtkDataObject = obj.GetDataObjectInput ()</code> -  Set/Get the input data
+ </LI>
+<LI>  <code>double = obj.GetBounds ()</code> -  Return bounding box (array of six doubles) of data expressed as
+ (xmin,xmax, ymin,ymax, zmin,zmax).
+ </LI>
+<LI>  <code>obj.GetBounds (double bounds[6])</code> -  Return bounding box (array of six doubles) of data expressed as
+ (xmin,xmax, ymin,ymax, zmin,zmax).
+ </LI>
+<LI>  <code>obj.SetScalarMode (int )</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>int = obj.GetScalarMode ()</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>obj.SetScalarModeToDefault ()</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>obj.SetScalarModeToUsePointData ()</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>obj.SetScalarModeToUseCellData ()</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>obj.SetScalarModeToUsePointFieldData ()</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>obj.SetScalarModeToUseCellFieldData ()</code> -  Control how the mapper works with scalar point data and cell attribute
+ data.  By default (ScalarModeToDefault), the mapper will use point data,
+ and if no point data is available, then cell data is used. Alternatively
+ you can explicitly set the mapper to use point data
+ (ScalarModeToUsePointData) or cell data (ScalarModeToUseCellData).
+ You can also choose to get the scalars from an array in point field
+ data (ScalarModeToUsePointFieldData) or cell field data
+ (ScalarModeToUseCellFieldData).  If scalars are coming from a field
+ data array, you must call SelectScalarArray.
+ </LI>
+<LI>  <code>obj.SelectScalarArray (int arrayNum)</code> -  When ScalarMode is set to UsePointFieldData or UseCellFieldData,
+ you can specify which scalar array to use during rendering.
+ The transfer function in the vtkVolumeProperty (attached to the calling
+ vtkVolume) will decide how to convert vectors to colors.
+ </LI>
+<LI>  <code>obj.SelectScalarArray (string arrayName)</code> -  When ScalarMode is set to UsePointFieldData or UseCellFieldData,
+ you can specify which scalar array to use during rendering.
+ The transfer function in the vtkVolumeProperty (attached to the calling
+ vtkVolume) will decide how to convert vectors to colors.
+ </LI>
+<LI>  <code>string = obj.GetArrayName ()</code> -  Get the array name or number and component to use for rendering.
+ </LI>
+<LI>  <code>int = obj.GetArrayId ()</code> -  Get the array name or number and component to use for rendering.
+ </LI>
+<LI>  <code>int = obj.GetArrayAccessMode ()</code> -  Return the method for obtaining scalar data.
+ </LI>
+<LI>  <code>string = obj.GetScalarModeAsString ()</code> -  Return the method for obtaining scalar data.
+ </LI>
+</UL>
+</BODY>
+</HTML>

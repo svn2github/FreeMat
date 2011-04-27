@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+ vtkDataRepresentation the superclass for representations of data objects.
+ This class itself may be instantiated and used as a representation
+ that simply holds a connection to a pipeline.
+<P>
+ If there are multiple representations present in a view, you should use
+ a subclass of vtkDataRepresentation.  The representation is
+ responsible for taking the input pipeline connection and converting it
+ to an object usable by a view.  In the most common case, the representation
+ will contain the pipeline necessary to convert a data object into an actor
+ or set of actors.
+<P>
+ The representation has a concept of a selection.  If the user performs a
+ selection operation on the view, the view forwards this on to its
+ representations.  The representation is responsible for displaying that
+ selection in an appropriate way.
+<P>
+ Representation selections may also be linked.  The representation shares
+ the selection by converting it into a view-independent format, then
+ setting the selection on its vtkAnnotationLink.  Other representations
+ sharing the same selection link instance will get the same selection
+ from the selection link when the view is updated.  The application is
+ responsible for linking representations as appropriate by setting the
+ same vtkAnnotationLink on each linked representation.
+<P>
+To create an instance of class vtkDataRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataRepresentation = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataRepresentation = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInputConnection (int port, int index)</code> -  The annotation link for this representation.
+ To link annotations, set the same vtkAnnotationLink object in
+ multiple representations.
+ </LI>
+<LI>  <code>vtkAnnotationLink = obj.GetAnnotationLink ()</code> -  The annotation link for this representation.
+ To link annotations, set the same vtkAnnotationLink object in
+ multiple representations.
+ </LI>
+<LI>  <code>obj.SetAnnotationLink (vtkAnnotationLink link)</code> -  The annotation link for this representation.
+ To link annotations, set the same vtkAnnotationLink object in
+ multiple representations.
+ </LI>
+<LI>  <code>obj.ApplyViewTheme (vtkViewTheme )</code> -  The view calls this method when a selection occurs.
+ The representation takes this selection and converts it into
+ a selection on its data by calling ConvertSelection,
+ then calls UpdateSelection with the converted selection.
+ Subclasses should not overrride this method, but should instead
+ override ConvertSelection.
+ The optional third argument specifies whether the selection should be
+ added to the previous selection on this representation.
+ </LI>
+<LI>  <code>obj.Select (vtkView view, vtkSelection selection)</code> -  The view calls this method when a selection occurs.
+ The representation takes this selection and converts it into
+ a selection on its data by calling ConvertSelection,
+ then calls UpdateSelection with the converted selection.
+ Subclasses should not overrride this method, but should instead
+ override ConvertSelection.
+ The optional third argument specifies whether the selection should be
+ added to the previous selection on this representation.
+ </LI>
+<LI>  <code>obj.Select (vtkView view, vtkSelection selection, bool extend)</code> -  The view calls this method when a selection occurs.
+ The representation takes this selection and converts it into
+ a selection on its data by calling ConvertSelection,
+ then calls UpdateSelection with the converted selection.
+ Subclasses should not overrride this method, but should instead
+ override ConvertSelection.
+ The optional third argument specifies whether the selection should be
+ added to the previous selection on this representation.
+ </LI>
+<LI>  <code>obj.SetSelectable (bool )</code> -  Whether this representation is able to handle a selection.
+ Default is true.
+ </LI>
+<LI>  <code>bool = obj.GetSelectable ()</code> -  Whether this representation is able to handle a selection.
+ Default is true.
+ </LI>
+<LI>  <code>obj.SelectableOn ()</code> -  Whether this representation is able to handle a selection.
+ Default is true.
+ </LI>
+<LI>  <code>obj.SelectableOff ()</code> -  Whether this representation is able to handle a selection.
+ Default is true.
+ </LI>
+<LI>  <code>obj.UpdateSelection (vtkSelection selection)</code> -  Updates the selection in the selection link and fires a selection
+ change event. Subclasses should not overrride this method,
+ but should instead override ConvertSelection.
+ The optional second argument specifies whether the selection should be
+ added to the previous selection on this representation.
+ </LI>
+<LI>  <code>obj.UpdateSelection (vtkSelection selection, bool extend)</code> -  Updates the selection in the selection link and fires a selection
+ change event. Subclasses should not overrride this method,
+ but should instead override ConvertSelection.
+ The optional second argument specifies whether the selection should be
+ added to the previous selection on this representation.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort ()</code> -  The output port that contains the annotations whose selections are
+ localized for a particular input data object.
+ This should be used when connecting the internal pipelines.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort (int port)</code> -  The output port that contains the annotations whose selections are
+ localized for a particular input data object.
+ This should be used when connecting the internal pipelines.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort (int port, int conn)</code> -  The output port that contains the annotations whose selections are
+ localized for a particular input data object.
+ This should be used when connecting the internal pipelines.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalSelectionOutputPort ()</code> -  The output port that contains the selection associated with the
+ current annotation (normally the interactive selection).
+ This should be used when connecting the internal pipelines.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalSelectionOutputPort (int port)</code> -  The output port that contains the selection associated with the
+ current annotation (normally the interactive selection).
+ This should be used when connecting the internal pipelines.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalSelectionOutputPort (int port, int conn)</code> -  The output port that contains the selection associated with the
+ current annotation (normally the interactive selection).
+ This should be used when connecting the internal pipelines.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalOutputPort ()</code> -  Retrieves an output port for the input data object at the specified port
+ and connection index. This may be connected to the representation's
+ internal pipeline.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalOutputPort (int port)</code> -  Retrieves an output port for the input data object at the specified port
+ and connection index. This may be connected to the representation's
+ internal pipeline.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalOutputPort (int port, int conn)</code> -  Retrieves an output port for the input data object at the specified port
+ and connection index. This may be connected to the representation's
+ internal pipeline.
+ </LI>
+<LI>  <code>obj.SetSelectionType (int )</code> -  Set the selection type produced by this view.
+ This should be one of the content type constants defined in
+ vtkSelectionNode.h. Common values are
+ vtkSelectionNode::INDICES
+ vtkSelectionNode::PEDIGREEIDS
+ vtkSelectionNode::VALUES
+ </LI>
+<LI>  <code>int = obj.GetSelectionType ()</code> -  Set the selection type produced by this view.
+ This should be one of the content type constants defined in
+ vtkSelectionNode.h. Common values are
+ vtkSelectionNode::INDICES
+ vtkSelectionNode::PEDIGREEIDS
+ vtkSelectionNode::VALUES
+ </LI>
+<LI>  <code>obj.SetSelectionArrayNames (vtkStringArray names)</code> -  If a VALUES selection, the arrays used to produce a selection.
+ </LI>
+<LI>  <code>vtkStringArray = obj.GetSelectionArrayNames ()</code> -  If a VALUES selection, the arrays used to produce a selection.
+ </LI>
+<LI>  <code>obj.SetSelectionArrayName (string name)</code> -  If a VALUES selection, the array used to produce a selection.
+ </LI>
+<LI>  <code>string = obj.GetSelectionArrayName ()</code> -  If a VALUES selection, the array used to produce a selection.
+ </LI>
+</UL>
+</BODY>
+</HTML>

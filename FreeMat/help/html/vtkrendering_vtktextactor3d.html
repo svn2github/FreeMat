@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTextActor3D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTextActor3D
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ The input text is rendered into a buffer, which in turn is used as a
+ texture applied onto a quad (a vtkImageActor is used under the hood).
+ .SECTION Warning
+ This class is experimental at the moment. 
+ - The orientation is not optimized, the quad should be oriented, not
+   the text itself when it is rendered in the buffer (we end up with
+   excessively big textures for 45 degrees angles).
+   This will be fixed first.
+ - No checking is done at the moment regarding hardware texture size limits.
+ - Alignment is not supported (soon).
+ - Multiline is not supported.
+ - Need to fix angle out of 0&lt;-&gt;360
+<P>
+<P>
+To create an instance of class vtkTextActor3D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTextActor3D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTextActor3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTextActor3D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTextActor3D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTextActor3D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInput (string )</code> -  Set the text string to be displayed.
+ </LI>
+<LI>  <code>string = obj.GetInput ()</code> -  Set the text string to be displayed.
+ </LI>
+<LI>  <code>obj.SetTextProperty (vtkTextProperty p)</code> -  Set/Get the text property.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetTextProperty ()</code> -  Set/Get the text property.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkProp prop)</code> -  Shallow copy of this text actor. Overloads the virtual
+ vtkProp method.
+ </LI>
+<LI>  <code>double = obj.GetBounds ()</code> -  Get the bounds for this Prop3D as (Xmin,Xmax,Ymin,Ymax,Zmin,Zmax).  
+ These are the padded-to-power-of-two texture bounds.
+ </LI>
+<LI>  <code>int = obj.GetBoundingBox (int bbox[4])</code> -  Get the Freetype-derived real bounding box for the given vtkTextProperty
+ and text string str.  Results are returned in the four element bbox int
+ array.  This call can be used for sizing other elements.
+ </LI>
+</UL>
+</BODY>
+</HTML>

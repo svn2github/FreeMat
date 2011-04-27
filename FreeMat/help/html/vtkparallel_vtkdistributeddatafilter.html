@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDistributedDataFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDistributedDataFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ This filter redistributes data among processors in a parallel
+ application into spatially contiguous vtkUnstructuredGrids.
+ The execution model anticipated is that all processes read in
+ part of a large vtkDataSet. Each process sets the input of
+ filter to be that DataSet. When executed, this filter builds
+ in parallel a k-d tree, decomposing the space occupied by the
+ distributed DataSet into spatial regions.  It assigns each
+ spatial region to a processor.  The data is then redistributed
+ and the output is a single vtkUnstructuredGrid containing the
+ cells in the process' assigned regions.
+<P>
+ This filter is sometimes called "D3" for "distributed data decomposition".
+<P>
+ Enhancement: You can set the k-d tree decomposition, rather than
+ have D3 compute it.  This allows you to divide a dataset using
+ the decomposition computed for another dataset.  Obtain a description
+ of the k-d tree cuts this way:
+<P>
+    vtkBSPCuts *cuts = D3Object1-&gt;GetCuts()
+<P>
+ And set it this way:
+<P>
+    D3Object2-&gt;SetCuts(cuts) 
+<P>
+    It is desirable to have a field array of global node IDs
+    for two reasons:
+<P>
+    1. When merging together sub grids that were distributed
+    across processors, global node IDs can be used to remove
+    duplicate points and significantly reduce the size of the
+    resulting output grid.  If no such array is available,
+    D3 will use a tolerance to merge points, which is much
+    slower.
+<P>
+    2. If ghost cells have been requested, D3 requires a
+    global node ID array in order to request and transfer
+    ghost cells in parallel among the processors.  If there
+    is no global node ID array, D3 will in parallel create
+    a global node ID array, and the time to do this can be
+    significant.
+    
+    If you know the name of a global node ID array in the input
+    dataset, set that name with this method.  If you leave
+    it unset, D3 will search the input data set for certain
+    common names of global node ID arrays.  If none is found,
+    and ghost cells have been requested, D3 will create a
+    temporary global node ID array before aquiring ghost cells.
+   It is also desirable to have global element IDs.  However,
+   if they don't exist D3 can create them relatively quickly.
+   Set the name of the global element ID array if you have it.
+   If it is not set, D3 will search for it using common names.
+   If still not found, D3 will create a temporary array of
+   global element IDs.
+<P>
+<P>
+To create an instance of class vtkDistributedDataFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDistributedDataFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDistributedDataFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDistributedDataFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDistributedDataFilter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDistributedDataFilter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetController (vtkMultiProcessController c)</code> -    Set/Get the communicator object
+ </LI>
+<LI>  <code>vtkMultiProcessController = obj.GetController ()</code> -    Set/Get the communicator object
+ </LI>
+<LI>  <code>vtkPKdTree = obj.GetKdtree ()</code>
+ </LI>
+<LI>  <code>obj.RetainKdtreeOn ()</code>
+ </LI>
+<LI>  <code>obj.RetainKdtreeOff ()</code>
+ </LI>
+<LI>  <code>int = obj.GetRetainKdtree ()</code>
+ </LI>
+<LI>  <code>obj.SetRetainKdtree (int )</code>
+ </LI>
+<LI>  <code>obj.IncludeAllIntersectingCellsOn ()</code>
+ </LI>
+<LI>  <code>obj.IncludeAllIntersectingCellsOff ()</code>
+ </LI>
+<LI>  <code>int = obj.GetIncludeAllIntersectingCells ()</code>
+ </LI>
+<LI>  <code>obj.SetIncludeAllIntersectingCells (int )</code>
+ </LI>
+<LI>  <code>obj.ClipCellsOn ()</code>
+ </LI>
+<LI>  <code>obj.ClipCellsOff ()</code>
+ </LI>
+<LI>  <code>int = obj.GetClipCells ()</code>
+ </LI>
+<LI>  <code>obj.SetClipCells (int )</code>
+ </LI>
+<LI>  <code>obj.SetBoundaryMode (int mode)</code> -  Handling of ClipCells and IncludeAllIntersectingCells.
+ </LI>
+<LI>  <code>obj.SetBoundaryModeToAssignToOneRegion ()</code> -  Handling of ClipCells and IncludeAllIntersectingCells.
+ </LI>
+<LI>  <code>obj.SetBoundaryModeToAssignToAllIntersectingRegions ()</code> -  Handling of ClipCells and IncludeAllIntersectingCells.
+ </LI>
+<LI>  <code>obj.SetBoundaryModeToSplitBoundaryCells ()</code> -  Handling of ClipCells and IncludeAllIntersectingCells.
+ </LI>
+<LI>  <code>int = obj.GetBoundaryMode ()</code> -  Handling of ClipCells and IncludeAllIntersectingCells.
+ </LI>
+<LI>  <code>obj.UseMinimalMemoryOn ()</code>
+ </LI>
+<LI>  <code>obj.UseMinimalMemoryOff ()</code>
+ </LI>
+<LI>  <code>int = obj.GetUseMinimalMemory ()</code>
+ </LI>
+<LI>  <code>obj.SetUseMinimalMemory (int )</code>
+ </LI>
+<LI>  <code>obj.TimingOn ()</code>
+ </LI>
+<LI>  <code>obj.TimingOff ()</code>
+ </LI>
+<LI>  <code>obj.SetTiming (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetTiming ()</code>
+ </LI>
+<LI>  <code>vtkBSPCuts = obj.GetCuts ()</code> -  You can set the k-d tree decomposition, rather than
+ have D3 compute it.  This allows you to divide a dataset using
+ the decomposition computed for another dataset.  Obtain a description
+ of the k-d tree cuts this way:
+
+    vtkBSPCuts *cuts = D3Object1-&gt;GetCuts()
+
+ And set it this way:
+
+    D3Object2-&gt;SetCuts(cuts) 
+ </LI>
+<LI>  <code>obj.SetCuts (vtkBSPCuts cuts)</code> -  You can set the k-d tree decomposition, rather than
+ have D3 compute it.  This allows you to divide a dataset using
+ the decomposition computed for another dataset.  Obtain a description
+ of the k-d tree cuts this way:
+
+    vtkBSPCuts *cuts = D3Object1-&gt;GetCuts()
+
+ And set it this way:
+
+    D3Object2-&gt;SetCuts(cuts) 
+ </LI>
+</UL>
+</BODY>
+</HTML>

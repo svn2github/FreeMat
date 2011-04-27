@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkOBBDicer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkOBBDicer
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkOBBDicer separates the cells of a dataset into spatially
+ aggregated pieces using a Oriented Bounding Box (OBB). These pieces
+ can then be operated on by other filters (e.g., vtkThreshold). One
+ application is to break very large polygonal models into pieces and
+ performing viewing and occlusion culling on the pieces.
+<P>
+ Refer to the superclass documentation (vtkDicer) for more information.
+<P>
+To create an instance of class vtkOBBDicer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkOBBDicer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkOBBDicer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkOBBDicer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkOBBDicer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkOBBDicer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

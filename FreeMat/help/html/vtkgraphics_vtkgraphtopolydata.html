@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGraphToPolyData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGraphToPolyData
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ Converts a vtkGraph to a vtkPolyData.  This assumes that the points
+ of the graph have already been filled (perhaps by vtkGraphLayout),
+ and coverts all the edge of the graph into lines in the polydata.
+ The vertex data is passed along to the point data, and the edge data
+ is passed along to the cell data.
+<P>
+ Only the owned graph edges (i.e. edges with ghost level 0) are copied
+ into the vtkPolyData.
+<P>
+To create an instance of class vtkGraphToPolyData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGraphToPolyData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGraphToPolyData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGraphToPolyData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGraphToPolyData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGraphToPolyData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetEdgeGlyphOutput (bool )</code> -  Create a second output containing points and orientation vectors
+ for drawing arrows or other glyphs on edges.  This output should be
+ set as the first input to vtkGlyph3D to place glyphs on the edges.
+ vtkGlyphSource2D's VTK_EDGEARROW_GLYPH provides a good glyph for 
+ drawing arrows.
+ Default value is off.
+ </LI>
+<LI>  <code>bool = obj.GetEdgeGlyphOutput ()</code> -  Create a second output containing points and orientation vectors
+ for drawing arrows or other glyphs on edges.  This output should be
+ set as the first input to vtkGlyph3D to place glyphs on the edges.
+ vtkGlyphSource2D's VTK_EDGEARROW_GLYPH provides a good glyph for 
+ drawing arrows.
+ Default value is off.
+ </LI>
+<LI>  <code>obj.EdgeGlyphOutputOn ()</code> -  Create a second output containing points and orientation vectors
+ for drawing arrows or other glyphs on edges.  This output should be
+ set as the first input to vtkGlyph3D to place glyphs on the edges.
+ vtkGlyphSource2D's VTK_EDGEARROW_GLYPH provides a good glyph for 
+ drawing arrows.
+ Default value is off.
+ </LI>
+<LI>  <code>obj.EdgeGlyphOutputOff ()</code> -  Create a second output containing points and orientation vectors
+ for drawing arrows or other glyphs on edges.  This output should be
+ set as the first input to vtkGlyph3D to place glyphs on the edges.
+ vtkGlyphSource2D's VTK_EDGEARROW_GLYPH provides a good glyph for 
+ drawing arrows.
+ Default value is off.
+ </LI>
+<LI>  <code>obj.SetEdgeGlyphPosition (double )</code> -  The position of the glyph point along the edge.
+ 0 puts a glyph point at the source of each edge.
+ 1 puts a glyph point at the target of each edge.
+ An intermediate value will place the glyph point between the source and target.
+ The default value is 1.
+ </LI>
+<LI>  <code>double = obj.GetEdgeGlyphPosition ()</code> -  The position of the glyph point along the edge.
+ 0 puts a glyph point at the source of each edge.
+ 1 puts a glyph point at the target of each edge.
+ An intermediate value will place the glyph point between the source and target.
+ The default value is 1.
+ </LI>
+</UL>
+</BODY>
+</HTML>

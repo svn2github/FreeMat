@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLoopSubdivisionFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLoopSubdivisionFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkLoopSubdivisionFilter is an approximating subdivision scheme that
+ creates four new triangles for each triangle in the mesh. The user can
+ specify the NumberOfSubdivisions. Loop's subdivision scheme is
+ described in: Loop, C., "Smooth Subdivision surfaces based on
+ triangles,", Masters Thesis, University of Utah, August 1987.
+ For a nice summary of the technique see, Hoppe, H., et. al,
+ "Piecewise Smooth Surface Reconstruction,:, Proceedings of Siggraph 94
+ (Orlando, Florida, July 24-29, 1994). In COmputer Graphics
+ Proceedings, Annual COnference Series, 1994, ACM SIGGRAPH,
+ pp. 295-302.
+ &lt;P&gt;
+ The filter only operates on triangles. Users should use the
+ vtkTriangleFilter to triangulate meshes that contain polygons or
+ triangle strips.
+ &lt;P&gt;
+ The filter approximates point data using the same scheme. New
+ triangles create at a subdivision step will have the cell data of
+ their parent cell.
+<P>
+To create an instance of class vtkLoopSubdivisionFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLoopSubdivisionFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLoopSubdivisionFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLoopSubdivisionFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Construct object with NumberOfSubdivisions set to 1.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Construct object with NumberOfSubdivisions set to 1.
+ </LI>
+<LI>  <code>vtkLoopSubdivisionFilter = obj.NewInstance ()</code> -  Construct object with NumberOfSubdivisions set to 1.
+ </LI>
+<LI>  <code>vtkLoopSubdivisionFilter = obj.SafeDownCast (vtkObject o)</code> -  Construct object with NumberOfSubdivisions set to 1.
+ </LI>
+</UL>
+</BODY>
+</HTML>

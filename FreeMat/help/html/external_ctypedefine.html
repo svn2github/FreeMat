@@ -24,7 +24,7 @@ where <code>typeclass</code> is the variant of the type (legal values are
 <code>'struct'</code>, <code>'alias'</code>, <code>'enum'</code>).  The second argument is the
 name of the C type.  The remaining arguments depend on what the
 class of the typedef is.  
-
+<P>
 To define a C structure, use the <code>'struct'</code> type class.  The usage
 in this case is:
 <PRE>
@@ -48,7 +48,7 @@ are <code>typespecs</code>.  They can be of three types:
       for example: <code>'uint8[10]'</code> or <code>'double[1000]'</code>.
  </LI>
 </UL>
-
+<P>
 To define a C enumeration, use the <code>'enum'</code> type class.  The usage
 in this case is:
   ctypedefine('enum',typename,name1,value1,name2,value2,...)
@@ -58,7 +58,7 @@ The argument <code>typename</code> must be a valid identifier string.  Each of t
 the possible values that the enumeration can take an, and their corresponding
 integer values.  Note that the names should be unique.  The behavior of
 the various <code>cenum</code> functions is undefined if the names are not unique.
-
+<P>
 To define a C alias (or typedef), use the following form of <code>ctypedefine</code>:
 <PRE>
   ctypedefine('alias',typename,aliased_typename)

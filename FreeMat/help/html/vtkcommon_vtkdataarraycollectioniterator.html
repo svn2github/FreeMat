@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataArrayCollectionIterator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataArrayCollectionIterator
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkDataArrayCollectionIterator provides an implementation of
+ vtkCollectionIterator which allows the items to be retrieved with
+ the proper subclass pointer type for vtkDataArrayCollection.
+<P>
+To create an instance of class vtkDataArrayCollectionIterator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataArrayCollectionIterator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataArrayCollectionIterator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataArrayCollectionIterator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataArrayCollectionIterator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataArrayCollectionIterator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCollection (vtkCollection )</code> -  Set the collection over which to iterate.
+ </LI>
+<LI>  <code>obj.SetCollection (vtkDataArrayCollection )</code> -  Set the collection over which to iterate.
+ </LI>
+<LI>  <code>vtkDataArray = obj.GetDataArray ()</code> -  Get the item at the current iterator position.  Valid only when
+ IsDoneWithTraversal() returns 1.
+ </LI>
+</UL>
+</BODY>
+</HTML>

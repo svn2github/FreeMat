@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkFixedWidthTextReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkFixedWidthTextReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+<P>
+ vtkFixedWidthTextReader reads in a table from a text file where
+ each column occupies a certain number of characters.
+ 
+ This class emits ProgressEvent for every 100 lines it reads.
+ 
+<P>
+To create an instance of class vtkFixedWidthTextReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkFixedWidthTextReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkFixedWidthTextReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkFixedWidthTextReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkFixedWidthTextReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkFixedWidthTextReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code>
+ </LI>
+<LI>  <code>obj.SetFieldWidth (int )</code> -  Set/get the field width
+ </LI>
+<LI>  <code>int = obj.GetFieldWidth ()</code> -  Set/get the field width
+ </LI>
+<LI>  <code>obj.SetStripWhiteSpace (bool )</code> -  If set, this flag will cause the reader to strip whitespace from
+ the beginning and ending of each field.  Defaults to off.
+ </LI>
+<LI>  <code>bool = obj.GetStripWhiteSpace ()</code> -  If set, this flag will cause the reader to strip whitespace from
+ the beginning and ending of each field.  Defaults to off.
+ </LI>
+<LI>  <code>obj.StripWhiteSpaceOn ()</code> -  If set, this flag will cause the reader to strip whitespace from
+ the beginning and ending of each field.  Defaults to off.
+ </LI>
+<LI>  <code>obj.StripWhiteSpaceOff ()</code> -  If set, this flag will cause the reader to strip whitespace from
+ the beginning and ending of each field.  Defaults to off.
+ </LI>
+<LI>  <code>bool = obj.GetHaveHeaders ()</code> -  Set/get whether to treat the first line of the file as headers.
+ </LI>
+<LI>  <code>obj.SetHaveHeaders (bool )</code> -  Set/get whether to treat the first line of the file as headers.
+ </LI>
+<LI>  <code>obj.HaveHeadersOn ()</code> -  Set/get whether to treat the first line of the file as headers.
+ </LI>
+<LI>  <code>obj.HaveHeadersOff ()</code> -  Set/get whether to treat the first line of the file as headers.
+ </LI>
+</UL>
+</BODY>
+</HTML>

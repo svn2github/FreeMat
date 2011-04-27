@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInformationIntegerKey
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInformationIntegerKey
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkInformationIntegerKey is used to represent keys for integer values
+ in vtkInformation.
+<P>
+To create an instance of class vtkInformationIntegerKey, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInformationIntegerKey
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInformationIntegerKey has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInformationIntegerKey class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInformationIntegerKey = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInformationIntegerKey = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkInformationIntegerKey = obj.(string name, string location)</code>
+ </LI>
+<LI>  <code>~vtkInformationIntegerKey = obj.()</code>
+ </LI>
+<LI>  <code>obj.Set (vtkInformation info, int )</code> -  Get/Set the value associated with this key in the given
+ information object.
+ </LI>
+<LI>  <code>int = obj.Get (vtkInformation info)</code> -  Get/Set the value associated with this key in the given
+ information object.
+ </LI>
+<LI>  <code>obj.ShallowCopy (vtkInformation from, vtkInformation to)</code> -  Copy the entry associated with this key from one information
+ object to another.  If there is no entry in the first information
+ object for this key, the value is removed from the second.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoCamera
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoCamera
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ I wanted to hide the normal vtkCamera API
+ so I did not make this a subclass.  The camera is a helper object.
+ You can get a pointer to the camera, but it should be treated like
+ a const.
+<P>
+To create an instance of class vtkGeoCamera, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoCamera
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoCamera has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoCamera class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoCamera = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoCamera = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>double = obj. GetPosition ()</code> -  Get the world position without the origin shift.
+ </LI>
+<LI>  <code>obj.SetLongitude (double longitude)</code> -  Longitude is in degrees: (-180-&gt;180)
+   Relative to absolute coordinates.
+  Rotate Longitude  around z axis (earth axis),
+ </LI>
+<LI>  <code>double = obj.GetLongitude ()</code> -  Longitude is in degrees: (-180-&gt;180)
+   Relative to absolute coordinates.
+  Rotate Longitude  around z axis (earth axis),
+ </LI>
+<LI>  <code>obj.SetLatitude (double latitude)</code> -   Latitude is in degrees: (-90-&gt;90)
+    Relative to Longitude.
+  Rotate Latitude   around x axis by Latitude, 
+ </LI>
+<LI>  <code>double = obj.GetLatitude ()</code> -   Latitude is in degrees: (-90-&gt;90)
+    Relative to Longitude.
+  Rotate Latitude   around x axis by Latitude, 
+ </LI>
+<LI>  <code>obj.SetDistance (double Distance)</code> -  Distance is in Meters
+   Relative to Longitude and Latitude.
+   above sea level   ???? should we make this from center of earth ????
+                    ???? what about equatorial bulge ????
+ </LI>
+<LI>  <code>double = obj.GetDistance ()</code> -  Distance is in Meters
+   Relative to Longitude and Latitude.
+   above sea level   ???? should we make this from center of earth ????
+                    ???? what about equatorial bulge ????
+ </LI>
+<LI>  <code>obj.SetHeading (double heading)</code> -  Heading is in degrees:  (-180-&gt;180)
+   Relative to Logitude and Latitude.
+   0 is north. 
+   90 is east.       ???? what is the standard ????
+   180 is south.
+   -90 is west.  
+  Rotate Heading    around -y axis Center,     
+ </LI>
+<LI>  <code>double = obj.GetHeading ()</code> -  Heading is in degrees:  (-180-&gt;180)
+   Relative to Logitude and Latitude.
+   0 is north. 
+   90 is east.       ???? what is the standard ????
+   180 is south.
+   -90 is west.  
+  Rotate Heading    around -y axis Center,     
+ </LI>
+<LI>  <code>obj.SetTilt (double tilt)</code> -  Tilt is also know as pitch.
+ Tilt is in degrees: (0-&gt;90)
+   Relative to Longitude, Latitude, and Heading.
+ Rotate Tilt       around x axis,             
+ </LI>
+<LI>  <code>double = obj.GetTilt ()</code> -  Tilt is also know as pitch.
+ Tilt is in degrees: (0-&gt;90)
+   Relative to Longitude, Latitude, and Heading.
+ Rotate Tilt       around x axis,             
+ </LI>
+<LI>  <code>vtkCamera = obj.GetVTKCamera ()</code> -  This vtk camera is updated to match this geo cameras state.
+ It should be treated as a const and should not be modified.
+ </LI>
+<LI>  <code>obj.InitializeNodeAnalysis (int rendererSize[2])</code> -  We precompute some values to speed up update of the terrain.
+ Unfortunately, they have to be manually/explicitely updated
+ when the camera or renderer size changes.
+ </LI>
+<LI>  <code>double = obj.GetNodeCoverage (vtkGeoTerrainNode node)</code> -  This method estimates how much of the view is covered by the sphere.
+ Returns a value from 0 to 1.
+ </LI>
+<LI>  <code>bool = obj.GetLockHeading ()</code>
+ </LI>
+<LI>  <code>obj.SetLockHeading (bool )</code>
+ </LI>
+<LI>  <code>obj.LockHeadingOn ()</code>
+ </LI>
+<LI>  <code>obj.LockHeadingOff ()</code>
+ </LI>
+<LI>  <code>obj.SetOriginLatitude (double oLat)</code> -  This point is shifted to 0,0,0 to avoid openGL issues.
+ </LI>
+<LI>  <code>double = obj.GetOriginLatitude ()</code> -  This point is shifted to 0,0,0 to avoid openGL issues.
+ </LI>
+<LI>  <code>obj.SetOriginLongitude (double oLat)</code> -  This point is shifted to 0,0,0 to avoid openGL issues.
+ </LI>
+<LI>  <code>double = obj.GetOriginLongitude ()</code> -  This point is shifted to 0,0,0 to avoid openGL issues.
+ </LI>
+<LI>  <code>double = obj. GetOrigin ()</code> -  Get the rectilinear cooridinate location of the origin.
+ This is used to shift the terrain points.
+ </LI>
+<LI>  <code>obj.SetOrigin (double ox, double oy, double oz)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

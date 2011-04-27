@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoEdgeStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoEdgeStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkGeoEdgeStrategy produces arcs for each edge in the input graph.
+ This is useful for viewing lines on a sphere (e.g. the earth).
+ The arcs may "jump" above the sphere's surface using ExplodeFactor.
+<P>
+To create an instance of class vtkGeoEdgeStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoEdgeStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoEdgeStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoEdgeStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoEdgeStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoEdgeStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGlobeRadius (double )</code> -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+ </LI>
+<LI>  <code>double = obj.GetGlobeRadius ()</code> -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+ </LI>
+<LI>  <code>obj.SetExplodeFactor (double )</code> -  Factor on which to "explode" the arcs away from the surface.
+ A value of 0.0 keeps the values on the surface.
+ Values larger than 0.0 push the arcs away from the surface by a distance
+ proportional to the distance between the points.
+ The default is 0.2.
+ </LI>
+<LI>  <code>double = obj.GetExplodeFactor ()</code> -  Factor on which to "explode" the arcs away from the surface.
+ A value of 0.0 keeps the values on the surface.
+ Values larger than 0.0 push the arcs away from the surface by a distance
+ proportional to the distance between the points.
+ The default is 0.2.
+ </LI>
+<LI>  <code>obj.SetNumberOfSubdivisions (int )</code> -  The number of subdivisions in the arc.
+ The default is 20.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfSubdivisions ()</code> -  The number of subdivisions in the arc.
+ The default is 20.
+ </LI>
+<LI>  <code>obj.Layout ()</code> -  Perform the layout.
+ </LI>
+</UL>
+</BODY>
+</HTML>

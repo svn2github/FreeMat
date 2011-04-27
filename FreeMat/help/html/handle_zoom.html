@@ -47,15 +47,14 @@ command, and a zoom of 1.
 --&gt; zoom(1.0);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="zoom1.png">
 </DIV>
 <P>
-
+<P>
 At this point, resizing the window accomplishes nothing, as with a zoom factor 
 greater than zero, the size of the image is fixed.
-
+<P>
 If we change the zoom to another factor larger than 1, we enlarge the image by
 the specified factor (or shrink it, for zoom factors <code>0 &lt; x &lt; 1</code>.  Here is the
 same image zoomed out to 60%
@@ -64,24 +63,22 @@ same image zoomed out to 60%
 --&gt; zoom(0.6);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="zoom3.png">
 </DIV>
 <P>
-
+<P>
 Similarly, we can enlarge it to 130%
 <PRE>
 --&gt; image(Z)
 --&gt; zoom(1.3);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="zoom4.png">
 </DIV>
 <P>
-
+<P>
 The ``free'' zoom of <code>x = 0</code> results in the image being zoomed to fit the window
 without changing the aspect ratio.  The image is zoomed as much as possible in
 one direction.
@@ -91,12 +88,11 @@ one direction.
 --&gt; sizefig(200,400);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="zoom5.png">
 </DIV>
 <P>
-
+<P>
 The case of a negative zoom <code>x &lt; 0</code> results in the image being scaled arbitrarily.
 This allows the image aspect ratio to be changed, as in the following example.
 <PRE>
@@ -104,7 +100,6 @@ This allows the image aspect ratio to be changed, as in the following example.
 --&gt; zoom(-1);
 --&gt; sizefig(200,400);
 </PRE>
-<P>
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="zoom6.png">

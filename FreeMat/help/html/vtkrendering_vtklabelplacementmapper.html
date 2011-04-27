@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLabelPlacementMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLabelPlacementMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ To use this mapper, first send your data through vtkPointSetToLabelHierarchy,
+ which takes a set of points, associates special arrays to the points (label,
+ priority, etc.), and produces a prioritized spatial tree of labels.
+<P>
+ This mapper then takes that hierarchy (or hierarchies) as input, and every
+ frame will decide which labels and/or icons to place in order of priority,
+ and will render only those labels/icons. A label render strategy is used to
+ render the labels, and can use e.g. FreeType or Qt for rendering.
+<P>
+To create an instance of class vtkLabelPlacementMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLabelPlacementMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLabelPlacementMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLabelPlacementMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLabelPlacementMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLabelPlacementMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.RenderOverlay (vtkViewport viewport, vtkActor2D actor)</code> -  Draw non-overlapping labels to the screen.
+ </LI>
+<LI>  <code>obj.SetRenderStrategy (vtkLabelRenderStrategy s)</code> -  Set the label rendering strategy.
+ </LI>
+<LI>  <code>vtkLabelRenderStrategy = obj.GetRenderStrategy ()</code> -  Set the label rendering strategy.
+ </LI>
+<LI>  <code>obj.SetMaximumLabelFraction (double )</code> -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+ </LI>
+<LI>  <code>double = obj.GetMaximumLabelFractionMinValue ()</code> -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+ </LI>
+<LI>  <code>double = obj.GetMaximumLabelFractionMaxValue ()</code> -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+ </LI>
+<LI>  <code>double = obj.GetMaximumLabelFraction ()</code> -  The maximum fraction of the screen that the labels may cover.
+ Label placement stops when this fraction is reached.
+ </LI>
+<LI>  <code>obj.SetIteratorType (int )</code> -  The type of iterator used when traversing the labels.
+ May be vtkLabelHierarchy::FRUSTUM or vtkLabelHierarchy::FULL_SORT
+ </LI>
+<LI>  <code>int = obj.GetIteratorType ()</code> -  The type of iterator used when traversing the labels.
+ May be vtkLabelHierarchy::FRUSTUM or vtkLabelHierarchy::FULL_SORT
+ </LI>
+<LI>  <code>obj.SetUseUnicodeStrings (bool )</code> -  Set whether, or not, to use unicode strings.
+ </LI>
+<LI>  <code>bool = obj.GetUseUnicodeStrings ()</code> -  Set whether, or not, to use unicode strings.
+ </LI>
+<LI>  <code>obj.UseUnicodeStringsOn ()</code> -  Set whether, or not, to use unicode strings.
+ </LI>
+<LI>  <code>obj.UseUnicodeStringsOff ()</code> -  Set whether, or not, to use unicode strings.
+ </LI>
+<LI>  <code>bool = obj.GetPositionsAsNormals ()</code> -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+ </LI>
+<LI>  <code>obj.SetPositionsAsNormals (bool )</code> -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+ </LI>
+<LI>  <code>obj.PositionsAsNormalsOn ()</code> -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+ </LI>
+<LI>  <code>obj.PositionsAsNormalsOff ()</code> -  Use label anchor point coordinates as normal vectors and eliminate those
+ pointing away from the camera. Valid only when points are on a sphere
+ centered at the origin (such as a 3D geographic view). Off by default.
+ </LI>
+<LI>  <code>bool = obj.GetGeneratePerturbedLabelSpokes ()</code> -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+ </LI>
+<LI>  <code>obj.SetGeneratePerturbedLabelSpokes (bool )</code> -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+ </LI>
+<LI>  <code>obj.GeneratePerturbedLabelSpokesOn ()</code> -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+ </LI>
+<LI>  <code>obj.GeneratePerturbedLabelSpokesOff ()</code> -  Enable drawing spokes (lines) to anchor point coordinates that were perturbed
+ for being coincident with other anchor point coordinates.
+ </LI>
+<LI>  <code>bool = obj.GetUseDepthBuffer ()</code> -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+ </LI>
+<LI>  <code>obj.SetUseDepthBuffer (bool )</code> -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+ </LI>
+<LI>  <code>obj.UseDepthBufferOn ()</code> -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+ </LI>
+<LI>  <code>obj.UseDepthBufferOff ()</code> -  Use the depth buffer to test each label to see if it should not be displayed if
+ it would be occluded by other objects in the scene. Off by default.
+ </LI>
+<LI>  <code>obj.SetPlaceAllLabels (bool )</code> -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+ </LI>
+<LI>  <code>bool = obj.GetPlaceAllLabels ()</code> -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+ </LI>
+<LI>  <code>obj.PlaceAllLabelsOn ()</code> -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+ </LI>
+<LI>  <code>obj.PlaceAllLabelsOff ()</code> -  Tells the placer to place every label regardless of overlap.
+ Off by default.
+ </LI>
+<LI>  <code>obj.SetOutputTraversedBounds (bool )</code> -  Whether to render traversed bounds. Off by default.
+ </LI>
+<LI>  <code>bool = obj.GetOutputTraversedBounds ()</code> -  Whether to render traversed bounds. Off by default.
+ </LI>
+<LI>  <code>obj.OutputTraversedBoundsOn ()</code> -  Whether to render traversed bounds. Off by default.
+ </LI>
+<LI>  <code>obj.OutputTraversedBoundsOff ()</code> -  Whether to render traversed bounds. Off by default.
+ </LI>
+<LI>  <code>obj.SetShape (int )</code> -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+ </LI>
+<LI>  <code>int = obj.GetShapeMinValue ()</code> -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+ </LI>
+<LI>  <code>int = obj.GetShapeMaxValue ()</code> -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+ </LI>
+<LI>  <code>int = obj.GetShape ()</code> -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+ </LI>
+<LI>  <code>obj.SetShapeToNone ()</code> -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+ </LI>
+<LI>  <code>obj.SetShapeToRect ()</code> -  The shape of the label background, should be one of the
+ values in the LabelShape enumeration.
+ </LI>
+<LI>  <code>obj.SetShapeToRoundedRect ()</code> -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+ </LI>
+<LI>  <code>obj.SetStyle (int )</code> -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+ </LI>
+<LI>  <code>int = obj.GetStyleMinValue ()</code> -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+ </LI>
+<LI>  <code>int = obj.GetStyleMaxValue ()</code> -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+ </LI>
+<LI>  <code>int = obj.GetStyle ()</code> -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+ </LI>
+<LI>  <code>obj.SetStyleToFilled ()</code> -  The style of the label background shape, should be one of the
+ values in the LabelStyle enumeration.
+ </LI>
+<LI>  <code>obj.SetStyleToOutline ()</code> -  The size of the margin on the label background shape.
+ Default is 5.
+ </LI>
+<LI>  <code>obj.SetMargin (double )</code> -  The size of the margin on the label background shape.
+ Default is 5.
+ </LI>
+<LI>  <code>double = obj.GetMargin ()</code> -  The size of the margin on the label background shape.
+ Default is 5.
+ </LI>
+<LI>  <code>obj.SetBackgroundColor (double , double , double )</code> -  The color of the background shape.
+ </LI>
+<LI>  <code>obj.SetBackgroundColor (double  a[3])</code> -  The color of the background shape.
+ </LI>
+<LI>  <code>double = obj. GetBackgroundColor ()</code> -  The color of the background shape.
+ </LI>
+<LI>  <code>obj.SetBackgroundOpacity (double )</code> -  The opacity of the background shape.
+ </LI>
+<LI>  <code>double = obj.GetBackgroundOpacityMinValue ()</code> -  The opacity of the background shape.
+ </LI>
+<LI>  <code>double = obj.GetBackgroundOpacityMaxValue ()</code> -  The opacity of the background shape.
+ </LI>
+<LI>  <code>double = obj.GetBackgroundOpacity ()</code> -  The opacity of the background shape.
+ </LI>
+<LI>  <code>vtkCoordinate = obj.GetAnchorTransform ()</code> -  Get the transform for the anchor points.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDiskSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDiskSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkDiskSource creates a polygonal disk with a hole in the center. The 
+ disk has zero height. The user can specify the inner and outer radius
+ of the disk, and the radial and circumferential resolution of the 
+ polygonal representation. 
+<P>
+To create an instance of class vtkDiskSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDiskSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDiskSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDiskSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDiskSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDiskSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInnerRadius (double )</code> -  Specify inner radius of hole in disc.
+ </LI>
+<LI>  <code>double = obj.GetInnerRadiusMinValue ()</code> -  Specify inner radius of hole in disc.
+ </LI>
+<LI>  <code>double = obj.GetInnerRadiusMaxValue ()</code> -  Specify inner radius of hole in disc.
+ </LI>
+<LI>  <code>double = obj.GetInnerRadius ()</code> -  Specify inner radius of hole in disc.
+ </LI>
+<LI>  <code>obj.SetOuterRadius (double )</code> -  Specify outer radius of disc.
+ </LI>
+<LI>  <code>double = obj.GetOuterRadiusMinValue ()</code> -  Specify outer radius of disc.
+ </LI>
+<LI>  <code>double = obj.GetOuterRadiusMaxValue ()</code> -  Specify outer radius of disc.
+ </LI>
+<LI>  <code>double = obj.GetOuterRadius ()</code> -  Specify outer radius of disc.
+ </LI>
+<LI>  <code>obj.SetRadialResolution (int )</code> -  Set the number of points in radius direction.
+ </LI>
+<LI>  <code>int = obj.GetRadialResolutionMinValue ()</code> -  Set the number of points in radius direction.
+ </LI>
+<LI>  <code>int = obj.GetRadialResolutionMaxValue ()</code> -  Set the number of points in radius direction.
+ </LI>
+<LI>  <code>int = obj.GetRadialResolution ()</code> -  Set the number of points in radius direction.
+ </LI>
+<LI>  <code>obj.SetCircumferentialResolution (int )</code> -  Set the number of points in circumferential direction.
+ </LI>
+<LI>  <code>int = obj.GetCircumferentialResolutionMinValue ()</code> -  Set the number of points in circumferential direction.
+ </LI>
+<LI>  <code>int = obj.GetCircumferentialResolutionMaxValue ()</code> -  Set the number of points in circumferential direction.
+ </LI>
+<LI>  <code>int = obj.GetCircumferentialResolution ()</code> -  Set the number of points in circumferential direction.
+ </LI>
+</UL>
+</BODY>
+</HTML>

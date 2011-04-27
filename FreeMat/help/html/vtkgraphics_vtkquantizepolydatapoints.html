@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkQuantizePolyDataPoints
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkQuantizePolyDataPoints
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkQuantizePolyDataPoints is a subclass of vtkCleanPolyData and
+ inherits the functionality of vtkCleanPolyData with the addition that
+ it quantizes the point coordinates before inserting into the point list.
+ The user should set QFactor to a positive value (0.25 by default) and all
+ {x,y,z} coordinates will be quantized to that grain size.
+<P>
+ A tolerance of zero is expected, though positive values may be used, the
+ quantization will take place before the tolerance is applied.
+<P>
+<P>
+To create an instance of class vtkQuantizePolyDataPoints, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkQuantizePolyDataPoints
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkQuantizePolyDataPoints has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkQuantizePolyDataPoints class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkQuantizePolyDataPoints = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkQuantizePolyDataPoints = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetQFactor (double )</code> -  Specify quantization grain size. Default is 0.25
+ </LI>
+<LI>  <code>double = obj.GetQFactorMinValue ()</code> -  Specify quantization grain size. Default is 0.25
+ </LI>
+<LI>  <code>double = obj.GetQFactorMaxValue ()</code> -  Specify quantization grain size. Default is 0.25
+ </LI>
+<LI>  <code>double = obj.GetQFactor ()</code> -  Specify quantization grain size. Default is 0.25
+ </LI>
+<LI>  <code>obj.OperateOnPoint (double in[3], double out[3])</code> -  Perform quantization on a point
+ </LI>
+<LI>  <code>obj.OperateOnBounds (double in[6], double out[6])</code> -  Perform quantization on bounds
+ </LI>
+</UL>
+</BODY>
+</HTML>

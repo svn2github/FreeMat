@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMedicalImageReader2
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMedicalImageReader2
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkMedicalImageReader2 is a parent class for medical image readers.
+ It provides a place to store patient information that may be stored
+ in the image header.
+<P>
+To create an instance of class vtkMedicalImageReader2, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMedicalImageReader2
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMedicalImageReader2 has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMedicalImageReader2 class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMedicalImageReader2 = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMedicalImageReader2 = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkMedicalImageProperties = obj.GetMedicalImageProperties ()</code> -  Get the medical image properties object
+ </LI>
+<LI>  <code>obj.SetPatientName (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetPatientName ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>obj.SetPatientID (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetPatientID ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>obj.SetDate (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetDate ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>obj.SetSeries (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetSeries ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>obj.SetStudy (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetStudy ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>obj.SetImageNumber (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetImageNumber ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>obj.SetModality (string )</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+<LI>  <code>string = obj.GetModality ()</code> -  For backward compatibility, propagate calls to the MedicalImageProperties
+ object.
+ </LI>
+</UL>
+</BODY>
+</HTML>

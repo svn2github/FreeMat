@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDistributedStreamTracer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDistributedStreamTracer
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ This filter integrates streamlines on a distributed dataset. It is
+ essentially a serial algorithm: only one process is active at one
+ time and it is not more efficient than a single process integration.
+ It is useful when the data is too large to be on one process and
+ has to be kept distributed.
+<P>
+To create an instance of class vtkDistributedStreamTracer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDistributedStreamTracer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDistributedStreamTracer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDistributedStreamTracer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDistributedStreamTracer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDistributedStreamTracer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

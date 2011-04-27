@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTimeSourceExample
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTimeSourceExample
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ Creates a small easily understood time varying data set for testing.
+ The output is a vtkUntructuredGrid in which the point and cell values vary
+ over time in a sin wave. The analytic ivar controls whether the output 
+ corresponds to a step function over time or is continuous.
+ The X and Y Amplitude ivars make the output move in the X and Y directions 
+ over time. The Growing ivar makes the number of cells in the output grow 
+ and then shrink over time.
+<P>
+To create an instance of class vtkTimeSourceExample, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTimeSourceExample
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTimeSourceExample has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTimeSourceExample class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTimeSourceExample = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTimeSourceExample = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetAnalytic (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetAnalyticMinValue ()</code>
+ </LI>
+<LI>  <code>int = obj.GetAnalyticMaxValue ()</code>
+ </LI>
+<LI>  <code>int = obj.GetAnalytic ()</code>
+ </LI>
+<LI>  <code>obj.AnalyticOn ()</code>
+ </LI>
+<LI>  <code>obj.AnalyticOff ()</code>
+ </LI>
+<LI>  <code>obj.SetXAmplitude (double )</code>
+ </LI>
+<LI>  <code>double = obj.GetXAmplitude ()</code>
+ </LI>
+<LI>  <code>obj.SetYAmplitude (double )</code>
+ </LI>
+<LI>  <code>double = obj.GetYAmplitude ()</code>
+ </LI>
+<LI>  <code>obj.SetGrowing (int )</code>
+ </LI>
+<LI>  <code>int = obj.GetGrowingMinValue ()</code>
+ </LI>
+<LI>  <code>int = obj.GetGrowingMaxValue ()</code>
+ </LI>
+<LI>  <code>int = obj.GetGrowing ()</code>
+ </LI>
+<LI>  <code>obj.GrowingOn ()</code>
+ </LI>
+<LI>  <code>obj.GrowingOff ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

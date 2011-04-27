@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHeap
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHeap
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ This class is a replacement for malloc/free and new/delete for software
+ that has inherent memory leak or performance problems. For example,
+ external software such as the PLY library (vtkPLY) and VRML importer
+ (vtkVRMLImporter) are often written with lots of malloc() calls but
+ without the corresponding free() invocations. The class
+ vtkOrderedTriangulator may create and delete millions of new/delete calls.
+ This class allows the overloading of the C++ new operator (or other memory
+ allocation requests) by using the method AllocateMemory(). Memory is
+ deleted with an invocation of CleanAll() (which deletes ALL memory; any
+ given memory allocation cannot be deleted). Note: a block size can be used
+ to control the size of each memory allocation. Requests for memory are
+ fulfilled from the block until the block runs out, then a new block is
+ created.
+<P>
+<P>
+To create an instance of class vtkHeap, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHeap
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHeap has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHeap class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHeap = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHeap = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetNumberOfBlocks ()</code> -  Get the number of allocations thus far.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfAllocations ()</code> -  Get the number of allocations thus far.
+ </LI>
+<LI>  <code>obj.Reset ()</code> -  This methods resets the current allocation location
+ back to the beginning of the heap. This allows
+ reuse of previously allocated memory which may be
+ beneficial to performance in many cases.
+ </LI>
+<LI>  <code>string = obj.StringDup (string str)</code> -  Convenience method performs string duplication.
+ </LI>
+</UL>
+</BODY>
+</HTML>

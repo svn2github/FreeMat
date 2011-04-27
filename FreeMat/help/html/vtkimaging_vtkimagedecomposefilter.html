@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageDecomposeFilter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageDecomposeFilter
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ This superclass molds the vtkImageIterateFilter superclass so
+ it iterates over the axes.  The filter uses dimensionality to 
+ determine how many axes to execute (starting from x).  
+ The filter also provides convenience methods for permuting information
+ retrieved from input, output and vtkImageData.
+<P>
+To create an instance of class vtkImageDecomposeFilter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageDecomposeFilter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageDecomposeFilter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageDecomposeFilter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Construct an instance of vtkImageDecomposeFilter filter with default
+ dimensionality 3.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Construct an instance of vtkImageDecomposeFilter filter with default
+ dimensionality 3.
+ </LI>
+<LI>  <code>vtkImageDecomposeFilter = obj.NewInstance ()</code> -  Construct an instance of vtkImageDecomposeFilter filter with default
+ dimensionality 3.
+ </LI>
+<LI>  <code>vtkImageDecomposeFilter = obj.SafeDownCast (vtkObject o)</code> -  Construct an instance of vtkImageDecomposeFilter filter with default
+ dimensionality 3.
+ </LI>
+<LI>  <code>obj.SetDimensionality (int dim)</code> -  Dimensionality is the number of axes which are considered during
+ execution. To process images dimensionality would be set to 2.
+ </LI>
+<LI>  <code>int = obj.GetDimensionality ()</code> -  Dimensionality is the number of axes which are considered during
+ execution. To process images dimensionality would be set to 2.
+ </LI>
+</UL>
+</BODY>
+</HTML>

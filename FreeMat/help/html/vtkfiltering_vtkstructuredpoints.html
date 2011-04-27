@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkStructuredPoints
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkStructuredPoints
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ StructuredPoints is a subclass of ImageData that requires the data extent
+ to exactly match the update extent. Normall image data allows that the
+ data extent may be larger than the update extent.
+ StructuredPoints also defines the origin differently that vtkImageData.
+ For structured points the origin is the location of first point. 
+ Whereas images define the origin as the location of point 0, 0, 0.
+ Image Origin is stored in ivar, and structured points
+ have special methods for setting/getting the origin/extents.
+<P>
+To create an instance of class vtkStructuredPoints, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkStructuredPoints
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkStructuredPoints has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkStructuredPoints class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkStructuredPoints = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkStructuredPoints = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDataObjectType ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

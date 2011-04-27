@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDijkstraImageGeodesicPath
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDijkstraImageGeodesicPath
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ Takes as input a polyline and an image representing a 2D cost function
+ and performs a single source shortest path calculation. 
+ Dijkstra's algorithm is used. The implementation is 
+ similar to the one described in Introduction to Algorithms (Second Edition)
+ by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and 
+ Cliff Stein, published by MIT Press and McGraw-Hill. Some minor 
+ enhancement are added though. All vertices are not pushed on the heap
+ at start, instead a front set is maintained. The heap is implemented as 
+ a binary heap. The output of the filter is a set of lines describing 
+ the shortest path from StartVertex to EndVertex.  See parent class
+ vtkDijkstraGraphGeodesicPath for the implementation.
+<P>
+<P>
+To create an instance of class vtkDijkstraImageGeodesicPath, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDijkstraImageGeodesicPath
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDijkstraImageGeodesicPath has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDijkstraImageGeodesicPath class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methids for printing and determining type information.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methids for printing and determining type information.
+ </LI>
+<LI>  <code>vtkDijkstraImageGeodesicPath = obj.NewInstance ()</code> -  Standard methids for printing and determining type information.
+ </LI>
+<LI>  <code>vtkDijkstraImageGeodesicPath = obj.SafeDownCast (vtkObject o)</code> -  Standard methids for printing and determining type information.
+ </LI>
+<LI>  <code>obj.SetInput (vtkDataObject )</code> -  Specify the image object which is used as a cost function.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetInputAsImageData ()</code> -  Specify the image object which is used as a cost function.
+ </LI>
+<LI>  <code>obj.SetImageWeight (double )</code> -  Image cost weight.
+ </LI>
+<LI>  <code>double = obj.GetImageWeight ()</code> -  Image cost weight.
+ </LI>
+<LI>  <code>obj.SetEdgeLengthWeight (double )</code> -  Edge length cost weight.
+ </LI>
+<LI>  <code>double = obj.GetEdgeLengthWeight ()</code> -  Edge length cost weight.
+ </LI>
+<LI>  <code>obj.SetCurvatureWeight (double )</code> -  Curvature cost weight.
+ </LI>
+<LI>  <code>double = obj.GetCurvatureWeightMinValue ()</code> -  Curvature cost weight.
+ </LI>
+<LI>  <code>double = obj.GetCurvatureWeightMaxValue ()</code> -  Curvature cost weight.
+ </LI>
+<LI>  <code>double = obj.GetCurvatureWeight ()</code> -  Curvature cost weight.
+ </LI>
+</UL>
+</BODY>
+</HTML>

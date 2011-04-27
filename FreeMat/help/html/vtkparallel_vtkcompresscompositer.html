@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCompressCompositer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCompressCompositer
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkCompressCompositer operates in multiple processes.  Each compositer has 
+ a render window.  They use vtkMultiProcessController to communicate 
+ the color and depth buffer to process 0's render window.
+ It will not handle transparency.  Compositing is run length encoding
+ of background pixels.
+<P>
+ SECTION See Also
+ vtkCompositeManager.
+<P>
+To create an instance of class vtkCompressCompositer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCompressCompositer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCompressCompositer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCompressCompositer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCompressCompositer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCompressCompositer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.CompositeBuffer (vtkDataArray pBuf, vtkFloatArray zBuf, vtkDataArray pTmp, vtkFloatArray zTmp)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

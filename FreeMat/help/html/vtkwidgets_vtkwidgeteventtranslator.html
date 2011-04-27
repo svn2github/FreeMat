@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkWidgetEventTranslator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkWidgetEventTranslator
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ vtkWidgetEventTranslator maps VTK events (defined on vtkCommand) into
+ widget events (defined in vtkWidgetEvent.h). This class is typically used
+ in combination with vtkWidgetCallbackMapper, which is responsible for
+ translating widget events into method callbacks, and then invoking the 
+ callbacks.
+<P>
+ This class can be used to define different mappings of VTK events into
+ the widget events. Thus widgets can be reconfigured to use different
+ event bindings.
+<P>
+To create an instance of class vtkWidgetEventTranslator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkWidgetEventTranslator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkWidgetEventTranslator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkWidgetEventTranslator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard macros.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard macros.
+ </LI>
+<LI>  <code>vtkWidgetEventTranslator = obj.NewInstance ()</code> -  Standard macros.
+ </LI>
+<LI>  <code>vtkWidgetEventTranslator = obj.SafeDownCast (vtkObject o)</code> -  Standard macros.
+ </LI>
+<LI>  <code>obj.SetTranslation (long VTKEvent, long widgetEvent)</code> -  Use these methods to create the translation from a VTK event to a widget
+ event. Specifying vtkWidgetEvent::NoEvent or an empty
+ string for the (toEvent) erases the mapping for the event.
+ </LI>
+<LI>  <code>obj.SetTranslation (string VTKEvent, string widgetEvent)</code> -  Use these methods to create the translation from a VTK event to a widget
+ event. Specifying vtkWidgetEvent::NoEvent or an empty
+ string for the (toEvent) erases the mapping for the event.
+ </LI>
+<LI>  <code>obj.SetTranslation (long VTKEvent, int modifier, char keyCode, int repeatCount, string keySym, long widgetEvent)</code> -  Use these methods to create the translation from a VTK event to a widget
+ event. Specifying vtkWidgetEvent::NoEvent or an empty
+ string for the (toEvent) erases the mapping for the event.
+ </LI>
+<LI>  <code>obj.SetTranslation (vtkEvent VTKevent, long widgetEvent)</code> -  Use these methods to create the translation from a VTK event to a widget
+ event. Specifying vtkWidgetEvent::NoEvent or an empty
+ string for the (toEvent) erases the mapping for the event.
+ </LI>
+<LI>  <code>long = obj.GetTranslation (long VTKEvent)</code> -  Translate a VTK event into a widget event. If no event mapping is found,
+ then the methods return vtkWidgetEvent::NoEvent or a NULL string.
+ </LI>
+<LI>  <code>string = obj.GetTranslation (string VTKEvent)</code> -  Translate a VTK event into a widget event. If no event mapping is found,
+ then the methods return vtkWidgetEvent::NoEvent or a NULL string.
+ </LI>
+<LI>  <code>long = obj.GetTranslation (long VTKEvent, int modifier, char keyCode, int repeatCount, string keySym)</code> -  Translate a VTK event into a widget event. If no event mapping is found,
+ then the methods return vtkWidgetEvent::NoEvent or a NULL string.
+ </LI>
+<LI>  <code>long = obj.GetTranslation (vtkEvent VTKEvent)</code> -  Translate a VTK event into a widget event. If no event mapping is found,
+ then the methods return vtkWidgetEvent::NoEvent or a NULL string.
+ </LI>
+<LI>  <code>int = obj.RemoveTranslation (long VTKEvent, int modifier, char keyCode, int repeatCount, string keySym)</code> -  Remove translations for a binding. 
+ Returns the number of translations removed.
+ </LI>
+<LI>  <code>int = obj.RemoveTranslation (vtkEvent e)</code> -  Remove translations for a binding. 
+ Returns the number of translations removed.
+ </LI>
+<LI>  <code>int = obj.RemoveTranslation (long VTKEvent)</code> -  Remove translations for a binding. 
+ Returns the number of translations removed.
+ </LI>
+<LI>  <code>obj.ClearEvents ()</code> -  Clear all events from the translator (i.e., no events will be
+ translated).
+ </LI>
+</UL>
+</BODY>
+</HTML>

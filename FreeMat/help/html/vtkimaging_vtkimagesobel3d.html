@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageSobel3D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageSobel3D
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageSobel3D computes a vector field from a scalar field by using
+ Sobel functions.  The number of vector components is 3 because
+ the input is a volume.  Output is always doubles.  A little creative 
+ liberty was used to extend the 2D sobel kernels into 3D.
+<P>
+To create an instance of class vtkImageSobel3D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageSobel3D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageSobel3D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageSobel3D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageSobel3D = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageSobel3D = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

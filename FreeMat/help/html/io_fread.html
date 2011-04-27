@@ -80,7 +80,6 @@ First, we create an array of <code>512 x 512</code> Gaussian-distributed <code>f
 --&gt; fwrite(fp,A);
 --&gt; fclose(fp);
 </PRE>
-<P>
 Read as many floats as possible into a row vector
 <PRE>
 --&gt; fp = fopen('test.dat','r');
@@ -88,9 +87,8 @@ Read as many floats as possible into a row vector
 --&gt; fclose(fp);
 --&gt; who x
   Variable Name       Type   Flags             Size
-              x    double                    [1 262144]
+              x    double                    [1x262144]
 </PRE>
-<P>
 Note that <code>x</code> is a <code>double</code> array.  This behavior is new to FreeMat 4.
 Read the same floats into a 2-D float array.
 <PRE>
@@ -99,9 +97,8 @@ Read the same floats into a 2-D float array.
 --&gt; fclose(fp);
 --&gt; who x
   Variable Name       Type   Flags             Size
-              x    double                    [512 512]
+              x    double                    [512x512]
 </PRE>
-<P>
 To read them as a single precision float array, we can use the
 following form:
 <PRE>
@@ -110,9 +107,8 @@ following form:
 --&gt; fclose(fp);
 --&gt; who x
   Variable Name       Type   Flags             Size
-              x    single                    [512 512]
+              x    single                    [512x512]
 </PRE>
-<P>
 
 </BODY>
 </HTML>

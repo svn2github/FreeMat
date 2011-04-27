@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCenteredSliderRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCenteredSliderRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ This class is used to represent and render a vtkCenteredSliderWidget. To use this
+ class, you must at a minimum specify the end points of the
+ slider. Optional instance variable can be used to modify the appearance of
+ the widget.
+<P>
+<P>
+To create an instance of class vtkCenteredSliderRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCenteredSliderRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCenteredSliderRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCenteredSliderRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkCenteredSliderRepresentation = obj.NewInstance ()</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkCenteredSliderRepresentation = obj.SafeDownCast (vtkObject o)</code> -  Standard methods for the class.
+ </LI>
+<LI>  <code>vtkCoordinate = obj.GetPoint1Coordinate ()</code> -  Position the first end point of the slider. Note that this point is an
+ instance of vtkCoordinate, meaning that Point 1 can be specified in a
+ variety of coordinate systems, and can even be relative to another
+ point. To set the point, you'll want to get the Point1Coordinate and
+ then invoke the necessary methods to put it into the correct coordinate
+ system and set the correct initial value.
+ </LI>
+<LI>  <code>vtkCoordinate = obj.GetPoint2Coordinate ()</code> -  Position the second end point of the slider. Note that this point is an
+ instance of vtkCoordinate, meaning that Point 1 can be specified in a
+ variety of coordinate systems, and can even be relative to another
+ point. To set the point, you'll want to get the Point2Coordinate and
+ then invoke the necessary methods to put it into the correct coordinate
+ system and set the correct initial value.
+ </LI>
+<LI>  <code>obj.SetTitleText (string )</code> -  Specify the label text for this widget. If the value is not set, or set
+ to the empty string "", then the label text is not displayed.
+ </LI>
+<LI>  <code>string = obj.GetTitleText ()</code> -  Specify the label text for this widget. If the value is not set, or set
+ to the empty string "", then the label text is not displayed.
+ </LI>
+<LI>  <code>vtkProperty2D = obj.GetTubeProperty ()</code> -  Get the properties for the tube and slider
+ </LI>
+<LI>  <code>vtkProperty2D = obj.GetSliderProperty ()</code> -  Get the properties for the tube and slider
+ </LI>
+<LI>  <code>vtkProperty2D = obj.GetSelectedProperty ()</code> -  Get the selection property. This property is used to modify the
+ appearance of selected objects (e.g., the slider).
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLabelProperty ()</code> -  Set/Get the properties for the label and title text.
+ </LI>
+<LI>  <code>obj.PlaceWidget (double bounds[6])</code> -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+ </LI>
+<LI>  <code>obj.StartWidgetInteraction (double eventPos[2])</code> -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+ </LI>
+<LI>  <code>int = obj.ComputeInteractionState (int X, int Y, int modify)</code> -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+ </LI>
+<LI>  <code>obj.WidgetInteraction (double eventPos[2])</code> -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+ </LI>
+<LI>  <code>obj.Highlight (int )</code> -  Methods to interface with the vtkSliderWidget. The PlaceWidget() method
+ assumes that the parameter bounds[6] specifies the location in display
+ space where the widget should be placed.
+ </LI>
+<LI>  <code>obj.GetActors (vtkPropCollection )</code>
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code>
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport )</code>
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport )</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

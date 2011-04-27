@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkXMLReader uses vtkXMLDataParser to parse a VTK XML input file.
+ Concrete subclasses then traverse the parsed file structure and
+ extract data.
+<P>
+To create an instance of class vtkXMLReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Get/Set the name of the input file.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Get/Set the name of the input file.
+ </LI>
+<LI>  <code>int = obj.CanReadFile (string name)</code> -  Test whether the file with the given name can be read by this
+ reader.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetOutputAsDataSet ()</code> -  Get the output as a vtkDataSet pointer.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetOutputAsDataSet (int index)</code> -  Get the output as a vtkDataSet pointer.
+ </LI>
+<LI>  <code>vtkDataArraySelection = obj.GetPointDataArraySelection ()</code> -  Get the data array selection tables used to configure which data
+ arrays are loaded by the reader.
+ </LI>
+<LI>  <code>vtkDataArraySelection = obj.GetCellDataArraySelection ()</code> -  Get the data array selection tables used to configure which data
+ arrays are loaded by the reader.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfPointArrays ()</code> -  Get the number of point or cell arrays available in the input.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfCellArrays ()</code> -  Get the number of point or cell arrays available in the input.
+ </LI>
+<LI>  <code>string = obj.GetPointArrayName (int index)</code> -  Get the name of the point or cell array with the given index in
+ the input.
+ </LI>
+<LI>  <code>string = obj.GetCellArrayName (int index)</code> -  Get the name of the point or cell array with the given index in
+ the input.
+ </LI>
+<LI>  <code>int = obj.GetPointArrayStatus (string name)</code> -  Get/Set whether the point or cell array with the given name is to
+ be read.
+ </LI>
+<LI>  <code>int = obj.GetCellArrayStatus (string name)</code> -  Get/Set whether the point or cell array with the given name is to
+ be read.
+ </LI>
+<LI>  <code>obj.SetPointArrayStatus (string name, int status)</code> -  Get/Set whether the point or cell array with the given name is to
+ be read.
+ </LI>
+<LI>  <code>obj.SetCellArrayStatus (string name, int status)</code> -  Get/Set whether the point or cell array with the given name is to
+ be read.
+ </LI>
+<LI>  <code>obj.CopyOutputInformation (vtkInformation , int )</code> -  Which TimeStep to read.    
+ </LI>
+<LI>  <code>obj.SetTimeStep (int )</code> -  Which TimeStep to read.    
+ </LI>
+<LI>  <code>int = obj.GetTimeStep ()</code> -  Which TimeStep to read.    
+ </LI>
+<LI>  <code>int = obj.GetNumberOfTimeSteps ()</code>
+ </LI>
+<LI>  <code>int = obj. GetTimeStepRange ()</code> -  Which TimeStepRange to read
+ </LI>
+<LI>  <code>obj.SetTimeStepRange (int , int )</code> -  Which TimeStepRange to read
+ </LI>
+<LI>  <code>obj.SetTimeStepRange (int  a[2])</code> -  Which TimeStepRange to read
+ </LI>
+</UL>
+</BODY>
+</HTML>

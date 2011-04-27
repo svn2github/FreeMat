@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolumetricPass
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolumetricPass
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkVolumetricPass renders the volumetric geometry of all the props that
+ have the keys contained in vtkRenderState.
+<P>
+ This pass expects an initialized depth buffer and color buffer.
+ Initialized buffers means they have been cleared with farest z-value and
+ background color/gradient/transparent color.
+ 
+<P>
+To create an instance of class vtkVolumetricPass, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolumetricPass
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolumetricPass has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolumetricPass class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolumetricPass = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolumetricPass = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

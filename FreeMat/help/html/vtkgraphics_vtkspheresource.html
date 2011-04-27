@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSphereSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSphereSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkSphereSource creates a sphere (represented by polygons) of specified
+ radius centered at the origin. The resolution (polygonal discretization)
+ in both the latitude (phi) and longitude (theta) directions can be
+ specified. It also is possible to create partial spheres by specifying
+ maximum phi and theta angles. By default, the surface tessellation of
+ the sphere uses triangles; however you can set LatLongTessellation to
+ produce a tessellation using quadrilaterals.
+<P>
+To create an instance of class vtkSphereSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSphereSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSphereSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSphereSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSphereSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSphereSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetRadius (double )</code> -  Set radius of sphere. Default is .5.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMinValue ()</code> -  Set radius of sphere. Default is .5.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMaxValue ()</code> -  Set radius of sphere. Default is .5.
+ </LI>
+<LI>  <code>double = obj.GetRadius ()</code> -  Set radius of sphere. Default is .5.
+ </LI>
+<LI>  <code>obj.SetCenter (double , double , double )</code> -  Set the center of the sphere. Default is 0,0,0.
+ </LI>
+<LI>  <code>obj.SetCenter (double  a[3])</code> -  Set the center of the sphere. Default is 0,0,0.
+ </LI>
+<LI>  <code>double = obj. GetCenter ()</code> -  Set the center of the sphere. Default is 0,0,0.
+ </LI>
+<LI>  <code>obj.SetThetaResolution (int )</code> -  Set the number of points in the longitude direction (ranging from
+ StartTheta to EndTheta).
+ </LI>
+<LI>  <code>int = obj.GetThetaResolutionMinValue ()</code> -  Set the number of points in the longitude direction (ranging from
+ StartTheta to EndTheta).
+ </LI>
+<LI>  <code>int = obj.GetThetaResolutionMaxValue ()</code> -  Set the number of points in the longitude direction (ranging from
+ StartTheta to EndTheta).
+ </LI>
+<LI>  <code>int = obj.GetThetaResolution ()</code> -  Set the number of points in the longitude direction (ranging from
+ StartTheta to EndTheta).
+ </LI>
+<LI>  <code>obj.SetPhiResolution (int )</code> -  Set the number of points in the latitude direction (ranging
+ from StartPhi to EndPhi).
+ </LI>
+<LI>  <code>int = obj.GetPhiResolutionMinValue ()</code> -  Set the number of points in the latitude direction (ranging
+ from StartPhi to EndPhi).
+ </LI>
+<LI>  <code>int = obj.GetPhiResolutionMaxValue ()</code> -  Set the number of points in the latitude direction (ranging
+ from StartPhi to EndPhi).
+ </LI>
+<LI>  <code>int = obj.GetPhiResolution ()</code> -  Set the number of points in the latitude direction (ranging
+ from StartPhi to EndPhi).
+ </LI>
+<LI>  <code>obj.SetStartTheta (double )</code> -  Set the starting longitude angle. By default StartTheta=0 degrees.
+ </LI>
+<LI>  <code>double = obj.GetStartThetaMinValue ()</code> -  Set the starting longitude angle. By default StartTheta=0 degrees.
+ </LI>
+<LI>  <code>double = obj.GetStartThetaMaxValue ()</code> -  Set the starting longitude angle. By default StartTheta=0 degrees.
+ </LI>
+<LI>  <code>double = obj.GetStartTheta ()</code> -  Set the starting longitude angle. By default StartTheta=0 degrees.
+ </LI>
+<LI>  <code>obj.SetEndTheta (double )</code> -  Set the ending longitude angle. By default EndTheta=360 degrees.
+ </LI>
+<LI>  <code>double = obj.GetEndThetaMinValue ()</code> -  Set the ending longitude angle. By default EndTheta=360 degrees.
+ </LI>
+<LI>  <code>double = obj.GetEndThetaMaxValue ()</code> -  Set the ending longitude angle. By default EndTheta=360 degrees.
+ </LI>
+<LI>  <code>double = obj.GetEndTheta ()</code> -  Set the ending longitude angle. By default EndTheta=360 degrees.
+ </LI>
+<LI>  <code>obj.SetStartPhi (double )</code> -  Set the starting latitude angle (0 is at north pole). By default
+ StartPhi=0 degrees.
+ </LI>
+<LI>  <code>double = obj.GetStartPhiMinValue ()</code> -  Set the starting latitude angle (0 is at north pole). By default
+ StartPhi=0 degrees.
+ </LI>
+<LI>  <code>double = obj.GetStartPhiMaxValue ()</code> -  Set the starting latitude angle (0 is at north pole). By default
+ StartPhi=0 degrees.
+ </LI>
+<LI>  <code>double = obj.GetStartPhi ()</code> -  Set the starting latitude angle (0 is at north pole). By default
+ StartPhi=0 degrees.
+ </LI>
+<LI>  <code>obj.SetEndPhi (double )</code> -  Set the ending latitude angle. By default EndPhi=180 degrees.
+ </LI>
+<LI>  <code>double = obj.GetEndPhiMinValue ()</code> -  Set the ending latitude angle. By default EndPhi=180 degrees.
+ </LI>
+<LI>  <code>double = obj.GetEndPhiMaxValue ()</code> -  Set the ending latitude angle. By default EndPhi=180 degrees.
+ </LI>
+<LI>  <code>double = obj.GetEndPhi ()</code> -  Set the ending latitude angle. By default EndPhi=180 degrees.
+ </LI>
+<LI>  <code>obj.SetLatLongTessellation (int )</code> -  Cause the sphere to be tessellated with edges along the latitude
+ and longitude lines. If off, triangles are generated at non-polar
+ regions, which results in edges that are not parallel to latitude and
+ longitude lines. If on, quadrilaterals are generated everywhere
+ except at the poles. This can be useful for generating a wireframe
+ sphere with natural latitude and longitude lines.
+ </LI>
+<LI>  <code>int = obj.GetLatLongTessellation ()</code> -  Cause the sphere to be tessellated with edges along the latitude
+ and longitude lines. If off, triangles are generated at non-polar
+ regions, which results in edges that are not parallel to latitude and
+ longitude lines. If on, quadrilaterals are generated everywhere
+ except at the poles. This can be useful for generating a wireframe
+ sphere with natural latitude and longitude lines.
+ </LI>
+<LI>  <code>obj.LatLongTessellationOn ()</code> -  Cause the sphere to be tessellated with edges along the latitude
+ and longitude lines. If off, triangles are generated at non-polar
+ regions, which results in edges that are not parallel to latitude and
+ longitude lines. If on, quadrilaterals are generated everywhere
+ except at the poles. This can be useful for generating a wireframe
+ sphere with natural latitude and longitude lines.
+ </LI>
+<LI>  <code>obj.LatLongTessellationOff ()</code> -  Cause the sphere to be tessellated with edges along the latitude
+ and longitude lines. If off, triangles are generated at non-polar
+ regions, which results in edges that are not parallel to latitude and
+ longitude lines. If on, quadrilaterals are generated everywhere
+ except at the poles. This can be useful for generating a wireframe
+ sphere with natural latitude and longitude lines.
+ </LI>
+</UL>
+</BODY>
+</HTML>

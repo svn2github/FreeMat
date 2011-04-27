@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLightActor
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLightActor
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkLightActor is a composite actor used to represent a spotlight. The cone
+ angle is equal to the spotlight angle, the cone apex is at the position of
+ the light, the direction of the light goes from the cone apex to the center
+ of the base of the cone. The square frustum position is the light position,
+ the frustum focal point is in the direction of the light direction. The
+ frustum vertical view angle (aperture) (this is also the horizontal view
+ angle as the frustum is square) is equal to twice the cone angle. The
+ clipping range of the frustum is arbitrary set by the user
+ (initially at 0.5,11.0).
+<P>
+To create an instance of class vtkLightActor, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLightActor
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLightActor has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLightActor class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLightActor = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLightActor = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLight (vtkLight light)</code> -  The spotlight to represent. Initial value is NULL.
+ </LI>
+<LI>  <code>vtkLight = obj.GetLight ()</code> -  The spotlight to represent. Initial value is NULL.
+ </LI>
+<LI>  <code>obj.SetClippingRange (double dNear, double dFar)</code> -  Set/Get the location of the near and far clipping planes along the
+ direction of projection.  Both of these values must be positive.
+ Initial values are  (0.5,11.0)
+ </LI>
+<LI>  <code>obj.SetClippingRange (double a[2])</code> -  Set/Get the location of the near and far clipping planes along the
+ direction of projection.  Both of these values must be positive.
+ Initial values are  (0.5,11.0)
+ </LI>
+<LI>  <code>double = obj. GetClippingRange ()</code> -  Set/Get the location of the near and far clipping planes along the
+ direction of projection.  Both of these values must be positive.
+ Initial values are  (0.5,11.0)
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Support the standard render methods.
+ </LI>
+<LI>  <code>int = obj.HasTranslucentPolygonalGeometry ()</code> -  Does this prop have some translucent polygonal geometry? No.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Get the actors mtime plus consider its properties and texture if set.
+ </LI>
+</UL>
+</BODY>
+</HTML>

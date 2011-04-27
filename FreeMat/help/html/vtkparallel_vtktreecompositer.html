@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTreeCompositer
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTreeCompositer
+</H2>
+<P>
+Section: <A HREF=sec_vtkparallel.html> Visualization Toolkit Parallel Classes </A>
+<H3>Usage</H3>
+ vtkTreeCompositer operates in multiple processes.  Each compositer has 
+ a render window.  They use a vtkMultiProcessController to communicate 
+ the color and depth buffer to process 0's render window.
+ It will not handle transparency well.
+<P>
+<P>
+To create an instance of class vtkTreeCompositer, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTreeCompositer
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTreeCompositer has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTreeCompositer class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTreeCompositer = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTreeCompositer = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.CompositeBuffer (vtkDataArray pBuf, vtkFloatArray zBuf, vtkDataArray pTmp, vtkFloatArray zTmp)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

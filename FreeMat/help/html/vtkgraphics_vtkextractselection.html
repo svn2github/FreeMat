@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractSelection
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractSelection
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkExtractSelection extracts some subset of cells and points from
+ its input dataset. The dataset is given on its first input port. 
+ The subset is described by the contents of the vtkSelection on its 
+ second input port. Depending on the content of the vtkSelection,
+ this will use either a vtkExtractSelectedIds, vtkExtractSelectedFrustum
+ vtkExtractSelectedLocations or a vtkExtractSelectedThreshold to perform
+ the extraction.
+<P>
+To create an instance of class vtkExtractSelection, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractSelection
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractSelection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractSelection class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractSelection = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractSelection = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetShowBounds (int )</code> -  When On, this returns an unstructured grid that outlines selection area.
+ Off is the default. Applicable only to Frustum selection extraction.
+ </LI>
+<LI>  <code>int = obj.GetShowBounds ()</code> -  When On, this returns an unstructured grid that outlines selection area.
+ Off is the default. Applicable only to Frustum selection extraction.
+ </LI>
+<LI>  <code>obj.ShowBoundsOn ()</code> -  When On, this returns an unstructured grid that outlines selection area.
+ Off is the default. Applicable only to Frustum selection extraction.
+ </LI>
+<LI>  <code>obj.ShowBoundsOff ()</code> -  When On, this returns an unstructured grid that outlines selection area.
+ Off is the default. Applicable only to Frustum selection extraction.
+ </LI>
+<LI>  <code>obj.SetUseProbeForLocations (int )</code> -  When On, vtkProbeSelectedLocations is used for extracting selections of
+ content type vtkSelection::LOCATIONS. Default is off and then
+ vtkExtractSelectedLocations is used.
+ </LI>
+<LI>  <code>int = obj.GetUseProbeForLocations ()</code> -  When On, vtkProbeSelectedLocations is used for extracting selections of
+ content type vtkSelection::LOCATIONS. Default is off and then
+ vtkExtractSelectedLocations is used.
+ </LI>
+<LI>  <code>obj.UseProbeForLocationsOn ()</code> -  When On, vtkProbeSelectedLocations is used for extracting selections of
+ content type vtkSelection::LOCATIONS. Default is off and then
+ vtkExtractSelectedLocations is used.
+ </LI>
+<LI>  <code>obj.UseProbeForLocationsOff ()</code> -  When On, vtkProbeSelectedLocations is used for extracting selections of
+ content type vtkSelection::LOCATIONS. Default is off and then
+ vtkExtractSelectedLocations is used.
+ </LI>
+</UL>
+</BODY>
+</HTML>

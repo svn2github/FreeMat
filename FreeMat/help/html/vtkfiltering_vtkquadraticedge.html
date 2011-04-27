@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkQuadraticEdge
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkQuadraticEdge
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkQuadraticEdge is a concrete implementation of vtkNonLinearCell to
+ represent a one-dimensional, 3-nodes, isoparametric parabolic line. The
+ interpolation is the standard finite element, quadratic isoparametric
+ shape function. The cell includes a mid-edge node. The ordering of the
+ three points defining the cell is point ids (0,1,2) where id #2 is the
+ midedge node.
+<P>
+To create an instance of class vtkQuadraticEdge, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkQuadraticEdge
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkQuadraticEdge has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkQuadraticEdge class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkQuadraticEdge = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkQuadraticEdge = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetCellType ()</code> -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+ </LI>
+<LI>  <code>int = obj.GetCellDimension ()</code> -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfEdges ()</code> -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfFaces ()</code> -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetEdge (int )</code> -  Implement the vtkCell API. See the vtkCell API for descriptions
+ of these methods.
+ </LI>
+<LI>  <code>vtkCell = obj.GetFace (int )</code>
+ </LI>
+<LI>  <code>int = obj.CellBoundary (int subId, double pcoords[3], vtkIdList pts)</code>
+ </LI>
+<LI>  <code>obj.Contour (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray verts, vtkCellArray lines, vtkCellArray polys, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd)</code>
+ </LI>
+<LI>  <code>int = obj.Triangulate (int index, vtkIdList ptIds, vtkPoints pts)</code>
+ </LI>
+<LI>  <code>obj.Derivatives (int subId, double pcoords[3], double values, int dim, double derivs)</code>
+ </LI>
+<LI>  <code>obj.Clip (double value, vtkDataArray cellScalars, vtkIncrementalPointLocator locator, vtkCellArray lines, vtkPointData inPd, vtkPointData outPd, vtkCellData inCd, vtkIdType cellId, vtkCellData outCd, int insideOut)</code> -  Clip this edge using scalar value provided. Like contouring, except
+ that it cuts the edge to produce linear line segments.
+ </LI>
+<LI>  <code>int = obj.GetParametricCenter (double pcoords[3])</code> -  Return the center of the quadratic tetra in parametric coordinates.
+ </LI>
+<LI>  <code>obj.InterpolateFunctions (double pcoords[3], double weights[3])</code> -  Compute the interpolation functions/derivatives
+ (aka shape functions/derivatives)
+ </LI>
+<LI>  <code>obj.InterpolateDerivs (double pcoords[3], double derivs[3])</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

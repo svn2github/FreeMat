@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageGridSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageGridSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageGridSource produces an image of a grid.  The
+ default output type is double.
+<P>
+To create an instance of class vtkImageGridSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageGridSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageGridSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageGridSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageGridSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageGridSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGridSpacing (int , int , int )</code> -  Set/Get the grid spacing in pixel units.  Default (10,10,0).
+ A value of zero means no grid.
+ </LI>
+<LI>  <code>obj.SetGridSpacing (int  a[3])</code> -  Set/Get the grid spacing in pixel units.  Default (10,10,0).
+ A value of zero means no grid.
+ </LI>
+<LI>  <code>int = obj. GetGridSpacing ()</code> -  Set/Get the grid spacing in pixel units.  Default (10,10,0).
+ A value of zero means no grid.
+ </LI>
+<LI>  <code>obj.SetGridOrigin (int , int , int )</code> -  Set/Get the grid origin, in ijk integer values.  Default (0,0,0).
+ </LI>
+<LI>  <code>obj.SetGridOrigin (int  a[3])</code> -  Set/Get the grid origin, in ijk integer values.  Default (0,0,0).
+ </LI>
+<LI>  <code>int = obj. GetGridOrigin ()</code> -  Set/Get the grid origin, in ijk integer values.  Default (0,0,0).
+ </LI>
+<LI>  <code>obj.SetLineValue (double )</code> -  Set the grey level of the lines. Default 1.0.
+ </LI>
+<LI>  <code>double = obj.GetLineValue ()</code> -  Set the grey level of the lines. Default 1.0.
+ </LI>
+<LI>  <code>obj.SetFillValue (double )</code> -  Set the grey level of the fill. Default 0.0.
+ </LI>
+<LI>  <code>double = obj.GetFillValue ()</code> -  Set the grey level of the fill. Default 0.0.
+ </LI>
+<LI>  <code>obj.SetDataScalarType (int )</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>obj.SetDataScalarTypeToDouble ()</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>obj.SetDataScalarTypeToInt ()</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>obj.SetDataScalarTypeToShort ()</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>obj.SetDataScalarTypeToUnsignedShort ()</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>obj.SetDataScalarTypeToUnsignedChar ()</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>int = obj.GetDataScalarType ()</code> -  Set/Get the data type of pixels in the imported data.
+ As a convenience, the OutputScalarType is set to the same value.
+ </LI>
+<LI>  <code>string = obj.GetDataScalarTypeAsString ()</code> -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+ </LI>
+<LI>  <code>obj.SetDataExtent (int , int , int , int , int , int )</code> -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+ </LI>
+<LI>  <code>obj.SetDataExtent (int  a[6])</code> -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+ </LI>
+<LI>  <code>int = obj. GetDataExtent ()</code> -  Set/Get the extent of the whole output image,
+ Default: (0,255,0,255,0,0)
+ </LI>
+<LI>  <code>obj.SetDataSpacing (double , double , double )</code> -  Set/Get the pixel spacing.
+ </LI>
+<LI>  <code>obj.SetDataSpacing (double  a[3])</code> -  Set/Get the pixel spacing.
+ </LI>
+<LI>  <code>double = obj. GetDataSpacing ()</code> -  Set/Get the pixel spacing.
+ </LI>
+<LI>  <code>obj.SetDataOrigin (double , double , double )</code> -  Set/Get the origin of the data.
+ </LI>
+<LI>  <code>obj.SetDataOrigin (double  a[3])</code> -  Set/Get the origin of the data.
+ </LI>
+<LI>  <code>double = obj. GetDataOrigin ()</code> -  Set/Get the origin of the data.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPContingencyStatistics
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPContingencyStatistics
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkPContingencyStatistics is vtkContingencyStatistics subclass for parallel datasets.
+ It learns and derives the global statistical model on each node, but assesses each 
+ individual data points on the node that owns it.
+<P>
+To create an instance of class vtkPContingencyStatistics, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPContingencyStatistics
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPContingencyStatistics has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPContingencyStatistics class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPContingencyStatistics = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPContingencyStatistics = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetController (vtkMultiProcessController )</code> -  Get/Set the multiprocess controller. If no controller is set,
+ single process is assumed.
+ </LI>
+<LI>  <code>vtkMultiProcessController = obj.GetController ()</code> -  Get/Set the multiprocess controller. If no controller is set,
+ single process is assumed.
+ </LI>
+<LI>  <code>obj.Learn (vtkTable inData, vtkTable inParameters, vtkDataObject outMeta)</code> -  Execute the parallel calculations required by the Learn option.
+ </LI>
+</UL>
+</BODY>
+</HTML>

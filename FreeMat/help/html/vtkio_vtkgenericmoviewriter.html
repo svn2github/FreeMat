@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGenericMovieWriter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGenericMovieWriter
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkGenericMovieWriter is the abstract base class for several movie
+ writers. The input type is a vtkImageData. The Start() method will
+ open and create the file, the Write() method will output a frame to
+ the file (i.e. the contents of the vtkImageData), End() will finalize
+ and close the file.
+<P>
+To create an instance of class vtkGenericMovieWriter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGenericMovieWriter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGenericMovieWriter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGenericMovieWriter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGenericMovieWriter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGenericMovieWriter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetInput (vtkImageData input)</code> -  Set/Get the input object from the image pipeline.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetInput ()</code> -  Set/Get the input object from the image pipeline.
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Specify file name of avi file.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Specify file name of avi file.
+ </LI>
+<LI>  <code>obj.Start ()</code> -  These methods start writing an Movie file, write a frame to the file
+ and then end the writing process.
+ </LI>
+<LI>  <code>obj.Write ()</code> -  These methods start writing an Movie file, write a frame to the file
+ and then end the writing process.
+ </LI>
+<LI>  <code>obj.End ()</code> -  These methods start writing an Movie file, write a frame to the file
+ and then end the writing process.
+ </LI>
+<LI>  <code>int = obj.GetError ()</code> -  Was there an error on the last write performed?
+ </LI>
+</UL>
+</BODY>
+</HTML>

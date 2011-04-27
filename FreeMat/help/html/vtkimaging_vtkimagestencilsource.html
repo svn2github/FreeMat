@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageStencilSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageStencilSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageStencilSource is a superclass for filters that generate image
+ stencils.  Given a clipping object such as a vtkImplicitFunction, it
+ will set up a list of clipping extents for each x-row through the
+ image data.  The extents for each x-row can be retrieved via the 
+ GetNextExtent() method after the extent lists have been built
+ with the BuildExtents() method.  For large images, using clipping
+ extents is much more memory efficient (and slightly more time-efficient)
+ than building a mask.  This class can be subclassed to allow clipping
+ with objects other than vtkImplicitFunction.
+<P>
+To create an instance of class vtkImageStencilSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageStencilSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageStencilSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageStencilSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageStencilSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageStencilSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetOutput (vtkImageStencilData output)</code> -  Get or set the output for this source.
+ </LI>
+<LI>  <code>vtkImageStencilData = obj.GetOutput ()</code> -  Get or set the output for this source.
+ </LI>
+</UL>
+</BODY>
+</HTML>

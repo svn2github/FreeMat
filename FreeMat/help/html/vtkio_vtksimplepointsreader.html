@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSimplePointsReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSimplePointsReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkSimplePointsReader is a source object that reads a list of
+ points from a file.  Each point is specified by three
+ floating-point values in ASCII format.  There is one point per line
+ of the file.  A vertex cell is created for each point in the
+ output.  This reader is meant as an example of how to write a
+ reader in VTK.
+<P>
+To create an instance of class vtkSimplePointsReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSimplePointsReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSimplePointsReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSimplePointsReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSimplePointsReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSimplePointsReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Set/Get the name of the file from which to read points.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Set/Get the name of the file from which to read points.
+ </LI>
+</UL>
+</BODY>
+</HTML>

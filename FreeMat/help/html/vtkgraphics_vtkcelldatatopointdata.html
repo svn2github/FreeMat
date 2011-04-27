@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkCellDataToPointData
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkCellDataToPointData
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkCellDataToPointData is a filter that transforms cell data (i.e., data
+ specified per cell) into point data (i.e., data specified at cell
+ points). The method of transformation is based on averaging the data
+ values of all cells using a particular point. Optionally, the input cell
+ data can be passed through to the output as well.
+<P>
+To create an instance of class vtkCellDataToPointData, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkCellDataToPointData
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkCellDataToPointData has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkCellDataToPointData class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkCellDataToPointData = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkCellDataToPointData = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPassCellData (int )</code> -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+ </LI>
+<LI>  <code>int = obj.GetPassCellData ()</code> -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+ </LI>
+<LI>  <code>obj.PassCellDataOn ()</code> -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+ </LI>
+<LI>  <code>obj.PassCellDataOff ()</code> -  Control whether the input cell data is to be passed to the output. If
+ on, then the input cell data is passed through to the output; otherwise,
+ only generated point data is placed into the output.
+ </LI>
+</UL>
+</BODY>
+</HTML>

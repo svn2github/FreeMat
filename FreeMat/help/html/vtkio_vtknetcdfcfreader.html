@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkNetCDFCFReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkNetCDFCFReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+<P>
+ Reads netCDF files that follow the CF convention.  Details on this convention
+ can be found at &lt;http://cf-pcmdi.llnl.gov/&gt;.
+<P>
+<P>
+To create an instance of class vtkNetCDFCFReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkNetCDFCFReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkNetCDFCFReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkNetCDFCFReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkNetCDFCFReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkNetCDFCFReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetSphericalCoordinates ()</code> -  If on (the default), then 3D data with latitude/longitude dimensions
+ will be read in as curvilinear data shaped like spherical coordinates.
+ If false, then the data will always be read in Cartesian coordinates.
+ </LI>
+<LI>  <code>obj.SetSphericalCoordinates (int )</code> -  If on (the default), then 3D data with latitude/longitude dimensions
+ will be read in as curvilinear data shaped like spherical coordinates.
+ If false, then the data will always be read in Cartesian coordinates.
+ </LI>
+<LI>  <code>obj.SphericalCoordinatesOn ()</code> -  If on (the default), then 3D data with latitude/longitude dimensions
+ will be read in as curvilinear data shaped like spherical coordinates.
+ If false, then the data will always be read in Cartesian coordinates.
+ </LI>
+<LI>  <code>obj.SphericalCoordinatesOff ()</code> -  If on (the default), then 3D data with latitude/longitude dimensions
+ will be read in as curvilinear data shaped like spherical coordinates.
+ If false, then the data will always be read in Cartesian coordinates.
+ </LI>
+<LI>  <code>double = obj.GetVerticalScale ()</code> -  The scale and bias of the vertical component of spherical coordinates.  It
+ is common to write the vertical component with respect to something other
+ than the center of the sphere (for example, the surface).  In this case, it
+ might be necessary to scale and/or bias the vertical height.  The height
+ will become height*scale + bias.  Keep in mind that if the positive
+ attribute of the vertical dimension is down, then the height is negated.
+ By default the scale is 1 and the bias is 0 (that is, no change).  The
+ scaling will be adjusted if it results in invalid (negative) vertical
+ values.
+ </LI>
+<LI>  <code>obj.SetVerticalScale (double )</code> -  The scale and bias of the vertical component of spherical coordinates.  It
+ is common to write the vertical component with respect to something other
+ than the center of the sphere (for example, the surface).  In this case, it
+ might be necessary to scale and/or bias the vertical height.  The height
+ will become height*scale + bias.  Keep in mind that if the positive
+ attribute of the vertical dimension is down, then the height is negated.
+ By default the scale is 1 and the bias is 0 (that is, no change).  The
+ scaling will be adjusted if it results in invalid (negative) vertical
+ values.
+ </LI>
+<LI>  <code>double = obj.GetVerticalBias ()</code> -  The scale and bias of the vertical component of spherical coordinates.  It
+ is common to write the vertical component with respect to something other
+ than the center of the sphere (for example, the surface).  In this case, it
+ might be necessary to scale and/or bias the vertical height.  The height
+ will become height*scale + bias.  Keep in mind that if the positive
+ attribute of the vertical dimension is down, then the height is negated.
+ By default the scale is 1 and the bias is 0 (that is, no change).  The
+ scaling will be adjusted if it results in invalid (negative) vertical
+ values.
+ </LI>
+<LI>  <code>obj.SetVerticalBias (double )</code> -  The scale and bias of the vertical component of spherical coordinates.  It
+ is common to write the vertical component with respect to something other
+ than the center of the sphere (for example, the surface).  In this case, it
+ might be necessary to scale and/or bias the vertical height.  The height
+ will become height*scale + bias.  Keep in mind that if the positive
+ attribute of the vertical dimension is down, then the height is negated.
+ By default the scale is 1 and the bias is 0 (that is, no change).  The
+ scaling will be adjusted if it results in invalid (negative) vertical
+ values.
+ </LI>
+</UL>
+</BODY>
+</HTML>

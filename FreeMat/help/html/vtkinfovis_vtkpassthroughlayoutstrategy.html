@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPassThroughLayoutStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPassThroughLayoutStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Yes, this incredible strategy does absoluted nothing to the data
+ so in affect passes through the graph untouched. This strategy
+ is useful in the cases where the graph is already laid out.
+<P>
+To create an instance of class vtkPassThroughLayoutStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPassThroughLayoutStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPassThroughLayoutStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPassThroughLayoutStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPassThroughLayoutStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPassThroughLayoutStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Initialize ()</code> -  This strategy sets up some data structures
+ for faster processing of each Layout() call
+ </LI>
+<LI>  <code>obj.Layout ()</code> -  This is the layout method where the graph that was
+ set in SetGraph() is laid out. The method can either
+ entirely layout the graph or iteratively lay out the
+ graph. If you have an iterative layout please implement
+ the IsLayoutComplete() method.
+ </LI>
+<LI>  <code>int = obj.IsLayoutComplete ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

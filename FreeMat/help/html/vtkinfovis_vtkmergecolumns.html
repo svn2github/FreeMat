@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkMergeColumns
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkMergeColumns
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkMergeColumns replaces two columns in a table with a single column
+ containing data in both columns.  The columns are set using
+<P>
+   SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_ROWS, "col1")
+<P>
+ and
+<P>
+   SetInputArrayToProcess(1, 0, 0, vtkDataObject::FIELD_ASSOCIATION_ROWS, "col2")
+<P>
+ where "col1" and "col2" are the names of the columns to merge.
+ The user may also specify the name of the merged column.
+ The arrays must be of the same type.
+ If the arrays are numeric, the values are summed in the merged column.
+ If the arrays are strings, the values are concatenated.  The strings are
+ separated by a space if they are both nonempty.
+<P>
+To create an instance of class vtkMergeColumns, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkMergeColumns
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkMergeColumns has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkMergeColumns class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkMergeColumns = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkMergeColumns = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMergedColumnName (string )</code> -  The name to give the merged column created by this filter.
+ </LI>
+<LI>  <code>string = obj.GetMergedColumnName ()</code> -  The name to give the merged column created by this filter.
+ </LI>
+</UL>
+</BODY>
+</HTML>

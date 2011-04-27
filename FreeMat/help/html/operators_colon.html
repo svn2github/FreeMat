@@ -85,32 +85,32 @@ even for the case where
 for some n.  The reason is that the roundoff in the calculations may
 be different depending on the nature of the sum.  FreeMat uses the
 following strategy to compute the double-colon vector:
-<OL>
-<LI>  The value <code>n</code> is computed by taking the floor of the larger 
+\begin{enumerate}
+\item The value <code>n</code> is computed by taking the floor of the larger 
  value in the interval defined above.
- </LI>
-<LI>  If <code>n</code> falls inside the interval defined above, then it is 
+\item If <code>n</code> falls inside the interval defined above, then it is 
 assumed that the user intended <code>c = a + n*b</code>, and the symmetric 
 algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
- </LI>
-<LI>  The symmetric algorithm computes the vector via
-\[
-  [a, a+b, a+2b,\ldots,c-2b,c-b,c]
-\]
+\item The symmetric algorithm computes the vector via
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="colon_eqn8.png">
+</DIV>
+<P>
 working symmetrically from both ends of the vector 
 (hence the nomenclature), while the nonsymmetric algorithm computes
-\[
-  [a, a+b ,a+2b,\ldots,a+nb]
-\]
+<P>
+<DIV ALIGN="CENTER">
+<IMG SRC="colon_eqn9.png">
+</DIV>
+<P>
 In practice, the entries are computed by repeated accumulation instead 
 of multiplying the step size by an integer.
- </LI>
-<LI>  The real interval calculation is modified so that we get the
+\item The real interval calculation is modified so that we get the
 exact same result with <code>a:b:c</code> and <code>c:-b:a</code> (which basically means
 that instead of moving towards infinity, we move towards the signed 
 infinity where the sign is inherited from <code>b</code>).
- </LI>
-</OL>
+\end{enumerate}
 If you think this is all very obscure, it is.  But without it, you will
 be confronted by mysterious vectors where the last entry is dropped,
 or where the values show progressively larger amounts of accumulated
@@ -123,7 +123,6 @@ Some simple examples of index generation.
 y = 
  1 2 3 4 
 </PRE>
-<P>
 Now by half-steps:
 <PRE>
 --&gt; y = 1:.5:4
@@ -131,7 +130,6 @@ Now by half-steps:
 y = 
     1.0000    1.5000    2.0000    2.5000    3.0000    3.5000    4.0000 
 </PRE>
-<P>
 Now going backwards (negative steps)
 <PRE>
 --&gt; y = 4:-.5:1
@@ -139,7 +137,6 @@ Now going backwards (negative steps)
 y = 
     4.0000    3.5000    3.0000    2.5000    2.0000    1.5000    1.0000 
 </PRE>
-<P>
 If the endpoints are the same, one point is generated, regardless of the step size (middle argument)
 <PRE>
 --&gt; y = 4:1:4
@@ -147,14 +144,12 @@ If the endpoints are the same, one point is generated, regardless of the step si
 y = 
  4 
 </PRE>
-<P>
 If the endpoints define an empty interval, the output is an empty matrix:
 <PRE>
 --&gt; y = 5:4
 
 y = 
-  Empty array 1 0
+  Empty array 1x0
 </PRE>
-<P>
 </BODY>
 </HTML>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtentTranslator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtentTranslator
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkExtentTranslator generates a structured extent from an unstructured
+ extent.  It uses a recursive scheme that splits the largest axis.  A hard
+ coded extent can be used for a starting point.
+<P>
+To create an instance of class vtkExtentTranslator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtentTranslator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtentTranslator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtentTranslator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtentTranslator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtentTranslator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetWholeExtent (int , int , int , int , int , int )</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>obj.SetWholeExtent (int  a[6])</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>int = obj. GetWholeExtent ()</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>obj.SetExtent (int , int , int , int , int , int )</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>obj.SetExtent (int  a[6])</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>int = obj. GetExtent ()</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>obj.SetPiece (int )</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>int = obj.GetPiece ()</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>obj.SetNumberOfPieces (int )</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfPieces ()</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>obj.SetGhostLevel (int )</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>int = obj.GetGhostLevel ()</code> -  Set the Piece/NumPieces. Set the WholeExtent and then call PieceToExtent.
+ The result can be obtained from the Extent ivar.
+ </LI>
+<LI>  <code>int = obj.PieceToExtent ()</code> -  These are the main methods that should be called. These methods 
+ are responsible for converting a piece to an extent. The signatures
+ without arguments are only thread safe when each thread accesses a
+ different instance. The signatures with arguements are fully thread
+ safe. 
+ </LI>
+<LI>  <code>int = obj.PieceToExtentByPoints ()</code> -  These are the main methods that should be called. These methods 
+ are responsible for converting a piece to an extent. The signatures
+ without arguments are only thread safe when each thread accesses a
+ different instance. The signatures with arguements are fully thread
+ safe. 
+ </LI>
+<LI>  <code>int = obj.PieceToExtentThreadSafe (int piece, int numPieces, int ghostLevel, int wholeExtent, int resultExtent, int splitMode, int byPoints)</code> -  These are the main methods that should be called. These methods 
+ are responsible for converting a piece to an extent. The signatures
+ without arguments are only thread safe when each thread accesses a
+ different instance. The signatures with arguements are fully thread
+ safe. 
+ </LI>
+<LI>  <code>obj.SetSplitModeToBlock ()</code> -  How should the streamer break up extents. Block mode
+ tries to break an extent up into cube blocks.  It always chooses
+ the largest axis to split.
+ Slab mode first breaks up the Z axis.  If it gets to one slice,
+ then it starts breaking up other axes.
+ </LI>
+<LI>  <code>obj.SetSplitModeToXSlab ()</code> -  How should the streamer break up extents. Block mode
+ tries to break an extent up into cube blocks.  It always chooses
+ the largest axis to split.
+ Slab mode first breaks up the Z axis.  If it gets to one slice,
+ then it starts breaking up other axes.
+ </LI>
+<LI>  <code>obj.SetSplitModeToYSlab ()</code> -  How should the streamer break up extents. Block mode
+ tries to break an extent up into cube blocks.  It always chooses
+ the largest axis to split.
+ Slab mode first breaks up the Z axis.  If it gets to one slice,
+ then it starts breaking up other axes.
+ </LI>
+<LI>  <code>obj.SetSplitModeToZSlab ()</code> -  How should the streamer break up extents. Block mode
+ tries to break an extent up into cube blocks.  It always chooses
+ the largest axis to split.
+ Slab mode first breaks up the Z axis.  If it gets to one slice,
+ then it starts breaking up other axes.
+ </LI>
+<LI>  <code>int = obj.GetSplitMode ()</code> -  How should the streamer break up extents. Block mode
+ tries to break an extent up into cube blocks.  It always chooses
+ the largest axis to split.
+ Slab mode first breaks up the Z axis.  If it gets to one slice,
+ then it starts breaking up other axes.
+ </LI>
+<LI>  <code>obj.SetSplitPath (int len, int splitpath)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPointSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPointSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkPointSource is a source object that creates a user-specified number 
+ of points within a specified radius about a specified center point. 
+ By default location of the points is random within the sphere. It is
+ also possible to generate random points only on the surface of the
+ sphere.
+<P>
+To create an instance of class vtkPointSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPointSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPointSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPointSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPointSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPointSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetNumberOfPoints (vtkIdType )</code> -  Set the number of points to generate.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPointsMinValue ()</code> -  Set the number of points to generate.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPointsMaxValue ()</code> -  Set the number of points to generate.
+ </LI>
+<LI>  <code>vtkIdType = obj.GetNumberOfPoints ()</code> -  Set the number of points to generate.
+ </LI>
+<LI>  <code>obj.SetCenter (double , double , double )</code> -  Set the center of the point cloud.
+ </LI>
+<LI>  <code>obj.SetCenter (double  a[3])</code> -  Set the center of the point cloud.
+ </LI>
+<LI>  <code>double = obj. GetCenter ()</code> -  Set the center of the point cloud.
+ </LI>
+<LI>  <code>obj.SetRadius (double )</code> -  Set the radius of the point cloud.  If you are
+ generating a Gaussian distribution, then this is
+ the standard deviation for each of x, y, and z.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMinValue ()</code> -  Set the radius of the point cloud.  If you are
+ generating a Gaussian distribution, then this is
+ the standard deviation for each of x, y, and z.
+ </LI>
+<LI>  <code>double = obj.GetRadiusMaxValue ()</code> -  Set the radius of the point cloud.  If you are
+ generating a Gaussian distribution, then this is
+ the standard deviation for each of x, y, and z.
+ </LI>
+<LI>  <code>double = obj.GetRadius ()</code> -  Set the radius of the point cloud.  If you are
+ generating a Gaussian distribution, then this is
+ the standard deviation for each of x, y, and z.
+ </LI>
+<LI>  <code>obj.SetDistribution (int )</code> -  Specify the distribution to use.  The default is a
+ uniform distribution.  The shell distribution produces
+ random points on the surface of the sphere, none in the interior.
+ </LI>
+<LI>  <code>obj.SetDistributionToUniform ()</code> -  Specify the distribution to use.  The default is a
+ uniform distribution.  The shell distribution produces
+ random points on the surface of the sphere, none in the interior.
+ </LI>
+<LI>  <code>obj.SetDistributionToShell ()</code> -  Specify the distribution to use.  The default is a
+ uniform distribution.  The shell distribution produces
+ random points on the surface of the sphere, none in the interior.
+ </LI>
+<LI>  <code>int = obj.GetDistribution ()</code> -  Specify the distribution to use.  The default is a
+ uniform distribution.  The shell distribution produces
+ random points on the surface of the sphere, none in the interior.
+ </LI>
+</UL>
+</BODY>
+</HTML>

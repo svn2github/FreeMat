@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoSampleArcs
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoSampleArcs
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ vtkGeoSampleArcs refines lines in the input polygonal data
+ so that the distance between adjacent points is no more than a threshold
+ distance. Points are interpolated along the surface of the globe.
+ This is useful in order to keep lines such as political boundaries from
+ intersecting the globe and becoming invisible.
+<P>
+To create an instance of class vtkGeoSampleArcs, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoSampleArcs
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoSampleArcs has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoSampleArcs class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoSampleArcs = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoSampleArcs = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetGlobeRadius (double )</code> -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+ </LI>
+<LI>  <code>double = obj.GetGlobeRadius ()</code> -  The base radius used to determine the earth's surface.
+ Default is the earth's radius in meters.
+ TODO: Change this to take in a vtkGeoTerrain to get altitude.
+ </LI>
+<LI>  <code>obj.SetMaximumDistanceMeters (double )</code> -  The maximum distance, in meters, between adjacent points.
+ </LI>
+<LI>  <code>double = obj.GetMaximumDistanceMeters ()</code> -  The maximum distance, in meters, between adjacent points.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystem (int )</code> -  The input coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>int = obj.GetInputCoordinateSystem ()</code> -  The input coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystemToRectangular ()</code> -  The input coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>obj.SetInputCoordinateSystemToSpherical ()</code> -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystem (int )</code> -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>int = obj.GetOutputCoordinateSystem ()</code> -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystemToRectangular ()</code> -  The desired output coordinate system.
+ RECTANGULAR is x,y,z meters relative the the earth center.
+ SPHERICAL is longitude,latitude,altitude.
+ </LI>
+<LI>  <code>obj.SetOutputCoordinateSystemToSpherical ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLabelRenderStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLabelRenderStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ These methods should only be called within a mapper.
+<P>
+To create an instance of class vtkLabelRenderStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLabelRenderStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLabelRenderStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLabelRenderStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLabelRenderStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLabelRenderStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>bool = obj.SupportsRotation ()</code> -  Whether the text rendering strategy supports bounded size.
+ The superclass returns true. Subclasses should override this to
+ return the appropriate value. Subclasses that return true
+ from this method should implement the version of RenderLabel()
+ that takes a maximum size (see RenderLabel()).
+ </LI>
+<LI>  <code>bool = obj.SupportsBoundedSize ()</code> -  Set the renderer associated with this strategy.
+ </LI>
+<LI>  <code>obj.SetRenderer (vtkRenderer ren)</code> -  Set the renderer associated with this strategy.
+ </LI>
+<LI>  <code>vtkRenderer = obj.GetRenderer ()</code> -  Set the renderer associated with this strategy.
+ </LI>
+<LI>  <code>obj.SetDefaultTextProperty (vtkTextProperty tprop)</code> -  Set the default text property for the strategy.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetDefaultTextProperty ()</code> -  Set the default text property for the strategy.
+ </LI>
+<LI>  <code>obj.StartFrame ()</code> -  End a rendering frame.
+ </LI>
+<LI>  <code>obj.EndFrame ()</code> -  Release any graphics resources that are being consumed by this strategy.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

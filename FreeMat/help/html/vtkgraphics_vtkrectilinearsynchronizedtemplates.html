@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRectilinearSynchronizedTemplates
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRectilinearSynchronizedTemplates
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkRectilinearSynchronizedTemplates is a 3D implementation (for rectilinear
+ grids) of the synchronized template algorithm. Note that vtkContourFilter
+ will automatically use this class when appropriate.
+<P>
+To create an instance of class vtkRectilinearSynchronizedTemplates, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRectilinearSynchronizedTemplates
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRectilinearSynchronizedTemplates has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRectilinearSynchronizedTemplates class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRectilinearSynchronizedTemplates = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRectilinearSynchronizedTemplates = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Because we delegate to vtkContourValues
+ </LI>
+<LI>  <code>obj.SetComputeNormals (int )</code> -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>int = obj.GetComputeNormals ()</code> -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>obj.ComputeNormalsOn ()</code> -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>obj.ComputeNormalsOff ()</code> -  Set/Get the computation of normals. Normal computation is fairly
+ expensive in both time and storage. If the output data will be
+ processed by filters that modify topology or geometry, it may be
+ wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>obj.SetComputeGradients (int )</code> -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>int = obj.GetComputeGradients ()</code> -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>obj.ComputeGradientsOn ()</code> -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>obj.ComputeGradientsOff ()</code> -  Set/Get the computation of gradients. Gradient computation is
+ fairly expensive in both time and storage. Note that if
+ ComputeNormals is on, gradients will have to be calculated, but
+ will not be stored in the output dataset.  If the output data
+ will be processed by filters that modify topology or geometry, it
+ may be wise to turn Normals and Gradients off.
+ </LI>
+<LI>  <code>obj.SetComputeScalars (int )</code> -  Set/Get the computation of scalars.
+ </LI>
+<LI>  <code>int = obj.GetComputeScalars ()</code> -  Set/Get the computation of scalars.
+ </LI>
+<LI>  <code>obj.ComputeScalarsOn ()</code> -  Set/Get the computation of scalars.
+ </LI>
+<LI>  <code>obj.ComputeScalarsOff ()</code> -  Set/Get the computation of scalars.
+ </LI>
+<LI>  <code>obj.SetValue (int i, double value)</code> -  Get the ith contour value.
+ </LI>
+<LI>  <code>double = obj.GetValue (int i)</code> -  Get a pointer to an array of contour values. There will be
+ GetNumberOfContours() values in the list.
+ </LI>
+<LI>  <code>obj.GetValues (double contourValues)</code> -  Set the number of contours to place into the list. You only really
+ need to use this method to reduce list size. The method SetValue()
+ will automatically increase list size as needed.
+ </LI>
+<LI>  <code>obj.SetNumberOfContours (int number)</code> -  Get the number of contours in the list of contour values.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfContours ()</code> -  Generate numContours equally spaced contour values between specified
+ range. Contour values will include min/max range values.
+ </LI>
+<LI>  <code>obj.GenerateValues (int numContours, double range[2])</code> -  Generate numContours equally spaced contour values between specified
+ range. Contour values will include min/max range values.
+ </LI>
+<LI>  <code>obj.GenerateValues (int numContours, double rangeStart, double rangeEnd)</code> -  Needed by templated functions.
+ </LI>
+<LI>  <code>obj.SetArrayComponent (int )</code> -  Set/get which component of the scalar array to contour on; defaults to 0.
+ </LI>
+<LI>  <code>int = obj.GetArrayComponent ()</code> -  Set/get which component of the scalar array to contour on; defaults to 0.
+ </LI>
+<LI>  <code>obj.ComputeSpacing (vtkRectilinearGrid data, int i, int j, int k, int extent[6], double spacing[6])</code> -  Compute the spacing between this point and its 6 neighbors.  This method
+ needs to be public so it can be accessed from a templated function.
+ </LI>
+</UL>
+</BODY>
+</HTML>

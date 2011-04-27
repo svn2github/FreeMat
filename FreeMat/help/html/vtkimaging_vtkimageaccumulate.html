@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageAccumulate
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageAccumulate
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageAccumulate - This filter divides component space into
+ discrete bins.  It then counts the number of pixels associated
+ with each bin.  The output is this "scatter plot" (histogram values for 1D).
+ The dimensionality of the output depends on how many components the
+ input pixels have.  Input pixels with one component generate a 1D histogram.
+ This filter can only handle images with 1 to 3 scalar components.
+ The input can be any type, but the output is always int.
+ Some statistics are computed on the pixel values at the same time.
+ The SetStencil and ReverseStencil
+ functions allow the statistics to be computed on an arbitrary
+ portion of the input data.
+ See the documentation for vtkImageStencilData for more information.
+<P>
+ This filter also support ignoring pixel with value equal to 0. Using this
+ option with vtkImageMask may result in results being slightly off since 0
+ could be a valid value from your input.
+<P>
+<P>
+To create an instance of class vtkImageAccumulate, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageAccumulate
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageAccumulate has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageAccumulate class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageAccumulate = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageAccumulate = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetComponentSpacing (double , double , double )</code> -  Set/Get - The component spacing is the dimension of each bin.
+ This ends up being the spacing of the output "image".
+ If the number of input scalar components are less than three,
+ then some of these spacing values are ignored.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this spacing should be set to 100, 0, 0
+ </LI>
+<LI>  <code>obj.SetComponentSpacing (double  a[3])</code> -  Set/Get - The component spacing is the dimension of each bin.
+ This ends up being the spacing of the output "image".
+ If the number of input scalar components are less than three,
+ then some of these spacing values are ignored.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this spacing should be set to 100, 0, 0
+ </LI>
+<LI>  <code>double = obj. GetComponentSpacing ()</code> -  Set/Get - The component spacing is the dimension of each bin.
+ This ends up being the spacing of the output "image".
+ If the number of input scalar components are less than three,
+ then some of these spacing values are ignored.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this spacing should be set to 100, 0, 0
+ </LI>
+<LI>  <code>obj.SetComponentOrigin (double , double , double )</code> -  Set/Get - The component origin is the location of bin (0, 0, 0).
+ Note that if the Component extent does not include the value (0,0,0),
+ then this origin bin will not actually be in the output.
+ The origin of the output ends up being the same as the componenet origin.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this origin should be set to 1000, 0, 0
+ </LI>
+<LI>  <code>obj.SetComponentOrigin (double  a[3])</code> -  Set/Get - The component origin is the location of bin (0, 0, 0).
+ Note that if the Component extent does not include the value (0,0,0),
+ then this origin bin will not actually be in the output.
+ The origin of the output ends up being the same as the componenet origin.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this origin should be set to 1000, 0, 0
+ </LI>
+<LI>  <code>double = obj. GetComponentOrigin ()</code> -  Set/Get - The component origin is the location of bin (0, 0, 0).
+ Note that if the Component extent does not include the value (0,0,0),
+ then this origin bin will not actually be in the output.
+ The origin of the output ends up being the same as the componenet origin.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this origin should be set to 1000, 0, 0
+ </LI>
+<LI>  <code>obj.SetComponentExtent (int extent[6])</code> -  Set/Get - The component extent sets the number/extent of the bins.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this extent should be set to 0, 9, 0, 0, 0, 0.
+ The extent specifies inclusive min/max values.
+ This implies that the top extent should be set to the number of bins - 1.
+ </LI>
+<LI>  <code>obj.SetComponentExtent (int minX, int maxX, int minY, int maxY, int minZ, int maxZ)</code> -  Set/Get - The component extent sets the number/extent of the bins.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this extent should be set to 0, 9, 0, 0, 0, 0.
+ The extent specifies inclusive min/max values.
+ This implies that the top extent should be set to the number of bins - 1.
+ </LI>
+<LI>  <code>obj.GetComponentExtent (int extent[6])</code> -  Set/Get - The component extent sets the number/extent of the bins.
+ For a 1D histogram with 10 bins spanning the values 1000 to 2000,
+ this extent should be set to 0, 9, 0, 0, 0, 0.
+ The extent specifies inclusive min/max values.
+ This implies that the top extent should be set to the number of bins - 1.
+ </LI>
+<LI>  <code>int = obj.GetComponentExtent ()</code> -  Use a stencil to specify which voxels to accumulate.
+ </LI>
+<LI>  <code>obj.SetStencil (vtkImageStencilData stencil)</code> -  Use a stencil to specify which voxels to accumulate.
+ </LI>
+<LI>  <code>vtkImageStencilData = obj.GetStencil ()</code> -  Use a stencil to specify which voxels to accumulate.
+ </LI>
+<LI>  <code>obj.SetReverseStencil (int )</code> -  Reverse the stencil.
+ </LI>
+<LI>  <code>int = obj.GetReverseStencilMinValue ()</code> -  Reverse the stencil.
+ </LI>
+<LI>  <code>int = obj.GetReverseStencilMaxValue ()</code> -  Reverse the stencil.
+ </LI>
+<LI>  <code>obj.ReverseStencilOn ()</code> -  Reverse the stencil.
+ </LI>
+<LI>  <code>obj.ReverseStencilOff ()</code> -  Reverse the stencil.
+ </LI>
+<LI>  <code>int = obj.GetReverseStencil ()</code> -  Reverse the stencil.
+ </LI>
+<LI>  <code>double = obj. GetMin ()</code> -  Get the statistics information for the data.
+ </LI>
+<LI>  <code>double = obj. GetMax ()</code> -  Get the statistics information for the data.
+ </LI>
+<LI>  <code>double = obj. GetMean ()</code> -  Get the statistics information for the data.
+ </LI>
+<LI>  <code>double = obj. GetStandardDeviation ()</code> -  Get the statistics information for the data.
+ </LI>
+<LI>  <code>long = obj.GetVoxelCount ()</code> -  Get the statistics information for the data.
+ </LI>
+<LI>  <code>obj.SetIgnoreZero (int )</code> -  Should the data with value 0 be ignored?
+ </LI>
+<LI>  <code>int = obj.GetIgnoreZeroMinValue ()</code> -  Should the data with value 0 be ignored?
+ </LI>
+<LI>  <code>int = obj.GetIgnoreZeroMaxValue ()</code> -  Should the data with value 0 be ignored?
+ </LI>
+<LI>  <code>int = obj.GetIgnoreZero ()</code> -  Should the data with value 0 be ignored?
+ </LI>
+<LI>  <code>obj.IgnoreZeroOn ()</code> -  Should the data with value 0 be ignored?
+ </LI>
+<LI>  <code>obj.IgnoreZeroOff ()</code> -  Should the data with value 0 be ignored?
+ </LI>
+</UL>
+</BODY>
+</HTML>

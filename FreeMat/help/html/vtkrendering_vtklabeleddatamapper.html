@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkLabeledDataMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkLabeledDataMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkLabeledDataMapper is a mapper that renders text at dataset
+ points. Various items can be labeled including point ids, scalars,
+ vectors, normals, texture coordinates, tensors, and field data components.
+<P>
+ The format with which the label is drawn is specified using a
+ printf style format string. The font attributes of the text can
+ be set through the vtkTextProperty associated to this mapper. 
+<P>
+ By default, all the components of multi-component data such as
+ vectors, normals, texture coordinates, tensors, and multi-component
+ scalars are labeled. However, you can specify a single component if
+ you prefer. (Note: the label format specifies the format to use for
+ a single component. The label is creating by looping over all components
+ and using the label format to render each component.)
+<P>
+To create an instance of class vtkLabeledDataMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkLabeledDataMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkLabeledDataMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkLabeledDataMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkLabeledDataMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkLabeledDataMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetLabelFormat (string )</code> -  Set/Get the format with which to print the labels.  This should
+ be a printf-style format string.
+
+ By default, the mapper will try to print each component of the
+ tuple using a sane format: %d for integers, %f for floats, %g for
+ doubles, %ld for longs, et cetera.  If you need a different
+ format, set it here.  You can do things like limit the number of
+ significant digits, add prefixes/suffixes, basically anything
+ that printf can do.  If you only want to print one component of a
+ vector, see the ivar LabeledComponent.
+ </LI>
+<LI>  <code>string = obj.GetLabelFormat ()</code> -  Set/Get the format with which to print the labels.  This should
+ be a printf-style format string.
+
+ By default, the mapper will try to print each component of the
+ tuple using a sane format: %d for integers, %f for floats, %g for
+ doubles, %ld for longs, et cetera.  If you need a different
+ format, set it here.  You can do things like limit the number of
+ significant digits, add prefixes/suffixes, basically anything
+ that printf can do.  If you only want to print one component of a
+ vector, see the ivar LabeledComponent.
+ </LI>
+<LI>  <code>obj.SetLabeledComponent (int )</code> -  Set/Get the component number to label if the data to print has
+ more than one component. For example, all the components of
+ scalars, vectors, normals, etc. are labeled by default
+ (LabeledComponent=(-1)). However, if this ivar is nonnegative,
+ then only the one component specified is labeled.
+ </LI>
+<LI>  <code>int = obj.GetLabeledComponent ()</code> -  Set/Get the component number to label if the data to print has
+ more than one component. For example, all the components of
+ scalars, vectors, normals, etc. are labeled by default
+ (LabeledComponent=(-1)). However, if this ivar is nonnegative,
+ then only the one component specified is labeled.
+ </LI>
+<LI>  <code>obj.SetFieldDataArray (int arrayIndex)</code> -  Set/Get the field data array to label. This instance variable is
+ only applicable if field data is labeled.  This will clear
+ FieldDataName when set.
+ </LI>
+<LI>  <code>int = obj.GetFieldDataArray ()</code> -  Set/Get the field data array to label. This instance variable is
+ only applicable if field data is labeled.  This will clear
+ FieldDataName when set.
+ </LI>
+<LI>  <code>obj.SetFieldDataName (string arrayName)</code> -  Set/Get the name of the field data array to label.  This instance
+ variable is only applicable if field data is labeled.  This will
+ override FieldDataArray when set.
+ </LI>
+<LI>  <code>string = obj.GetFieldDataName ()</code> -  Set/Get the name of the field data array to label.  This instance
+ variable is only applicable if field data is labeled.  This will
+ override FieldDataArray when set.
+ </LI>
+<LI>  <code>obj.SetInput (vtkDataObject )</code> -  Set the input dataset to the mapper. This mapper handles any type of data.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetInput ()</code> -  Use GetInputDataObject() to get the input data object for composite
+ datasets.
+ </LI>
+<LI>  <code>obj.SetLabelMode (int )</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>int = obj.GetLabelMode ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelIds ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelScalars ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelVectors ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelNormals ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelTCoords ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelTensors ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelModeToLabelFieldData ()</code> -  Specify which data to plot: IDs, scalars, vectors, normals, texture coords,
+ tensors, or field data. If the data has more than one component, use
+ the method SetLabeledComponent to control which components to plot.
+ The default is VTK_LABEL_IDS.
+ </LI>
+<LI>  <code>obj.SetLabelTextProperty (vtkTextProperty p)</code> -  Set/Get the text property.
+ If an integer argument is provided, you may provide different text
+ properties for different label types. The type is determined by an
+ optional type input array.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLabelTextProperty ()</code> -  Set/Get the text property.
+ If an integer argument is provided, you may provide different text
+ properties for different label types. The type is determined by an
+ optional type input array.
+ </LI>
+<LI>  <code>obj.SetLabelTextProperty (vtkTextProperty p, int type)</code> -  Set/Get the text property.
+ If an integer argument is provided, you may provide different text
+ properties for different label types. The type is determined by an
+ optional type input array.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetLabelTextProperty (int type)</code> -  Set/Get the text property.
+ If an integer argument is provided, you may provide different text
+ properties for different label types. The type is determined by an
+ optional type input array.
+ </LI>
+<LI>  <code>obj.RenderOpaqueGeometry (vtkViewport viewport, vtkActor2D actor)</code> -  Draw the text to the screen at each input point.
+ </LI>
+<LI>  <code>obj.RenderOverlay (vtkViewport viewport, vtkActor2D actor)</code> -  Draw the text to the screen at each input point.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow )</code> -  Release any graphics resources that are being consumed by this actor.
+ </LI>
+<LI>  <code>vtkTransform = obj.GetTransform ()</code> -  The transform to apply to the labels before mapping to 2D.
+ </LI>
+<LI>  <code>obj.SetTransform (vtkTransform t)</code> -  The transform to apply to the labels before mapping to 2D.
+ </LI>
+<LI>  <code>int = obj.GetCoordinateSystem ()</code> -  Set/get the coordinate system used for output labels.
+ The output datasets may have point coordinates reported in the world space or display space.
+ </LI>
+<LI>  <code>obj.SetCoordinateSystem (int )</code> -  Set/get the coordinate system used for output labels.
+ The output datasets may have point coordinates reported in the world space or display space.
+ </LI>
+<LI>  <code>int = obj.GetCoordinateSystemMinValue ()</code> -  Set/get the coordinate system used for output labels.
+ The output datasets may have point coordinates reported in the world space or display space.
+ </LI>
+<LI>  <code>int = obj.GetCoordinateSystemMaxValue ()</code> -  Set/get the coordinate system used for output labels.
+ The output datasets may have point coordinates reported in the world space or display space.
+ </LI>
+<LI>  <code>obj.CoordinateSystemWorld ()</code> -  Set/get the coordinate system used for output labels.
+ The output datasets may have point coordinates reported in the world space or display space.
+ </LI>
+<LI>  <code>obj.CoordinateSystemDisplay ()</code> -  Return the modified time for this object.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Return the modified time for this object.
+ </LI>
+</UL>
+</BODY>
+</HTML>

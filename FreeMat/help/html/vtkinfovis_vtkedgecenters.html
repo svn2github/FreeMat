@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkEdgeCenters
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkEdgeCenters
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkEdgeCenters is a filter that takes as input any graph and 
+ generates on output points at the center of the cells in the dataset.
+ These points can be used for placing glyphs (vtkGlyph3D) or labeling 
+ (vtkLabeledDataMapper). (The center is the parametric center of the
+ cell, not necessarily the geometric or bounding box center.) The edge
+ attributes will be associated with the points on output.
+ 
+<P>
+To create an instance of class vtkEdgeCenters, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkEdgeCenters
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkEdgeCenters has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkEdgeCenters class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkEdgeCenters = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkEdgeCenters = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetVertexCells (int )</code> -  Enable/disable the generation of vertex cells.
+ </LI>
+<LI>  <code>int = obj.GetVertexCells ()</code> -  Enable/disable the generation of vertex cells.
+ </LI>
+<LI>  <code>obj.VertexCellsOn ()</code> -  Enable/disable the generation of vertex cells.
+ </LI>
+<LI>  <code>obj.VertexCellsOff ()</code> -  Enable/disable the generation of vertex cells.
+ </LI>
+</UL>
+</BODY>
+</HTML>

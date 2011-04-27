@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkQuadric
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkQuadric
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkQuadric evaluates the quadric function F(x,y,z) = a0*x^2 + a1*y^2 + 
+ a2*z^2 + a3*x*y + a4*y*z + a5*x*z + a6*x + a7*y + a8*z + a9. vtkQuadric is
+ a concrete implementation of vtkImplicitFunction.
+<P>
+To create an instance of class vtkQuadric, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkQuadric
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkQuadric has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkQuadric class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkQuadric = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkQuadric = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>double = obj.EvaluateFunction (double x[3])</code>
+ </LI>
+<LI>  <code>double = obj.EvaluateFunction (double x, double y, double z)</code>
+ </LI>
+<LI>  <code>obj.EvaluateGradient (double x[3], double g[3])</code>
+ </LI>
+<LI>  <code>obj.SetCoefficients (double a[10])</code>
+ </LI>
+<LI>  <code>obj.SetCoefficients (double a0, double a1, double a2, double a3, double a4, double a5, double a6, double a7, double a8, double a9)</code>
+ </LI>
+<LI>  <code>double = obj. GetCoefficients ()</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

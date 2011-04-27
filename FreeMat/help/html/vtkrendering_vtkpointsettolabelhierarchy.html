@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkPointSetToLabelHierarchy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkPointSetToLabelHierarchy
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+<P>
+ Every point in the input vtkPoints object is taken to be an
+ anchor point for a label. Statistics on the input points
+ are used to subdivide an octree referencing the points
+ until the points each octree node contains have a variance
+ close to the node size and a limited population (&lt; 100).
+<P>
+To create an instance of class vtkPointSetToLabelHierarchy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkPointSetToLabelHierarchy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkPointSetToLabelHierarchy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkPointSetToLabelHierarchy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkPointSetToLabelHierarchy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkPointSetToLabelHierarchy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetTargetLabelCount (int )</code> -  Set/get the "ideal" number of labels to associate with each node in the output hierarchy.
+ </LI>
+<LI>  <code>int = obj.GetTargetLabelCount ()</code> -  Set/get the "ideal" number of labels to associate with each node in the output hierarchy.
+ </LI>
+<LI>  <code>obj.SetMaximumDepth (int )</code> -  Set/get the maximum tree depth in the output hierarchy.
+ </LI>
+<LI>  <code>int = obj.GetMaximumDepth ()</code> -  Set/get the maximum tree depth in the output hierarchy.
+ </LI>
+<LI>  <code>obj.SetUseUnicodeStrings (bool )</code> -  Whether to use unicode strings.
+ </LI>
+<LI>  <code>bool = obj.GetUseUnicodeStrings ()</code> -  Whether to use unicode strings.
+ </LI>
+<LI>  <code>obj.UseUnicodeStringsOn ()</code> -  Whether to use unicode strings.
+ </LI>
+<LI>  <code>obj.UseUnicodeStringsOff ()</code> -  Whether to use unicode strings.
+ </LI>
+<LI>  <code>obj.SetLabelArrayName (string name)</code> -  Set/get the label array name.
+ </LI>
+<LI>  <code>string = obj.GetLabelArrayName ()</code> -  Set/get the label array name.
+ </LI>
+<LI>  <code>obj.SetSizeArrayName (string name)</code> -  Set/get the priority array name.
+ </LI>
+<LI>  <code>string = obj.GetSizeArrayName ()</code> -  Set/get the priority array name.
+ </LI>
+<LI>  <code>obj.SetPriorityArrayName (string name)</code> -  Set/get the priority array name.
+ </LI>
+<LI>  <code>string = obj.GetPriorityArrayName ()</code> -  Set/get the priority array name.
+ </LI>
+<LI>  <code>obj.SetIconIndexArrayName (string name)</code> -  Set/get the icon index array name.
+ </LI>
+<LI>  <code>string = obj.GetIconIndexArrayName ()</code> -  Set/get the icon index array name.
+ </LI>
+<LI>  <code>obj.SetOrientationArrayName (string name)</code> -  Set/get the text orientation array name.
+ </LI>
+<LI>  <code>string = obj.GetOrientationArrayName ()</code> -  Set/get the text orientation array name.
+ </LI>
+<LI>  <code>obj.SetBoundedSizeArrayName (string name)</code> -  Set/get the maximum text width (in world coordinates) array name.
+ </LI>
+<LI>  <code>string = obj.GetBoundedSizeArrayName ()</code> -  Set/get the maximum text width (in world coordinates) array name.
+ </LI>
+<LI>  <code>obj.SetTextProperty (vtkTextProperty tprop)</code> -  Set/get the text property assigned to the hierarchy.
+ </LI>
+<LI>  <code>vtkTextProperty = obj.GetTextProperty ()</code> -  Set/get the text property assigned to the hierarchy.
+ </LI>
+</UL>
+</BODY>
+</HTML>

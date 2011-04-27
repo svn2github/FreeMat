@@ -63,29 +63,26 @@ ans =
 (:,:,1,1,2) = 
  0 
 </PRE>
-<P>
 Note that these operations (where shifting involves only singleton dimensions)
 do not actually cause data to be resorted, only the size of the arrays change.
 This is not true for the following example, which triggers a call to <code>permute</code>:
 <PRE>
 --&gt; z = shiftdim(x,4);
 </PRE>
-<P>
  Note that <code>z</code> is now the transpose of <code>x</code>
 <PRE>
 --&gt; squeeze(x)
 
 ans = 
- 0 0 
- 0 3 
- 0 0 
+ 11  1 
+  0  0 
+  0  8 
 
 --&gt; squeeze(z)
 
 ans = 
- 0 0 0 
- 0 3 0 
+ 11  0  0 
+  1  0  8 
 </PRE>
-<P>
 </BODY>
 </HTML>

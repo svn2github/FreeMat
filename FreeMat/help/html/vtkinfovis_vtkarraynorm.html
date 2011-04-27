@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkArrayNorm
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkArrayNorm
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ Given an input matrix (vtkTypedArray&lt;double&gt;), computes the L-norm for each
+ vector along either dimension, storing the results in a dense output
+ vector (1D vtkDenseArray&lt;double&gt;).  The caller may optionally request the
+ inverse norm as output (useful for subsequent normalization), and may limit
+ the computation to a "window" of vector elements, to avoid data copying.
+<P>
+ .SECTION Thanks
+ Developed by Timothy M. Shead (tshead@sandia.gov) at Sandia National Laboratories.
+<P>
+To create an instance of class vtkArrayNorm, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkArrayNorm
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkArrayNorm has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkArrayNorm class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkArrayNorm = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkArrayNorm = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>int = obj.GetDimension ()</code> -  Controls the dimension along which norms will be computed.  For input matrices,
+ For input matrices, use "0" (rows) or "1" (columns). Default: 0
+ </LI>
+<LI>  <code>obj.SetDimension (int )</code> -  Controls the dimension along which norms will be computed.  For input matrices,
+ For input matrices, use "0" (rows) or "1" (columns). Default: 0
+ </LI>
+<LI>  <code>int = obj.GetL ()</code> -  Controls the L-value.  Default: 2
+ </LI>
+<LI>  <code>obj.SetL (int value)</code> -  Controls the L-value.  Default: 2
+ </LI>
+<LI>  <code>obj.SetInvert (int )</code> -  Controls whether to invert output values.  Default: false
+ </LI>
+<LI>  <code>int = obj.GetInvert ()</code> -  Controls whether to invert output values.  Default: false
+ </LI>
+</UL>
+</BODY>
+</HTML>

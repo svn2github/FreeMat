@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkEdgePoints
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkEdgePoints
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkEdgePoints is a filter that takes as input any dataset and 
+ generates for output a set of points that lie on an isosurface. The 
+ points are created by interpolation along cells edges whose end-points are 
+ below and above the contour value.
+<P>
+To create an instance of class vtkEdgePoints, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkEdgePoints
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkEdgePoints has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkEdgePoints class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkEdgePoints = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkEdgePoints = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetValue (double )</code> -  Set/get the contour value.
+ </LI>
+<LI>  <code>double = obj.GetValue ()</code> -  Set/get the contour value.
+ </LI>
+</UL>
+</BODY>
+</HTML>

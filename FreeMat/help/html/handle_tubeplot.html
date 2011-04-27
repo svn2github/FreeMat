@@ -48,12 +48,12 @@ and <code>surf</code>.
 </PRE>
 <P>
 returns <code>N x 3</code> matrices suitable for mesh or surf.
-
+<P>
 Note that the tube may pinch at points where the normal and binormal 
 misbehaves. It is suitable for general space curves, not ones that 
 contain straight sections. Normally the tube is calculated using the
 Frenet frame, making the tube minimally twisted except at inflexion points.
-
+<P>
 To deal with this problem there is an alternative frame:
 <PRE>
     tubeplot(x,y,z,r,v,s,vec)
@@ -72,12 +72,11 @@ Here is an example of a <code>tubeplot</code>.
 --&gt; tubeplot(x,y,z,0.14*sin(t*5)+.29,t,10);
 </PRE>
 <P>
-<P>
 <DIV ALIGN="CENTER">
 <IMG SRC="tubeplot1.png">
 </DIV>
 <P>
-
+<P>
  Written by Anders Sandberg, asa@nada.kth.se, 2005
  Website says the package is free for anybody to use.
  www.nada.kth.se/~asa/Ray/Tubeplot/tubeplot.html

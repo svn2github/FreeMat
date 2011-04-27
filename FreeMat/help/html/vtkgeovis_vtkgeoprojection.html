@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGeoProjection
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGeoProjection
+</H2>
+<P>
+Section: <A HREF=sec_vtkgeovis.html> Visualization Toolkit Geo Vis Classes </A>
+<H3>Usage</H3>
+ This class uses the PROJ.4 library to represent geographic coordinate
+ projections.
+<P>
+To create an instance of class vtkGeoProjection, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGeoProjection
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGeoProjection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGeoProjection class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkGeoProjection = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkGeoProjection = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetName (string )</code> -  Set/get the short name describing the projection you wish to use.
+ This defaults to "rpoly" for no reason other than I like it.
+ To get a list of valid values, use the GetNumberOfProjections() and
+ GetProjectionName(int) static methods.
+ </LI>
+<LI>  <code>string = obj.GetName ()</code> -  Set/get the short name describing the projection you wish to use.
+ This defaults to "rpoly" for no reason other than I like it.
+ To get a list of valid values, use the GetNumberOfProjections() and
+ GetProjectionName(int) static methods.
+ </LI>
+<LI>  <code>int = obj.GetIndex ()</code> -  Return the index of the current projection's type in the list of all projection types.
+ On error, this will return -1. On success, it returns a number in [0,GetNumberOfProjections()[.
+ </LI>
+<LI>  <code>string = obj.GetDescription ()</code> -  Get the description of a projection.
+ This will return NULL if the projection name is invalid.
+ </LI>
+<LI>  <code>obj.SetCentralMeridian (double )</code> -  Set/get the longitude which corresponds to the central meridian of the projection.
+ This defaults to 0, the Greenwich Meridian.
+ </LI>
+<LI>  <code>double = obj.GetCentralMeridian ()</code> -  Set/get the longitude which corresponds to the central meridian of the projection.
+ This defaults to 0, the Greenwich Meridian.
+ </LI>
+</UL>
+</BODY>
+</HTML>

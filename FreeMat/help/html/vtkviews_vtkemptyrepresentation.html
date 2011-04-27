@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkEmptyRepresentation
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkEmptyRepresentation
+</H2>
+<P>
+Section: <A HREF=sec_vtkviews.html> Visualization Toolkit View Classes </A>
+<H3>Usage</H3>
+<P>
+To create an instance of class vtkEmptyRepresentation, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkEmptyRepresentation
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkEmptyRepresentation has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkEmptyRepresentation class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkEmptyRepresentation = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkEmptyRepresentation = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort ()</code> -  Since this representation has no inputs, override superclass 
+ implementation with one that ignores "port" and "conn" and still allows it
+ to have an annotation output.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort (int port)</code> -  Since this representation has no inputs, override superclass 
+ implementation with one that ignores "port" and "conn" and still allows it
+ to have an annotation output.
+ </LI>
+<LI>  <code>vtkAlgorithmOutput = obj.GetInternalAnnotationOutputPort (int port, int conn)</code> -  Since this representation has no inputs, override superclass 
+ implementation with one that ignores "port" and "conn" and still allows it
+ to have an annotation output.
+ </LI>
+</UL>
+</BODY>
+</HTML>

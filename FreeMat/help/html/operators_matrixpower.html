@@ -19,12 +19,10 @@ combination of two operators, both of which have the same general syntax:
 <P>
 The exact action taken by this operator, and the size and type of the output, 
 depends on which of the two configurations of <code>a</code> and <code>b</code> is present:
-<OL>
-<LI>  <code>a</code> is a scalar, <code>b</code> is a square matrix
- </LI>
-<LI>  <code>a</code> is a square matrix, <code>b</code> is a scalar
- </LI>
-</OL>
+\begin{enumerate}
+  \item <code>a</code> is a scalar, <code>b</code> is a square matrix
+  \item <code>a</code> is a square matrix, <code>b</code> is a scalar
+\end{enumerate}
 <H3>Function Internals</H3>
 In the first case that <code>a</code> is a scalar, and <code>b</code> is a square matrix, the matrix power is defined in terms of the eigenvalue decomposition of <code>b</code>.  Let <code>b</code> have the following eigen-decomposition (problems arise with non-symmetric matrices <code>b</code>, so let us assume that <code>b</code> is symmetric):
 <P>
@@ -64,7 +62,6 @@ B =
     1.0000    0.2000 
     0.2000    1.0000 
 </PRE>
-<P>
 First, we raise <code>B</code> to the (scalar power) <code>A</code>:
 <PRE>
 --&gt; C = B^A
@@ -73,7 +70,6 @@ C =
     1.0150    0.2995 
     0.2995    1.0150 
 </PRE>
-<P>
 Next, we raise <code>A</code> to the matrix power <code>B</code>:
 <PRE>
 --&gt; C = A^B
@@ -82,6 +78,5 @@ C =
     1.5049    0.1218 
     0.1218    1.5049 
 </PRE>
-<P>
 </BODY>
 </HTML>

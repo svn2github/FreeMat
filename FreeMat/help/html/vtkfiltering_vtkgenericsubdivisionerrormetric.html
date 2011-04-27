@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkGenericSubdivisionErrorMetric
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkGenericSubdivisionErrorMetric
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ Objects of that class answer the following question during the cell
+ subdivision: "does the edge need to be subdivided?" through
+ RequiresEdgeSubdivision(). 
+ The answer depends on the criterium actually used in the subclass of this
+ abstract class: a geometric-based error
+ metric (variation of edge from a straight line), an attribute-based error
+ metric (variation of the active attribute/component value from a linear
+ ramp) , a view-depend error metric, ...
+ Cell subdivision is performed in the context of the adaptor
+ framework: higher-order, or complex cells, are automatically tessellated
+ into simplices so that they can be processed with conventional
+ visualization algorithms.
+<P>
+To create an instance of class vtkGenericSubdivisionErrorMetric, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkGenericSubdivisionErrorMetric
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkGenericSubdivisionErrorMetric has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkGenericSubdivisionErrorMetric class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard VTK type and error macros.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard VTK type and error macros.
+ </LI>
+<LI>  <code>vtkGenericSubdivisionErrorMetric = obj.NewInstance ()</code> -  Standard VTK type and error macros.
+ </LI>
+<LI>  <code>vtkGenericSubdivisionErrorMetric = obj.SafeDownCast (vtkObject o)</code> -  Standard VTK type and error macros.
+ </LI>
+<LI>  <code>int = obj.RequiresEdgeSubdivision (double leftPoint, double midPoint, double rightPoint, double alpha)</code> -  Does the edge need to be subdivided according to the implemented
+ computation?
+ The edge is defined by its `leftPoint' and its `rightPoint'.
+ `leftPoint', `midPoint' and `rightPoint' have to be initialized before
+ calling RequiresEdgeSubdivision().
+ Their format is global coordinates, parametric coordinates and
+ point centered attributes: xyx rst abc de...
+ `alpha' is the normalized abscissa of the midpoint along the edge.
+ (close to 0 means close to the left point, close to 1 means close to the
+ right point)
+ \pre leftPoint_exists: leftPoint!=0
+ \pre midPoint_exists: midPoint!=0
+ \pre rightPoint_exists: rightPoint!=0
+ \pre clamped_alpha: alpha&gt;0 &amp;&amp; alpha&lt;1
+ \pre valid_size: sizeof(leftPoint)=sizeof(midPoint)=sizeof(rightPoint)
+          =GetAttributeCollection()-&gt;GetNumberOfPointCenteredComponents()+6
+ </LI>
+<LI>  <code>double = obj.GetError (double leftPoint, double midPoint, double rightPoint, double alpha)</code> -  Return the error at the mid-point. The type of error depends on the state
+ of the concrete error metric. For instance, it can return an absolute
+ or relative error metric.
+ See RequiresEdgeSubdivision() for a description of the arguments.
+ \pre leftPoint_exists: leftPoint!=0
+ \pre midPoint_exists: midPoint!=0
+ \pre rightPoint_exists: rightPoint!=0
+ \pre clamped_alpha: alpha&gt;0 &amp;&amp; alpha&lt;1
+ \pre valid_size: sizeof(leftPoint)=sizeof(midPoint)=sizeof(rightPoint)
+          =GetAttributeCollection()-&gt;GetNumberOfPointCenteredComponents()+6
+ \post positive_result: result&gt;=0
+ </LI>
+<LI>  <code>obj.SetGenericCell (vtkGenericAdaptorCell cell)</code> -  The cell that the edge belongs to.
+ </LI>
+<LI>  <code>vtkGenericAdaptorCell = obj.GetGenericCell ()</code> -  The cell that the edge belongs to.
+ </LI>
+<LI>  <code>obj.SetDataSet (vtkGenericDataSet ds)</code> -  Set/Get the dataset to be tessellated.
+ </LI>
+<LI>  <code>vtkGenericDataSet = obj.GetDataSet ()</code> -  Set/Get the dataset to be tessellated.
+ </LI>
+</UL>
+</BODY>
+</HTML>

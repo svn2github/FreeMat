@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkImageWrapPad
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkImageWrapPad
+</H2>
+<P>
+Section: <A HREF=sec_vtkimaging.html> Visualization Toolkit Imaging Classes </A>
+<H3>Usage</H3>
+ vtkImageWrapPad performs a modulo operation on the output pixel index
+ to determine the source input index.  The new image extent of the
+ output has to be specified.  Input has to be the same scalar type as 
+ output.
+<P>
+To create an instance of class vtkImageWrapPad, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkImageWrapPad
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkImageWrapPad has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkImageWrapPad class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkImageWrapPad = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkImageWrapPad = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

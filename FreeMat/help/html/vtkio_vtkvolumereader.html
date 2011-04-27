@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolumeReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolumeReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+ vtkVolumeReader is a source object that reads image files.
+<P>
+ VolumeReader creates structured point datasets. The dimension of the 
+ dataset depends upon the number of files read. Reading a single file 
+ results in a 2D image, while reading more than one file results in a 
+ 3D volume.
+<P>
+ File names are created using FilePattern and FilePrefix as follows:
+ sprintf (filename, FilePattern, FilePrefix, number);
+ where number is in the range ImageRange[0] to ImageRange[1]. If
+ ImageRange[1] &lt;= ImageRange[0], then slice number ImageRange[0] is
+ read. Thus to read an image set ImageRange[0] = ImageRange[1] = slice 
+ number. The default behavior is to read a single file (i.e., image slice 1).
+<P>
+ The DataMask instance variable is used to read data files with imbedded
+ connectivity or segmentation information. For example, some data has
+ the high order bit set to indicate connected surface. The DataMask allows
+ you to select this data. Other important ivars include HeaderSize, which
+ allows you to skip over initial info, and SwapBytes, which turns on/off
+ byte swapping. Consider using vtkImageReader as a replacement.
+<P>
+To create an instance of class vtkVolumeReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolumeReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolumeReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolumeReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolumeReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolumeReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetFilePrefix (string )</code> -  Specify file prefix for the image file(s).
+ </LI>
+<LI>  <code>string = obj.GetFilePrefix ()</code> -  Specify file prefix for the image file(s).
+ </LI>
+<LI>  <code>obj.SetFilePattern (string )</code> -  The sprintf format used to build filename from FilePrefix and number.
+ </LI>
+<LI>  <code>string = obj.GetFilePattern ()</code> -  The sprintf format used to build filename from FilePrefix and number.
+ </LI>
+<LI>  <code>obj.SetImageRange (int , int )</code> -  Set the range of files to read.
+ </LI>
+<LI>  <code>obj.SetImageRange (int  a[2])</code> -  Set the range of files to read.
+ </LI>
+<LI>  <code>int = obj. GetImageRange ()</code> -  Set the range of files to read.
+ </LI>
+<LI>  <code>obj.SetDataSpacing (double , double , double )</code> -  Specify the spacing for the data.
+ </LI>
+<LI>  <code>obj.SetDataSpacing (double  a[3])</code> -  Specify the spacing for the data.
+ </LI>
+<LI>  <code>double = obj. GetDataSpacing ()</code> -  Specify the spacing for the data.
+ </LI>
+<LI>  <code>obj.SetDataOrigin (double , double , double )</code> -  Specify the origin for the data.
+ </LI>
+<LI>  <code>obj.SetDataOrigin (double  a[3])</code> -  Specify the origin for the data.
+ </LI>
+<LI>  <code>double = obj. GetDataOrigin ()</code> -  Specify the origin for the data.
+ </LI>
+<LI>  <code>vtkImageData = obj.GetImage (int ImageNumber)</code> -  Other objects make use of this method.
+ </LI>
+</UL>
+</BODY>
+</HTML>

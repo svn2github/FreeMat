@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkTextSource
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkTextSource
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+ vtkTextSource converts a text string into polygons.  This way you can 
+ insert text into your renderings. It uses the 9x15 font from X Windows.
+ You can specify if you want the background to be drawn or not. The
+ characters are formed by scan converting the raster font into
+ quadrilaterals. Colors are assigned to the letters using scalar data.
+ To set the color of the characters with the source's actor property, set
+ BackingOff on the text source and ScalarVisibilityOff on the associated
+ vtkPolyDataMapper. Then, the color can be set using the associated actor's
+ property.
+<P>
+ vtkVectorText generates higher quality polygonal representations of
+ characters.
+<P>
+To create an instance of class vtkTextSource, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkTextSource
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkTextSource has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkTextSource class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkTextSource = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkTextSource = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetText (string )</code> -  Set/Get the text to be drawn.
+ </LI>
+<LI>  <code>string = obj.GetText ()</code> -  Set/Get the text to be drawn.
+ </LI>
+<LI>  <code>obj.SetBacking (int )</code> -  Controls whether or not a background is drawn with the text.
+ </LI>
+<LI>  <code>int = obj.GetBacking ()</code> -  Controls whether or not a background is drawn with the text.
+ </LI>
+<LI>  <code>obj.BackingOn ()</code> -  Controls whether or not a background is drawn with the text.
+ </LI>
+<LI>  <code>obj.BackingOff ()</code> -  Controls whether or not a background is drawn with the text.
+ </LI>
+<LI>  <code>obj.SetForegroundColor (double , double , double )</code> -  Set/Get the foreground color. Default is white (1,1,1). ALpha is always 1.
+ </LI>
+<LI>  <code>obj.SetForegroundColor (double  a[3])</code> -  Set/Get the foreground color. Default is white (1,1,1). ALpha is always 1.
+ </LI>
+<LI>  <code>double = obj. GetForegroundColor ()</code> -  Set/Get the foreground color. Default is white (1,1,1). ALpha is always 1.
+ </LI>
+<LI>  <code>obj.SetBackgroundColor (double , double , double )</code> -  Set/Get the background color. Default is black (0,0,0). Alpha is always 1.
+ </LI>
+<LI>  <code>obj.SetBackgroundColor (double  a[3])</code> -  Set/Get the background color. Default is black (0,0,0). Alpha is always 1.
+ </LI>
+<LI>  <code>double = obj. GetBackgroundColor ()</code> -  Set/Get the background color. Default is black (0,0,0). Alpha is always 1.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -23,11 +23,11 @@ output <code>y</code> is the same size as the inputs, and is the element-wise
 product of <code>a</code> and <code>b</code>.  In the second case, either <code>a</code> or <code>b</code> is a scalar, 
 in which case <code>y</code> is the same size as the larger argument,
 and is the product of the scalar with each element of the other argument.
-
-
+<P>
+<P>
 The rules for manipulating types has changed in FreeMat 4.0.  See <code>typerules</code>
 for more details.
-
+<P>
 <H3>Function Internals</H3>
 There are three formulae for the dot-times operator, depending on the
 sizes of the three arguments.  In the most general case, in which 
@@ -59,7 +59,6 @@ is straightforward:
 ans = 
  24 
 </PRE>
-<P>
 Next, we multiply a scalar by a vector of values:
 <PRE>
 --&gt; 3.1 .* [2,4,5,6,7]
@@ -67,7 +66,6 @@ Next, we multiply a scalar by a vector of values:
 ans = 
     6.2000   12.4000   15.5000   18.6000   21.7000 
 </PRE>
-<P>
 With complex values
 <PRE>
 --&gt; a = 3 + 4*i
@@ -80,7 +78,6 @@ a =
 b = 
    6.0000 +  8.0000i 
 </PRE>
-<P>
 Finally, the element-wise version:
 <PRE>
 --&gt; a = [1,2;3,4]
@@ -101,6 +98,5 @@ c =
   2  6 
  18 28 
 </PRE>
-<P>
 </BODY>
 </HTML>

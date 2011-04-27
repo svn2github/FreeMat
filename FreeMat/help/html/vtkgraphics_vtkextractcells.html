@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkExtractCells
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkExtractCells
+</H2>
+<P>
+Section: <A HREF=sec_vtkgraphics.html> Visualization Toolkit Graphics Classes </A>
+<H3>Usage</H3>
+    Given a vtkDataSet and a list of cell Ids, create a vtkUnstructuredGrid
+    composed of these cells.  If the cell list is empty when vtkExtractCells 
+    executes, it will set up the ugrid, point and cell arrays, with no points, 
+    cells or data.
+<P>
+To create an instance of class vtkExtractCells, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkExtractCells
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkExtractCells has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkExtractCells class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkExtractCells = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkExtractCells = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetCellList (vtkIdList l)</code>
+ </LI>
+<LI>  <code>obj.AddCellList (vtkIdList l)</code>
+ </LI>
+<LI>  <code>obj.AddCellRange (vtkIdType from, vtkIdType to)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

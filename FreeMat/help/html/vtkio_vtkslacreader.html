@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkSLACReader
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkSLACReader
+</H2>
+<P>
+Section: <A HREF=sec_vtkio.html> Visualization Toolkit IO Classes </A>
+<H3>Usage</H3>
+<P>
+ A reader for a data format used by Omega3p, Tau3p, and several other tools
+ used at the Standford Linear Accelerator Center (SLAC).  The underlying
+ format uses netCDF to store arrays, but also imposes several conventions
+ to form an unstructured grid of elements.
+<P>
+<P>
+To create an instance of class vtkSLACReader, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkSLACReader
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkSLACReader has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkSLACReader class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkSLACReader = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkSLACReader = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>string = obj.GetMeshFileName ()</code>
+ </LI>
+<LI>  <code>obj.SetMeshFileName (string )</code>
+ </LI>
+<LI>  <code>obj.AddModeFileName (string fname)</code> -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+ </LI>
+<LI>  <code>obj.RemoveAllModeFileNames ()</code> -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+ </LI>
+<LI>  <code>int = obj.GetNumberOfModeFileNames ()</code> -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+ </LI>
+<LI>  <code>string = obj.GetModeFileName (int idx)</code> -  There may be one mode file (usually for actual modes) or multiple mode
+ files (which usually actually represent time series).  These methods
+ set and clear the list of mode files (which can be a single mode file).
+ </LI>
+<LI>  <code>int = obj.GetReadInternalVolume ()</code> -  If on, reads the internal volume of the data set.  Set to off by default.
+ </LI>
+<LI>  <code>obj.SetReadInternalVolume (int )</code> -  If on, reads the internal volume of the data set.  Set to off by default.
+ </LI>
+<LI>  <code>obj.ReadInternalVolumeOn ()</code> -  If on, reads the internal volume of the data set.  Set to off by default.
+ </LI>
+<LI>  <code>obj.ReadInternalVolumeOff ()</code> -  If on, reads the internal volume of the data set.  Set to off by default.
+ </LI>
+<LI>  <code>int = obj.GetReadExternalSurface ()</code> -  If on, reads the external surfaces of the data set.  Set to on by default.
+ </LI>
+<LI>  <code>obj.SetReadExternalSurface (int )</code> -  If on, reads the external surfaces of the data set.  Set to on by default.
+ </LI>
+<LI>  <code>obj.ReadExternalSurfaceOn ()</code> -  If on, reads the external surfaces of the data set.  Set to on by default.
+ </LI>
+<LI>  <code>obj.ReadExternalSurfaceOff ()</code> -  If on, reads the external surfaces of the data set.  Set to on by default.
+ </LI>
+<LI>  <code>int = obj.GetReadMidpoints ()</code> -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+ </LI>
+<LI>  <code>obj.SetReadMidpoints (int )</code> -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+ </LI>
+<LI>  <code>obj.ReadMidpointsOn ()</code> -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+ </LI>
+<LI>  <code>obj.ReadMidpointsOff ()</code> -  If on, reads midpoint information for external surfaces and builds
+ quadratic surface triangles.  Set to on by default.
+ </LI>
+<LI>  <code>int = obj.GetNumberOfVariableArrays ()</code> -  Variable array selection.
+ </LI>
+<LI>  <code>string = obj.GetVariableArrayName (int idx)</code> -  Variable array selection.
+ </LI>
+<LI>  <code>int = obj.GetVariableArrayStatus (string name)</code> -  Variable array selection.
+ </LI>
+<LI>  <code>obj.SetVariableArrayStatus (string name, int status)</code> -  Variable array selection.
+ </LI>
+</UL>
+</BODY>
+</HTML>

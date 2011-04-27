@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolumePicker
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolumePicker
+</H2>
+<P>
+Section: <A HREF=sec_vtkvolumerendering.html> Visualization Toolkit Volume Rendering Classes </A>
+<H3>Usage</H3>
+ vtkVolumePicker is a subclass of vtkCellPicker.  It has one
+ advantage over vtkCellPicker for volumes: it will be able to
+ correctly perform picking when CroppingPlanes are present.  This
+ isn't possible for vtkCellPicker since it doesn't link to
+ the VolumeRendering classes and hence cannot access information
+ about the CroppingPlanes.
+<P>
+<P>
+To create an instance of class vtkVolumePicker, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolumePicker
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolumePicker has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolumePicker class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolumePicker = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolumePicker = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetPickCroppingPlanes (int )</code> -  Set whether to pick the cropping planes of props that have them.
+ If this is set, then the pick will be done on the cropping planes
+ rather than on the data. The GetCroppingPlaneId() method will return
+ the index of the cropping plane of the volume that was picked.  This
+ setting is only relevant to the picking of volumes.
+ </LI>
+<LI>  <code>obj.PickCroppingPlanesOn ()</code> -  Set whether to pick the cropping planes of props that have them.
+ If this is set, then the pick will be done on the cropping planes
+ rather than on the data. The GetCroppingPlaneId() method will return
+ the index of the cropping plane of the volume that was picked.  This
+ setting is only relevant to the picking of volumes.
+ </LI>
+<LI>  <code>obj.PickCroppingPlanesOff ()</code> -  Set whether to pick the cropping planes of props that have them.
+ If this is set, then the pick will be done on the cropping planes
+ rather than on the data. The GetCroppingPlaneId() method will return
+ the index of the cropping plane of the volume that was picked.  This
+ setting is only relevant to the picking of volumes.
+ </LI>
+<LI>  <code>int = obj.GetPickCroppingPlanes ()</code> -  Set whether to pick the cropping planes of props that have them.
+ If this is set, then the pick will be done on the cropping planes
+ rather than on the data. The GetCroppingPlaneId() method will return
+ the index of the cropping plane of the volume that was picked.  This
+ setting is only relevant to the picking of volumes.
+ </LI>
+<LI>  <code>int = obj.GetCroppingPlaneId ()</code> -  Get the index of the cropping plane that the pick ray passed
+ through on its way to the prop. This will be set regardless
+ of whether PickCroppingPlanes is on.  The crop planes are ordered
+ as follows: xmin, xmax, ymin, ymax, zmin, zmax.  If the volume is
+ not cropped, the value will bet set to -1.
+ </LI>
+</UL>
+</BODY>
+</HTML>

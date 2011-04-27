@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkVolumeTextureMapper
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkVolumeTextureMapper
+</H2>
+<P>
+Section: <A HREF=sec_vtkvolumerendering.html> Visualization Toolkit Volume Rendering Classes </A>
+<H3>Usage</H3>
+ vtkVolumeTextureMapper is the abstract definition of a volume mapper
+ that uses a texture mapping approach.
+<P>
+To create an instance of class vtkVolumeTextureMapper, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkVolumeTextureMapper
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkVolumeTextureMapper has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkVolumeTextureMapper class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkVolumeTextureMapper = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkVolumeTextureMapper = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.Update ()</code> -  Update the volume rendering pipeline by updating the scalar input
+ </LI>
+<LI>  <code>obj.SetGradientEstimator (vtkEncodedGradientEstimator gradest)</code> -  Set / Get the gradient estimator used to estimate normals
+ </LI>
+<LI>  <code>vtkEncodedGradientEstimator = obj.GetGradientEstimator ()</code> -  Set / Get the gradient estimator used to estimate normals
+ </LI>
+<LI>  <code>vtkEncodedGradientShader = obj.GetGradientShader ()</code> -  Get the gradient shader.
+ </LI>
+</UL>
+</BODY>
+</HTML>

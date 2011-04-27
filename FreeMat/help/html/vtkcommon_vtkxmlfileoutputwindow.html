@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkXMLFileOutputWindow
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkXMLFileOutputWindow
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ Writes debug/warning/error output to an XML file. Uses prefined XML
+ tags for each text display method. The text is processed to replace
+ XML markup characters.
+ 
+   DisplayText - &lt;Text&gt;
+ 
+   DisplayErrorText - &lt;Error&gt;
+ 
+   DisplayWarningText - &lt;Warning&gt;
+ 
+   DisplayGenericWarningText - &lt;GenericWarning&gt;
+ 
+   DisplayDebugText - &lt;Debug&gt;
+ 
+ The method DisplayTag outputs the text unprocessed. To use this
+ class, instantiate it and then call SetInstance(this).
+<P>
+To create an instance of class vtkXMLFileOutputWindow, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkXMLFileOutputWindow
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkXMLFileOutputWindow has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkXMLFileOutputWindow class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkXMLFileOutputWindow = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkXMLFileOutputWindow = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.DisplayText (string )</code> -  Put the text into the log file. The text is processed to
+ replace &amp;, &lt;, &gt; with &amp;amp, &amp;lt, and &amp;gt.
+ Each display method outputs a different XML tag.
+ </LI>
+<LI>  <code>obj.DisplayErrorText (string )</code> -  Put the text into the log file. The text is processed to
+ replace &amp;, &lt;, &gt; with &amp;amp, &amp;lt, and &amp;gt.
+ Each display method outputs a different XML tag.
+ </LI>
+<LI>  <code>obj.DisplayWarningText (string )</code> -  Put the text into the log file. The text is processed to
+ replace &amp;, &lt;, &gt; with &amp;amp, &amp;lt, and &amp;gt.
+ Each display method outputs a different XML tag.
+ </LI>
+<LI>  <code>obj.DisplayGenericWarningText (string )</code> -  Put the text into the log file. The text is processed to
+ replace &amp;, &lt;, &gt; with &amp;amp, &amp;lt, and &amp;gt.
+ Each display method outputs a different XML tag.
+ </LI>
+<LI>  <code>obj.DisplayDebugText (string )</code> -  Put the text into the log file. The text is processed to
+ replace &amp;, &lt;, &gt; with &amp;amp, &amp;lt, and &amp;gt.
+ Each display method outputs a different XML tag.
+ </LI>
+<LI>  <code>obj.DisplayTag (string )</code> -  Put the text into the log file without processing it.
+ </LI>
+</UL>
+</BODY>
+</HTML>

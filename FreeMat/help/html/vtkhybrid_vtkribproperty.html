@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkRIBProperty
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkRIBProperty
+</H2>
+<P>
+Section: <A HREF=sec_vtkhybrid.html> Visualization Toolkit Hybrid Classes </A>
+<H3>Usage</H3>
+ vtkRIBProperty is a subclass of vtkProperty that allows the user to
+ specify named shaders for use with RenderMan. Both a surface shader
+ and displacement shader can be specified. Parameters for the shaders
+ can be declared and set.
+<P>
+<P>
+To create an instance of class vtkRIBProperty, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkRIBProperty
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkRIBProperty has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkRIBProperty class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkRIBProperty = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkRIBProperty = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSurfaceShader (string )</code> -  Specify the name of a surface shader.
+ </LI>
+<LI>  <code>string = obj.GetSurfaceShader ()</code> -  Specify the name of a surface shader.
+ </LI>
+<LI>  <code>obj.SetDisplacementShader (string )</code> -  Specify the name of a displacement shader.
+ </LI>
+<LI>  <code>string = obj.GetDisplacementShader ()</code> -  Specify the name of a displacement shader.
+ </LI>
+<LI>  <code>obj.SetVariable (string variable, string declaration)</code> -  Specify declarations for variables..
+ </LI>
+<LI>  <code>obj.AddVariable (string variable, string declaration)</code> -  Specify declarations for variables..
+ </LI>
+<LI>  <code>string = obj.GetDeclarations ()</code> -  Get variable declarations
+ </LI>
+<LI>  <code>obj.SetParameter (string parameter, string value)</code> -  Specify parameter values for variables.
+ </LI>
+<LI>  <code>obj.AddParameter (string parameter, string value)</code> -  Specify parameter values for variables.
+ </LI>
+<LI>  <code>string = obj.GetParameters ()</code> -  Get parameters.
+ </LI>
+</UL>
+</BODY>
+</HTML>

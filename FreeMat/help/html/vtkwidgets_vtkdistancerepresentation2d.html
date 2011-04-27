@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDistanceRepresentation2D
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDistanceRepresentation2D
+</H2>
+<P>
+Section: <A HREF=sec_vtkwidgets.html> Visualization Toolkit Widget Classes </A>
+<H3>Usage</H3>
+ The vtkDistanceRepresentation2D is a representation for the
+ vtkDistanceWidget. This representation consists of a measuring line (axis)
+ and two vtkHandleWidgets to place the end points of the line. Note that
+ this particular widget draws its representation in the overlay plane.
+<P>
+To create an instance of class vtkDistanceRepresentation2D, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDistanceRepresentation2D
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDistanceRepresentation2D has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDistanceRepresentation2D class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>vtkDistanceRepresentation2D = obj.NewInstance ()</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>vtkDistanceRepresentation2D = obj.SafeDownCast (vtkObject o)</code> -  Standard VTK methods.
+ </LI>
+<LI>  <code>double = obj.GetDistance ()</code> -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetPoint1WorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.GetPoint2WorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetPoint1WorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetPoint2WorldPosition (double pos[3])</code> -  Methods to Set/Get the coordinates of the two points defining
+ this representation. Note that methods are available for both
+ display and world coordinates.
+ </LI>
+<LI>  <code>obj.SetPoint1DisplayPosition (double pos[3])</code>
+ </LI>
+<LI>  <code>obj.SetPoint2DisplayPosition (double pos[3])</code>
+ </LI>
+<LI>  <code>obj.GetPoint1DisplayPosition (double pos[3])</code>
+ </LI>
+<LI>  <code>obj.GetPoint2DisplayPosition (double pos[3])</code>
+ </LI>
+<LI>  <code>vtkAxisActor2D = obj.GetAxis ()</code> -  Retrieve the vtkAxisActor2D used to draw the measurement axis. With this
+ properties can be set and so on.
+ </LI>
+<LI>  <code>obj.BuildRepresentation ()</code> -  Method to satisfy superclasses' API.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow w)</code> -  Methods required by vtkProp superclass.
+ </LI>
+<LI>  <code>int = obj.RenderOverlay (vtkViewport viewport)</code> -  Methods required by vtkProp superclass.
+ </LI>
+<LI>  <code>int = obj.RenderOpaqueGeometry (vtkViewport viewport)</code> -  Methods required by vtkProp superclass.
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -77,7 +77,6 @@ A =
  3 2 1 
  0 3 1 
 </PRE>
-<P>
 We first take the minimum along the columns, resulting in a row vector.
 <PRE>
 --&gt; min(A)
@@ -85,7 +84,6 @@ We first take the minimum along the columns, resulting in a row vector.
 ans = 
  0 1 1 
 </PRE>
-<P>
 Next, we take the minimum along the rows, resulting in a column vector.
 <PRE>
 --&gt; min(A,[],2)
@@ -95,7 +93,6 @@ ans =
  1 
  0 
 </PRE>
-<P>
 When the dimension argument is not supplied, <code>min</code> acts along the first 
 non-singular dimension.  For a row vector, this is the column direction:
 <PRE>
@@ -105,49 +102,46 @@ ans =
  2 
 </PRE>
 <P>
-
 For the two-argument version, we can compute the smaller of two arrays,
 as in this example:
 <PRE>
 --&gt; a = int8(100*randn(4))
 
 a = 
-   27   61 -128  -22 
-  -54  -74  -27  -61 
-   66 -128  127   34 
-  -13 -128   42   86 
+  -66  -74  -74   32 
+ -128  -14 -110 -128 
+  127  -96  -49   72 
+  127   50   83  120 
 
 --&gt; b = int8(100*randn(4))
 
 b = 
-   56   33  -15   17 
-  127  127   29  -97 
-   99  -45  117 -128 
-   56 -114  127  104 
+  -94  108  -99  -35 
+  127   50 -100  113 
+  -98  -39 -127 -107 
+  -12  127  103  -44 
 
 --&gt; min(a,b)
 
 ans = 
-   27   33 -128  -22 
-  -54  -74  -27  -97 
-   66 -128  117 -128 
-  -13 -128   42   86 
+  -94  -74  -99  -35 
+ -128  -14 -110 -128 
+  -98  -96 -127 -107 
+  -12   50   83  -44 
 </PRE>
-<P>
 Or alternately, we can compare an array with a scalar
 <PRE>
 --&gt; a = randn(2)
 
 a = 
-   -0.2804    0.3739 
-   -0.8883   -0.4260 
+    0.7713    0.6716 
+   -1.0581   -1.3734 
 
 --&gt; min(a,0)
 
 ans = 
-   -0.2804         0 
-   -0.8883   -0.4260 
+         0         0 
+   -1.0581   -1.3734 
 </PRE>
-<P>
 </BODY>
 </HTML>

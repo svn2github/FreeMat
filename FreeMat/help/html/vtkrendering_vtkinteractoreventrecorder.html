@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkInteractorEventRecorder
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkInteractorEventRecorder
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkInteractorEventRecorder records all VTK events invoked from a
+ vtkRenderWindowInteractor. The events are recorded to a
+ file. vtkInteractorEventRecorder can also be used to play those events
+ back and invoke them on an vtkRenderWindowInteractor. (Note: the events
+ can also be played back from a file or string.)
+<P>
+ The format of the event file is simple. It is:
+  EventName X Y ctrl shift keycode repeatCount keySym
+ The format also allows "#" comments.
+<P>
+To create an instance of class vtkInteractorEventRecorder, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkInteractorEventRecorder
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkInteractorEventRecorder has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkInteractorEventRecorder class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkInteractorEventRecorder = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkInteractorEventRecorder = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetEnabled (int )</code>
+ </LI>
+<LI>  <code>obj.SetInteractor (vtkRenderWindowInteractor iren)</code>
+ </LI>
+<LI>  <code>obj.SetFileName (string )</code> -  Set/Get the name of a file events should be written to/from.
+ </LI>
+<LI>  <code>string = obj.GetFileName ()</code> -  Set/Get the name of a file events should be written to/from.
+ </LI>
+<LI>  <code>obj.Record ()</code> -  Invoke this method to begin recording events. The events will be
+ recorded to the filename indicated.
+ </LI>
+<LI>  <code>obj.Play ()</code> -  Invoke this method to begin playing events from the current position.
+ The events will be played back from the filename indicated.
+ </LI>
+<LI>  <code>obj.Stop ()</code> -  Invoke this method to stop recording/playing events.
+ </LI>
+<LI>  <code>obj.Rewind ()</code> -  Rewind to the beginning of the file.
+ </LI>
+<LI>  <code>obj.SetReadFromInputString (int )</code> -  Enable reading from an InputString as compared to the default
+ behavior, which is to read from a file.
+ </LI>
+<LI>  <code>int = obj.GetReadFromInputString ()</code> -  Enable reading from an InputString as compared to the default
+ behavior, which is to read from a file.
+ </LI>
+<LI>  <code>obj.ReadFromInputStringOn ()</code> -  Enable reading from an InputString as compared to the default
+ behavior, which is to read from a file.
+ </LI>
+<LI>  <code>obj.ReadFromInputStringOff ()</code> -  Enable reading from an InputString as compared to the default
+ behavior, which is to read from a file.
+ </LI>
+<LI>  <code>obj.SetInputString (string )</code> -  Set/Get the string to read from.
+ </LI>
+<LI>  <code>string = obj.GetInputString ()</code> -  Set/Get the string to read from.
+ </LI>
+</UL>
+</BODY>
+</HTML>

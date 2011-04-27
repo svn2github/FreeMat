@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkQtLabelRenderStrategy
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkQtLabelRenderStrategy
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ This class uses Qt to render labels and compute sizes. The labels are
+ rendered to a QImage, then EndFrame() converts that image to a vtkImageData
+ and textures the image onto a quad spanning the render area.
+<P>
+To create an instance of class vtkQtLabelRenderStrategy, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkQtLabelRenderStrategy
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkQtLabelRenderStrategy has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkQtLabelRenderStrategy class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkQtLabelRenderStrategy = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkQtLabelRenderStrategy = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.StartFrame ()</code> -  Start a rendering frame. Renderer must be set.
+ </LI>
+<LI>  <code>obj.EndFrame ()</code> -  End a rendering frame.
+ </LI>
+<LI>  <code>obj.ReleaseGraphicsResources (vtkWindow window)</code> -  Release any graphics resources that are being consumed by this strategy.
+ The parameter window could be used to determine which graphic
+ resources to release.
+ </LI>
+</UL>
+</BODY>
+</HTML>

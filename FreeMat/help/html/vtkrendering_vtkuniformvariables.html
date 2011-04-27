@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkUniformVariables
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkUniformVariables
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+ vtkUniformVariables is a list of uniform variables attached to either a
+ vtkShader2 object or to a vtkShaderProgram2. Uniform variables on
+ a vtkShaderProgram2 override values of uniform variables on a vtkShader2.
+<P>
+To create an instance of class vtkUniformVariables, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkUniformVariables
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkUniformVariables has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkUniformVariables class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkUniformVariables = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkUniformVariables = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetUniformi (string name, int numberOfComponents, int value)</code> -  Set an integer uniform variable.
+ \pre name_exists: name!=0
+ \pre value_exists: value!=0
+ \pre valid_numberOfComponents: numberOfComponents&gt;=1 &amp;&amp; numberOfComponents&lt;=4
+ </LI>
+<LI>  <code>obj.SetUniformf (string name, int numberOfComponents, float value)</code> -  Set an float uniform variable.
+ \pre name_exists: name!=0
+ \pre value_exists: value!=0
+ \pre valid_numberOfComponents: numberOfComponents&gt;=1 &amp;&amp; numberOfComponents&lt;=4
+ </LI>
+<LI>  <code>obj.SetUniformiv (string name, int numberOfComponents, int numberOfElements, int value)</code> -  Set an array of integer uniform variables.
+ The array `value' is of size `numberOfElements'*`numberOfComponents.'.
+ \pre name_exists: name!=0
+ \pre value_exists: value!=0
+ \pre valid_numberOfComponents: numberOfComponents&gt;=1 &amp;&amp; numberOfComponents&lt;=4
+ \pre valid_numberOfElements: numberOfElements&gt;=1
+ </LI>
+<LI>  <code>obj.SetUniformfv (string name, int numberOfComponents, int numberOfElements, float value)</code> -  Set an array of float uniform variables.
+ The array `value' is of size `numberOfElements'*`numberOfComponents.'.
+ \pre name_exists: name!=0
+ \pre value_exists: value!=0
+ \pre valid_numberOfComponents: numberOfComponents&gt;=1 &amp;&amp; numberOfComponents&lt;=4
+ \pre valid_numberOfElements: numberOfElements&gt;=1
+ </LI>
+<LI>  <code>obj.SetUniformMatrix (string name, int rows, int columns, float value)</code> -  Set a matrix uniform variable.
+ \pre name_exists: name!=0
+ \pre value_exists: value!=0
+ \pre valid_rows:  rows&gt;=2 &amp;&amp; rows&lt;=4
+ \pre valid_columns: columns&gt;=2 &amp;&amp; columns&lt;=4
+ </LI>
+<LI>  <code>obj.RemoveUniform (string name)</code> -  Remove uniform `name' from the list.
+ </LI>
+<LI>  <code>obj.RemoveAllUniforms ()</code> -  Remove all uniforms from the list.
+ </LI>
+<LI>  <code>obj.Send (string name, int uniformIndex)</code> -  \pre need a valid OpenGL context and a shader program in use.
+ </LI>
+<LI>  <code>obj.Start ()</code> -  Place the internal cursor on the first uniform.
+ </LI>
+<LI>  <code>bool = obj.IsAtEnd ()</code> -  Is the iteration done?
+ </LI>
+<LI>  <code>string = obj.GetCurrentName ()</code> -  Name of the uniform at the current cursor position.
+ \pre not_done: !this-&gt;IsAtEnd()
+ </LI>
+<LI>  <code>obj.SendCurrentUniform (int uniformIndex)</code> -  \pre need a valid OpenGL context and a shader program in use.
+ \pre not_done: !this-&gt;IsAtEnd()
+ </LI>
+<LI>  <code>obj.Next ()</code> -  Move the cursor to the next uniform.
+ \pre not_done: !this-&gt;IsAtEnd()
+ </LI>
+<LI>  <code>obj.DeepCopy (vtkUniformVariables other)</code> -  Copy all the variables from `other'. Any existing variable will be
+ deleted first.
+ \pre other_exists: other!=0
+ \pre not_self: other!=this
+ </LI>
+<LI>  <code>obj.Merge (vtkUniformVariables other)</code> -  Copy all the variables from `other'. Any existing variable will be
+ overwritten.
+ \pre other_exists: other!=0
+ \pre not_self: other!=this
+ </LI>
+</UL>
+</BODY>
+</HTML>

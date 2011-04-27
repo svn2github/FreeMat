@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkThresholdTable
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkThresholdTable
+</H2>
+<P>
+Section: <A HREF=sec_vtkinfovis.html> Visualization Toolkit Infovis Classes </A>
+<H3>Usage</H3>
+ vtkThresholdTable uses minimum and/or maximum values to threshold
+ table rows based on the values in a particular column.
+ The column to threshold is specified using SetInputArrayToProcess(0, ...).
+<P>
+To create an instance of class vtkThresholdTable, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkThresholdTable
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkThresholdTable has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkThresholdTable class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkThresholdTable = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkThresholdTable = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetMode (int )</code> -  The mode of the threshold filter.  Options are:
+ ACCEPT_LESS_THAN (0) accepts rows with values &lt; MaxValue;
+ ACCEPT_GREATER_THAN (1) accepts rows with values &gt; MinValue;
+ ACCEPT_BETWEEN (2) accepts rows with values &gt; MinValue and &lt; MaxValue;
+ ACCEPT_OUTSIDE (3) accepts rows with values &lt; MinValue or &gt; MaxValue.
+ </LI>
+<LI>  <code>int = obj.GetModeMinValue ()</code> -  The mode of the threshold filter.  Options are:
+ ACCEPT_LESS_THAN (0) accepts rows with values &lt; MaxValue;
+ ACCEPT_GREATER_THAN (1) accepts rows with values &gt; MinValue;
+ ACCEPT_BETWEEN (2) accepts rows with values &gt; MinValue and &lt; MaxValue;
+ ACCEPT_OUTSIDE (3) accepts rows with values &lt; MinValue or &gt; MaxValue.
+ </LI>
+<LI>  <code>int = obj.GetModeMaxValue ()</code> -  The mode of the threshold filter.  Options are:
+ ACCEPT_LESS_THAN (0) accepts rows with values &lt; MaxValue;
+ ACCEPT_GREATER_THAN (1) accepts rows with values &gt; MinValue;
+ ACCEPT_BETWEEN (2) accepts rows with values &gt; MinValue and &lt; MaxValue;
+ ACCEPT_OUTSIDE (3) accepts rows with values &lt; MinValue or &gt; MaxValue.
+ </LI>
+<LI>  <code>int = obj.GetMode ()</code> -  The mode of the threshold filter.  Options are:
+ ACCEPT_LESS_THAN (0) accepts rows with values &lt; MaxValue;
+ ACCEPT_GREATER_THAN (1) accepts rows with values &gt; MinValue;
+ ACCEPT_BETWEEN (2) accepts rows with values &gt; MinValue and &lt; MaxValue;
+ ACCEPT_OUTSIDE (3) accepts rows with values &lt; MinValue or &gt; MaxValue.
+ </LI>
+<LI>  <code>obj.SetMinValue (double v)</code> -  The maximum value for the threshold as a double.
+ </LI>
+<LI>  <code>obj.SetMaxValue (double v)</code> -  Criterion is rows whose scalars are between lower and upper thresholds
+ (inclusive of the end values).
+ </LI>
+<LI>  <code>obj.ThresholdBetween (double lower, double upper)</code>
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkAssemblyNode
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkAssemblyNode
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkAssemblyNode represents a node in an assembly. It is used by
+ vtkAssemblyPath to create hierarchical assemblies of props. The
+ props can be either 2D or 3D.
+<P>
+ An assembly node refers to a vtkProp, and possibly a vtkMatrix4x4.
+ Nodes are used by vtkAssemblyPath to build fully evaluated path
+ (matrices are concatenated through the path) that is used by picking
+ and other operations involving assemblies.
+<P>
+To create an instance of class vtkAssemblyNode, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkAssemblyNode
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkAssemblyNode has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkAssemblyNode class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkAssemblyNode = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkAssemblyNode = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetViewProp (vtkProp prop)</code> -  Set/Get the prop that this assembly node refers to.
+ </LI>
+<LI>  <code>vtkProp = obj.GetViewProp ()</code> -  Set/Get the prop that this assembly node refers to.
+ </LI>
+<LI>  <code>obj.SetMatrix (vtkMatrix4x4 matrix)</code> -  Specify a transformation matrix associated with the prop.
+ Note: if the prop is not a type of vtkProp3D, then the
+ transformation matrix is ignored (and expected to be NULL).
+ Also, internal to this object the matrix is copied because
+ the matrix is used for computation by vtkAssemblyPath.
+ </LI>
+<LI>  <code>vtkMatrix4x4 = obj.GetMatrix ()</code> -  Specify a transformation matrix associated with the prop.
+ Note: if the prop is not a type of vtkProp3D, then the
+ transformation matrix is ignored (and expected to be NULL).
+ Also, internal to this object the matrix is copied because
+ the matrix is used for computation by vtkAssemblyPath.
+ </LI>
+<LI>  <code>long = obj.GetMTime ()</code> -  Override the standard GetMTime() to check for the modified times
+ of the prop and matrix.
+ </LI>
+<LI>  <code>obj.SetProp (vtkProp prop)</code> -  @deprecated Replaced by vtkAssemblyNode::SetViewProp() as of VTK 5.0.
+ </LI>
+<LI>  <code>vtkProp = obj.GetProp ()</code> -  @deprecated Replaced by vtkAssemblyNode::GetViewProp() as of VTK 5.0.
+ </LI>
+</UL>
+</BODY>
+</HTML>

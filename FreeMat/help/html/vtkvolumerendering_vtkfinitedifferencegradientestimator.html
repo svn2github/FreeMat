@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkFiniteDifferenceGradientEstimator
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkFiniteDifferenceGradientEstimator
+</H2>
+<P>
+Section: <A HREF=sec_vtkvolumerendering.html> Visualization Toolkit Volume Rendering Classes </A>
+<H3>Usage</H3>
+  vtkFiniteDifferenceGradientEstimator is a concrete subclass of 
+  vtkEncodedGradientEstimator that uses a central differences technique to
+  estimate the gradient. The gradient at some sample location (x,y,z)
+  would be estimated by:
+      
+       nx = (f(x-dx,y,z) - f(x+dx,y,z)) / 2*dx;
+       ny = (f(x,y-dy,z) - f(x,y+dy,z)) / 2*dy;
+       nz = (f(x,y,z-dz) - f(x,y,z+dz)) / 2*dz;
+<P>
+  This value is normalized to determine a unit direction vector and a
+  magnitude. The normal is computed in voxel space, and 
+  dx = dy = dz = SampleSpacingInVoxels. A scaling factor is applied to
+  convert this normal from voxel space to world coordinates.
+<P>
+<P>
+To create an instance of class vtkFiniteDifferenceGradientEstimator, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkFiniteDifferenceGradientEstimator
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkFiniteDifferenceGradientEstimator has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkFiniteDifferenceGradientEstimator class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkFiniteDifferenceGradientEstimator = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkFiniteDifferenceGradientEstimator = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.SetSampleSpacingInVoxels (int )</code> -  Set/Get the spacing between samples for the finite differences
+ method used to compute the normal. This spacing is in voxel units.
+ </LI>
+<LI>  <code>int = obj.GetSampleSpacingInVoxels ()</code> -  Set/Get the spacing between samples for the finite differences
+ method used to compute the normal. This spacing is in voxel units.
+ </LI>
+</UL>
+</BODY>
+</HTML>

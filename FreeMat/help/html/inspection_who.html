@@ -46,20 +46,18 @@ Here is an example of the general use of <code>who</code>, which lists all of th
 --&gt; p = randn(1,256);
 --&gt; who
   Variable Name       Type   Flags             Size
-              c    double                    [1 3]
-              f      char                    [1 5]
-              p    double                    [1 256]
+              c    double                    [1x3]
+              f      char                    [1x5]
+              p    double                    [1x256]
 </PRE>
-<P>
 In the second case, we examine only a specific variable:
 <PRE>
 --&gt; who c
   Variable Name       Type   Flags             Size
-              c    double                    [1 3]
+              c    double                    [1x3]
 --&gt; who('c')
   Variable Name       Type   Flags             Size
-              c    double                    [1 3]
+              c    double                    [1x3]
 </PRE>
-<P>
 </BODY>
 </HTML>

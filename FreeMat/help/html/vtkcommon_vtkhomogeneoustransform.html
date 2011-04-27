@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkHomogeneousTransform
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkHomogeneousTransform
+</H2>
+<P>
+Section: <A HREF=sec_vtkcommon.html> Visualization Toolkit Common Classes </A>
+<H3>Usage</H3>
+ vtkHomogeneousTransform provides a generic interface for homogeneous 
+ transformations, i.e. transformations which can be represented by 
+ multiplying a 4x4 matrix with a homogeneous coordinate. 
+<P>
+To create an instance of class vtkHomogeneousTransform, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkHomogeneousTransform
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkHomogeneousTransform has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkHomogeneousTransform class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkHomogeneousTransform = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkHomogeneousTransform = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.TransformPoints (vtkPoints inPts, vtkPoints outPts)</code> -  Apply the transformation to a series of points, and append the
+ results to outPts.  
+ </LI>
+<LI>  <code>obj.TransformPointsNormalsVectors (vtkPoints inPts, vtkPoints outPts, vtkDataArray inNms, vtkDataArray outNms, vtkDataArray inVrs, vtkDataArray outVrs)</code> -  Apply the transformation to a combination of points, normals
+ and vectors.  
+ </LI>
+<LI>  <code>obj.GetMatrix (vtkMatrix4x4 m)</code> -  Get a copy of the internal transformation matrix.  The
+ transform is Updated first, to guarantee that the matrix
+ is valid.
+ </LI>
+<LI>  <code>vtkMatrix4x4 = obj.GetMatrix ()</code> -  Get a pointer to an internal vtkMatrix4x4 that represents
+ the transformation.  An Update() is called on the transform
+ to ensure that the matrix is up-to-date when you get it.
+ You should not store the matrix pointer anywhere because it
+ might become stale.
+ </LI>
+<LI>  <code>vtkHomogeneousTransform = obj.GetHomogeneousInverse ()</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+<LI>  <code>obj.InternalTransformPoint (float in[3], float out[3])</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+<LI>  <code>obj.InternalTransformPoint (double in[3], double out[3])</code> -  This will calculate the transformation without calling Update.
+ Meant for use only within other VTK classes.
+ </LI>
+</UL>
+</BODY>
+</HTML>

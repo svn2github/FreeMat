@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkDataSetCollection
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkDataSetCollection
+</H2>
+<P>
+Section: <A HREF=sec_vtkfiltering.html> Visualization Toolkit Filtering Classes </A>
+<H3>Usage</H3>
+ vtkDataSetCollection is an object that creates and manipulates lists of
+ datasets. See also vtkCollection and subclasses.
+<P>
+To create an instance of class vtkDataSetCollection, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkDataSetCollection
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkDataSetCollection has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkDataSetCollection class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkDataSetCollection = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkDataSetCollection = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.AddItem (vtkDataSet ds)</code> -  Get the next dataset in the list.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetNextItem ()</code> -  Get the next dataset in the list.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetNextDataSet ()</code> -  Get the next dataset in the list.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetItem (int i)</code> -  Get the ith dataset in the list.
+ </LI>
+<LI>  <code>vtkDataSet = obj.GetDataSet (int i)</code> -  Get the ith dataset in the list.
+ </LI>
+</UL>
+</BODY>
+</HTML>

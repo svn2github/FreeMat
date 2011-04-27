@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<HTML>
+<HEAD>
+<TITLE>vtkOpenGLPainterDeviceAdapter
+</TITLE>
+</HEAD>
+<BODY>
+<H2>vtkOpenGLPainterDeviceAdapter
+</H2>
+<P>
+Section: <A HREF=sec_vtkrendering.html> Visualization Toolkit Rendering Classes </A>
+<H3>Usage</H3>
+<P>
+ An adapter between vtkPainter and the OpenGL rendering system.  Only a
+ handful of attributes with special meaning are supported.  The OpenGL
+ attribute used for each attribute is given below.
+<P>
+ \verbatim
+ vtkDataSetAttributes::NORMALS          glNormal
+ vtkDataSetAttributes:::SCALARS         glColor
+ vtkDataSetAttributes::TCOORDS          glTexCoord
+ vtkDataSetAttributes::NUM_ATTRIBUTES   glVertex
+ \endverbatim
+<P>
+<P>
+To create an instance of class vtkOpenGLPainterDeviceAdapter, simply
+invoke its constructor as follows
+<PRE>
+  obj = vtkOpenGLPainterDeviceAdapter
+</PRE>
+<P>
+<H3>Methods</H3>
+The class vtkOpenGLPainterDeviceAdapter has several methods that can be used.
+  They are listed below.
+Note that the documentation is translated automatically from the VTK sources,
+and may not be completely intelligible.  When in doubt, consult the VTK website.
+In the methods listed below, <code>obj</code> is an instance of the vtkOpenGLPainterDeviceAdapter class.
+<UL>
+<LI>  <code>string = obj.GetClassName ()</code>
+ </LI>
+<LI>  <code>int = obj.IsA (string name)</code>
+ </LI>
+<LI>  <code>vtkOpenGLPainterDeviceAdapter = obj.NewInstance ()</code>
+ </LI>
+<LI>  <code>vtkOpenGLPainterDeviceAdapter = obj.SafeDownCast (vtkObject o)</code>
+ </LI>
+<LI>  <code>obj.BeginPrimitive (int mode)</code> -  Converts mode from VTK_* to GL_* and calls glBegin.
+ </LI>
+<LI>  <code>obj.EndPrimitive ()</code> -  Calls glEnd.
+ </LI>
+<LI>  <code>int = obj.IsAttributesSupported (int attribute)</code> -  Returns if the given attribute type is supported by the device.
+ Returns 1 is supported, 0 otherwise.
+ </LI>
+<LI>  <code>obj.EnableAttributeArray (int index)</code> -  Calls glEnableClientState or glDisableClientState.
+ </LI>
+<LI>  <code>obj.DisableAttributeArray (int index)</code> -  Calls glEnableClientState or glDisableClientState.
+ </LI>
+<LI>  <code>obj.DrawArrays (int mode, vtkIdType first, vtkIdType count)</code> -  Calls glDrawArrays.  Mode is converted from VTK_* to GL_*.
+ </LI>
+<LI>  <code>int = obj.Compatible (vtkRenderer renderer)</code> -  Returns true if renderer is a vtkOpenGLRenderer.
+ </LI>
+<LI>  <code>obj.MakeLighting (int mode)</code> -  Turns lighting on and off.
+ </LI>
+<LI>  <code>int = obj.QueryLighting ()</code> -  Returns current lighting setting.
+ </LI>
+<LI>  <code>obj.MakeMultisampling (int mode)</code> -  Turns antialiasing on and off.
+ </LI>
+<LI>  <code>int = obj.QueryMultisampling ()</code> -  Returns current antialiasing setting.
+ </LI>
+<LI>  <code>obj.MakeBlending (int mode)</code> -  Turns blending on and off.
+ </LI>
+<LI>  <code>int = obj.QueryBlending ()</code> -  Returns current blending setting.
+ </LI>
+<LI>  <code>obj.MakeVertexEmphasis (bool mode)</code> -  Turns emphasis of vertices on or off for vertex selection.
+ When emphasized verts are drawn nearer to the camera and are drawn 
+ larger than normal to make selection of them more reliable.
+ </LI>
+<LI>  <code>obj.MakeVertexEmphasisWithStencilCheck (int mode)</code> -  @deprecated
+ </LI>
+<LI>  <code>obj.Stencil (int on)</code> -  Control use of the stencil buffer (for vertex selection).
+ </LI>
+<LI>  <code>obj.WriteStencil (vtkIdType value)</code> -  Control use of the stencil buffer (for vertex selection).
+ </LI>
+<LI>  <code>obj.TestStencil (vtkIdType value)</code> -  Control use of the stencil buffer (for vertex selection).
+ </LI>
+</UL>
+</BODY>
+</HTML>

@@ -27,3 +27,17 @@ binary Bitwise Operations
 thread FreeMat Threads
 function Function Related Functions
 external FreeMat External Interface
+vtkcommon Visualization Toolkit Common Classes
+vtkfiltering Visualization Toolkit Filtering Classes
+vtkgeovis Visualization Toolkit Geo Vis Classes
+vtkgraphics Visualization Toolkit Graphics Classes
+vtkhybrid Visualization Toolkit Hybrid Classes
+vtkimaging Visualization Toolkit Imaging Classes
+vtkinfovis Visualization Toolkit Infovis Classes
+vtkio Visualization Toolkit IO Classes
+vtkparallel Visualization Toolkit Parallel Classes
+vtkrendering Visualization Toolkit Rendering Classes
+vtkviews Visualization Toolkit View Classes
+vtkvolumerendering Visualization Toolkit Volume Rendering Classes
+vtkwidgets Visualization Toolkit Widget Classes
+

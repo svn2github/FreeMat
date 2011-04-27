@@ -26,10 +26,13 @@ function fraggen(fname)
 	cmdlist = [cmdlist,{pline}];
       end
       fclose(fp);
+      wd = pwd;
       etext = threadcall(exec_id,100000,'simkeys',cmdlist);
+      cd(wd);
       etext = regexprep(etext,'(--> mprint[^\n]*\n)','');
       etext = regexprep(etext,'[\n]*--> quit\n',sprintf('\n'));
-      if (threadcall(exec_id,100000,'errorcount') ~= errors_expected)
+      errors_occured = threadcall(exec_id,100000,'errorcount');
+      if (errors_occured ~= errors_expected)
 	     keyboard
         error('Error count mismatch on block');
       end

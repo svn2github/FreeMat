@@ -20,7 +20,7 @@
 %of intermediate storage required.
 %@<
 %I = speye(5000);
-%which I
+%who I
 %full(I(1:10,1:10))
 %@>
 %@@Tests

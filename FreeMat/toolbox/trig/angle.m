@@ -1,4 +1,4 @@
-% ANGLE ANGLE Phase Angle Function
+% ANGLE Phase Angle Function
 % 
 % Usage
 % 

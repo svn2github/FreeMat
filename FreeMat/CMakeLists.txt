@@ -442,4 +442,26 @@ ENDIF(APPLE)
 INCLUDE(CPack)
 
 #TODO Handle gfortran vs g77 issue: libgfortran vs libg2c
+
+add_custom_target( helpgen
+	COMMENT "Building help files"
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
+	COMMAND ${FreeMat_Loc} "-nogui" "-f" "fraggen ${CMAKE_SOURCE_DIR}/help/tmp"
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
+	VERBATIM
+	)
+add_custom_target( helpgen_fast
+	COMMENT "Building help files (no fragment generation)"
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
+	VERBATIM
+	)
+
+#add_custom_target( fraggen
+#	COMMENT "Generating help files"
+#	VERBATIM
+#	)
+
 WRITE_OUT_ALL_VARIABLES()

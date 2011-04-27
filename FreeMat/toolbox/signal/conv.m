@@ -1,4 +1,4 @@
-% CONV CONV Convolution Function
+% CONV Convolution Function
 % 
 % Usage
 % 

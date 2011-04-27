@@ -1,4 +1,4 @@
-% ADDPATH ADDPATH Add 
+% ADDPATH Add 
 % 
 % Usage
 % 

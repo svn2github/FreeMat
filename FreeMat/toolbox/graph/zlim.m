@@ -1,4 +1,4 @@
-% ZLIM ZLIM Adjust Z Axis limits of plot
+% ZLIM Adjust Z Axis limits of plot
 % 
 % Usage
 % 

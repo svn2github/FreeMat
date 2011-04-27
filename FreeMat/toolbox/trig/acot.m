@@ -1,4 +1,4 @@
-% ACOT ACOT Inverse Cotangent Function
+% ACOT Inverse Cotangent Function
 % 
 % Usage
 % 

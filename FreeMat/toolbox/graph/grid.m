@@ -1,4 +1,4 @@
-% GRID GRID Plot Grid Toggle Function
+% GRID Plot Grid Toggle Function
 % 
 % Usage
 % 

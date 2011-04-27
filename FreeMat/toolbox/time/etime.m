@@ -1,4 +1,4 @@
-% ETIME ETIME Elapsed Time Function
+% ETIME Elapsed Time Function
 % 
 % Usage
 % 

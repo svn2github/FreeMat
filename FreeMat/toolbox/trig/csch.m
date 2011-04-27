@@ -1,4 +1,4 @@
-% CSCH CSCH Hyperbolic Cosecant Function
+% CSCH Hyperbolic Cosecant Function
 % 
 % Usage
 % 

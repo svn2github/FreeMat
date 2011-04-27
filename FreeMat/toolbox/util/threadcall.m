@@ -1,4 +1,4 @@
-% THREADCALL THREADCALL Call Function In A Thread
+% THREADCALL Call Function In A Thread
 % 
 % Usage
 % 

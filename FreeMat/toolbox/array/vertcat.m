@@ -1,4 +1,4 @@
-% VERTCAT VERTCAT Overloaded Vertical Concatenation
+% VERTCAT Overloaded Vertical Concatenation
 % 
 % Usage
 % 
@@ -14,16 +14,6 @@
 % 
 % when one of the variables is a class.  The exact meaning of 
 % vertical concatenation depends on the class you have designed.
-% VERTCAT VERTCAT Horizontal Array Concatenation
-% 
-% Usage
-% 
-% This function concatenates arrays vertically (along the row
-% dimension).  The syntax for its use is
-% 
-%    d = vertcat(a,b,c)
-% 
-% which is equivalent to the statement d = [a;b;c].
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

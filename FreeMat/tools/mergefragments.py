@@ -43,7 +43,6 @@ pngs = glob.glob(basedir+'/tmp/*.png')
 for png in pngs:
     fname = os.path.basename(png)
     print("Copying file %s to latex/html directories"%(fname))
-    shutil.copyfile(png,basedir+'/latex/'+fname)
     shutil.copyfile(png,basedir+'/html/'+fname)
 jpgs = glob.glob(basedir+'/tmp/*.jpg')
 for jpg in jpgs:

@@ -1,4 +1,4 @@
-% IND2SUB IND2SUB Convert Linear Indexing To Multiple Indexing 
+% IND2SUB Convert Linear Indexing To Multiple Indexing 
 % 
 % Usage
 % 

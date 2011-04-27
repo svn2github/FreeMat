@@ -1,4 +1,4 @@
-% SHIFTDIM SHIFTDIM Shift Array Dimensions Function
+% SHIFTDIM Shift Array Dimensions Function
 % 
 % Usage
 % 

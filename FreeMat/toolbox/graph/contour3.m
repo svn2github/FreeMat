@@ -1,4 +1,4 @@
-% CONTOUR3 CONTOUR3 3D Contour Plot Function
+% CONTOUR3 3D Contour Plot Function
 % 
 % Usage
 % 

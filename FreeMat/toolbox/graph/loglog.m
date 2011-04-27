@@ -1,4 +1,4 @@
-% LOGLOG LOGLOG Log-Log Plot Function
+% LOGLOG Log-Log Plot Function
 % 
 % Usage
 % 

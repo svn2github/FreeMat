@@ -1,4 +1,4 @@
-% XLABEL XLABEL Plot X-axis Label Function
+% XLABEL Plot X-axis Label Function
 % 
 % Usage
 % 

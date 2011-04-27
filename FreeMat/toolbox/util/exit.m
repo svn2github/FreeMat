@@ -1,4 +1,4 @@
-% EXIT EXIT Exit Program
+% EXIT Exit Program
 % 
 % Usage
 % 

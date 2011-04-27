@@ -1,4 +1,4 @@
-% NDIMS NDIMS Number of Dimensions in Array
+% NDIMS Number of Dimensions in Array
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% MKDIR MKDIR Make Directory
+% MKDIR Make Directory
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% FFTN FFTN N-Dimensional Forward FFT 
+% FFTN N-Dimensional Forward FFT 
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% DEG2RAD DEG2RAD Convert From Degrees To Radians
+% DEG2RAD Convert From Degrees To Radians
 % 
 % Usage
 % 

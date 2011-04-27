@@ -1,4 +1,4 @@
-% ISDIGIT ISDIGIT Test for Digit Characters in a String
+% ISDIGIT Test for Digit Characters in a String
 % 
 % Usage
 % 

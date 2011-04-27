@@ -1,4 +1,4 @@
-% RANK RANK Calculate the Rank of a Matrix
+% RANK Calculate the Rank of a Matrix
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% LOWER LOWER Convert strings to lower case
+% LOWER Convert strings to lower case
 % 
 % Usage
 % 

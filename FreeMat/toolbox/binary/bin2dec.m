@@ -1,4 +1,4 @@
-% BIN2DEC BIN2DEC Convert Binary String to Decimal
+% BIN2DEC Convert Binary String to Decimal
 % 
 % Usage
 % 

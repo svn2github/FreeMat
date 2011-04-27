@@ -1,4 +1,4 @@
-% WAVREAD WAVREAD Read a WAV Audio File
+% WAVREAD Read a WAV Audio File
 % 
 % Usage
 % 

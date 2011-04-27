@@ -1,4 +1,4 @@
-% SYMVAR SYMVAR Find Symbolic Variables in an Expression
+% SYMVAR Find Symbolic Variables in an Expression
 % 
 % Usage
 % 

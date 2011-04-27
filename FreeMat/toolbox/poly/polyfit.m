@@ -1,4 +1,4 @@
-% POLYFIT POLYFIT Fit Polynomial To Data
+% POLYFIT Fit Polynomial To Data
 % 
 % Usage
 % 

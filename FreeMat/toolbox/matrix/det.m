@@ -1,4 +1,4 @@
-% DET DET Determinant of a Matrix
+% DET Determinant of a Matrix
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% CSVREAD CSVREAD Read Comma Separated Value (CSV) File
+% CSVREAD Read Comma Separated Value (CSV) File
 % 
 % Usage
 % 

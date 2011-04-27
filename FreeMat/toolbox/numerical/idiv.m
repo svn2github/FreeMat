@@ -1,4 +1,4 @@
-% IDIV IDIV Integer Division Operation
+% IDIV Integer Division Operation
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% CTYPEWRITE CTYPEWRITE Write a C Typedef To File
+% CTYPEWRITE Write a C Typedef To File
 % 
 
 % Copyright (c) 2002-2007 Samit Basu

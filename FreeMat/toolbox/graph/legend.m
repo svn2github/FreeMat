@@ -1,4 +1,4 @@
-% LEGEND LEGEND Add Legent to Plot
+% LEGEND Add Legent to Plot
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% MAXDIM MAXDIM Maximum Dimension in Array
+% MAXDIM Maximum Dimension in Array
 % 
 % Usage
 % 

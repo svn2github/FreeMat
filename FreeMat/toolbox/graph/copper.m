@@ -1,4 +1,4 @@
-% COPPER COPPER Copper Colormap
+% COPPER Copper Colormap
 % 
 % Usage
 % 

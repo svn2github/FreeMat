@@ -1,4 +1,4 @@
-% NDGRID NDGRID Generate N-Dimensional Grid
+% NDGRID Generate N-Dimensional Grid
 % 
 % Usage
 % 

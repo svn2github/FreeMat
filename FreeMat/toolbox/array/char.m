@@ -1,4 +1,4 @@
-% CHAR CHAR Convert to character array or string
+% CHAR Convert to character array or string
 % 
 % Usage
 % 

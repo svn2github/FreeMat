@@ -1,4 +1,4 @@
-% NEWPLOT NEWPLOT Get Handle For Next Plot
+% NEWPLOT Get Handle For Next Plot
 % 
 % Usage
 % 

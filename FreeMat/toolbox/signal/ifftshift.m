@@ -1,4 +1,4 @@
-% IFFTSHIFT IFFTSHIFT Inverse Shift FFT Output
+% IFFTSHIFT Inverse Shift FFT Output
 % 
 % Usage
 % 

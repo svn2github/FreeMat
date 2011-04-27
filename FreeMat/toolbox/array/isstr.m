@@ -1,4 +1,4 @@
-% ISSTR ISSTR Test For Character Array (string)
+% ISSTR Test For Character Array (string)
 % 
 % Usage
 % 

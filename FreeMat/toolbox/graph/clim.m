@@ -1,4 +1,4 @@
-% CLIM CLIM Adjust Color limits of plot
+% CLIM Adjust Color limits of plot
 % 
 % Usage
 % 

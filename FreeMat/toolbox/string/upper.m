@@ -1,4 +1,4 @@
-% UPPER UPPER Convert strings to upper case
+% UPPER Convert strings to upper case
 % 
 % Usage
 % 

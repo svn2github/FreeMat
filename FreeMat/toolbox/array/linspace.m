@@ -1,4 +1,4 @@
-% LINSPACE LINSPACE Linearly Spaced Vector
+% LINSPACE Linearly Spaced Vector
 % 
 % Usage
 % 
@@ -18,5 +18,9 @@ function y = linspace(a,b,len)
   if (nargin < 3)
     len = 100;
   end
-  y = a + ((0:(len-1))*(b-a)/(floor(len)-1));
+  if (a == b)
+      y = a*ones(1,len);
+  else
+      y = a + ((0:(len-1))*(b-a)/(len-1));
+  end
 

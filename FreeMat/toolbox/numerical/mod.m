@@ -1,4 +1,4 @@
-% MOD MOD Modulus Operation
+% MOD Modulus Operation
 % 
 % Usage
 % 
@@ -14,12 +14,11 @@
 % vector (different base for each element of x).
 % 
 % Note that the following are defined behaviors:
-%   1.  mod(x,0) = x@
-% 
-%   2.  mod(x,x) = 0@
-% 
-%   3.  mod(x,n)@ has the same sign as n for all other cases.
-% 
+% \begin{enumerate}
+% \item mod(x,0) = x@
+% \item mod(x,x) = 0@
+% \item mod(x,n)@ has the same sign as n for all other cases.
+% \end{enumerate}
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL
 function y = mod(x,n)

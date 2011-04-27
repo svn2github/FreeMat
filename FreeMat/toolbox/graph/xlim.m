@@ -1,4 +1,4 @@
-% XLIM XLIM Adjust X Axis limits of plot
+% XLIM Adjust X Axis limits of plot
 % 
 % Usage
 % 
@@ -19,6 +19,11 @@
 % automatically.  The xlim('mode') form returns the current mode for the axis
 % (either 'auto' or 'manual').  Finally, you can specify the handle of an
 % axis to manipulate instead of using the current one.
+% 
+% As an additional feature, you can now specify inf for a limit, and
+% FreeMat will take that limit from the automatic set.  So, for example 
+% xlim([10,inf]) will set the minimum for the x axis, but use the
+% automatic value for the maximum.
 
 %Copyright (c) 2004,2006 Brian Yanoff, Samit Basu
 % Licensed under the GPL

@@ -1,4 +1,4 @@
-% SPY SPY Visualize Sparsity Pattern of a Sparse Matrix
+% SPY Visualize Sparsity Pattern of a Sparse Matrix
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% HORZCAT HORZCAT Overloaded Horizontal Concatenation
+% HORZCAT Overloaded Horizontal Concatenation
 % 
 % Usage
 % 
@@ -14,16 +14,6 @@
 % 
 % when one of these variables is a class.  The exact meaning of
 % horizontal concatenation depends on the class you have designed.
-% HORZCAT HORZCAT Horizontal Array Concatenation
-% 
-% Usage
-% 
-% This function concatenates arrays horizontally (along the column
-% dimension).  The syntax for its use is
-% 
-%    d = horzcat(a,b,c)
-% 
-% which is equivalent to the statement d = [a,b,c].
 
 % Copyright (c) 2002-2006 Samit Basu
 % Licensed under the GPL

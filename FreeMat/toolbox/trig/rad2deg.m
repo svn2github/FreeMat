@@ -1,4 +1,4 @@
-% RAD2DEG RAD2DEG Radians To Degrees Conversion Function
+% RAD2DEG Radians To Degrees Conversion Function
 % 
 % Usage
 % 

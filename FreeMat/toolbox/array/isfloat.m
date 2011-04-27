@@ -1,4 +1,4 @@
-% ISFLOAT ISFLOAT Test for Floating Point Array
+% ISFLOAT Test for Floating Point Array
 % 
 % Usage
 % 

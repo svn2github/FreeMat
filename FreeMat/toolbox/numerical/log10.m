@@ -1,4 +1,4 @@
-% LOG10 LOG10 Base-10 Logarithm Function
+% LOG10 Base-10 Logarithm Function
 % 
 % Usage
 % 

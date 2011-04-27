@@ -1,4 +1,4 @@
-% ISMATRIX ISMATRIX Test For a 2D Matrix
+% ISMATRIX Test For a 2D Matrix
 % 
 % Usage
 % 

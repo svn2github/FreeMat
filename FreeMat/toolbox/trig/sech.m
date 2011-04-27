@@ -1,4 +1,4 @@
-% SECH SECH Hyperbolic Secant Function
+% SECH Hyperbolic Secant Function
 % 
 % Usage
 % 

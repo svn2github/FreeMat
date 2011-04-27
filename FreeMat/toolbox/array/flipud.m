@@ -1,4 +1,4 @@
-% FLIPUD FLIPUD Reverse the Columns of a Matrix
+% FLIPUD Reverse the Columns of a Matrix
 % 
 % Usage
 % 

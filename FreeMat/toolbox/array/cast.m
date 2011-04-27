@@ -1,4 +1,4 @@
-% CAST CAST Typecast Variable to Specified Type
+% CAST Typecast Variable to Specified Type
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% WAVWRITE WAVWRITE Write a WAV Audio File
+% WAVWRITE Write a WAV Audio File
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% ISFIELD ISFIELD Test for Existence of a Structure Field
+% ISFIELD Test for Existence of a Structure Field
 % 
 % Usage
 % 

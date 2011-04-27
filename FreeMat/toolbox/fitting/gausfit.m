@@ -1,4 +1,4 @@
-% GAUSFIT GAUSFIT Gaussian Curve Fit
+% GAUSFIT Gaussian Curve Fit
 % 
 % Usage
 % 

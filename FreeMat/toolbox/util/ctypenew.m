@@ -1,4 +1,4 @@
-% CTYPENEW CTYPENEW Create New Instance of C Structure
+% CTYPENEW Create New Instance of C Structure
 % 
 % Usage
 % 

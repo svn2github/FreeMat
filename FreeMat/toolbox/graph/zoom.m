@@ -1,4 +1,4 @@
-% ZOOM ZOOM Image Zoom Function
+% ZOOM Image Zoom Function
 % 
 % Usage
 % 

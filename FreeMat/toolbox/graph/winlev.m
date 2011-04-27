@@ -1,4 +1,4 @@
-% WINLEV WINLEV Image Window-Level Function
+% WINLEV Image Window-Level Function
 % 
 % Usage
 % 

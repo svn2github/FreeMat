@@ -1,4 +1,4 @@
-% HOLD HOLD Plot Hold Toggle Function
+% HOLD Plot Hold Toggle Function
 % 
 % Usage
 % 

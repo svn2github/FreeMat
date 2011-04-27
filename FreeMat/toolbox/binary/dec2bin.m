@@ -1,4 +1,4 @@
-% DEC2BIN DEC2BIN Convert Decimal to Binary String
+% DEC2BIN Convert Decimal to Binary String
 % 
 % Usage
 % 

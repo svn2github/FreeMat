@@ -1,4 +1,4 @@
-% LOGSPACE LOGSPACE Logarithmically Spaced Vector
+% LOGSPACE Logarithmically Spaced Vector
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% ISHOLD ISHOLD Test Hold Status
+% ISHOLD Test Hold Status
 % 
 % Usage
 % 

@@ -1,26 +1,33 @@
-% TRIU TRIU Upper Triangular Matrix Function
+% TRIU Upper Triangular Matrix Function
 % 
 % Usage
 % 
-% Returns the upper triangular matrix of a square matrix. The general
-% syntax for its use is
-%
-%   y = triu(x)
-%
-% where x is a square matrix. This returns the upper triangular matrix
-% (i.e.: all elements on or below the diagonal are set to 0). You can also
-% specify a different diagonal using the alternate form
-%
-%   y = triu(x,n)
-%
-% where n is the diagonal offset. In this mode, the diagonal specified 
-% is not set to zero in the returned matrix (e.g.: tril(x) and tril(x,1))
-% will return the same value.
-%
+%  
+%  Returns the upper triangular matrix of a square matrix. The general
+%  syntax for its use is
+% 
+%    y = triu(x)
+% 
+%  where x is a square matrix. This returns the upper triangular matrix
+%  (i.e.: all elements on or below the diagonal are set to 0). You can also
+%  specify a different diagonal using the alternate form
+% 
+%    y = triu(x,n)
+% 
+%  where n is the diagonal offset. In this mode, the diagonal specified 
+%  is not set to zero in the returned matrix (e.g.: tril(x) and tril(x,1))
+%  will return the same value.
+
 % Copyright (c) 2008 Samit Basu
 % Licensed under the GPL
 
-function ret = triu2(x,n)
+function ret = triu(x,n)
+   
+   [m n] = size(x);
+   
+   if m ~= n
+        error('Matrix must be square!\n');
+   end
    
    if nargin == 1
       t1 = zeros(size(x));

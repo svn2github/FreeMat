@@ -1,4 +1,4 @@
-% INLINE INLINE Construct Inline Function
+% INLINE Construct Inline Function
 % 
 % Usage
 % 

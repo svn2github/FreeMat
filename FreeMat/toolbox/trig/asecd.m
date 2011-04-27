@@ -1,4 +1,4 @@
-% ASECD ASECD Inverse Secant Degrees Function
+% ASECD Inverse Secant Degrees Function
 % 
 % Usage
 % 

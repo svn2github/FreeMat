@@ -1,4 +1,4 @@
-% MESHGRID MESHGRID Generate Grid Mesh For Plots
+% MESHGRID Generate Grid Mesh For Plots
 % 
 % Usage
 % 

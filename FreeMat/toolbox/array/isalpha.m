@@ -1,4 +1,4 @@
-% ISALPHA ISALPHA Test for Alpha Characters in a String
+% ISALPHA Test for Alpha Characters in a String
 % 
 % Usage
 % 

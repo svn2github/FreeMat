@@ -48,20 +48,20 @@ function h = quiver(varargin)
     else
         error('Quiver needs at least 2 arguments')
     end
-    len = sqrt(u(:).^2+v(:).^2);
+    length = sqrt(u(:).^2+v(:).^2);
     if scale ~= 0
-        len = 0.7*scale*len*sqrt(max(x(2:end)-x(1:end-1))^2+max(y(2:end)-y(1:end-1))^2)/max(len(:));
+        length = 0.7*scale*length*sqrt(max(x(2:end)-x(1:end-1))^2+max(y(2:end)-y(1:end-1))^2)/max(length(:));
     end
     phi = atan2(v(:),u(:));
     if isempty(varargin)
         varargin = {'b-'};
     end
-    t1 = len.*cos(phi);
-    t2 = len.*sin(phi);
+    t1 = length.*cos(phi);
+    t2 = length.*sin(phi);
     h1 = plot([x(:), x(:)+t1]', [y(:), y(:)+t2]', varargin{:});
     hold on
-    h2 = plot([x(:)+t1-0.2*len.*cos(phi-pi/8), x(:)+t1, x(:)+t1-0.2*len.*cos(phi+pi/8)]', ...
-              [y(:)+t2-0.2*len.*sin(phi-pi/8), y(:)+t2, y(:)+t2-0.2*len.*sin(phi+pi/8)]', varargin{:});
+    h2 = plot([x(:)+t1-0.2*length.*cos(phi-pi/8), x(:)+t1, x(:)+t1-0.2*length.*cos(phi+pi/8)]', ...
+              [y(:)+t2-0.2*length.*sin(phi-pi/8), y(:)+t2, y(:)+t2-0.2*length.*sin(phi+pi/8)]', varargin{:});
     hold off
     if nargout > 0
         h = [h1 h2];

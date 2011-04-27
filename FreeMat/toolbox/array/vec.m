@@ -1,4 +1,4 @@
-% VEC VEC Reshape to a Vector
+% VEC Reshape to a Vector
 % 
 % Usage
 % 

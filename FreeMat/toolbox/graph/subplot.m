@@ -1,4 +1,4 @@
-% SUBPLOT SUBPLOT Subplot Function
+% SUBPLOT Subplot Function
 % 
 % Usage
 % 

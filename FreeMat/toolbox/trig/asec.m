@@ -1,4 +1,4 @@
-% ASEC ASEC Inverse Secant Function
+% ASEC Inverse Secant Function
 % 
 % Usage
 % 

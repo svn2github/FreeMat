@@ -1,4 +1,4 @@
-% GRAY GRAY Gray Colormap
+% GRAY Gray Colormap
 % 
 % Usage
 % 

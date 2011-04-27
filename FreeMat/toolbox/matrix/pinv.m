@@ -1,4 +1,4 @@
-% PINV PINV Moore-Penrose Pseudoinverse
+% PINV Moore-Penrose Pseudoinverse
 % 
 % Usage
 % 

@@ -1,4 +1,4 @@
-% ISSPACE ISSPACE Test for Space Characters in a String
+% ISSPACE Test for Space Characters in a String
 % 
 % Usage
 % 

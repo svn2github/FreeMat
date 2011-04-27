@@ -1,4 +1,4 @@
-% VIEW VIEW Set Graphical View
+% VIEW Set Graphical View
 % 
 % Usage
 % 

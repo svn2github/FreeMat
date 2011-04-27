@@ -1,9 +1,9 @@
-% IPERMUTE IPERMUTE Array Inverse Permutation Function
+% IPERMUTE Array Inverse Permutation Function
 % 
 % Usage
 % 
 % The ipermute function rearranges the contents of an array according
-% to the inverse of the specified permutation vector.  The syntx for 
+% to the inverse of the specified permutation vector.  The syntax for 
 % its use is
 % 
 %    y = ipermute(x,p)
@@ -18,6 +18,6 @@
 % Licensed under the GPL
 
 function y = ipermute(x,p)
-  iperm = zeros(1,ndims(x));
-  iperm(p) = 1:ndims(x);
+  iperm = zeros(1,length(p));
+  iperm(p) = 1:length(p);
   y = permute(x,iperm);

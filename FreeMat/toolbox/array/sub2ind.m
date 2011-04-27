@@ -1,4 +1,4 @@
-% SUB2IND SUB2IND Convert Multiple Indexing To Linear Indexing
+% SUB2IND Convert Multiple Indexing To Linear Indexing
 % 
 % Usage
 % 

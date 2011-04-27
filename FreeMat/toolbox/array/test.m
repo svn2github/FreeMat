@@ -1,4 +1,4 @@
-% TEST TEST Test Function
+% TEST Test Function
 % 
 % Usage
 % 

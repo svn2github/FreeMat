@@ -1,4 +1,4 @@
-% SQUEEZE SQUEEZE Remove Singleton Dimensions of an Array
+% SQUEEZE Remove Singleton Dimensions of an Array
 % 
 % Usage
 % 

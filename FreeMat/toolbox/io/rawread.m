@@ -1,4 +1,4 @@
-% RAWREAD RAWREAD Read N-dimensional Array From File
+% RAWREAD Read N-dimensional Array From File
 % 
 % Usage
 % 

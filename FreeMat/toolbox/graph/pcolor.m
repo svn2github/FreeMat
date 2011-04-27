@@ -1,4 +1,4 @@
-% PCOLOR PCOLOR Pseudocolor Plot
+% PCOLOR Pseudocolor Plot
 % 
 % Usage
 % 

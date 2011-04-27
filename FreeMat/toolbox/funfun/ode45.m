@@ -1,4 +1,4 @@
-% ODE45 ODE45 Numerical Solution of ODEs
+% ODE45 Numerical Solution of ODEs
 % 
 % Usage
 % 
@@ -18,50 +18,8 @@
 %       y(0) =  1
 % 
 %  whose exact solution is y(t)=exp(t), over the interval t0=0, t1=3, do
-% 
-% -->       [t,y]=ode45(@(t,y) y,[0 3],1)
-% 
-% t = 
-% 
-%  Columns 1 to 8
-% 
-%          0    0.0030    0.0180    0.0930    0.3930    0.6930    0.9930    1.2930 
-% 
-%  Columns 9 to 14
-% 
-%     1.5930    1.8930    2.1930    2.4930    2.7930    3.0000 
-% 
-% y = 
-%     1.0000 
-%     1.0030 
-%     1.0182 
-%     1.0975 
-%     1.4814 
-%     1.9997 
-%     2.6993 
-%     3.6437 
-%     4.9185 
-%     6.6392 
-%     8.9620 
-%    12.0975 
-%    16.3299 
-%    20.0854 
-% 
 %  If you want a dense output (i.e., an output that also contains an interpolating
 %  spline), use instead
-% 
-% -->       SOL=ode45(@(t,y) y,[0 3],1) 
-% 
-% SOL = 
-%     x: 1 14 double array
-%     y: 1 14 double array
-%     xe: 
-%     ye: 
-%     ie: 
-%     solver: generic_ode_solver
-%     interpolant: 1 1 functionpointer array
-%     idata: 1 1 struct array
-% 
 %  You can view the result using
 % 
 %       plot(0:0.01:3,deval(SOL,0:0.01:3))
@@ -110,7 +68,6 @@
 % 
 %  If the output yn is very different from the input yn, the quality of interpolation
 %  may decrease.
-
 function varargout = ode45(f,tspan,y0,options,varargin)
 if(nargin<4) options={}; end
 abstol=generic_get(options,'AbsTol',1e-6);

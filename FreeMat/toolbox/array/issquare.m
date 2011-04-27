@@ -1,4 +1,4 @@
-% ISSQUARE ISSQUARE Test For a Square matrix
+% ISSQUARE Test For a Square matrix
 % 
 % Usage
 % 

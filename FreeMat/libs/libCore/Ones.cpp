@@ -76,3 +76,37 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
   for (index_t i=1;i<=rp.length();i++) rp[i] = 1;
   return ArrayVector(r);
 }
+
+//!
+//@Module TRUE Logical TRUE
+//@@Section CONSTANTS
+//@@Usage
+//Returns a logical 1.  The syntax for its use is
+//@[
+//   y = true
+//@]
+//You can also create an array of logical ones using
+//the syntax
+//@[
+//   y = true(d1,d2,...,dn)
+//@]none
+//or the syntax
+//@[
+//   y = true([d1,d2,...,dn])
+//@]
+//@@Tests
+//@$exact#y1=true
+//@@Signature
+//function true TrueFunction
+//inputs varargin
+//outputs y
+//!
+ArrayVector TrueFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    return ArrayVector(Array(bool(true)));
+  NTuple dims(ArrayVectorAsDimensions(arg));
+  Array r(Bool,dims);
+  BasicArray<bool> &rp(r.real<bool>());
+  for (index_t i=1;i<=rp.length();i++) rp[i] = true;
+  return ArrayVector(r);  
+}

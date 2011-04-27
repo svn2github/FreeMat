@@ -311,3 +311,36 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
 }
 
 #undef MacroZeros
+
+
+//!
+//@Module FALSE Logical False
+//@@Section CONSTANTS
+//@@Usage
+//Returns a logical 0.  The syntax for its use is
+//@[
+//   y = false
+//@]
+//You can also create an array of logical ones using
+//the syntax
+//@[
+//   y = false(d1,d2,...,dn)
+//@]none
+//or the syntax
+//@[
+//   y = false([d1,d2,...,dn])
+//@]
+//@@Tests
+//@$exact#y1=false
+//@@Signature
+//function false FalseFunction
+//inputs none
+//outputs y
+//!
+ArrayVector FalseFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() == 0)
+    return ArrayVector(Array(bool(false)));
+  NTuple dims(ArrayVectorAsDimensions(arg));
+  Array r(Bool,dims);
+  return ArrayVector(r);
+}

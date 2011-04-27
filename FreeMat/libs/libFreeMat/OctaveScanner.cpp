@@ -154,8 +154,7 @@ void OctaveScanner::fetchOctString() {
 void OctaveScanner::fetch() {
   if (m_ptr >= m_strlen)
     setToken(TOK_EOF);
-  else if (((current() == '#') && (ahead(1) == '#')) ||
-	   (current() == '%')) {
+  else if ((current() == '#') || (current() == '%')) {
     fetchComment();
     return;
   } else if ((current() == '.') && 

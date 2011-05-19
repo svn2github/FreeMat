@@ -876,7 +876,7 @@ ArrayVector ScanfHelperFunction( QFile *fp, const ArrayVector& arg );
 //!
 ArrayVector FscanfFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
-    throw Exception("fscanf takes two arguments, the file handle and the format string");
+    throw Exception("fscanf requires at least two arguments, the file handle and the format string");
   int handle = arg[0].asInteger();
   FilePtr *fptr=(fileHandles.lookupHandle(handle+1));
 

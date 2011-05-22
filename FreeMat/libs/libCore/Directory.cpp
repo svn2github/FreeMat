@@ -374,7 +374,7 @@ ArrayVector DirSepFunction(int nargout, const ArrayVector& arg) {
 //outputs y
 //!
 ArrayVector PrintWorkingDirectoryFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(QDir::currentPath()));
+  return ArrayVector(Array(QDir::toNativeSeparators(QDir::currentPath())));
 }
 
 //!

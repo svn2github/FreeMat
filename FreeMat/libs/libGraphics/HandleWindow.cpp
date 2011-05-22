@@ -181,6 +181,10 @@ HandleWindow::HandleWindow(unsigned ahandle, Interpreter *eval) : QMainWindow(),
 //
 
 void HandleWindow::zoom(bool active) {
+  if( mode == click_mode ){
+    zoomAct->setChecked(false);
+    return;
+  }
   panAct->setChecked(false);
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
@@ -192,6 +196,10 @@ void HandleWindow::zoom(bool active) {
 }
 
 void HandleWindow::pan(bool active) {
+  if( mode == click_mode ){
+    panAct->setChecked(false);
+    return;
+  }
   zoomAct->setChecked(false);
   rotateAct->setChecked(false);
   camRotateAct->setChecked(false);
@@ -207,6 +215,10 @@ void HandleWindow::pan(bool active) {
 }
 
 void HandleWindow::rotate(bool active) {
+  if( mode == click_mode ){
+    rotateAct->setChecked(false);
+    return;
+  }
   zoomAct->setChecked(false);
   panAct->setChecked(false);
   camRotateAct->setChecked(false);
@@ -222,6 +234,10 @@ void HandleWindow::rotate(bool active) {
 }
 
 void HandleWindow::camRotate(bool active) {
+  if( mode == click_mode ){
+    camRotateAct->setChecked(false);
+    return;
+  }
   zoomAct->setChecked(false);
   panAct->setChecked(false);
   rotateAct->setChecked(false);
@@ -237,6 +253,10 @@ void HandleWindow::camRotate(bool active) {
 }
 
 void HandleWindow::pointSample(bool active) {
+  if( mode == click_mode ){
+    pointSampleAct->setChecked(false);
+    return;
+  }
   zoomAct->setChecked(false);
   panAct->setChecked(false);
   rotateAct->setChecked(false);

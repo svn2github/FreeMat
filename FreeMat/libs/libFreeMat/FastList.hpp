@@ -45,15 +45,20 @@ public:
     else
       m_vec = 0;
   }
+
   inline FastList& operator=(const FastList& copy) {
     if (&copy == this) return *this;
     m_slot1 = copy.m_slot1;
     m_slot2 = copy.m_slot2;
     m_size = copy.m_size;
-    m_vec = copy.m_vec;
-    if (m_vec) m_vec = new QVector<T>(*m_vec);
+    if (copy.m_vec) {
+      if( m_vec )
+	delete m_vec;
+      m_vec = new QVector<T>(*copy.m_vec);
+    }
     return *this;
   }
+
   inline void clear() {
     if (m_size > 2) m_vec->clear();
     m_slot1 = T();

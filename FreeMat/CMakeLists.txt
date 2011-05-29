@@ -247,6 +247,15 @@ ENDIF (VTK_FOUND)
 ENDIF (USE_VTK)
 
 ######################################################################
+# GSL Library
+######################################################################
+FIND_PACKAGE(GSL)
+IF( GSL_FOUND )
+   add_definitions( -DHAVE_GSL )
+   include(${GSL_INCLUDE_DIRS})
+   SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${GSL_LIBRARIES})
+ENDIF( GSL_FOUND )
+######################################################################
 # ITK Support
 ######################################################################
 OPTION(USE_ITK "Build with InsightToolkit support?" OFF)

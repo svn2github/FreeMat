@@ -22,6 +22,7 @@
 #include "Array.hpp"
 #include <math.h>
 #include "Operators.hpp"
+#include "mathfunc5.hpp"
 
 #if defined(_MSC_VER )
     float erff(float x);
@@ -32,8 +33,8 @@
     float tgammaf(float x);
     double lgamma(double x);
     float lgammaf(float x);
-	double trunc( double x );
-	float truncf( float x );
+    double trunc( double x );
+    float truncf( float x );
 #endif 
 
 //!
@@ -135,7 +136,52 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
     throw Exception("erf requires at least one argument");
   return ArrayVector(UnaryOp<OpErf>(arg[0]));
 }
-  
+
+//!
+//@Module ERFINV Inverse Error Function
+//@@Section MATHFUNCTIONS
+//@@Usage
+//Computes the inverse error function for each element of x.  The @|erf|
+//function takes only a single argument
+//@[
+//  y = erfinv(x)
+//@]
+//where @|x| is either a @|float| or @|double| array.  The output
+//vector @|y| is the same size (and type) as @|x|. For values outside the interval [-1, 1] function returns NaN.
+//@@Example
+//Here is a plot of the erf function over the range @|[-.9,.9]|.
+//@<
+//x = linspace(-.9,.9,100);
+//y = erfinv(x);
+//plot(x,y); xlabel('x'); ylabel('erfinv(x)');
+//mprint erfinv1
+//@>
+//which results in the following plot.
+//@figure erfinv1
+//@@Tests
+//@$near#y1=erfinv(x1)
+//@@Signature
+//function erfinv ErfInvFunction
+//inputs x
+//outputs y
+//!
+
+struct OpErfInv{
+  static inline float func(float x) {return erfinv(x);}
+  static inline double func(double x) {return erfinv(x);}
+  static inline void func(float, float, float&, float&) 
+  { throw Exception("erf not defined for complex types");}
+  static inline void func(float, float, double&, double&) 
+  { throw Exception("erf not defined for complex types");}
+};
+
+ArrayVector ErfInvFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 1)
+    throw Exception("erf requires at least one argument");
+  return ArrayVector(UnaryOp<OpErfInv>(arg[0]));
+}
+
+
 //!
 //@Module GAMMA Gamma Function
 //@@Section MATHFUNCTIONS

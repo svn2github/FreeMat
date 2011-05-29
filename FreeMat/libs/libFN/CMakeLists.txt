@@ -19,6 +19,7 @@ Interp1D.cpp
 Interp2D.cpp 
 FNFun.cpp
 OptFun.cpp 
+mathfunc5.cpp
 )
 
 add_custom_command(

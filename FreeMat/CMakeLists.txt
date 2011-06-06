@@ -247,15 +247,6 @@ ENDIF (VTK_FOUND)
 ENDIF (USE_VTK)
 
 ######################################################################
-# GSL Library
-######################################################################
-FIND_PACKAGE(GSL)
-IF( GSL_FOUND )
-   add_definitions( -DHAVE_GSL )
-   include(${GSL_INCLUDE_DIRS})
-   SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${GSL_LIBRARIES})
-ENDIF( GSL_FOUND )
-######################################################################
 # ITK Support
 ######################################################################
 OPTION(USE_ITK "Build with InsightToolkit support?" OFF)
@@ -267,6 +258,16 @@ IF (ITK_FOUND)
   SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ITKBasicFilters)
 ENDIF(ITK_FOUND)
 ENDIF(USE_ITK)
+
+######################################################################
+# Boost Support
+######################################################################
+find_package( Boost COMPONENTS math_c99 )
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    add_definitions(-DHAVE_BOOST)
+    set(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${Boost_LIBRARIES})
+endif()
 
 ######################################################################
 # LLVM Support

@@ -23,6 +23,7 @@
 #include <math.h>
 #include "Operators.hpp"
 #include "mathfunc5.hpp"
+#include <boost/math/special_functions/beta.hpp>
 
 #if defined(_MSC_VER )
     float erff(float x);
@@ -292,3 +293,96 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
     throw Exception("gammaln requires at least one argument");
   return ArrayVector(UnaryOp<OpGammaLn>(arg[0]));
 }
+
+//!
+//@Module BETAINC Incomplete Beta Function
+//@@Section MATHFUNCTIONS
+//@@Usage
+//Computes the incomplete beta function.  The @|betainc|
+//function takes 3 or 4 arguments
+//@[
+//  A = betainc(X,Y,Z)
+//@]
+//@[
+//  A = betainc(X,Y,Z,tail)
+//@]
+//where @|X| is either a @|float| or @|double| array with elements in [0,1] interval, @|Y| and @|Z| are real non-negative arrays. 
+//@|tail| specifies the tail of the incomplete beta function. 
+//If @|tail| is 'lower' (default) than the integral from 0 to x is computed. If @|tail| is 'upper' than the integral from x to 1 is computed.
+//All arrays must be the same size or be scalar. The output
+//vector @|A| is the same size (and type) as input arrays.
+//@@Function Internals
+//The incomplete beta function is defined by the integral:
+//\[
+//  BetaI_x(a,b)=B_x(a,b)/B(a,b) where B_x(a,b) = \int_0^x t^{a-1} (1-t)^{b-1} dt 
+//  for 0 <= x <= 1. For a > 0, b > 0
+//\]
+//@@Example
+//Here is a plot of the betainc function over the range @|[.2,.8]|.
+//@<
+//x=.2:.01:.8;
+//y = betainc(x,5,3);
+//plot(x,y); xlabel('x'); ylabel('betainc(x,5,3)');
+//mprint betainc1
+//@>
+//which results in the following plot.
+//@figure betainc1
+//@@Tests
+//@$near#y1=betainc(x1,5,3)
+//@@Signature
+//function betainc BetaIncFunction
+//inputs varargin
+//outputs y
+//!
+#ifdef HAVE_BOOST
+#include <boost/math/special_functions/beta.hpp>
+
+ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 3)
+    throw Exception("betainc requires at least three arguments");
+  ArrayVector retVec;
+  Array X( arg[0] );
+  Array Y( arg[1] );
+  Array Z( arg[2] );
+  int maxLen = std::max( X.length(), std::max( Y.length(), Z.length() ) );
+
+  if( X.length() != 1 && maxLen != X.length() )
+    throw Exception("wrong size of the first argument");
+  if( Y.length() != 1 && maxLen != Y.length() )
+    throw Exception("wrong size of the second argument");
+  if( Z.length() != 1 && maxLen != Z.length() )
+    throw Exception("wrong size of the third argument");
+  
+  if( X.dataClass() == Double && Y.dataClass() == Double && Z.dataClass() == Double ){
+    BasicArray< double > result( maxLen );
+    for( int i = 1; i <= maxLen; ++i ){
+      double x,y,z,r;
+      x = (X.isScalar()) ? X.constRealScalar<double>() : X.real<double>()[i];
+      y = (Y.isScalar()) ? Y.constRealScalar<double>() : Y.real<double>()[i];
+      z = (Z.isScalar()) ? Z.constRealScalar<double>() : Z.real<double>()[i];
+      result[i] = boost::math::ibeta( y, z, x );
+    }
+    retVec.push_back( result );
+  }
+  else if( X.dataClass() == Float && Y.dataClass() == Float && Z.dataClass() == Float ){
+    BasicArray< float > result( maxLen );
+    for( int i = 1; i <= maxLen; ++i ){
+      float x,y,z,r;
+      x = (X.isScalar()) ? X.realScalar<float>() : X.real<float>()[i];
+      y = (Y.isScalar()) ? Y.realScalar<float>() : Y.real<float>()[i];
+      z = (Z.isScalar()) ? Z.realScalar<float>() : Z.real<float>()[i];
+      result[i] = boost::math::ibeta( y, z, x );
+    }
+    retVec.push_back( result );
+  }
+  else{
+    throw Exception("Inputs must be either double or single");
+  }
+  return retVec;
+}
+#else
+ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
+    throw Exception("FreeMat must be compiled with boost to enable betainc");
+    return ArrayVector();
+}
+#endif

@@ -345,16 +345,17 @@ ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
   Array Y( arg[1] );
   Array Z( arg[2] );
   int maxLen = std::max( X.length(), std::max( Y.length(), Z.length() ) );
-
-  if( X.length() != 1 && maxLen != X.length() )
+  NTuple retDims = max( X.dimensions(), max( Y.dimensions(), Z.dimensions() ) );
+  
+  if( !(X.isScalar()) && retDims != X.dimensions() )
     throw Exception("wrong size of the first argument");
-  if( Y.length() != 1 && maxLen != Y.length() )
+  if( !(Y.isScalar()) && retDims != Y.dimensions() )
     throw Exception("wrong size of the second argument");
-  if( Z.length() != 1 && maxLen != Z.length() )
+  if( !(Z.isScalar()) && retDims != Z.dimensions() )
     throw Exception("wrong size of the third argument");
   
   if( X.dataClass() == Double && Y.dataClass() == Double && Z.dataClass() == Double ){
-    BasicArray< double > result( maxLen );
+    BasicArray< double > result( retDims );
     for( int i = 1; i <= maxLen; ++i ){
       double x,y,z,r;
       x = (X.isScalar()) ? X.constRealScalar<double>() : X.real<double>()[i];
@@ -365,7 +366,7 @@ ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
     retVec.push_back( result );
   }
   else if( X.dataClass() == Float && Y.dataClass() == Float && Z.dataClass() == Float ){
-    BasicArray< float > result( maxLen );
+    BasicArray< float > result( retDims );
     for( int i = 1; i <= maxLen; ++i ){
       float x,y,z,r;
       x = (X.isScalar()) ? X.realScalar<float>() : X.real<float>()[i];

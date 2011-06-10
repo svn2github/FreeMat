@@ -24,6 +24,7 @@
 #include "Operators.hpp"
 #include "mathfunc5.hpp"
 #include <boost/math/special_functions/beta.hpp>
+#include <boost/math/special_functions/legendre.hpp>
 
 #if defined(_MSC_VER )
     float erff(float x);
@@ -387,3 +388,81 @@ ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector();
 }
 #endif
+
+//!
+//@Module LEGENDRE Associated Legendre Polynomial
+//@@Section MATHFUNCTIONS
+//@@Usage
+//Computes the associated Legendre function of degree n. 
+//@[
+//  y = legendre(n,x)
+//@]
+//where @|x| is either a @|float| or @|double| array in range @|[-1,1]|, @|n| is integer scalar.  The output
+//vector @|y| is the same size (and type) as @|x|.
+//@@Example
+//Here is a plot of the @|legendre| function over the range @|[-1,1]|.
+//@<
+//x = linspace(-1,1,30);
+//y = legendre(4,x);
+//plot(x,y); xlabel('x'); ylabel('legendre(4,x)');
+//mprint legendre
+//@>
+//which results in the following plot.
+//@figure legendre
+//@@Tests
+//@$near#y1=legendre(3,x1)
+//@@Signature
+//function legendre LegendreFunction
+//inputs varargin
+//outputs y
+//!
+
+ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
+  if (arg.size() < 2)
+    throw Exception("Legendre function requires at least two argument");
+  Array x( arg[1] );
+  Array n( arg[0] );
+  NTuple retDims;
+  ArrayVector retVec;
+  
+  if( x.isComplex() )
+    throw Exception("Second argument must be real");
+
+  if( n.isComplex() )
+    throw Exception("First argument must be real integer");
+  
+  if( x.dimensions().count() > 1 && !n.isScalar() )
+    throw Exception("If second argument is a not a vector or scalar, then first argument must be scalar");
+  
+  if( (n.dimensions().count() == 2 && n.dimensions()[1] != x.length()) || (n.dimensions().count() > 2) )
+    throw Exception("Incompatible dimensions between first and second argument");
+  
+  if( n.isScalar() )
+    retDims = x.dimensions();
+  else
+    retDims = n.dimensions();
+  
+  if( x.dataClass() == Double ){
+    BasicArray< double > result( retDims );
+    if( n.isScalar() ){
+      for( int i=0; i<x.length(); ++i ){
+	double xt = (x.isScalar()) ? x.constRealScalar<double>() : x.real<double>()[i];
+	result[i]=boost::math::legendre_p<double>(n.constRealScalar<double>(), xt);
+      }
+    }
+    retVec.push_back(result); 
+  }
+  else if( x.dataClass() == Float ){
+    BasicArray< float > result( retDims );
+    if( n.isScalar() ){
+      for( int i=0; i<x.length(); ++i ){
+	float xt = (x.isScalar()) ? x.constRealScalar<float>() : x.real<float>()[i];
+	result[i]=boost::math::legendre_p<float>(n.constRealScalar<float>(), xt);
+      }
+    }
+    retVec.push_back(result); 
+  }
+  else
+    throw Exception("Second argument must be double or single");
+  return retVec;
+}

@@ -23,8 +23,6 @@
 #include <math.h>
 #include "Operators.hpp"
 #include "mathfunc5.hpp"
-#include <boost/math/special_functions/beta.hpp>
-#include <boost/math/special_functions/legendre.hpp>
 
 #if defined(_MSC_VER )
     float erff(float x);
@@ -417,6 +415,8 @@ ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
 //outputs y
 //!
 
+#ifdef HAVE_BOOST
+#include <boost/math/special_functions/legendre.hpp>
 ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("Legendre function requires at least two argument");
@@ -445,7 +445,7 @@ ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
   if( x.dataClass() == Double ){
     BasicArray< double > result( retDims );
     if( n.isScalar() ){
-      for( int i=0; i<x.length(); ++i ){
+      for( int i=1; i<=x.length(); ++i ){
 	double xt = (x.isScalar()) ? x.constRealScalar<double>() : x.real<double>()[i];
 	result[i]=boost::math::legendre_p<double>(n.constRealScalar<double>(), xt);
       }
@@ -455,7 +455,7 @@ ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
   else if( x.dataClass() == Float ){
     BasicArray< float > result( retDims );
     if( n.isScalar() ){
-      for( int i=0; i<x.length(); ++i ){
+      for( int i=1; i<=x.length(); ++i ){
 	float xt = (x.isScalar()) ? x.constRealScalar<float>() : x.real<float>()[i];
 	result[i]=boost::math::legendre_p<float>(n.constRealScalar<float>(), xt);
       }
@@ -466,3 +466,9 @@ ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Second argument must be double or single");
   return retVec;
 }
+#else
+ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
+    throw Exception("FreeMat must be compiled with boost to enable legendre");
+    return ArrayVector();
+}
+#endif

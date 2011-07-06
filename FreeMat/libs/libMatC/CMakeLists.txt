@@ -1,8 +1,11 @@
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} ${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} )
- 
+
 ADD_LIBRARY( MatC 
-	JIT.cpp 
-	JITFunc.cpp
+	JITFactory.cpp
+	CJitFunc.cpp
+	CJitFuncClang.cpp
+	CArray.cpp
 )
 
+ADD_DEPENDENCIES(MatC jitgen)

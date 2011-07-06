@@ -19,13 +19,8 @@
 #ifndef __JITInfo_hpp__
 #define __JITInfo_hpp__
 
-#ifdef HAVE_LLVM
 #include <QSharedDataPointer>
-#include "JITFunc.hpp"
-
-#ifndef HAVE_LLVM
-class JITFunc {};
-#endif
+#include "JITFuncBase.hpp"
 
 class JITInfo {
 public:
@@ -36,15 +31,13 @@ public:
   } JITState_t;
 private:
   JITState_t m_jitstate;
-  JITFunc* m_jitfunc;
+  JITFuncBase* m_jitfunc;
 public:
   JITInfo() : m_jitstate(UNTRIED), m_jitfunc(NULL) {}
   inline JITState_t JITState() const {return m_jitstate;}
   inline void setJITState(JITState_t t) {m_jitstate = t;}
-  inline JITFunc* JITFunction() const {return m_jitfunc;}
-  inline void setJITFunction(JITFunc *t) {m_jitfunc = t;}
+  inline JITFuncBase* JITFunction() const {return m_jitfunc;}
+  inline void setJITFunction(JITFuncBase *t) {m_jitfunc = t;}
 };
-
-#endif
 
 #endif

@@ -470,7 +470,7 @@ public:
   /**
    * Add a built in function to the global scope with the given name.
    */
-  inline void addFunction(QString name, BuiltInFuncPtr fptr, int argc_in, int argc_out, ...) {
+  inline void addFunction(QString name, BuiltInFuncPtr fptr, bool jitsafe, int argc_in, int argc_out, ...) {
     StringVector args;
     va_list argp;
     if (argc_in>0) {
@@ -496,6 +496,7 @@ public:
     f2def->name = name;
     f2def->fptr = fptr;
     f2def->arguments = args;
+    f2def->jitsafe = jitsafe;
     insertFunction(f2def,false);  
     if (builtinTab.hasSymbol(name))
       dbout << "function " << name << " is already in the builtin table";
@@ -504,7 +505,7 @@ public:
   /**
    * Add a special function to the global scope with the given name.
    */
-  inline void addSpecialFunction(QString name, SpecialFuncPtr fptr, int argc_in, int argc_out, ...) {
+  inline void addSpecialFunction(QString name, SpecialFuncPtr fptr, bool jitsafe, int argc_in, int argc_out, ...) {
     StringVector args;
     va_list argp;
     if (argc_in>0) {
@@ -530,6 +531,7 @@ public:
     f2def->name = name;
     f2def->fptr = fptr;
     f2def->arguments = args;
+    f2def->jitsafe = jitsafe;
     insertFunction(f2def,false);
     if (builtinTab.hasSymbol(name))
       dbout << "function " << name << " is already in the builtin table";
@@ -539,7 +541,7 @@ public:
    * Add a built in function to the global scope with the given name
    * and tag it as a graphics function
    */
-  inline void addGfxFunction(QString name, BuiltInFuncPtr fptr, int argc_in, int argc_out, ...) {
+  inline void addGfxFunction(QString name, BuiltInFuncPtr fptr, bool jitsafe, int argc_in, int argc_out, ...) {
     StringVector args;
     va_list argp;
     if (argc_in>0) {
@@ -566,6 +568,7 @@ public:
     f2def->fptr = fptr;
     f2def->arguments = args;
     f2def->graphicsFunction = true;
+    f2def->jitsafe = jitsafe;
     insertFunction(f2def,false);  
     if (builtinTab.hasSymbol(name))
       dbout << "function " << name << " is already in the builtin table";
@@ -575,7 +578,7 @@ public:
    * Add a special function to the global scope with the given name, and
    * tag it as a graphics function
    */
-  inline void addGfxSpecialFunction(QString name, SpecialFuncPtr fptr, int argc_in, int argc_out, ...) {
+  inline void addGfxSpecialFunction(QString name, SpecialFuncPtr fptr, bool jitsafe, int argc_in, int argc_out, ...) {
     StringVector args;
     va_list argp;
     if (argc_in>0) {
@@ -602,6 +605,7 @@ public:
     f2def->fptr = fptr;
     f2def->arguments = args;
     f2def->graphicsFunction = true;
+    f2def->jitsafe = jitsafe;
     insertFunction(f2def,false);
     if (builtinTab.hasSymbol(name))
       dbout << "function " << name << " is already in the builtin table";

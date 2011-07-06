@@ -1164,4 +1164,18 @@ static inline Array StringOp(const Array &arg) {
   return Array(y);
 }
 
+
+// These macros are defined here -- they are used to map
+// operators to jit scalar functions under special circumstances.
+
+#define JitScalarFunc2(name,func) \
+  extern "C" { double _jit_ ## name(double a, double b) { return func(a,b); } }
+
+#define JitScalarFunc1(name,func) \
+  extern "C" { double _jit_ ## name(double a) { return func(a); } }
+
+#define JitScalarFunc0(name,func) \
+  extern "C" { double _jit_ ## name() { return func; } }
+
+
 #endif

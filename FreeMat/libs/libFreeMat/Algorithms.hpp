@@ -143,5 +143,6 @@ static inline BasicArray<T> BasicArrayFromNative(const T* data, NTuple dims) {
   return rp;
 }
 
+Array NCat(const ArrayVector& pdata, int catdim);
 
 #endif

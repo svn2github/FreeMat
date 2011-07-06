@@ -89,6 +89,12 @@ public:
    */
   bool graphicsFunction;
   /**
+   * The list of functions that may be called from JIT-ted code
+   * is limited.  Set this flag to true if the function can be called
+   * from JIT-ted code.
+   */
+  bool jitsafe;
+  /**
    * The names of the arguments to the fuction (analogous to returnVals).
    * Should have "varargin" as the last entry for variable argument
    * functions.

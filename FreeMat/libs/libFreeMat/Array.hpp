@@ -60,7 +60,7 @@ enum DataClass {
 };
 
 template <typename V>
-static inline DataClass GetDataClass(V c);
+inline DataClass GetDataClass(V c);
 
 size_t ByteSizeOfDataClass(DataClass);
 

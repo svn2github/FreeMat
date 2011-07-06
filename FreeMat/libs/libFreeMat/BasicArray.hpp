@@ -552,7 +552,7 @@ IndexArray Find(const BasicArray<T>& vec) {
   index_t count = 0;
   for (index_t i=1;i<=vec.length();i++)
     if (vec[i] != T()) count++;
-  IndexArray retvec(NTuple(count,1));
+  IndexArray retvec(NTuple(1,count));
   count = 1;
   for (index_t i=1;i<=vec.length();i++)
     if (vec[i] != T()) {

@@ -136,6 +136,10 @@ class Interpreter : public QThread {
    */
   bool InCLI;
   /**
+   * Disable rescan of the path.
+   */
+  bool m_disablerescan;
+  /**
    * This mutex protects the command buffer.
    */
   QMutex mutex;
@@ -444,6 +448,11 @@ public:
    */
   bool getStopOverload();
   void setStopOverload(bool flag);
+  /**
+   * Get/Set the disable rescan flag
+   */
+  bool getDisableRescan();
+  void setDisableRescan(bool flag);
   /**
    * Retrieve the version string for the interpreter
    */
@@ -932,6 +941,7 @@ private:
    * assignment, the code in the codeBlock is executed.
    */
   void forStatement(const Tree & t);
+  bool tryJitCode(const Tree & t);
   /**
    * Implements the while control statement.  The AST looks like
    *     expr->codeBlock
@@ -1132,7 +1142,10 @@ QString TrimFilename(QString);
 QString TildeExpand(QString);
 
 void WarningMessage(QString);
-int num_for_loop_iter( double first, double step, double last );
-int num_for_loop_iter_f( float first, float step, float last );
+extern "C"
+{
+  double num_for_loop_iter( double first, double step, double last );
+  float num_for_loop_iter_f( float first, float step, float last );
+}
 
 #endif

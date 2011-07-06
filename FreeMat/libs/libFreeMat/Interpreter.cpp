@@ -37,8 +37,7 @@
 #include <QtCore>
 #include <fstream>
 #include <stdarg.h>
-#include "JIT.hpp"
-#include "JITFunc.hpp"
+#include "JITFactory.hpp"
 #include "JITInfo.hpp"
 #include "IEEEFP.hpp"
 #include "Algorithms.hpp"
@@ -48,6 +47,7 @@
 #include "Stats.hpp"
 #include <QtGui>
 #include "DebugStream.hpp"
+#include "CArray.hpp"
 
 #ifdef WIN32
 #define PATHSEP ";"
@@ -60,9 +60,7 @@ const int max_line_count = 1000000;
 /**
  * The database of compiled code segments
  */
-#ifdef HAVE_LLVM
 QMap<int,JITInfo> m_codesegments;
-#endif
 
 /**
  * The file system watcher -- watches for changes to the file system
@@ -297,6 +295,7 @@ void Interpreter::updateFileTool() {
 }
 
 void Interpreter::rescanPath() {
+  if (m_disablerescan) return;
   if (!context) return;
   context->flushTemporaryGlobalFunctions();
   for (int i=0;i<m_basePath.size();i++)
@@ -622,9 +621,7 @@ void Interpreter::sendGreeting() {
   outputMessage("      <pathtool> to set or change your path\n");
   outputMessage(" Use <dbauto on/off> to control stop-on-error behavior\n");
   outputMessage(" Use ctrl-b to stop execution of a function/script\n");
-#ifdef HAVE_LLVM
   outputMessage(" JIT is enabled by default - use jitcontrol to change it\n");
-#endif
   outputMessage(" Use <rootpath gui> to set/change where the FreeMat toolbox is installed\n");
   outputMessage("");
 }
@@ -1880,6 +1877,72 @@ void Interpreter::ifStatement(const Tree & t) {
     block(t.last().first());
 }
 
+static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref) {
+  delete ref.JITFunction();
+  ref.setJITState(JITInfo::FAILED);
+  JITFuncBase *cg = JITFactory::GetJITFunc(interp);
+  if (!cg) return false;
+  bool success = false;
+  try {
+    if (!cg->compile(t))
+      {
+	delete cg;
+	success = false;
+	ref.setJITState(JITInfo::FAILED);
+	return success;
+      }
+    success = true;
+    ref.setJITState(JITInfo::SUCCEEDED);
+    ref.setJITFunction(cg);
+    dbout << "Block JIT compiled at line " 
+	  << LineNumber(interp->getContext()->scopeTokenID())
+	  << " of " << interp->getContext()->scopeName() << "\n";
+  } catch (Exception &e) {
+    dbout << "JIT compile failed:" << e.msg() << " at line " 
+      	  << LineNumber(interp->getContext()->scopeTokenID())
+	  << " of " << interp->getContext()->scopeName() << "\n";
+    delete cg;
+    success = false;
+    ref.setJITState(JITInfo::FAILED);
+  }
+  return success;
+}
+
+bool Interpreter::tryJitCode(const Tree & t) {
+  // Try to compile this block to an instruction stream  
+  if (jitcontrol) {
+    int UID = t.node().UID();
+    JITInfo & ref = m_codesegments[UID];
+    if (ref.JITState() == JITInfo::UNTRIED) {
+      bool success = compileJITBlock(this,t,ref);
+      if (success) 
+	{
+	  if (ref.JITFunction()->run() == CJIT_Success)
+	    return true;
+	  ref.setJITState(JITInfo::FAILED);
+	  return false;
+	}
+    } else if (ref.JITState() == JITInfo::SUCCEEDED) {
+      int stat = ref.JITFunction()->run();
+      if (stat == CJIT_Success)
+	return true;
+      // If the prep stage failed, we can try to recompile
+      dbout << "Prep failed for JIT block retrying\n";
+      if (stat == CJIT_Prepfail)
+	{
+	  bool success = compileJITBlock(this,t,ref);
+	  if (success)
+	    {
+	      if (ref.JITFunction()->run() == CJIT_Success)
+		return true;
+	    }
+	}
+    }
+    ref.setJITState(JITInfo::FAILED);
+  }
+  return false;
+}
+
 //!
 //@Module WHILE While Loop
 //@@Section FLOW
@@ -1958,6 +2021,7 @@ void Interpreter::ifStatement(const Tree & t) {
 //!
 //Works
 void Interpreter::whileStatement(const Tree & t) {
+  if (tryJitCode(t)) return;
   const Tree & testCondition(t.first());
   const Tree & codeBlock(t.second());
   bool breakEncountered = false;
@@ -2083,7 +2147,8 @@ void ForLoopIterator( const Tree & codeBlock, QString indexName,
     }
 }
 
-int num_for_loop_iter_f( float first, float step, float last )
+extern "C"
+float num_for_loop_iter_f( float first, float step, float last )
 {
     int signum = (step > 0) - (step < 0);
     int nsteps = (int) floor( ( last - first ) / step ) + 1;  
@@ -2097,7 +2162,8 @@ int num_for_loop_iter_f( float first, float step, float last )
     return nsteps;
 }
 
-int num_for_loop_iter( double first, double step, double last )
+extern "C"
+double num_for_loop_iter( double first, double step, double last )
 {
     int signum = (step > 0) - (step < 0);
     int nsteps = (int) floor( ( last - first ) / step ) + 1;  
@@ -2110,43 +2176,6 @@ int num_for_loop_iter( double first, double step, double last )
 
     return nsteps;
 }
-
-#ifdef HAVE_LLVM
-static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref) {
-  delete ref.JITFunction();
-  JITFunc *cg = new JITFunc(interp);
-  bool success = false;
-  try {
-    cg->compile(t);
-    success = true;
-    ref.setJITState(JITInfo::SUCCEEDED);
-    ref.setJITFunction(cg);
-    dbout << "Block JIT compiled at line " 
-	  << LineNumber(interp->getContext()->scopeTokenID())
-	  << " of " << interp->getContext()->scopeName() << "\n";
-  } catch (Exception &e) {
-    dbout << "JIT compile failed:" << e.msg() << " at line " 
-      	  << LineNumber(interp->getContext()->scopeTokenID())
-	  << " of " << interp->getContext()->scopeName() << "\n";
-    delete cg;
-    success = false;
-    ref.setJITState(JITInfo::FAILED);
-  }
-  return success;
-}
-
-static bool prepJITBlock(JITInfo & t) {
-  bool success;
-  try {
-    t.JITFunction()->prep();
-    success = true;
-  } catch (Exception &e) {
-    dbout << "JIT Prep failed: " << e.msg() << "\n";
-    success = false;
-  }
-  return success;
-}
-#endif
 
 //!
 //@Module FOR For Loop
@@ -2245,33 +2274,7 @@ static bool prepJITBlock(JITInfo & t) {
 //Works
 
 void Interpreter::forStatement(const Tree & t) {
-  // Try to compile this block to an instruction stream  
-#ifdef HAVE_LLVM
-  if (jitcontrol) {
-    int UID = t.node().UID();
-    JITInfo & ref = m_codesegments[UID];
-    if (ref.JITState() == JITInfo::UNTRIED) {
-      bool success = compileJITBlock(this,t,ref);
-      if (success)
-	success = prepJITBlock(ref);
-      if (success) {
-	ref.JITFunction()->run();
-	return;
-      } 
-    } else if (ref.JITState() == JITInfo::SUCCEEDED) {
-      bool success = prepJITBlock(ref);
-      if (!success) {
-	success = compileJITBlock(this,t,ref);
-	if (success)
-	  success = prepJITBlock(ref);
-      }
-      if (success) {
-	ref.JITFunction()->run();
-	return;
-      }
-    }
-  }
-#endif
+  if (tryJitCode(t)) return;
   Array indexSet;
   QString indexVarName;
     /* Get the name of the indexing variable */
@@ -5351,6 +5354,7 @@ Interpreter::Interpreter(Context* aContext) {
   m_profile = false;
   m_quietlevel = 0;
   m_enableWarnings = true;
+  m_disablerescan = false;
   context->pushScope("base","base",false);
 }
 
@@ -5359,6 +5363,13 @@ Interpreter::~Interpreter() {
   delete context;
 }
 
+bool Interpreter::getDisableRescan() {
+  return m_disablerescan;
+}
+
+void Interpreter::setDisableRescan(bool flag) {
+  m_disablerescan = flag;
+}
 
 bool Interpreter::getStopOverload() {
   return stopoverload;

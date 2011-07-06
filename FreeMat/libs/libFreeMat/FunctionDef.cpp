@@ -599,7 +599,7 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
     retCount = 0;
   else
     retCount = 1;
-#if HAVE_LLVM
+#if HAVE_LLVM2
   /*
    * Build the JIT function that is a stub to the called function.
    * The stub should be:
@@ -716,7 +716,7 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
 					      ArrayVector& inputs,
 					      int nargout,
 					      VariableTable*) {
-#ifdef HAVE_LLVM
+#ifdef HAVE_LLVM2
   /**
    * To actually evaluate the function, we have to process each of
    * the arguments and get them into the right form.

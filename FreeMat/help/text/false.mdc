@@ -6,3 +6,12 @@ Returns a logical 0.  The syntax for its use is
 
    y = false
 
+You can also create an array of logical ones using
+the syntax
+
+   y = false(d1,d2,...,dn)
+
+or the syntax
+
+   y = false([d1,d2,...,dn])
+

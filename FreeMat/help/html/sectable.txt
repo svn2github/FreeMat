@@ -1668,12 +1668,12 @@ Object Oriented Programming
 +(class) mrdivide
 +(class) minus
 Base Constants
-+(constants) e
++(constants) false
 +(constants) teps
 +(constants) i
 +(constants) eps
 +(constants) feps
-+(constants) false
++(constants) e
 +(constants) inf
 +(constants) pi
 +(constants) true
@@ -1933,6 +1933,7 @@ Mathematical Functions
 +(mathfunctions) sec
 +(mathfunctions) sqrt
 +(mathfunctions) acosh
++(mathfunctions) legendre
 +(mathfunctions) tan
 +(mathfunctions) acosd
 +(mathfunctions) atanh
@@ -1954,6 +1955,7 @@ Mathematical Functions
 +(mathfunctions) asinh
 +(mathfunctions) log2
 +(mathfunctions) acoth
++(mathfunctions) betainc
 +(mathfunctions) acotd
 +(mathfunctions) cos
 +(mathfunctions) asind
@@ -1972,6 +1974,7 @@ Mathematical Functions
 +(mathfunctions) tand
 +(mathfunctions) cscd
 +(mathfunctions) mpower
++(mathfunctions) erfinv
 +(mathfunctions) atan2
 +(mathfunctions) erf
 +(mathfunctions) erfc

@@ -27,3 +27,13 @@ plots.  The complete dictionary of commands is given
 
   -  SIZE x1 y1 -- Set the page mapping
 
+  -  BOX x1 y1 x2 y2 -- draw a filled box covering the given coordinates
+
+  -  HTEXTBOX x1 y1 x2 y2 string -- Draw a horizontal box with the given string centered in it
+
+  -  VTEXTBOX x1 y1 x2 y2 string -- Draw a vertical box with the given string centered in it (rotated 90 degrees)
+
+  -  BRUSH string -- Set the brush color ('red','blue', etc)
+
+  -  PEN string -- Set the pen color
+

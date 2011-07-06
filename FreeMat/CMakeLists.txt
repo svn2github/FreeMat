@@ -317,7 +317,7 @@ IF( USE_LLVM )
     endif (LLVM_INCLUDE_DIR)
   else (MSVC)
     find_program(LLVM_CONFIG llvm-config)
-    execute_process(COMMAND ${LLVM_CONFIG} --libfiles jit nativecodegen ipo instrumentation scalaropts 
+    execute_process(COMMAND ${LLVM_CONFIG} --libfiles jit nativecodegen asmparser bitreader bitwriter codegen ipo instrumentation scalaropts selectiondag 
     			    OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -325,7 +325,20 @@ IF( USE_LLVM )
 # These shouldn't be necessary, but for now... I have added them
     FIND_LIBRARY(PTHREADS_LIB pthread)
     FIND_LIBRARY(DL_LIB dl)
-    SET(LLVM_LIBS ${LLVM_LIBS} ${PTHREADS_LIB} ${DL_LIB})
+    FIND_LIBRARY(CLANGFRONTEND clangFrontend /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGSERIALIZATION clangSerialization /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGDRIVER  clangDriver /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGCODEGEN  clangCodeGen /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGSEMA  clangSema /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGCHECKER  clangChecker /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGINDEX  clangIndex /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGANALYSIS  clangAnalysis /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGREWRITE  clangRewrite /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGAST  clangAST /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGPARSE  clangParse /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGLEX  clangLex /usr/lib64/llvm)
+    FIND_LIBRARY(CLANGBASIC  clangBasic /usr/lib64/llvm)
+    SET(LLVM_LIBS ${CLANGFRONTEND} ${CLANGSERIALIZATION} ${CLANGDRIVER} ${CLANGCODEGEN} ${CLANGSEMA} ${CLANGCHECKER} ${CLANGINDEX} ${CLANGANALYSIS} ${CLANGREWRITE} ${CLANGAST} ${CLANGPARSE} ${CLANGLEX} ${CLANGBASIC} ${LLVM_LIBS} ${PTHREADS_LIB} ${DL_LIB})
   endif (MSVC)
 #  if (NOT LLVM_VERSION STREQUAL "2.5")
 #    message(FATAL_ERROR "LLVM version 2.5 required.")
@@ -348,7 +361,7 @@ ENDIF(NOT MSVC)
 
 INCLUDE_DIRECTORIES( libs/libFreeMat libs/libGraphics 
 libs/libMex libs/libXP libs/libCore libs/libFN libs/libMatC 
-libs/libMath/libDynBlas ${QT_LIBRARIES} src)   
+libs/libMath/libDynBlas ${QT_LIBRARIES} src src/toolbox/jit)   
 
 
 ##############################################################################
@@ -466,6 +479,12 @@ add_custom_target( helpgen_fast
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
+	VERBATIM
+	)
+
+add_custom_target( jitgen
+        COMMENT "Building list of scalar JIT functions"
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/jitgen.py ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src/toolbox/jit/CScalarFuncs.hpp
 	VERBATIM
 	)
 

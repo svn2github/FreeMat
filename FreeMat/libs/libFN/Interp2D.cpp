@@ -201,7 +201,7 @@ static BasicArray<T> Minterp2(const BasicArray<T> &z, const BasicArray<T> &xi, c
 //The @|z| and @|xi,yi| vectors must be real, although complex types
 //are allowed for @|z|.
 //@@Signature
-//function interp2 Interp2Function
+//function interp2 Interp2Function jitsafe
 //inputs z xi yi method extrapflag
 //outputs zi
 //!

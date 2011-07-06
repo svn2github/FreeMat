@@ -67,7 +67,7 @@
 //@@Tests
 //@$near#y1=erfc(x1)
 //@@Signature
-//function erfc ErfcFunction
+//function erfc ErfcFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -86,6 +86,8 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
     throw Exception("erfc requires at least one argument");
   return ArrayVector(UnaryOp<OpErfc>(arg[0]));
 }
+
+JitScalarFunc1(erfc,OpErfc::func);
 
 //!
 //@Module ERF Error Function
@@ -117,7 +119,7 @@ ArrayVector ErfcFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=erf(x1)
 //@@Signature
-//function erf ErfFunction
+//function erf ErfFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -137,6 +139,8 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpErf>(arg[0]));
 }
 
+JitScalarFunc1(erf,OpErf::func);
+  
 //!
 //@Module ERFINV Inverse Error Function
 //@@Section MATHFUNCTIONS
@@ -161,7 +165,7 @@ ArrayVector ErfFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=erfinv(x1)
 //@@Signature
-//function erfinv ErfInvFunction
+//function erfinv ErfInvFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -181,6 +185,7 @@ ArrayVector ErfInvFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpErfInv>(arg[0]));
 }
 
+JitScalarFunc1(erfinv,OpErfInv::func);
 
 //!
 //@Module GAMMA Gamma Function
@@ -217,7 +222,7 @@ ArrayVector ErfInvFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=gamma(x1)
 //@@Signature
-//function gamma GammaFunction
+//function gamma GammaFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -243,6 +248,8 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpGamma>(arg[0]));
 }
 
+JitScalarFunc1(gamma,OpGamma::func);
+
 //!
 //@Module GAMMALN Log Gamma Function
 //@@Section MATHFUNCTIONS
@@ -267,7 +274,7 @@ ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=gammaln(x1)
 //@@Signature
-//function gammaln GammaLnFunction
+//function gammaln GammaLnFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -292,6 +299,8 @@ ArrayVector GammaLnFunction(int nargout, const ArrayVector& arg) {
     throw Exception("gammaln requires at least one argument");
   return ArrayVector(UnaryOp<OpGammaLn>(arg[0]));
 }
+
+JitScalarFunc1(gammaln,OpGammaLn::func);
 
 //!
 //@Module BETAINC Incomplete Beta Function

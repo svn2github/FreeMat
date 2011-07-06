@@ -1258,13 +1258,17 @@ ArrayVector HTextBitmapFunction(int nargout, const ArrayVector& arg) {
 //\item @|STYLE style| -- select line style ('solid' or 'dotted')
 //\item @|PAGE| -- force a new page
 //\item @|SIZE x1 y1| -- Set the page mapping
+//\item @|BOX x1 y1 x2 y2| -- draw a filled box covering the given coordinates
+//\item @|HTEXTBOX x1 y1 x2 y2 string| -- Draw a horizontal box with the given string centered in it
+//\item @|VTEXTBOX x1 y1 x2 y2 string| -- Draw a vertical box with the given string centered in it (rotated 90 degrees)
+//\item @|BRUSH string| -- Set the brush color ('red','blue', etc)
+//\item @|PEN string| -- Set the pen color
 //\end{itemize}
 //@@Signature
 //gfunction hrawplot HRawPlotFunction
 //input filename commands
 //output none
 //!
-
 ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) throw Exception("hrawplot requires 4 arguments");
   QString filename(arg[0].asString());
@@ -1273,6 +1277,7 @@ ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
   QPrinter prnt;
   prnt.setOutputFormat(QPrinter::PdfFormat);
   prnt.setOutputFileName(filename);
+  prnt.setColorMode(QPrinter::Color);
   prnt.setPageSize(QPrinter::Ledger);
   QPainter pnt(&prnt);
   QRect rect = pnt.viewport();
@@ -1288,6 +1293,39 @@ ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
       int x2 = cmdp[3].asInteger();
       int y2 = cmdp[4].asInteger();
       pnt.drawLine(x1,y1,x2,y2);
+    } else if (cmdp[0].asString().toUpper() == "BOX") {
+      if (cmdp.size() != 5) throw Exception("malformed line: " + cmd);
+      int x1 = cmdp[1].asInteger();
+      int y1 = cmdp[2].asInteger();
+      int x2 = cmdp[3].asInteger();
+      int y2 = cmdp[4].asInteger();
+      pnt.drawRect(QRect(QPoint(x1,y1),QPoint(x2,y2)));
+    } else if (cmdp[0].asString().toUpper() == "HTEXTBOX") {
+      if (cmdp.size() != 6) throw Exception("malformed line: " + cmd);
+      int x1 = cmdp[1].asInteger();
+      int y1 = cmdp[2].asInteger();
+      int x2 = cmdp[3].asInteger();
+      int y2 = cmdp[4].asInteger();
+      QString txt = cmdp[5].asString();
+      QRect rect(QPoint(x1,y1),QPoint(x2,y2));
+      pnt.fillRect(rect,pnt.brush());
+      pnt.drawText(rect,Qt::AlignCenter | Qt::TextWordWrap,txt);
+    } else if (cmdp[0].asString().toUpper() == "VTEXTBOX") {
+      if (cmdp.size() != 6) throw Exception("malformed line: " + cmd);
+      int x1 = cmdp[1].asInteger();
+      int y1 = cmdp[2].asInteger();
+      int x2 = cmdp[3].asInteger();
+      int y2 = cmdp[4].asInteger();
+      QString txt = cmdp[5].asString();
+      pnt.save();
+      pnt.translate(QPoint(pnt.window().width()/2,pnt.window().height()/2));
+      pnt.rotate(-90);
+      pnt.translate(QPoint(-pnt.window().width()/2,-pnt.window().height()/2));
+      QRect rect(pnt.transform().inverted().map(QPoint(x1,y1)),
+		 pnt.transform().inverted().map(QPoint(x2,y2)));
+      pnt.fillRect(rect,pnt.brush());
+      pnt.drawText(rect,Qt::AlignCenter,txt);
+      pnt.restore();
     } else if (cmdp[0].asString().toUpper() == "FONT") {
       if (cmdp.size() != 3) throw Exception("malformed line: " + cmd);
       QString name = cmdp[1].asString();
@@ -1313,6 +1351,13 @@ ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
 	throw Exception("malformed line: " + cmd);
     } else if (cmdp[0].asString().toUpper() == "PAGE") {
       prnt.newPage();
+    } else if (cmdp[0].asString().toUpper() == "BRUSH") {
+      if (cmdp.size() != 2) throw Exception("malformed line: " + cmd);
+      pnt.setBrush(QBrush(QColor(cmdp[1].asString())));
+    } else if (cmdp[0].asString().toUpper() == "PEN") {
+      QPen pen(pnt.pen());
+      pen.setColor(QColor(cmdp[1].asString()));
+      pnt.setPen(pen);
     } else if (cmdp[0].asString().toUpper() == "SIZE") {
       if (cmdp.size() != 3) throw Exception("malformed line: " + cmd);
       int width = cmdp[1].asInteger();

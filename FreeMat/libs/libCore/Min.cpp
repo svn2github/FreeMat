@@ -293,7 +293,7 @@ struct OpVecMin {
 //@$exact#[y1,y2]=min(x1,[],2)
 //@$exact#[y1,y2]=min(x1,x2)
 //@@Signature
-//function min MinFunction
+//function min MinFunction jitsafe
 //input x z dim
 //output y n
 //!
@@ -326,3 +326,5 @@ ArrayVector MinFunction(int nargout, const ArrayVector& arg) {
   }
   return BiVectorOp<OpVecMin>(arg[0],1,dim);
 }
+
+JitScalarFunc2(min,OpLessThan::func);

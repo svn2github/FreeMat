@@ -123,7 +123,7 @@ struct OpVecProd {
 //@@Tests
 //@$exact#y1=prod(x1)
 //@@Signature
-//function prod ProdFunction
+//function prod ProdFunction jitsafe
 //inputs x dimension
 //outputs y
 //!

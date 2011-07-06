@@ -217,7 +217,7 @@ ArrayVector SqrtFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=tanh(x1)
 //@@Signature
-//function tanh TanhFunction
+//function tanh TanhFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -253,6 +253,8 @@ ArrayVector TanhFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpTanh>(arg[0]));
 }
 
+JitScalarFunc1(tanh,OpTanh::func);
+
 //!
 //@Module ACOSH Inverse Hyperbolic Cosine Function
 //@@Section MATHFUNCTIONS
@@ -280,7 +282,7 @@ ArrayVector TanhFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=acosh(x1)
 //@@Signature
-//function acosh ArccoshFunction
+//function acosh ArccoshFunction 
 //inputs x
 //outputs y
 //!
@@ -349,7 +351,7 @@ ArrayVector ArccoshFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=asinh(x1)
 //@@Signature
-//function asinh ArcsinhFunction
+//function asinh ArcsinhFunction 
 //inputs x
 //outputs y
 //!
@@ -544,7 +546,7 @@ ArrayVector ArctanhFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=cosh(x1)
 //@@Signature
-//function cosh CoshFunction
+//function cosh CoshFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -567,6 +569,8 @@ ArrayVector CoshFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Cosh function takes exactly one argument");
   return ArrayVector(UnaryOp<OpCosh>(arg[0]));
 }
+
+JitScalarFunc1(cosh,OpCosh::func);
 
 //!
 //@Module SINH Hyperbolic Sine Function
@@ -593,7 +597,7 @@ ArrayVector CoshFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=sinh(x1)
 //@@Signature
-//function sinh SinhFunction
+//function sinh SinhFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -617,6 +621,7 @@ ArrayVector SinhFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpSinh>(arg[0]));
 }
 
+JitScalarFunc1(sinh,OpSinh::func);
 
 //!
 //@Module EXP Exponential Function
@@ -669,7 +674,7 @@ ArrayVector SinhFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=exp(x1)
 //@@Signature
-//function exp ExpFunction
+//function exp ExpFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -693,6 +698,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpExp>(arg[0]));
 }
 
+JitScalarFunc1(exp,OpExp::func);
 
 //!
 //@Module EXPM1 Exponential Minus One Function
@@ -707,7 +713,7 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=expm1(x1)
 //@@Signature
-//function expm1 ExpM1Function
+//function expm1 ExpM1Function jitsafe
 //inputs x
 //outputs y
 //!
@@ -733,5 +739,7 @@ ArrayVector ExpM1Function(int nargout, const ArrayVector& arg) {
     throw Exception("ExpM1 function takes exactly one argument");
   return ArrayVector(UnaryOp<OpExpM1>(arg[0]));
 }
+
+JitScalarFunc1(expm1,OpExpM1::func);
 
 

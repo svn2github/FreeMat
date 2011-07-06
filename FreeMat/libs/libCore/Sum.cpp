@@ -114,7 +114,7 @@ struct OpVecSum {
 //@$near#y1=sum(x1)
 //@$near#y1=sum(x1,2)
 //@@Signature
-//function sum SumFunction
+//function sum SumFunction jitsafe
 //inputs x dim
 //outputs y
 //!

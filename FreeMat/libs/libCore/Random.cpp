@@ -57,7 +57,7 @@ static bool initialized = false;
 //  test_val = issame(a1,a2);
 //@}
 //@@Signature
-//function seed SeedFunction
+//function seed SeedFunction jitsafe
 //inputs s t
 //outputs none
 //!
@@ -117,7 +117,7 @@ ArrayVector SeedFunction(int nargout, const ArrayVector& arg) {
 //randbeta(3*ones(1,5),7*ones(1,5))
 //@>
 //@@Signature
-//function randbeta RandBetaFunction
+//function randbeta RandBetaFunction jitsafe
 //inputs alpha beta
 //outputs y
 //!
@@ -159,7 +159,7 @@ ArrayVector RandBetaFunction(int nargout, const ArrayVector& arg) {
 //randi(zeros(1,6),5*ones(1,6))
 //@>
 //@@Signature
-//function randi RandIFunction
+//function randi RandIFunction jitsafe
 //inputs low high
 //outputs y
 //!
@@ -219,7 +219,7 @@ ArrayVector RandIFunction(int nargout, const ArrayVector& arg) {
 //sum(randn(4,6).^2)
 //@>
 //@@Signature
-//function randchi RandChiFunction
+//function randchi RandChiFunction jitsafe
 //inputs n
 //outputs y
 //!
@@ -266,7 +266,7 @@ ArrayVector RandChiFunction(int nargout, const ArrayVector& arg) {
 //randexp(ones(1,6))
 //@>
 //@@Signature
-//function randexp RandExpFunction
+//function randexp RandExpFunction jitsafe
 //inputs lambda
 //outputs y
 //!
@@ -316,7 +316,7 @@ ArrayVector RandExpFunction(int nargout, const ArrayVector& arg) {
 //randbin(1000*ones(1,10),33/1000*ones(1,10))
 //@>
 //@@Signature
-//function randp RandPoissonFunction
+//function randp RandPoissonFunction jitsafe
 //inputs n
 //outputs y
 //!
@@ -366,7 +366,7 @@ ArrayVector RandPoissonFunction(int nargout, const ArrayVector& arg) {
 //sum(rand(100,10)<0.1)
 //@>
 //@@Signature
-//function randbin RandBinFunction
+//function randbin RandBinFunction jitsafe
 //inputs N p
 //outputs y
 //!
@@ -412,7 +412,7 @@ ArrayVector RandBinFunction(int nargout, const ArrayVector& arg) {
 //randnbin(6*ones(1,4),.01)
 //@>
 //@@Signature
-//function randnbin RandNBinFunction
+//function randnbin RandNBinFunction jitsafe
 //inputs r p
 //outputs y
 //!
@@ -464,7 +464,7 @@ ArrayVector RandNBinFunction(int nargout, const ArrayVector& arg) {
 //randchi(5*ones(1,9))./randchi(7*ones(1,9))
 //@>
 //@@Signature
-//function randf RandFFunction
+//function randf RandFFunction jitsafe
 //inputs n m
 //outputs y
 //!
@@ -520,7 +520,7 @@ ArrayVector RandFFunction(int nargout, const ArrayVector& arg) {
 //sum(randexp(ones(15,9)))
 //@>
 //@@Signature
-//function randgamma RandGammaFunction
+//function randgamma RandGammaFunction jitsafe
 //inputs a r
 //outputs y
 //!
@@ -576,7 +576,7 @@ ArrayVector RandGammaFunction(int nargout, const ArrayVector& arg) {
 //randmulti(10000,[0.4999,0.4999,0.0002])
 //@>
 //@@Signature
-//function randmulti RandMultiFunction
+//function randmulti RandMultiFunction jitsafe
 //inputs N pvec
 //outputs y
 //!
@@ -628,7 +628,7 @@ ArrayVector RandMultiFunction(int nargout, const ArrayVector& arg) {
 //randnchi(5*ones(1,9),0.3)
 //@>
 //@@Signature
-//function randnchi RandNChiFunction
+//function randnchi RandNChiFunction jitsafe
 //inputs n mu
 //outputs y
 //!
@@ -677,7 +677,7 @@ ArrayVector RandNChiFunction(int nargout, const ArrayVector& arg) {
 //randnf(5*ones(1,9),7,1.34)
 //@>
 //@@Signature
-//function randnf RandNFFunction
+//function randnf RandNFFunction jitsafe
 //inputs n m c
 //outputs y
 //!
@@ -825,7 +825,7 @@ static ArrayVector RandStateControl(const ArrayVector& arg) {
 //c = randn(1,3)      % we get random sequence 2 again
 //@>
 //@@Signature
-//function randn RandnFunction
+//function randn RandnFunction jitsafe
 //inputs varargin
 //outputs y
 //!
@@ -920,7 +920,7 @@ ArrayVector RandnFunction(int nargout, const ArrayVector& arg) {
 //c = rand(1,3)      % we get random sequence 2 again
 //@>
 //@@Signature
-//function rand RandFunction
+//function rand RandFunction jitsafe
 //inputs varargin
 //outputs y
 //!

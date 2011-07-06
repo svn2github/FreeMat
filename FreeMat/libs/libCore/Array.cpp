@@ -74,7 +74,7 @@
 //test_val = all(y == z);
 //@}
 //@@Signature
-//function permute PermuteFunction
+//function permute PermuteFunction jitsafe
 //inputs x p
 //outputs y
 //!
@@ -165,7 +165,7 @@ ArrayVector PermuteFunction(int nargout, const ArrayVector& arg) {
 //  test_val = all(p == ones(4,4,2));
 //@}
 //@@Signature
-//function repmat RepMatFunction
+//function repmat RepMatFunction jitsafe
 //inputs x rows cols
 //outputs y
 //!
@@ -388,7 +388,7 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
 //x = testeq(diag(yi1,30),diag(zi1,30)) & testeq(diag(yf1,30),diag(zf1,30)) & testeq(diag(yd1,30),diag(zd1,30)) & testeq(diag(yc1,30),diag(zc1,30)) & testeq(diag(yz1,30),diag(zz1,30));
 //@}
 //@@Signature
-//function diag DiagFunction
+//function diag DiagFunction jitsafe
 //inputs x n
 //outputs y
 //!

@@ -1353,7 +1353,7 @@ static ArrayVector QRDPivotFunction(bool compactDec, Array A) {
 //@$near#[y1,y2] = qr(x1)
 //@$near#[y1,y2,y3] = qr(x1)
 //@@Signature
-//function qr QRDFunction
+//function qr QRDFunction jitsafe
 //inputs x n
 //outputs varargout
 //!

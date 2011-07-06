@@ -88,7 +88,7 @@ struct OpRound {
 //@@Tests
 //@$exact#y1=round(x1)
 //@@Signature
-//function round RoundFunction
+//function round RoundFunction jitsafe
 //input x
 //output y
 //!
@@ -97,3 +97,5 @@ ArrayVector RoundFunction(int nargout, const ArrayVector& arg) {
     throw Exception("round requires one argument");
   return ArrayVector(UnaryOp<OpRound>(arg[0]));
 }
+
+JitScalarFunc1(round,OpRound::func);

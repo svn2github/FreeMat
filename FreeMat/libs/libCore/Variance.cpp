@@ -138,7 +138,7 @@ struct OpVecVar {
 //@$near#y1=var(x1)
 //@$near#y1=var(x1,2)
 //@@Signature
-//function var VarFunction
+//function var VarFunction jitsafe
 //inputs x dim
 //outputs y
 //!

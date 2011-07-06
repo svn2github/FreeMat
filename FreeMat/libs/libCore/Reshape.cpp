@@ -73,7 +73,7 @@
 //  test_val = issame(b,c);
 //@} 
 //@@Signature
-//function reshape ReshapeFunction
+//function reshape ReshapeFunction jitsafe
 //inputs x varargin
 //outputs y
 //!

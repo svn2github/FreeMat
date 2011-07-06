@@ -43,7 +43,7 @@
 //@$exact#y1=dot(x1,x2)
 //@$exact#y1=dot(x1,x2,2)
 //@@Signature
-//function dot DotFunction
+//function dot DotFunction jitsafe
 //inputs x1 x2 dim
 //outputs y
 //!

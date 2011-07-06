@@ -70,7 +70,7 @@ struct OpCeil {
 //@@Tests
 //@$exact#y1=ceil(x1)
 //@@Signature
-//function ceil CeilFunction
+//function ceil CeilFunction jitsafe
 //input x
 //output y
 //!
@@ -79,3 +79,5 @@ ArrayVector CeilFunction(int nargout, const ArrayVector& arg) {
     throw Exception("ceil requires one argument");
   return ArrayVector(UnaryOp<OpCeil>(arg[0]));
 }
+
+JitScalarFunc1(ceil,OpCeil::func);

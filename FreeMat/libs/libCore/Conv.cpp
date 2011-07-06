@@ -237,7 +237,7 @@ static Array Conv2FunctionRCX(Array hcol, Array hrow, Array X, QString type) {
 //   x = wbtest_near(C,D+E*i);
 //@}
 //@@Signature
-//function conv2 Conv2Function
+//function conv2 Conv2Function jitsafe
 //inputs hcol hrow X shape
 //outputs Z
 //!

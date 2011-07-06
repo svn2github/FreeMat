@@ -62,7 +62,7 @@ struct OpAbs {
 //@@Tests
 //@$exact#y1=abs(x1)
 //@@Signature
-//function abs AbsFunction
+//function abs AbsFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -71,3 +71,5 @@ ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
     throw Exception("abs function requires 1 argument");
   return ArrayVector(Real(UnaryOp<OpAbs>(arg[0])));
 }
+
+JitScalarFunc1(abs,OpAbs::func);

@@ -64,7 +64,7 @@
 //@>
 //@figure cosplot
 //@@Signature
-//function cos CosFunction
+//function cos CosFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -92,6 +92,8 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpCos>(arg[0]));
 }
 
+JitScalarFunc1(cos,OpCos::func);
+
 //!
 //@Module COSD Cosine Degrees Function
 //@@Section MATHFUNCTIONS
@@ -114,7 +116,7 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=cosd(x1)
 //@@Signature
-//function cosd CosdFunction
+//function cosd CosdFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -135,6 +137,7 @@ ArrayVector CosdFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpCosd>(arg[0]));
 }
 
+JitScalarFunc1(cosd,OpCosd::func);
 
 //!
 //@Module SIN Trigonometric Sine Function
@@ -173,7 +176,7 @@ ArrayVector CosdFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=sin(x1)#(loopi==5)
 //@@Signature 
-//function sin SinFunction
+//function sin SinFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -201,6 +204,8 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpSin>(arg[0]));
 }
 
+JitScalarFunc1(sin,OpSin::func);
+
 //!
 //@Module SIND Sine Degrees Function
 //@@Section MATHFUNCTIONS
@@ -223,7 +228,7 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=sind(x1)
 //@@Signature
-//function sind SindFunction
+//function sind SindFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -245,6 +250,7 @@ ArrayVector SindFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpSind>(arg[0]));
 }
 
+JitScalarFunc1(sind,OpSind::func);
 
 //!
 //@Module TAN Trigonometric Tangent Function
@@ -287,7 +293,7 @@ ArrayVector SindFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=tan(x1)#(loopi==5)
 //@@Signature
-//function tan TanFunction
+//function tan TanFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -315,6 +321,8 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpTan>(arg[0]));
 }
 
+JitScalarFunc1(tan,OpTan::func);
+
 //!
 //@Module TAND Tangent Degrees Function
 //@@Section MATHFUNCTIONS
@@ -333,7 +341,7 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=tand(x1)#(loopi==54)
 //@@Signature
-//function tand TandFunction
+//function tand TandFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -353,6 +361,8 @@ ArrayVector TandFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Tand Function takes exactly one argument");
   return ArrayVector(UnaryOp<OpTand>(arg[0]));
 }
+
+JitScalarFunc1(tand,OpTand::func);
 
 //!
 //@Module CSC Trigonometric Cosecant Function
@@ -387,7 +397,7 @@ ArrayVector TandFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=csc(x1)#(any(loopi==[5,55]))
 //@@Signature
-//function csc CscFunction
+//function csc CscFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -417,6 +427,8 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpCsc>(arg[0]));
 }
 
+JitScalarFunc1(csc,OpCsc::func);
+
 //!
 //@Module CSCD Cosecant Degrees Function
 //@@Section MATHFUNCTIONS
@@ -430,7 +442,7 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=cscd(x1)
 //@@Signature
-//function cscd CscdFunction
+//function cscd CscdFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -460,6 +472,7 @@ ArrayVector CscdFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpCscd>(arg[0]));
 }
 
+JitScalarFunc1(cscd,OpCscd::func);
 
 //!
 //@Module SEC Trigonometric Secant Function
@@ -494,7 +507,7 @@ ArrayVector CscdFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=sec(x1)
 //@@Signature
-//function sec SecFunction
+//function sec SecFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -524,6 +537,8 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpSec>(arg[0]));
 }
 
+JitScalarFunc1(sec,OpSec::func);
+
 //!
 //@Module SECD Secant Degrees Function
 //@@Section MATHFUNCTIONS
@@ -537,7 +552,7 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=secd(x1)#(loopi==54)
 //@@Signature
-//function secd SecdFunction
+//function secd SecdFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -562,6 +577,8 @@ ArrayVector SecdFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Secd Function takes exactly one argument");
   return ArrayVector(UnaryOp<OpSecd>(arg[0]));
 }
+
+JitScalarFunc1(secd,OpSecd::func);
 
 //!
 //@Module COT Trigonometric Cotangent Function
@@ -600,7 +617,7 @@ ArrayVector SecdFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=cot(x1)#(any(loopi==[5,55]))
 //@@Signature
-//function cot CotFunction
+//function cot CotFunction jitsafe
 //inputs x
 //outputs y
 //!
@@ -625,6 +642,8 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
     throw Exception("Cotangent Function takes exactly one argument");
   return ArrayVector(UnaryOp<OpCot>(arg[0]));
 }
+
+JitScalarFunc1(cot,OpCot::func);
 
 //!
 //@Module COTD Cotangent Degrees Function
@@ -663,6 +682,8 @@ ArrayVector CotdFunction(int nargout, const ArrayVector& arg) {
     throw Exception("cotd function takes exactly one argument");
   return ArrayVector(UnaryOp<OpCotd>(arg[0]));
 }
+
+JitScalarFunc1(cotd,OpCotd::func);
 
 //!
 //@Module ACOS Inverse Trigonometric Arccosine Function
@@ -753,7 +774,6 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
     input.forceComplex();
   return ArrayVector(UnaryOp<OpAcos>(input));
 }
-
 
 //!
 //@Module ASIN Inverse Trigonometric Arcsine Function
@@ -906,6 +926,8 @@ ArrayVector ArcTanFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpAtan>(arg[0]));
 }
 
+JitScalarFunc1(atan,OpAtan::func);
+
 //!
 //@Module ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function
 //@@Section MATHFUNCTIONS
@@ -953,7 +975,7 @@ ArrayVector ArcTanFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$near#y1=atan(x1,x2)
 //@@Signature
-//function atan2 Arctan2Function
+//function atan2 Arctan2Function jitsafe
 //inputs y x
 //outputs z
 //!
@@ -998,3 +1020,5 @@ ArrayVector Arctan2Function(int nargout, const ArrayVector& arg) {
   Array x(arg[1]);
   return ArrayVector(DotOp<OpAtan2>(y,x));
 }
+
+JitScalarFunc2(atan2,OpAtan2::func);

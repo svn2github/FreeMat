@@ -476,6 +476,7 @@ ArrayVector IsNaNFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpIsNaN>(arg[0]).toClass(Bool));
 }
 
+JitScalarFunc1(isnan,OpIsNaN::func);
 
 struct OpIsInf {
   static inline float func(float t) {return (IsInfinite(t) ? 1.0 : 0.0);}
@@ -526,6 +527,8 @@ ArrayVector IsInfFunction(int nargout, const ArrayVector& arg) {
     throw Exception("isinf function takes one argument - the array to test");
   return ArrayVector(UnaryOp<OpIsInf>(arg[0]).toClass(Bool));
 }
+
+JitScalarFunc1(isinf,OpIsInf::func);
 
 //!
 //@Module ISREAL Test For Real Array

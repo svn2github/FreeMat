@@ -292,7 +292,7 @@ struct OpVecMax {
 //@$exact#[y1,y2]=max(x1,[],2)
 //@$exact#[y1,y2]=max(x1,x2)
 //@@Signature
-//function max MaxFunction
+//function max MaxFunction jitsafe
 //input x z dim
 //output y n
 //!
@@ -325,3 +325,6 @@ ArrayVector MaxFunction(int nargout, const ArrayVector& arg) {
   }
   return BiVectorOp<OpVecMax>(arg[0],1,dim);
 }
+
+JitScalarFunc2(max,OpGreaterThan::func);
+

@@ -31,7 +31,7 @@
 //where @|A| is the n-dimensional array to analyze.  This form
 //uses the underlying BLAS implementation to compute the 2-norm.
 //@@Signature
-//function xnrm2 XNrm2Function
+//function xnrm2 XNrm2Function jitsafe
 //inputs A
 //outputs y
 //!

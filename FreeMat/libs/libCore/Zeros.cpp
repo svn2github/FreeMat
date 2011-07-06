@@ -19,7 +19,7 @@
 
 #include "Array.hpp"
 #include "Utils.hpp"
-
+#include "Operators.hpp"
 
 //!
 //@Module INF Infinity Constant
@@ -84,7 +84,7 @@
 //inputs varargin
 //outputs y
 //@@Signature
-//function Inf InfFunction
+//function Inf InfFunction jitsafe
 //inputs varargin
 //outputs y
 //!
@@ -117,6 +117,8 @@ ArrayVector InfFunction(int nargout, const ArrayVector& arg) {
     p.real<double>().fill(Inf());
   return ArrayVector(p);
 }
+
+JitScalarFunc0(infp,Inf());
 
 //!
 //@Module NAN Not-a-Number Constant
@@ -165,11 +167,11 @@ ArrayVector InfFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$exact#y1=nan
 //@@Signature
-//function nan NaNFunction
+//function nan NaNFunction jitsafe
 //inputs varargin
 //outputs y
 //@@Signature
-//function NaN NaNFunction
+//function NaN NaNFunction jitsafe
 //inputs varargin
 //outputs y
 //!
@@ -202,6 +204,9 @@ ArrayVector NaNFunction(int nargout, const ArrayVector& arg) {
     p.real<double>().fill(NaN());
   return ArrayVector(p);
 }
+
+JitScalarFunc0(nan,NaN());
+JitScalarFunc0(NaN,NaN());
 
 //!
 //@Module ZEROS Array of Zeros
@@ -279,7 +284,7 @@ ArrayVector NaNFunction(int nargout, const ArrayVector& arg) {
 //  test_val = (size(a) == [2,3]) && strcmp(typeof(a),'single');
 //@}
 //@@Signature
-//function zeros ZerosFunction
+//function zeros ZerosFunction jitsafe
 //inputs varargin
 //outputs y
 //!
@@ -333,7 +338,7 @@ ArrayVector ZerosFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$exact#y1=false
 //@@Signature
-//function false FalseFunction
+//function false FalseFunction jitsafe
 //inputs none
 //outputs y
 //!

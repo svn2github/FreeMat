@@ -98,7 +98,7 @@ struct OpVecCumSum {
 //@@Tests
 //@$exact#y1=cumsum(x1)
 //@@Signature
-//function cumsum CumsumFunction
+//function cumsum CumsumFunction jitsafe
 //inputs x dimension
 //outputs y
 //!  

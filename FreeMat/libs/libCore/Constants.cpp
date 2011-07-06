@@ -90,13 +90,15 @@ ArrayVector IFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$exact#y1=pi
 //@@Signature
-//function pi PiFunction
+//function pi PiFunction jitsafe
 //inputs none
 //outputs y
 //!
 ArrayVector PiFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(double(4.0*atan(1.0))));
 }  
+
+JitScalarFunc0(pi,double(4.0*atan(1.0)));
 
 //!
 //@Module E Euler Constant (Base of Natural Logarithm)
@@ -116,13 +118,15 @@ ArrayVector PiFunction(int nargout, const ArrayVector& arg) {
 //@@Tests
 //@$exact#y1=e
 //@@Signature
-//function e EFunction
+//function e EFunction jitsafe
 //inputs none
 //outputs y
 //!
 ArrayVector EFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(exp(1.0)));
 }  
+
+JitScalarFunc0(e,double(exp(1.0)));
 
 struct OpEps {
   static inline float func(float t) {
@@ -181,7 +185,7 @@ struct OpEps {
 //@$exact#y1=eps('single')
 //@$exact#y1=eps(x1)
 //@@Signature
-//function eps EpsFunction
+//function eps EpsFunction jitsafe
 //inputs varargin
 //outputs y
 //!

@@ -115,7 +115,7 @@ struct OpVecMean {
 //@$near#y1=mean(x1)
 //@$near#y1=mean(x1,2)#(any(loopi==[4,21]))
 //@@Signature
-//function mean MeanFunction
+//function mean MeanFunction jitsafe
 //inputs x dim
 //outputs y
 //!

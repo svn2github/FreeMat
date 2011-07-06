@@ -64,7 +64,7 @@ struct OpFloor {
 //@@Tests
 //@$exact#y1=floor(x1)
 //@@Signature
-//function floor FloorFunction
+//function floor FloorFunction jitsafe
 //input x
 //output y
 //!
@@ -73,6 +73,8 @@ ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
     throw Exception("floor requires one argument");
   return ArrayVector(UnaryOp<OpFloor>(arg[0]));
 }
+
+JitScalarFunc1(floor,OpFloor::func);
 
 struct OpFix {
   static inline float func(float t) { 
@@ -101,6 +103,7 @@ struct OpFix {
   }
 };
 
+JitScalarFunc1(fix,OpFix::func);
 
 //!
 //@Module FIX Round Towards Zero

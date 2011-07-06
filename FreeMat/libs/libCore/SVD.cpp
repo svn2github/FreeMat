@@ -995,7 +995,7 @@ static ArrayVector SVDFunction(BasicArray<T> &A_real,
 //@$near#[y1,y2,y3] = svd(x1)
 //@$near#[y1,y2,y3] = svd(x1,0)
 //@@Signature
-//function svd SVDFunction
+//function svd SVDFunction jitsafe
 //inputs A flag
 //outputs U S V
 //!

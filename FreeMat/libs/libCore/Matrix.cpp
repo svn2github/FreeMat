@@ -41,7 +41,7 @@
 //@@Tests
 //@$near#y1=inv(x1)
 //@@Signature
-//function inv InvFunction
+//function inv InvFunction jitsafe
 //inputs x
 //outputs y
 //!

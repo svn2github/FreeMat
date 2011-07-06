@@ -93,7 +93,7 @@ struct OpVecCumProd {
 //@>
 //@@Tests
 //@$exact#y1=cumprod(x1)
-//@@Signature
+//@@Signature jitsafe
 //function cumprod CumprodFunction
 //inputs x dimensions
 //outputs y

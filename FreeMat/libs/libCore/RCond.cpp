@@ -171,7 +171,7 @@ static double doubleRecipCond(int m, int n, double *a) {
 //@@Tests
 //@$near#y1=rcond(x1)
 //@@Signature
-//function rcond RcondFunction
+//function rcond RcondFunction jitsafe
 //inputs A
 //outputs x
 //!

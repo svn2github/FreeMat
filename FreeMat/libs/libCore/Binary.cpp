@@ -91,7 +91,7 @@ struct OpBitCmp {
 // test_val = all(bitand([1,5,42],3) == [1 1 2]);
 //@}
 //@@Signature
-//function bitand BitandFunction
+//function bitand BitandFunction jitsafe
 //inputs a b
 //outputs y
 //!
@@ -100,6 +100,8 @@ ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
     throw Exception("bitand requires at least two arguments");
   return ArrayVector(DotOp<OpBitAnd>(arg[0],arg[1]));
 }
+
+JitScalarFunc2(bitand,OpBitAnd::func);
 
 //!
 //@Module BITOR Bitwise Boolean Or Operation
@@ -125,7 +127,7 @@ ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
 //  test_val = all(bitor([1,5,42],3) == [3 7 43]);
 //@}
 //@@Signature
-//function bitor BitorFunction
+//function bitor BitorFunction jitsafe
 //inputs a b
 //outputs y
 //!
@@ -134,6 +136,8 @@ ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
     throw Exception("bitor requires at least two arguments");
   return ArrayVector(DotOp<OpBitOr>(arg[0],arg[1]));
 }
+
+JitScalarFunc2(bitor,OpBitOr::func);
 
 //!
 //@Module BITXOR Bitwise Boolean Exclusive-Or (XOR) Operation
@@ -159,7 +163,7 @@ ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
 //  test_val = all(bitxor([1,5,42],3) == [2 6 41]);
 //@}
 //@@Signature
-//function bitxor BitxorFunction
+//function bitxor BitxorFunction jitsafe
 //inputs a b
 //outputs y
 //!
@@ -168,6 +172,8 @@ ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
     throw Exception("bitxor requires at least two arguments");
   return ArrayVector(DotOp<OpBitXor>(arg[0],arg[1]));
 }
+
+JitScalarFunc2(bitxor,OpBitXor::func);
 
 //!
 //@Module BITCMP Bitwise Boolean Complement Operation
@@ -197,7 +203,7 @@ ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
 //bitcmp(uint16(2^14-2),14)
 //@>
 //@@Signature
-//function bitcmp BitcmpFunction
+//function bitcmp BitcmpFunction jitsafe
 //inputs a n
 //outputs y
 //!

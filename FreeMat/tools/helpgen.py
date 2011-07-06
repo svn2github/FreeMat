@@ -545,8 +545,8 @@ class BBTestWriter(Writer):
         return
     def endmodule(self):
         self.fp.close()
-## TODO... delete empty tests
-##        if (self.empty):
+        if (self.empty):
+            os.unlink(self.filename)
             
 
 
@@ -749,6 +749,8 @@ class HelpGen:
         return
     def process_dir(self,dirname):
         if (re.search('\.svn',dirname)):
+            return
+        if (re.search('\+octave',dirname)):
             return
         print('Processing dir %s'%(dirname))
         names = os.listdir(dirname)

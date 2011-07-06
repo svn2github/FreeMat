@@ -28,7 +28,7 @@ def writeloader(dirname,gfuncs,classdefs,loadername):
     for fnc in gfuncs:
         if (fnc["type"] == "gfunction" or fnc["type"] == "sgfunction"):
             g.write('  if (guiflag)')
-        g.write('  context->add%s("%s",%s,'%(funcmapping[fnc["type"]],fnc["name"],fnc["internal_name"]))
+        g.write('  context->add%s("%s",%s,%d,'%(funcmapping[fnc["type"]],fnc["name"],fnc["internal_name"],fnc["jitsafe"]))
         if fnc["inputs"][0]=='none':
             input_count = 0
         elif fnc["inputs"][len(fnc["inputs"])-1]=='varargin':
@@ -74,6 +74,9 @@ for name in names:
                 iline = f.readline()
                 oline = f.readline()
                 fsplit = fline.split()
+                jitsafe = 0;
+                if ((len(fsplit) > 3) and (fsplit[3] == 'jitsafe')):
+                    jitsafe = 1
                 function_type = fsplit[0][2:]
                 function_name = fsplit[1]
                 function_internal_name = fsplit[2];
@@ -87,7 +90,8 @@ for name in names:
                         "name": function_name,
                         "internal_name": function_internal_name,
                         "inputs": inputs,
-                        "outputs": outputs}
+                        "outputs": outputs,
+                        "jitsafe": jitsafe}
                 gfuncs.append(data);
             if (line.startswith("//@@Parents")):
                 classes = line.split()

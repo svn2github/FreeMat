@@ -141,6 +141,18 @@ ADD_DEFINITIONS( -DHAVE_ZLIB)
 SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${ZLIB_LIBRARY})
 
 ######################################################################
+# AVCALL Package
+######################################################################
+
+FIND_LIBRARY(AVCALL_LIBRARY NAMES avcall DOC "Location of the AVCALL library" PATHS ${LOCAL_PATH})
+FIND_PATH(AVCALL_INCLUDE_DIR avcall.h doc "Location of avcall.h" PATHS ${LOCAL_PATH})
+IF (AVCALL_LIBRARY AND AVCALL_INCLUDE_DIR)
+   ADD_DEFINITIONS( -DHAVE_AVCALL)
+   INCLUDE_DIRECTORIES( ${AVCALL_INCLUDE_DIR} )
+   SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${AVCALL_LIBRARY})
+ENDIF ()
+
+######################################################################
 # UMFPACK Package
 ######################################################################
 

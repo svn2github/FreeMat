@@ -27,7 +27,6 @@
 #include <QSharedData>
 #include <QDateTime>
 #include "Scope.hpp"
-#include "JIT.hpp"
 
 using namespace std;
 
@@ -377,12 +376,6 @@ public:
    * The return type of the function
    */
   QString retType;
-#ifdef HAVE_LLVM
-  /**
-   * The stub function that does the foreign function call work.
-   */
-  JITFunction fcnStub;
-#endif
   /**
    * Default constructor
    */

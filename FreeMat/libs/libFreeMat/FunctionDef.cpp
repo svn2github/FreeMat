@@ -34,7 +34,10 @@
 #include "MemPtr.hpp"
 #include "Algorithms.hpp"
 #include "FuncPtr.hpp"
-#include <llvm/LLVMContext.h>
+
+#if HAVE_AVCALL
+#include "avcall.h"
+#endif
 
 #define MSGBUFLEN 2048
 
@@ -599,82 +602,6 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
     retCount = 0;
   else
     retCount = 1;
-#if HAVE_LLVM2
-  /*
-   * Build the JIT function that is a stub to the called function.
-   * The stub should be:
-   *  ret_type _genstub_fcn(ptr_to_fun,addr1,addr2,...,addrn)
-   * where addr1 through addrn are the address of the arguments.
-   * The stub function shall internally convert those arguments
-   * that are to be passed by value to value arguments, and then
-   * invoke the function at the given address.  The arguments are
-   * untyped pointers.
-   */
-  JIT* jit = JIT::Instance();  
-  QString jit_ret_code = QString(MapImportTypeToJITCode(retType));
-  /*
-   * Our stub takes N+1 void* arguments, where N is the number of
-   * arguments that the function itself takes, and one extra for
-   * the address of the function.
-   */
-  
-  QString jit_arg_code = QString("Z");
-
-  fcnStub = jit->DefineFunction(jit->FunctionType(jit_ret_code,jit_arg_code),QString("genstub%1").arg(importCounter++));
-  jit->SetCurrentFunction(fcnStub);
-  JITBlock main = jit->NewBlock("main_body");
-  /*						
-   * Build the signature for the actual function -- 
-   * the stub uses this to decide which parameters to 
-   * pass by value
-   */
-  QString jit_fcn_sig;
-  for (int i=0;i<types.size();i++) {
-    if (isPassedAsPointer(i))
-      jit_fcn_sig += "V";
-    else
-      jit_fcn_sig += MapImportTypeToJITCode(types[i]);
-  }
-  jit->SetCurrentBlock(main);
-  /*
-   * Loop over the arguments to the function
-   */
-  llvm::Function::arg_iterator args = fcnStub->arg_begin();
-  
-  JITScalar arg_list = jit->ToType(args, jit->PointerType( jit->PointerType(llvm::IntegerType::get(llvm::getGlobalContext(),8)) ) ); 
-
-  JITScalar func_addr = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( 32, 0 ) ) ) );
-
-  std::vector<JITScalar> func_args;
-
-  for (int i=0;i<types.size();i++) {
-	//ei 
-	  JITScalar var = jit->Load( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( 32, i+2 ) ) ) );
-	  if (isPassedAsPointer(i)){
-		  func_args.push_back(var);
-	  }
-	  else{
-		  func_args.push_back(jit->Load(jit->ToType(var,jit->PointerType(jit->MapTypeCode(MapImportTypeToJITCode(types[i]))))));
-	  }
-  }
-
-  if (retType != "void"){
-    JITScalar ret_val;
-    ret_val = (jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args));
-    
-    JITScalar ret_val_cast = jit->ToType( ret_val, jit->MapTypeCode( MapImportTypeToJITCode(retType) ) );
-    jit->Store( ret_val_cast, jit->Load( jit->ToType( jit->GetElement(arg_list,  llvm::ConstantInt::get( llvm::getGlobalContext(), llvm::APInt( 32, 1 ) ) ), jit->PointerType( jit->PointerType( jit->MapTypeCode( MapImportTypeToJITCode(retType) ) ) ) ) ) );
-    jit->Return();
-
-  }
-  else {
-    jit->Call(jit->ToType(func_addr,jit->PointerType(jit->FunctionType(jit_ret_code,jit_fcn_sig))),func_args);
-    jit->Return();
-  }
-  
-  //jit->Dump("c:\\freemat_src\\call_stub.txt", fcnStub);
-
-#endif
 }
 
 ImportedFunctionDef::~ImportedFunctionDef() {
@@ -716,7 +643,7 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
 					      ArrayVector& inputs,
 					      int nargout,
 					      VariableTable*) {
-#ifdef HAVE_LLVM2
+#ifdef HAVE_AVCALL
   /**
    * To actually evaluate the function, we have to process each of
    * the arguments and get them into the right form.
@@ -724,6 +651,15 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
   int i;
   for (i=0;i<inputs.size();i++)
     inputs[i] = inputs[i].asDenseArray().toClass(mapTypeNameToClass(types[i]));
+  /**
+   * Next, we count how many of the inputs are to be passed by
+   * reference.
+   */
+  int passByReference = 0;
+  for (int j=0;j<inputs.size();j++)
+    if ((arguments[j][0] == '&') || (types[j] == "string") ||
+	(sizeCheckExpressions[j].valid()))
+      passByReference++;
   /**
    * Strings are converted to C strings and stored here
    */
@@ -769,66 +705,115 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
     }
     context->popScope();
   }
-  JIT *jit = JIT::Instance();
 
-  void** alist = new void*[types.size()+2]; //WARNING: stub generation relies on alist type
-  alist[0]=(void*)address;
-
-  if (retType == "uint8") {
-    alist[1]=new uint8(0);
-  } else if (retType == "int8") {
-    alist[1]=new int8(0);
-  } else if (retType == "uint16") {
-    alist[1]=new uint16(0);
-  } else if (retType == "int16") {
-    alist[1]=new int16(0);
-  } else if (retType== "uint32") {
-    alist[1]=new uint32(0);
-  } else if (retType == "int32") {
-    alist[1]=new int32(0);
-  } else if (retType == "float") {
-    alist[1]=new float(0);
-  } else if (retType == "double") {
-    alist[1]=new double(0);
-  } else
-    alist[1]=0;
-
-
-  for (i=0;i<types.size();i++) {
-	  if (types[i] != "string"){
-		alist[i+2]=inputs[i].getVoidPointer();
-	  }
-	  else{
-		alist[i+2]=(void*)(string_store[i]);
-	  }
+  /**
+   * Allocate an array of pointers to store for variables passed
+   * by reference.
+   */
+  vector<void*> refPointers;
+  refPointers.resize(passByReference);
+  /** 
+   * Allocate an array of value pointers...
+   */
+  vector<void*> values;
+  values.resize(inputs.size());
+  int ptr = 0;
+  for (i=0;i<inputs.size();i++) {
+    if (types[i] != "string") {
+      if ((arguments[i][0] == '&') || (sizeCheckExpressions[i].valid())) {
+	refPointers[ptr] = inputs[i].getVoidPointer();
+	values[i] = &refPointers[ptr];
+	ptr++;
+      } else {
+	values[i] = inputs[i].getVoidPointer();
+      }
+    } else {
+      refPointers[ptr] = string_store[i];
+      values[i] = &refPointers[ptr];
+      ptr++;
+    }
   }
-  jit->Invoke(fcnStub,alist);
+
+  // The argument list object
+  av_alist alist;
+  // Holders for the return values
+  uint8 ret_uint8;
+  int8 ret_int8;
+  uint16 ret_uint16;
+  int16 ret_int16;
+  uint32 ret_uint32;
+  int32 ret_int32;
+  float ret_float;
+  double ret_double;
+
+  // First pass - based on the return type, call the right version of av_start_*
+  if (retType == "uint8") {
+    av_start_uchar(alist,address,&ret_uint8);
+  } else if (retType == "int8") {      
+    av_start_schar(alist,address,&ret_int8);
+  } else if (retType == "uint16") {
+    av_start_ushort(alist,address,&ret_uint16);
+  } else if (retType == "int16") {
+    av_start_short(alist,address,&ret_int16);
+  } else if (retType == "uint32") {
+    av_start_uint(alist,address,&ret_uint32);
+  } else if (retType == "int32") {
+    av_start_int(alist,address,&ret_int32);
+  } else if (retType == "float") {
+    av_start_float(alist,address,&ret_float);
+  } else if (retType == "double") {
+    av_start_double(alist,address,&ret_double);
+  } else if (retType == "void") {
+    av_start_void(alist,address);
+  } else
+    throw Exception("Unsupported return type " + retType + " in imported function call");
+    
+  // Second pass - Loop through the arguments
+  for (int i=0;i<types.size();i++) {
+    if (arguments[i][0] == '&' || types[i] == "string" ||
+	sizeCheckExpressions[i].valid())
+      av_ptr(alist,void*,*((void**)values[i]));
+    else {
+      if (types[i] == "uint8")
+	av_uchar(alist,*((uint8*)values[i]));
+      else if (types[i] == "int8")
+	av_char(alist,*((int8*)values[i]));
+      else if (types[i] == "uint16")
+	av_ushort(alist,*((uint16*)values[i]));
+      else if (types[i] == "int16")
+	av_short(alist,*((int16*)values[i]));
+      else if (types[i] == "uint32")
+	av_uint(alist,*((uint32*)values[i]));
+      else if (types[i] == "int32")
+	av_int(alist,*((int32*)values[i]));
+      else if (types[i] == "float")
+	av_float(alist,*((float*)values[i]));
+      else if (types[i] == "double")
+	av_double(alist,*((double*)values[i]));
+    }
+  }
+
+  // Call the function
+  av_call(alist);
 
   Array retArray;
+  // Extract the return value
   if (retType == "uint8") {
-    retArray = Array(*(uint8*)alist[1]);
-    delete (uint8*) alist[1];
+    retArray = Array(ret_uint8);
   } else if (retType == "int8") {
-    retArray = Array(*(int8*)alist[1]);
-    delete (int8*)alist[1];
+    retArray = Array(ret_int8);
   } else if (retType == "uint16") {
-    retArray = Array(*(uint16*)alist[1]);
-    delete (uint16*)alist[1];
+    retArray = Array(ret_uint16);
   } else if (retType == "int16") {
-    retArray = Array(*(int16*)alist[1]);
-    delete (int16*)alist[1];
+    retArray = Array(ret_int16);
   } else if (retType== "uint32") {
-    retArray = Array(*(uint32*)alist[1]);
-    delete (uint32*)alist[1];
+    retArray = Array(ret_uint32);
   } else if (retType == "int32") {
-    retArray = Array(*(int32*)alist[1]);
-    delete (int32*)alist[1];
+    retArray = Array(ret_int32);
   } else if (retType == "float") {
-    retArray = Array(*(float*)alist[1]);
-    delete (float*)alist[1];
+    retArray = Array(ret_float);
   } else if (retType == "double") {
-    retArray = Array(*(double*)alist[1]);
-    delete (double*)alist[1];
+    retArray = Array(ret_double);
   } else
     retArray = EmptyConstructor();
   // Strings that were passed by reference have to be
@@ -839,12 +824,9 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
   }
   for (i=0;i<inputs.size();i++)
     if (string_store[i]) free(string_store[i]);
-
-  if( alist )
-      delete[] alist;
   return ArrayVector(retArray);
 #else
-  throw Exception("Support for the import command requires that the LLVM library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install LLVM and recompile FreeMat.");
+  throw Exception("Support for the import command requires that the avcall library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install avcall and recompile FreeMat.");
 #endif
 }
 

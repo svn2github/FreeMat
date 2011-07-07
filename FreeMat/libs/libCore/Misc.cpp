@@ -26,11 +26,6 @@
 #include "Algorithms.hpp"
 #include "PathSearch.hpp"
 
-#include "CArray.hpp"
-#include "CJIT.hpp"
-#include "CJitFuncClang.hpp"
-
-
 //!
 //@Module SIMKEYS Simulate Keypresses from the User
 //@@Section FREEMAT

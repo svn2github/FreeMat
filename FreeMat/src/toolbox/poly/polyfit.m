@@ -57,7 +57,7 @@
 %The resulting plot is shown here
 %@figure polyfit3
 %@@Tests
-%@near#t=linspace(-1,1);c=t.^3-t;y1=polyfit(y,c,3)
+%@$near#t=linspace(-1,1);c=t.^3-t;y1=polyfit(y,c,3)
 %!
 
 % Copyright (c) 2002-2006 Samit Basu

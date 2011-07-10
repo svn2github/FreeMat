@@ -274,13 +274,20 @@ ENDIF(USE_ITK)
 ######################################################################
 # Boost Support
 ######################################################################
-find_package( Boost COMPONENTS math_c99 )
-if(Boost_FOUND)
+if(UNIX)
+  find_package( Boost)
+  if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    add_definitions(-DHAVE_BOOST)
+  endif(Boost_FOUND)
+else()
+  find_package( Boost COMPONENTS math_c99 )
+  if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     add_definitions(-DHAVE_BOOST)
     set(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${Boost_LIBRARIES})
-endif()
-
+  endif()
+endif(UNIX)
 ######################################################################
 # LLVM Support
 ######################################################################
@@ -486,10 +493,23 @@ add_custom_target( helpgen
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
 	VERBATIM
 	)
+
 add_custom_target( helpgen_fast
 	COMMENT "Building help files (no fragment generation)"
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
+	VERBATIM
+	)
+
+add_custom_target( helpgen_only
+	COMMENT "Building help files"
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
+	VERBATIM
+	)
+
+add_custom_target( mergem
+	COMMENT "Merging M files"
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
 	VERBATIM
 	)

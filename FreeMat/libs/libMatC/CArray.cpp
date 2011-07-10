@@ -66,7 +66,7 @@ void* carray_write_ptr(void* p)
 }
 
 extern "C"
-void* carray_scalar(double data, int typecode)
+void* carray_scalar(double data, int typecode) 
 {
   CArray *p = new CArray;
   p->rows = 1;
@@ -93,7 +93,7 @@ void* carray_scalar(double data, int typecode)
 }
 
 extern "C"
-void* carray_create(void* interp, double rows, double cols, int typecode, bool *flag)
+void* carray_create(void* interp, double rows, double cols, int typecode, bool *flag) 
 {
   try
     {
@@ -135,20 +135,20 @@ void update_cache(void* arg)
 }
 
 extern "C"
-void* carray_empty()
+void* carray_empty() 
 {
   CArray *cp = new CArray;
   return cp;
 }
 
 extern "C"
-void* carray_copy(void* arg)
+void* carray_copy(void* arg) 
 {
   return new CArray(*((CArray*)arg));
 }
 
 extern "C"
-bool carray_download_function(void *interp, void *dst, const char *name)
+bool carray_download_function(void *interp, void *dst, const char *name) 
 {
   try 
     {
@@ -217,7 +217,7 @@ void* carray_invoke_2(void* interp, void* func, void* arg1, void* arg2, bool *fl
 }
 
 extern "C"
-bool carray_download_scalar(void *interp, void* dst, const char *name, int typecode)
+bool carray_download_scalar(void *interp, void* dst, const char *name, int typecode) 
 {
   try
     {
@@ -242,7 +242,7 @@ bool carray_download_scalar(void *interp, void* dst, const char *name, int typec
 }
 
 extern "C"
-bool carray_download_array(void *interp, void *data, const char *name, int typecode)
+bool carray_download_array(void *interp, void *data, const char *name, int typecode) 
 {
   try
     {
@@ -268,8 +268,8 @@ bool carray_download_array(void *interp, void *data, const char *name, int typec
 }
 
 extern "C"
-bool carray_upload_scalar(void *interp, void* data, const char *name, 
-			  int typecode)
+bool carray_upload_scalar(void *interp, void* data, const char *name,  
+			  int typecode) 
 {
   Interpreter *eval = (Interpreter*) interp;
   try
@@ -294,7 +294,7 @@ bool carray_upload_scalar(void *interp, void* data, const char *name,
 }
 
 extern "C"
-bool carray_upload_array(void *interp, void *data, const char *name)
+bool carray_upload_array(void *interp, void *data, const char *name) 
 {
   Interpreter *eval = (Interpreter*) interp;
   try
@@ -318,27 +318,27 @@ bool carray_upload_array(void *interp, void *data, const char *name)
 
 // Delete an array
 extern "C"
-void carray_free(void* arg)
+void carray_free(void* arg) 
 {
   delete (cast(arg));
 }
 
 // Get the number of rows in the array
 extern "C"
-double carray_rows(void* arg)
+double carray_rows(void* arg) 
 {
   return (cast(arg)->rows);
 }
 
 // Get the number of cols in the array
 extern "C"
-double carray_cols(void* arg)
+double carray_cols(void* arg) 
 {
   return (cast(arg)->cols);
 }
 
 extern "C"
-bool carray_set_ss(void* interp, void *arg, double row, double col, double val)
+bool carray_set_ss(void* interp, void *arg, double row, double col, double val) 
 {
   try
     {
@@ -383,7 +383,7 @@ bool carray_set_ss(void* interp, void *arg, double row, double col, double val)
 }
 
 extern "C"
-bool carray_set_s(void* interp, void *arg, double row, double val)
+bool carray_set_s(void* interp, void *arg, double row, double val) 
 {
   try
     {
@@ -427,7 +427,7 @@ bool carray_set_s(void* interp, void *arg, double row, double val)
 }
 
 extern "C"
-bool carray_set_a(void* interp, void* arg, void* ndx, void *val)
+bool carray_set_a(void* interp, void* arg, void* ndx, void *val) 
 {
   try
     {
@@ -448,7 +448,7 @@ bool carray_set_a(void* interp, void* arg, void* ndx, void *val)
 }
 
 extern "C"
-bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val)
+bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val) 
 {
   try
     {
@@ -473,7 +473,7 @@ bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val)
 }
 
 extern "C"
-void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag)
+void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag) 
 {
   try 
     {
@@ -491,7 +491,7 @@ void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag)
 }
 
 extern "C"
-void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag)
+void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag) 
 {
   try 
     {
@@ -513,7 +513,7 @@ void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag)
 }
   
 extern "C"
-double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag)
+double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag) 
 {
   try
     {
@@ -547,7 +547,7 @@ double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag
 }
  
 extern "C"
-double carray_get_s(void* interp, void* arg, double row, bool *flag)
+double carray_get_s(void* interp, void* arg, double row, bool *flag) 
 {
   try
     {
@@ -580,7 +580,7 @@ double carray_get_s(void* interp, void* arg, double row, bool *flag)
 }
 
 extern "C"
-bool carray_duplicate(void *interp, void *a, void *b)
+bool carray_duplicate(void *interp, void *a, void *b) 
 {
   try
     {
@@ -598,7 +598,7 @@ bool carray_duplicate(void *interp, void *a, void *b)
 }
 
 extern "C"
-void* carray_colon(void *interp, double a, double b, bool *flag)
+void* carray_colon(void *interp, double a, double b, bool *flag) 
 {
   try
     {
@@ -616,7 +616,7 @@ void* carray_colon(void *interp, double a, double b, bool *flag)
 }
 
 extern "C"
-void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
+void* carray_dcolon(void *interp, double a, double b, double c, bool *flag) 
 {
   try
     {
@@ -634,7 +634,7 @@ void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
 }
 
 extern "C"
-bool carray_any(void *interp, void *p, bool *flag)
+bool carray_any(void *interp, void *p, bool *flag) 
 {
   try
     {

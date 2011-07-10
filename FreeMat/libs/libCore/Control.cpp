@@ -275,6 +275,124 @@
 //function y = tjit_double(a)
 //  y = a*2;
 //@}
+//@{ jit_test025.m
+//function A = jit_test025
+//  B = [3,4,5];
+//  C = [1;2;3];
+//  A = zeros(1,10000);
+//  for i=1:10000
+//    A(i) = B*C;
+//  end
+//@}
+//@{ jit_test026.m
+//function A = jit_test026
+//  B = [3,4;5,2];
+//  C = [2;5];
+//  A = zeros(2,10000);
+//  for i=1:10000
+//    C(2,1) = i;
+//    A(1:2,i) = B*C + 1;
+//  end
+//@}
+//@{ jit_test027.m
+//function A = jit_test027
+//  A = zeros(1,10000);
+//  B = [1,2,3];
+//  C = [4,5,6];
+//  for i=1:9000
+//    A(1,i+(0:5)) = [B,C];
+//  end
+//@}
+//@{ jit_test028.m
+//function A = jit_test028
+//  A = zeros(10000,1);
+//  B = [1;2;3];
+//  C = [4;5;6];
+//  for i=1:9000
+//    A(i+(0:5),1) = [B;C];
+//  end
+//@}
+//@{ jit_test029.m
+//function A = jit_test029
+//  A = zeros(10000,1);
+//  for i=1:10000
+//    A(i,1) = 5*(i - 4);
+//  end
+//@}
+//@{ jit_test030.m
+//function A = jit_test030
+//  P = [1,2,3,4,5];
+//  B = [6,5,3,4,5];
+//  A = [0,0,0,0,0];
+//  for i=1:10000
+//    C = P.*B;
+//    D = P./B;
+//    E = P.\B;
+//    A = A + C + D - E;
+//  end
+//@}
+//@{ jit_test031.m
+//function A = jit_test031
+//  A = zeros(2,10000);
+//  B = [3,4;5,1];
+//  C = [1;0];
+//  for i=1:10000
+//    A(1:2,i) = B \ [1;i];
+//  end
+//@}
+//@{ jit_test032.m
+//function A = jit_test032
+//  A = zeros(10000,2);
+//  B = [3,4;5,1];
+//  for i=1:10000
+//    A(i,1:2) = [1,i] / B;
+//  end
+//@}
+//@{ jit_test033.m
+//function A = jit_test033
+//  A = zeros(100000,1);
+//  for i=1:90000
+//   A(i+(1:2:50),1) = A(i+(1:2:50),1) + 6;
+//  end
+//@}
+//@{ jit_test034.m
+//function A = jit_test034
+//  A = zeros(1,100000);
+//  for i=1:100000
+//    A(i) = ((i > 500) && (i < 10000)) || ((i >= 20000) && (i <= 30000)) || (i == 50000);
+//  end
+//@}
+//@{ jit_test035.m
+//function A = jit_test035
+//  A = zeros(2,100000);
+//  C = [5,6];
+//  for i=1:100000
+//    C(2) = i;
+//    A(1:2,i) = C';
+//  end
+//@}
+//@{ jit_test036.m
+//function A = jit_test036
+//  A = zeros(2,100000);
+//  B = zeros(5,100000);
+//  for i=1:10000
+//     for j=1:5
+//        B(j,i) = j+i;
+//     end;
+//     A(1,i) = min(B(1:5,i));
+//     A(2,i) = max(B(1:5,i));
+//  end
+//@}
+//@{ jit_test037.m
+//function A = jit_test037
+//  A = zeros(5,100000);
+//  for i=1:10000
+//    for j=1:5
+//      A(j,i) = (j-2.5)/2.5*0.87;
+//    end;
+//    A(1:5,i) = cos(A(1:5,i));
+//  end
+//@}
 //@{ test_jit.m
 //function success = test_jit
 //  tests = dir('jit_test*.m');

@@ -56,6 +56,7 @@ public:
   RescanDisabler(Interpreter *eval) : m_eval(eval)
   {
     m_flag = m_eval->getDisableRescan();
+    m_eval->setDisableRescan(true);
   }
   ~RescanDisabler() 
   {
@@ -306,7 +307,8 @@ void CJitFunc::compile_assignment(const Tree & t) {
 
 CTypeInfo CJitFunc::compile_unop(const Tree & t, std::string op) {
   cs.Operator(op);
-  cs.BeginParen();
+  cs.BeginParen(); 
+  cs.EmitString("interp,");
   CTypeInfo ret = compile_expression(t);
   cs.EndParen();
   return ret;
@@ -315,6 +317,7 @@ CTypeInfo CJitFunc::compile_unop(const Tree & t, std::string op) {
 CTypeInfo CJitFunc::compile_unop_logical(const Tree & t, std::string op) {
   cs.Operator(op);
   cs.BeginParen();
+  cs.EmitString("interp,");
   CTypeInfo ret = compile_expression(t);
   cs.EndParen();
   return CTypeInfo(CBOOL,ret.isscalar());
@@ -450,7 +453,8 @@ CSymbol CJitFunc::lookup_symbol(QString name, bool createIfNotDefined)
   return res;
 }
 
-CTypeInfo CJitFunc::compile_inline_function(MFunctionDef *mptr, std::vector<CTypeInfo> argtypes) 
+CTypeInfo CJitFunc::compile_inline_function(QString symname, MFunctionDef *mptr, 
+					    std::vector<CTypeInfo> argtypes) 
 {
   // Functions must contain all of their variables (i.e., they form
   // a scope).
@@ -465,7 +469,7 @@ CTypeInfo CJitFunc::compile_inline_function(MFunctionDef *mptr, std::vector<CTyp
   cs.EndScope();
   CSymbol ret = lookup_symbol(mptr->returnVals[0], false /*createIfNotDefined*/);
   std::stringstream p;
-  p << MapCTypeToC(ret.typeinfo()) << " " << mptr->name.toStdString() << "(void *interp";
+  p << MapCTypeToC(ret.typeinfo()) << " " << symname.toStdString() << "(void *interp";
   for (int i=0;i<argtypes.size();i++)
     {
       p << ", ";
@@ -488,7 +492,7 @@ bool CJitFunc::compile_mfunction(QString symname, std::vector<CTypeInfo> argtype
       FuncPtr fptr;
       if (!m_eval->lookupFunction(symname,fptr)) return false;
       MFunctionDef *mptr = (MFunctionDef*) (fptr);
-      ret = cfunc.compile_inline_function(mptr,argtypes);
+      ret = cfunc.compile_inline_function(symname,mptr,argtypes);
       cs.AddPrereq(cfunc.GetCode());
       return true;
     }
@@ -512,7 +516,7 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
   CSymbol symbol = lookup_symbol(symname,false);
   if (!symbol.isFunction()) 
     throw Exception("function call compile called without a function...");
-  if (!symbol.isJITsafe())
+  if (!symbol.isMFunction() && !symbol.isJITsafe())
     throw Exception("Call to function " + symname + " is not JIT-safe");
   if (symbol.retcount() != 1)
     throw Exception("function must return 1 value to be JIT compiled");

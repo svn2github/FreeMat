@@ -135,10 +135,10 @@ bool CJitFuncClang::compile(const Tree & t)
   CJitFunc mcomp;
   mcomp.set_interpreter(m_eval);
   mcomp.compile_tree(t,std::string("testfunc"));
-  // QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
-  // file.open();
-  // std::string codename = file.fileName().toStdString();
-  std::string codename = "/tmp/jit.cpp";
+  QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
+  file.open();
+  std::string codename = file.fileName().toStdString();
+   //std::string codename = "/tmp/jit.cpp";
   mcomp.writeCode(codename);
   return compile(codename,"testfunc");
 }
@@ -154,7 +154,57 @@ int CJitFuncClang::run()
   return retval;
 }
 
-static void __force_linkage()
+void force_linkage()
 {
   carray_empty();
+  carray_scalar(0,0);
+  carray_create(0,0,0,0,0);
+  carray_download_scalar(0,0,0,0);
+  carray_download_array(0,0,0,0);
+  carray_download_function(0,0,0);
+  carray_upload_scalar(0,0,0,0);
+  carray_upload_array(0,0,0);
+  carray_copy(0);
+  carray_free(0);
+  carray_rows(0);
+  carray_cols(0);
+  carray_set_ss(0,0,0,0,0);
+  carray_set_s(0,0,0,0);
+  carray_set_aa(0,0,0,0,0);
+  carray_set_a(0,0,0,0);
+  carray_get_ss(0,0,0,0,0);
+  carray_get_s(0,0,0,0);
+  carray_get_aa(0,0,0,0,0);
+  carray_get_a(0,0,0,0);
+  carray_duplicate(0,0,0);
+  carray_add(0,0,0,0);
+  carray_hcat(0,0,0,0);
+  carray_vcat(0,0,0,0);
+  carray_sub(0,0,0,0);
+  carray_times(0,0,0,0);
+  carray_pow(0,0,0,0);
+  carray_dpow(0,0,0,0);
+  carray_dtimes(0,0,0,0);
+  carray_rdiv(0,0,0,0);
+  carray_drdiv(0,0,0,0);
+  carray_ldiv(0,0,0,0);
+  carray_dldiv(0,0,0,0);
+  carray_colon(0,0,0,0);
+  carray_dcolon(0,0,0,0,0);
+  carray_or(0,0,0,0);
+  carray_and(0,0,0,0);
+  carray_lt(0,0,0,0);
+  carray_le(0,0,0,0);
+  carray_gt(0,0,0,0);
+  carray_ge(0,0,0,0);
+  carray_eq(0,0,0,0);
+  carray_neq(0,0,0,0);
+  carray_pos(0,0,0);
+  carray_neg(0,0,0);
+  carray_not(0,0,0);
+  carray_transpose(0,0,0);
+  carray_dottranspose(0,0,0);
+  carray_any(0,0,0);
+  carray_invoke_1(0,0,0,0);
+  carray_invoke_2(0,0,0,0,0);
 }

@@ -144,7 +144,7 @@ protected:
   CSymbol lookup_symbol(QString name, bool createIfNotDefined);
   void reclass_scalar_to_array(std::string name);
   bool compile_mfunction(QString symname, std::vector<CTypeInfo> argtypes, CTypeInfo &ret);
-  CTypeInfo compile_inline_function(MFunctionDef *mptr, std::vector<CTypeInfo> argtypes);
+  CTypeInfo compile_inline_function(QString symname, MFunctionDef *mptr, std::vector<CTypeInfo> argtypes);
 public:
   CJitFunc() : m_eval(0), m_tmp(0), m_functionmode(false) {}
   void set_interpreter(Interpreter* eval) {m_eval = eval;}

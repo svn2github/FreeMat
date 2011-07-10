@@ -282,6 +282,18 @@ inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double
   return JITArray<T>(ret);
 }
 
+template <class T>
+inline JITArray<T> Get(void*interp, const JITArray<T> & A, double rndx, const JITArray<double> &cndx)
+{
+  return Get(interp,A,JITArray<double>(rndx),cndx);
+}
+
+template <class T>
+inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx, double cndx)
+{
+  return Get(interp,A,rndx,JITArray<double>(cndx));
+}
+
 inline JITArray<double> Invoke(void *interp, void *ptr, double a)
 {
   bool flag = false;
@@ -362,7 +374,7 @@ template <class T> JITArray<T> Colon(void* interp, T a, T b) {
 }
 template <class T> JITArray<T> DoubleColon(void* interp, T a, T b, T c) {
   bool flag = false;
-  void *ret = carray_colon(interp,a,b,c,&flag);
+  void *ret = carray_dcolon(interp,a,b,c,&flag);
   if (flag) throw JITException();
   return JITArray<T>(ret);
 }

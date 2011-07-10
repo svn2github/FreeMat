@@ -82,8 +82,8 @@ extern "C"
   void* carray_vcat(void* interp, void *a, void *b, bool *flag);
   void* carray_sub(void* interp, void *a, void *b, bool *flag);
   void* carray_times(void* interp, void *a, void *b, bool *flag);
-  void* carray_power(void* interp, void *a, void *b, bool *flag);
-  void* carray_dpower(void* interp, void *a, void *b, bool *flag);
+  void* carray_pow(void* interp, void *a, void *b, bool *flag);
+  void* carray_dpow(void* interp, void *a, void *b, bool *flag);
   void* carray_dtimes(void* interp, void *a, void *b, bool *flag);
   void* carray_rdiv(void* interp, void *a, void *b, bool *flag);
   void* carray_drdiv(void* interp, void *a, void *b, bool *flag);
@@ -199,9 +199,33 @@ inline void Set(void* interp, JITArray<T>& A, double val, const JITArray<double>
 }
 
 template <class T>
+inline void Set(void* interp, JITArray<T>& A, double val, double B, const JITArray<double>& C)
+{
+  if (!carray_set_aa(interp,A.data(),JITArray<double>(B).data(),C.data(),JITArray<double>(val).data())) throw JITException();
+}
+
+template <class T>
+inline void Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B, double C)
+{
+  if (!carray_set_aa(interp,A.data(),B.data(),JITArray<double>(C).data(),JITArray<double>(val).data())) throw JITException();
+}
+
+template <class T>
 inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B, const JITArray<double>& C)
 {
   if (!carray_set_aa(interp,A.data(),B.data(),C.data(),val.data())) throw JITException();
+}
+
+template <class T>
+inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, double B, const JITArray<double>& C)
+{
+  if (!carray_set_aa(interp,A.data(),JITArray<double>(B).data(),C.data(),val.data())) throw JITException();
+}
+
+template <class T>
+inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B, double C)
+{
+  if (!carray_set_aa(interp,A.data(),B.data(),JITArray<double>(C).data(),val.data())) throw JITException();
 }
 
 template <class T>
@@ -366,15 +390,15 @@ template <class T> JITArray<T> DoubleColon(void* interp, T a, T b, T c) {
   }
 
 template <class T>
-inline JITArray<T> VCat(T a, T b)
+inline JITArray<T> VCat(void* interp,T a, T b)
 {
-  return VCat(JITArray<T>(a),JITArray<T>(b));
+  return VCat(interp,JITArray<T>(a),JITArray<T>(b));
 }
 
 template <class T>
-inline JITArray<T> HCat(T a, T b)
+inline JITArray<T> HCat(void* interp,T a, T b)
 {
-  return HCat(JITArray<T>(a),JITArray<T>(b));
+  return HCat(interp,JITArray<T>(a),JITArray<T>(b));
 }
 
 OpCases(VCat,carray_vcat);

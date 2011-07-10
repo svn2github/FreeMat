@@ -125,9 +125,12 @@ void CWriter::Declare(CSymbol sym) {
 void CWriter::Download(CSymbol sym) {
   if (sym.isFunction())
     {
-      q << "  if (!carray_download_function(interp,&_" 
-	<< sym.name() << ",\"" << sym.name() 
-	<< "\")) return CJIT_Prepfail;\n";
+      if (sym.isused())
+	{
+	  q << "  if (!carray_download_function(interp,&_" 
+	    << sym.name() << ",\"" << sym.name() 
+	    << "\")) return CJIT_Prepfail;\n";
+	}
     }
   else
     {
@@ -409,6 +412,16 @@ void CJitFunc::cast_symbol(std::string name, CTypeInfo type)
       }
 }
 
+void CJitFunc::use_function(std::string name)
+{
+  for (int i=0;i<m_symbols.size();i++)
+    if (m_symbols[i].name() == name)
+      {
+	m_symbols[i].use();
+	return;
+      }
+}
+
 CSymbol CJitFunc::lookup_symbol(QString name, bool createIfNotDefined)
 {
   for (int i=0;i<m_symbols.size();i++)
@@ -518,7 +531,7 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
     throw Exception("function call compile called without a function...");
   if (!symbol.isMFunction() && !symbol.isJITsafe())
     throw Exception("Call to function " + symname + " is not JIT-safe");
-  if (symbol.retcount() != 1)
+  if (symbol.retcount() < 1)
     throw Exception("function must return 1 value to be JIT compiled");
   // Check for the case of an MFunction
   if (symbol.isMFunction())
@@ -596,6 +609,7 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
   cs.BeginFuncCall("Invoke");
   cs.Operator("interp");
   cs.NextArg();
+  use_function(symname.toStdString());
   cs.Operator("_"+symname.toStdString());
   CTypeInfo p;
   // At the moment, there is no type information for functions.

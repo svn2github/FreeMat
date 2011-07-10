@@ -33,9 +33,10 @@ class CSymbol {
   bool m_isJITsafe;
   int m_argcount;
   int m_retcount;
+  int m_usecount;
 public:
   CSymbol(std::string name, CTypeInfo type, bool isFunction = false) :
-    m_name(name), m_type(type), m_isFunction(isFunction) {}
+    m_name(name), m_type(type), m_isFunction(isFunction), m_usecount(0) {}
   std::string name() {return m_name;}
   CTypeInfo typeinfo() {return m_type;}
   void settypeinfo(CTypeInfo t) {m_type = t;}
@@ -51,6 +52,8 @@ public:
   void setmfunctionflag(bool flag) {m_isMFunction = flag;}
   bool isJITsafe() {return m_isJITsafe;}
   void setjitsafeflag(bool flag) {m_isJITsafe = flag;}
+  void use() {m_usecount++;}
+  bool isused() {return (m_usecount>0);}
 };
 
 class CWriter {
@@ -119,6 +122,7 @@ protected:
   std::vector<CSymbol> m_symbols;
   bool exists_symbol(std::string name);
   void cast_symbol(std::string name, CTypeInfo type);
+  void use_function(std::string name);
   CSymbol declare_temp_variable(CTypeInfo type);
   CSymbol declare_variable(CTypeInfo type, std::string name);
   void compile_assignment(const Tree & t);

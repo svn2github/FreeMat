@@ -393,6 +393,159 @@
 //    A(1:5,i) = cos(A(1:5,i));
 //  end
 //@}
+//@{ jit_test038.m
+//function A = jit_test038
+//  A = zeros(512,512);
+//  for i=1:8:64
+//    for j=1:8:512
+//      A(i+(0:7),j+(0:7)) = j;
+//    end
+//  end
+//@}
+//@{ jit_test039.m
+//function A = jit_test039
+//  i = 1;
+//  A = 0;
+//  while (i<1000000)
+//     if ((i > 5) && (i < 3000))
+//       A = A + i;
+//     end
+//     i = i + 1;
+//  end
+//@}
+//@{ jit_test040.m
+//function A = jit_test040
+//  A = zeros(1,1000000);
+//  for i=1:1000000;
+//    A(i) = -1;
+//  end;
+//@}
+//@{ jit_test041.m
+//function A = jit_test041
+//  A = [];
+//  for i=1:10000
+//    A = [1,2,3,4;5,4,3,2;8,9,4,5];
+//    T = [1,2;3,4];
+//    Y = [8;7];
+//    pol = Y'*(T*Y);
+//  end
+//@}
+//@{ jit_test042.m
+//function A = jit_test042
+//  M = zeros(512,512);
+//  A = zeros(1,10000);
+//  for i=1:8:512
+//    for j=1:8:512
+//      L = M(i+(0:7),j+(0:7));
+//      P = [1;4;2;3;5;6;7;8];
+//      Q = L*P;
+//      A(i+(0:7)) = Q;
+//    end
+//  end
+//@}
+//@{ jit_test043.m
+//function A = jit_test043
+//  M = zeros(512,512);
+//  A = 0;
+//  for i=1:8:64
+//    for j=1:8:512
+//      L = M(i+(0:7),j+(0:7));
+//      P = [1;4;2;3;5;6;7;8];
+//      L*P + 3;
+//      A = A + 3;
+//    end
+//  end
+//@}
+//@{ jit_test044.m
+//function A = jit_test044
+//  A = zeros(1,1000000);
+//  for i=1:1000000
+//    A(i) = min(max(i,200),10000);
+//  end
+//@}
+//@{ jit_test045.m
+//function A = jit_test045
+//  A = zeros(1,1000000);
+//  for i = 1:1000000
+//    A(i) = (i + 3 - 4 + A(i))*2;
+//  end
+//@}
+//@{ jit_test046.m
+//function A = jit_test046
+//  A = zeros(1,1000000);
+//  for i=1:1000
+//    for j=1:1000
+//      A(i+10*j) = A(i+j);
+//    end
+//  end
+//@}
+//@{ jit_test047.m
+//function A = jit_test047
+//  A = zeros(1,1000000);
+//  p = 1:10;
+//  for i=1:90000
+//    A(i) = p(5);
+//  end
+//@}
+//@{ jit_test048.m
+//function A = jit_test048
+//  A = zeros(1,1000000);
+//  for i=1:10:100000
+//    A(i + (1:8) - 1) = 1:8;
+//  end
+//@}
+//@{ jit_test049.m
+//function A = jit_test049
+//  A = zeros(1,1000000);
+//  for i=1:10:100000
+//    A(1:8) = 1;
+//  end
+//@}
+//@{ jit_test050.m
+//function A = jit_test050
+//  A = zeros(1,1000000);
+//  for i=1:10:100000
+//    A((1:8) + i) = i*3-2;
+//  end
+//@}
+//@{ jit_test051.m
+//function A = jit_test051
+//  A = zeros(512,512);
+//  for i=1:8:512
+//    for j=1:8:512
+//      B(i+(0:7),j+(0:7)) = j;
+//    end
+//  end
+//@}
+//@{ func_jit_test052.m
+//function y = func_jit_test052(a,b)
+//    for i=1:100
+//      c = 43;
+//      d = 56;
+//      GOOGLEPLEX = 1231;
+//      p = c + d - a + b - GOOGLEPLEX;
+//      y = p;
+//    end
+//@}
+//@{ jit_test052.m
+//function A = jit_test052
+//  A = 0;
+//  B = 1;
+//  GOOGLEPLEX = [4323,52342];
+//  for i=1:10000
+//    A = func_jit_test052(A,B);
+//  end
+//@}
+//@{ jit_test053.m
+//function B = jit_test053
+//  A = zeros(1,1000000);
+//  B = zeros(1,1000000);
+//  for i=1:100000
+//    p = (i-50000)/5000;
+//    A(i) = log(p)+1;
+//    B(i) = A(i);
+//  end
+//@}
 //@{ test_jit.m
 //function success = test_jit
 //  tests = dir('jit_test*.m');

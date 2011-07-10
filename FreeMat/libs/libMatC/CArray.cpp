@@ -122,6 +122,7 @@ static void* carray_capture(const Array &a)
   p->dp = (void*) a.getConstVoidPointer();
   p->valid_for_writes = false;
   p->typecode = a.dataClass();
+  return p;
 }
 
 void update_cache(void* arg)

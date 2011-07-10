@@ -135,10 +135,10 @@ bool CJitFuncClang::compile(const Tree & t)
   CJitFunc mcomp;
   mcomp.set_interpreter(m_eval);
   mcomp.compile_tree(t,std::string("testfunc"));
-  QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
-  file.open();
-  std::string codename = file.fileName().toStdString();
-   //std::string codename = "/tmp/jit.cpp";
+  //  QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
+  //  file.open();
+  //  std::string codename = file.fileName().toStdString();
+  std::string codename = "/tmp/jit.cpp";
   mcomp.writeCode(codename);
   return compile(codename,"testfunc");
 }

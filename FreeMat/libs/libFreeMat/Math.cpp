@@ -2231,7 +2231,7 @@ Array RightDivide(const Array& A, const Array& B) {
 //[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
 //x = testeq(yi1.',zi1.') & testeq(yf1.',zf1.') & testeq(yd1.',zd1.') & testeq(yc1.',zc1.') & testeq(yz1.',zz1.');
 //@}
-//@$exact#y1=x1.'
+//@$exact#y1=transpose(x1)
 //!
 
 

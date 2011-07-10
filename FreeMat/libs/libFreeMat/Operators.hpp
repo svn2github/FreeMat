@@ -23,6 +23,28 @@
 #include "SparseMatrix.hpp"
 #include "Algorithms.hpp"
 
+template <class Op>
+static inline bool IsZeroPreservingUnary()
+{
+  double pr, pi;
+  Op::func(0.0,0.0,pr,pi);
+  return ((Op::func(0.0) == 0) && (pr == 0) && (pi == 0));
+}
+
+template <class Op>
+static inline bool IsZeroPreservingCmp()
+{
+  return ((Op::func(0.0,0.0) == false) && (Op::func(0,0,0,0) == false));
+}
+
+template <class Op>
+static inline bool IsZeroPreserving()
+{
+  double pr, pi;
+  Op::func(0.0,0.0,0.0,0.0,pr,pi);
+  return ((Op::func(0.0,0.0) == 0) && (pr == 0) && (pi == 0));
+}
+
 // Real, Real --> Real
 template <typename S, typename T, class Op>
 static inline SparseMatrix<S> DotOp(const SparseMatrix<T>& A, 
@@ -389,6 +411,8 @@ static inline bool IsIntegerDataClass(const Array &Ain) {
 
 template <class Op>
 Array DotOp(const Array &Ain, const Array &Bin) {
+  if ((Ain.isSparse() || Bin.isSparse()) && !IsZeroPreserving<Op>())
+    return ToSparse(DotOp<Op>(Ain.asDenseArray(),Bin.asDenseArray()));
   DataClass via_type;
   DataClass out_type;
   ComputeTypes(Ain,Bin,via_type,out_type);
@@ -464,6 +488,9 @@ static inline Array CmpOp(const Array &Ain, const Array &Bin) {
   DataClass out_type;
   ComputeTypes(Ain,Bin,via_type,out_type);
   Array F;
+  // Check for non zero-preserving cmp functions
+  if ((Ain.isSparse() || Bin.isSparse()) && !IsZeroPreservingCmp<Op>())
+    return ToSparse(CmpOp<Op>(Ain.asDenseArray(),Bin.asDenseArray()));
   if (via_type == Float) 
     F = CmpOp<float,Op>(Ain,Bin,Float);
   else
@@ -570,6 +597,8 @@ static inline Array EqOp(const Array &Ain, const Array &Bin, DataClass Tclass) {
 
 template <class Op>
 static inline Array EqOp(const Array &Ain, const Array &Bin) {
+  if ((Ain.isSparse() || Bin.isSparse()) && !IsZeroPreservingCmp<Op>())
+    return (ToSparse(EqOp<Op>(Ain.asDenseArray(),Bin.asDenseArray())));
   DataClass via_type;
   DataClass out_type;
   ComputeTypes(Ain,Bin,via_type,out_type);
@@ -663,6 +692,9 @@ static inline Array UnaryOp(const Array &Ain, DataClass Tclass) {
 
 template <class Op>
 static inline Array UnaryOp(const Array &Ain) {
+  // Check for non zero-preserving unary functions
+  if (Ain.isSparse() && !IsZeroPreservingUnary<Op>())
+    return ToSparse(UnaryOp<Op>(Ain.asDenseArray()));
   if (Ain.dataClass() == Float)
     return UnaryOp<float,Op>(Ain,Float);
   else

@@ -159,7 +159,7 @@ void CWriter::Upload(CSymbol sym) {
 
 void CWriter::Indent() {for (int i=0;i<m_indent;i++) o << "  "; }
 void CWriter::Operator(std::string op) { o << op; }
-void CWriter::BeginWhile() { o << "while (Any(";}
+void CWriter::BeginWhile() { o << "while (Any(interp,";}
 void CWriter::EndWhile() {o << "))";}
 void CWriter::BeginParen() { o << "("; }
 void CWriter::EndParen() { o << ")"; }
@@ -182,9 +182,9 @@ CSymbol CWriter::BeginLoop(CSymbol loopvar, CSymbol loopcount) {
   BeginScope();
   return loopvar;
 }
-void CWriter::BeginIf() {Indent(); o << "if (Any(";}
+void CWriter::BeginIf() {Indent(); o << "if (Any(interp,";}
 void CWriter::EndIf() {o << "))\n";}
-void CWriter::BeginElseIf() {Indent(); o << "else if (Any(";};
+void CWriter::BeginElseIf() {Indent(); o << "else if (Any(interp,";};
 void CWriter::EndElseIf() {o << "))\n";}
 void CWriter::BeginElse() {Indent(); o << "else\n";}
 void CWriter::EndElse() {}
@@ -520,23 +520,30 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
   if (symbol.isMFunction())
     {
       std::vector<CTypeInfo> argtypes;
-      const Tree &q(t.second());
-      cs.Push();
-      for (int i=0;i<q.numChildren();i++)
+      if (t.numChildren() > 1)
 	{
-	  cs.NextArg();
-	  argtypes.push_back(compile_expression(q.child(i)));
+	  const Tree &q(t.second());
+	  cs.Push();
+	  for (int i=0;i<q.numChildren();i++)
+	    {
+	      cs.NextArg();
+	      argtypes.push_back(compile_expression(q.child(i)));
+	    }
+	  cs.Pop();
 	}
-      cs.Pop();
       CTypeInfo rettype;
       if (compile_mfunction(symname,argtypes,rettype))
 	{
 	  cs.BeginFuncCall(symname.toStdString());
 	  cs.Operator("interp");
-	  for (int i=0;i<q.numChildren();i++)
+	  if (t.numChildren() > 1)
 	    {
-	      cs.NextArg();
-	      compile_expression(q.child(i));
+	      const Tree &q(t.second());
+	      for (int i=0;i<q.numChildren();i++)
+		{
+		  cs.NextArg();
+		  compile_expression(q.child(i));
+		}
 	    }
 	  cs.EndFuncCall();
 	  return rettype;
@@ -551,25 +558,32 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
     {
       cs.Push();
       scalarSpecialCase = true;
-      const Tree &q(t.second());
-      if (!q.is(TOK_PARENS))
-	throw Exception("Function calls!");
-      for (int i=0;i<q.numChildren();i++)
+      if (t.numChildren() > 1)
 	{
-	  cs.NextArg();
-	  CTypeInfo p = compile_expression(q.child(i));
-	  if (p.type() != CDOUBLE)
-	    throw Exception("function calls only support double type arguments in JIT");
-	  scalarSpecialCase = scalarSpecialCase && p.isscalar();
+	  const Tree &q(t.second());
+	  if (!q.is(TOK_PARENS))
+	    throw Exception("Function calls!");
+	  for (int i=0;i<q.numChildren();i++)
+	    {
+	      cs.NextArg();
+	      CTypeInfo p = compile_expression(q.child(i));
+	      if (p.type() != CDOUBLE)
+		throw Exception("function calls only support double type arguments in JIT");
+	      scalarSpecialCase = scalarSpecialCase && p.isscalar();
+	    }
 	}
       cs.Pop();
       if (scalarSpecialCase)
 	{
 	  cs.BeginFuncCall("_jit_" + symname.toStdString());
-	  for (int i=0;i<q.numChildren();i++)
+	  if (t.numChildren() > 1)
 	    {
-	      if (i != 0) cs.NextArg();
-	      compile_expression(q.child(i));
+	      const Tree &q(t.second());
+	      for (int i=0;i<q.numChildren();i++)
+		{
+		  if (i != 0) cs.NextArg();
+		  compile_expression(q.child(i));
+		}
 	    }
 	  cs.EndFuncCall();
 	  return CTypeInfo(CDOUBLE,true);
@@ -584,15 +598,18 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
   // But there should be.  So in this incarnation, we cowardly
   // refuse to handle any function invokation that isn't all
   // double arguments.
-  const Tree &q(t.second());
-  if (!q.is(TOK_PARENS))
-    throw Exception("Function calls!");
-  for (int i=0;i<q.numChildren();i++)
+  if (t.numChildren() > 1)
     {
-      cs.NextArg();
-      p = compile_expression(q.child(i));
-      if (p.type() != CDOUBLE)
-	throw Exception("function calls only support double type arguments in JIT");
+      const Tree &q(t.second());
+      if (!q.is(TOK_PARENS))
+	throw Exception("Function calls!");
+      for (int i=0;i<q.numChildren();i++)
+	{
+	  cs.NextArg();
+	  p = compile_expression(q.child(i));
+	  if (p.type() != CDOUBLE)
+	    throw Exception("function calls only support double type arguments in JIT");
+	}
     }
   cs.EndFuncCall();
   return CTypeInfo(CDOUBLE,false);

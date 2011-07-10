@@ -597,6 +597,7 @@ bool carray_duplicate(void *interp, void *a, void *b)
     }
 }
 
+extern "C"
 void* carray_colon(void *interp, double a, double b, bool *flag)
 {
   try
@@ -614,6 +615,7 @@ void* carray_colon(void *interp, double a, double b, bool *flag)
     }
 }
 
+extern "C"
 void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
 {
   try
@@ -631,10 +633,20 @@ void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
     }
 }
 
-bool carray_any(void *p)
+extern "C"
+bool carray_any(void *interp, void *p, bool *flag)
 {
-  CArray *pp = cast(p);
-  return !RealAllZeros(pp->sp);
+  try
+    {
+      CArray *pp = cast(p);
+      return !RealAllZeros(pp->sp);
+    }
+  catch (Exception &e)
+    {
+      *flag = true;
+      reinterpret_cast<Interpreter*>(interp)->setLastErrorString(e.msg());
+      return false;
+    }
 }
 
 #define WrapUnaryOp(wrapped,func)					\

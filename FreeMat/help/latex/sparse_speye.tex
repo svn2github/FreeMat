@@ -21,8 +21,9 @@ difficult to do using \verb|sparse(eye(5000))| because of the large amount
 of intermediate storage required.
 \begin{verbatim}
 --> I = speye(5000);
---> which I
-Function I is unknown!
+--> who I
+  Variable Name       Type   Flags             Size
+              I    double   sparse           [5000x5000]
 --> full(I(1:10,1:10))
 
 ans = 

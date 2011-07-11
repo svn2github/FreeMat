@@ -71,6 +71,7 @@ void usage() {
   printf("                   update its internal configuration and then\n");
   printf("                   exit.\n");
   printf("     -p <path>     Set the FreeMat path to the given pathspec.\n");
+  printf("     -r <path>     Set the FreeMat root path to the given pathspec.\n");
   printf("     -help         Get this help text\n");
   exit(0);
 }
@@ -113,6 +114,7 @@ int main(int argc, char *argv[]) {
   int installMode = parseFlagArg(argc,argv,"-i",true);
   int pathMode = parseFlagArg(argc,argv,"-p",true);
   int scriptMode = parseFlagArg(argc,argv,"-s",true);
+  int rootpathMode = parseFlagArg(argc,argv,"-r",true);
 
   signal(SIGINT,sigDoNothing);
   
@@ -138,6 +140,11 @@ int main(int argc, char *argv[]) {
   if (pathMode) {
     QSettings settings("FreeMat", Interpreter::getVersionString());
     settings.setValue("interpreter/path",QString::fromStdString(argv[pathMode+1]).split(":"));
+  }
+
+  if (rootpathMode) {
+    QSettings settings("FreeMat", Interpreter::getVersionString());
+    settings.setValue("root",QString::fromStdString(argv[rootpathMode+1]));
   }
 
   if (dumbTerminal) nogui = 1;

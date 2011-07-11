@@ -994,6 +994,9 @@ class HelpGen:
                     self.process_file(fname)
     def process_file(self,filename):
         print('Processing file %s'%(filename))
+        if (re.search('(\+octave)',filename)):
+            print('skipped');
+            return
         self.fp = open(filename,'r')
         self.finished = False
         while not self.finished:

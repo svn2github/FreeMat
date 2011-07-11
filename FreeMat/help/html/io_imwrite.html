@@ -40,7 +40,6 @@ a grayscale image and save it to an image file.
 --&gt; a =  uint8(255*rand(64));
 --&gt; figure(1), image(a), colormap(gray)
 --&gt; title('image to save')
-Warning: Newly defined variable nargin shadows a function of the same name.  Use clear nargin to recover access to the function
 --&gt; imwrite(a, 'test.bmp')
 </PRE>
 Then, we read image file and show it:
@@ -48,7 +47,6 @@ Then, we read image file and show it:
 --&gt; b = imread('test.bmp');
 --&gt; figure(2), image(b), colormap(gray)
 --&gt; title('loaded image')
-Warning: Newly defined variable nargin shadows a function of the same name.  Use clear nargin to recover access to the function
 </PRE>
 </BODY>
 </HTML>

@@ -35,10 +35,6 @@
 #include "Algorithms.hpp"
 #include "FuncPtr.hpp"
 
-#if HAVE_AVCALL
-#include "avcall.h"
-#endif
-
 #define MSGBUFLEN 2048
 
 QMutex functiondefmutex;
@@ -568,21 +564,41 @@ bool FunctionDef::referenced() {
 FunctionDef::~FunctionDef() {
 }
 
-static QChar MapImportTypeToJITCode(QString imptype) {
-  if (imptype == "uint8" || imptype == "int8") return QChar('c');
-  if (imptype == "uint16" || imptype == "int16") return QChar('s');
-  if (imptype == "uint32" || imptype == "int32") return QChar('i');
-  if (imptype == "uint64" || imptype == "int64") return QChar('l');
-  if (imptype == "string") return QChar('c');
-  if (imptype == "float") return QChar('f');
-  if (imptype == "double") return QChar('d');
-  if (imptype == "void") return QChar('v');
-  throw Exception("unrecognized type " + imptype + " in imported function setup");
-}
-
 bool ImportedFunctionDef::isPassedAsPointer(int arg) {
   return (arguments[arg].startsWith("&") || (types[arg] == "string")
 	  || sizeCheckExpressions[arg].valid());
+}
+
+static DataClass mapTypeNameToClass(QString name) {
+  if (name == "uint8") return UInt8;
+  if (name == "int8") return Int8;
+  if (name == "uint16") return UInt16;
+  if (name == "int16") return Int16;
+  if (name == "uint32") return UInt32;
+  if (name == "int32") return Int32;
+  if (name == "uint64") return UInt64;
+  if (name == "int64") return Int64;
+  if (name == "float") return Float;
+  if (name == "double") return Double;
+  if (name == "string") return StringArray;
+  if (name == "void") return Int32;
+  throw Exception("unrecognized type " + name + " in imported function setup");
+}
+
+static ffi_type* mapTypeNameToFFIType(QString name) {
+  if (name == "uint8") return &ffi_type_uint8;
+  if (name == "int8") return &ffi_type_sint8;
+  if (name == "uint16") return &ffi_type_uint16;
+  if (name == "int16") return &ffi_type_sint16;
+  if (name == "uint32") return &ffi_type_uint32;
+  if (name == "int32") return &ffi_type_sint32;
+  if (name == "uint64") return &ffi_type_uint64;
+  if (name == "int64") return &ffi_type_sint64;
+  if (name == "float") return &ffi_type_float;
+  if (name == "double") return &ffi_type_double;
+  if (name == "string") return &ffi_type_pointer;
+  if (name == "void") return &ffi_type_void;
+  throw Exception("unrecognized type " + name + " in imported function setup");
 }
 
 static int importCounter = 0;
@@ -602,6 +618,19 @@ ImportedFunctionDef::ImportedFunctionDef(GenericFuncPointer address_arg,
     retCount = 0;
   else
     retCount = 1;
+  // Build the ffi cif (call interface object)
+  ffi_type **args;
+  args = (ffi_type**) malloc(sizeof(ffi_type*)*argCount);
+  for (int i=0;i<argCount;i++) {
+    if (arguments[i][0] == '&' || types[i] == "string" ||
+	sizeCheckExpressions[i].valid()) 
+      args[i] = &ffi_type_pointer;
+    else
+      args[i] = mapTypeNameToFFIType(types[i]);
+  }
+  if (ffi_prep_cif(&cif, FFI_DEFAULT_ABI, argCount,
+		   mapTypeNameToFFIType(retType), args) != FFI_OK)
+    throw Exception("unable to import function through ffi!");
 }
 
 ImportedFunctionDef::~ImportedFunctionDef() {
@@ -610,27 +639,25 @@ ImportedFunctionDef::~ImportedFunctionDef() {
 void ImportedFunctionDef::printMe(Interpreter *) {
 }
 
-static DataClass mapTypeNameToClass(QString name) {
-  if (name == "uint8") return UInt8;
-  if (name == "int8") return Int8;
-  if (name == "uint16") return UInt16;
-  if (name == "int16") return Int16;
-  if (name == "uint32") return UInt32;
-  if (name == "int32") return Int32;
-  if (name == "uint64") return UInt64;
-  if (name == "int64") return Int64;
-  if (name == "float") return Float;
-  if (name == "double") return Double;
-  if (name == "string") return StringArray;
-  if (name == "void") return Int32;
-  throw Exception("unrecognized type " + name + " in imported function setup");
-}
 
 static QString TrimAmpersand(QString name) {
   if (!name.startsWith("&")) return name;
   name.remove(0,1);
   return name;
 }
+
+template <class T>
+static Array DoCIFCall(ffi_cif cif, GenericFuncPointer address,
+		       vector<void*> &values, DataClass rclass)
+{
+  T retval;
+  if (values.size() > 0)
+    ffi_call(&cif, address, &retval, &values[0]);
+  else
+    ffi_call(&cif, address, &retval, NULL);
+  return Array::Array(retval);
+}
+
 /**
  * Note: Pass-by-reference only really matters for strings, and that
  * is only because for strings, we convert them from Unicode to C strings
@@ -643,7 +670,6 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
 					      ArrayVector& inputs,
 					      int nargout,
 					      VariableTable*) {
-#ifdef HAVE_AVCALL
   /**
    * To actually evaluate the function, we have to process each of
    * the arguments and get them into the right form.
@@ -733,89 +759,24 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
       ptr++;
     }
   }
-
-  // The argument list object
-  av_alist alist;
-  // Holders for the return values
-  uint8 ret_uint8;
-  int8 ret_int8;
-  uint16 ret_uint16;
-  int16 ret_int16;
-  uint32 ret_uint32;
-  int32 ret_int32;
-  float ret_float;
-  double ret_double;
-
-  // First pass - based on the return type, call the right version of av_start_*
-  if (retType == "uint8") {
-    av_start_uchar(alist,address,&ret_uint8);
-  } else if (retType == "int8") {      
-    av_start_schar(alist,address,&ret_int8);
-  } else if (retType == "uint16") {
-    av_start_ushort(alist,address,&ret_uint16);
-  } else if (retType == "int16") {
-    av_start_short(alist,address,&ret_int16);
-  } else if (retType == "uint32") {
-    av_start_uint(alist,address,&ret_uint32);
-  } else if (retType == "int32") {
-    av_start_int(alist,address,&ret_int32);
-  } else if (retType == "float") {
-    av_start_float(alist,address,&ret_float);
-  } else if (retType == "double") {
-    av_start_double(alist,address,&ret_double);
-  } else if (retType == "void") {
-    av_start_void(alist,address);
-  } else
-    throw Exception("Unsupported return type " + retType + " in imported function call");
-    
-  // Second pass - Loop through the arguments
-  for (int i=0;i<types.size();i++) {
-    if (arguments[i][0] == '&' || types[i] == "string" ||
-	sizeCheckExpressions[i].valid())
-      av_ptr(alist,void*,*((void**)values[i]));
-    else {
-      if (types[i] == "uint8")
-	av_uchar(alist,*((uint8*)values[i]));
-      else if (types[i] == "int8")
-	av_char(alist,*((int8*)values[i]));
-      else if (types[i] == "uint16")
-	av_ushort(alist,*((uint16*)values[i]));
-      else if (types[i] == "int16")
-	av_short(alist,*((int16*)values[i]));
-      else if (types[i] == "uint32")
-	av_uint(alist,*((uint32*)values[i]));
-      else if (types[i] == "int32")
-	av_int(alist,*((int32*)values[i]));
-      else if (types[i] == "float")
-	av_float(alist,*((float*)values[i]));
-      else if (types[i] == "double")
-	av_double(alist,*((double*)values[i]));
-    }
-  }
-
-  // Call the function
-  av_call(alist);
-
+  
   Array retArray;
-  // Extract the return value
-  if (retType == "uint8") {
-    retArray = Array(ret_uint8);
-  } else if (retType == "int8") {
-    retArray = Array(ret_int8);
-  } else if (retType == "uint16") {
-    retArray = Array(ret_uint16);
-  } else if (retType == "int16") {
-    retArray = Array(ret_int16);
-  } else if (retType== "uint32") {
-    retArray = Array(ret_uint32);
-  } else if (retType == "int32") {
-    retArray = Array(ret_int32);
-  } else if (retType == "float") {
-    retArray = Array(ret_float);
-  } else if (retType == "double") {
-    retArray = Array(ret_double);
-  } else
+  if (retType == "uint8") retArray = DoCIFCall<uint8>(cif,address,values,UInt8);
+  else if (retType == "int8") retArray = DoCIFCall<int8>(cif,address,values,Int8);
+  else if (retType == "uint16") retArray = DoCIFCall<uint16>(cif,address,values,UInt16);
+  else if (retType == "int16") retArray = DoCIFCall<int16>(cif,address,values,Int16);
+  else if (retType == "uint32") retArray = DoCIFCall<uint32>(cif,address,values,UInt32);
+  else if (retType == "int32") retArray = DoCIFCall<int32>(cif,address,values,Int32);
+  else if (retType == "uint64") retArray = DoCIFCall<uint64>(cif,address,values,UInt64);
+  else if (retType == "int64") retArray = DoCIFCall<int64>(cif,address,values,Int64);
+  else if (retType == "float") retArray = DoCIFCall<float>(cif,address,values,Float);
+  else if (retType == "double") retArray = DoCIFCall<double>(cif,address,values,Double);
+  else if (retType == "void") {
+    DoCIFCall<int32>(cif,address,values,Int32);
     retArray = EmptyConstructor();
+  } else
+    throw Exception("Unsupported return tye " + retType + " in imported function call");
+
   // Strings that were passed by reference have to be
   // special-cased
   for (i=0;i<inputs.size();i++) {
@@ -825,9 +786,6 @@ ArrayVector ImportedFunctionDef::evaluateFunc(Interpreter *walker,
   for (i=0;i<inputs.size();i++)
     if (string_store[i]) free(string_store[i]);
   return ArrayVector(retArray);
-#else
-  throw Exception("Support for the import command requires that the avcall library be installed.  FreeMat was compiled without this library being available, and hence imported functions are unavailable. To enable imported commands, please install avcall and recompile FreeMat.");
-#endif
 }
 
 MexFunctionDef::MexFunctionDef(QString fullpathname) {

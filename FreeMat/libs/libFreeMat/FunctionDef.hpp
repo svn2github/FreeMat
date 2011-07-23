@@ -28,6 +28,8 @@
 #include <QDateTime>
 #include "Scope.hpp"
 
+#include "ffi.h"
+
 using namespace std;
 
 typedef enum {
@@ -364,6 +366,10 @@ public:
    * The pointer to the function to be called.
    */
   GenericFuncPointer address;
+  /**
+   * The call interface object
+   */
+  ffi_cif cif;
   /**
    * The types of each argument
    */

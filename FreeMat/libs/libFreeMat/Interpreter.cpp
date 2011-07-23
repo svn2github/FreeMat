@@ -607,6 +607,7 @@ void Interpreter::doCLI() {
   } catch (InterpreterQuitException &e) {
     emit QuitSignal();
   } catch (std::exception& e) {
+    qDebug() << "crash: " << e.what();
     emit CrashedSignal();
   } catch (...) {
     emit CrashedSignal();

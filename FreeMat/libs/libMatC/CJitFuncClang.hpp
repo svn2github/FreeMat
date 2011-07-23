@@ -13,6 +13,7 @@
 class CJitFuncClang : public JITFuncBase
 {
 protected:
+  llvm::LLVMContext *ctxt;
   llvm::ExecutionEngine* EE;
   clang::CompilerInstance* comp;
   llvm::Function* func;

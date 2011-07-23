@@ -38,7 +38,6 @@ using namespace clang::driver;
 
 CJitFuncClang::CJitFuncClang(Interpreter* eval)
 {
-  llvm::InitializeNativeTarget();
   m_eval = eval;
 }
 
@@ -52,11 +51,13 @@ QString GetRootPath();
 bool CJitFuncClang::compile(const std::string &filename, 
 			    const std::string &funcname) 
 {
+  llvm::InitializeNativeTarget();
+  ctxt = new llvm::LLVMContext;
   TextDiagnosticPrinter *DiagClient =
     new TextDiagnosticPrinter(llvm::errs(), DiagnosticOptions());
-  Diagnostic Diags(DiagClient);
-  Driver TheDriver("",
-		   llvm::sys::getHostTriple(),
+  llvm::IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
+  Diagnostic Diags(DiagID, DiagClient);
+  Driver TheDriver("", llvm::sys::getHostTriple(),
                    "a.out", /*IsProduction=*/false, /*CXXIsProduction=*/false,
                    Diags);
   TheDriver.setTitle("FreeMat JIT");
@@ -103,7 +104,7 @@ bool CJitFuncClang::compile(const std::string &filename,
   // FIXME: This is copied from cc1_main.cpp; simplify and eliminate.
   // Create a compiler instance to handle the actual work.
   comp = new clang::CompilerInstance;
-  comp->setLLVMContext(new llvm::LLVMContext);
+  //  comp->setLLVMContext(new llvm::LLVMContext);
   comp->setInvocation(CI.take());
   // Create the compilers actual diagnostics engine.
   comp->createDiagnostics(int(CCArgs.size()),const_cast<char**>(CCArgs.data()));

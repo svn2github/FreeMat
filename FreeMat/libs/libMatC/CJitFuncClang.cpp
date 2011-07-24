@@ -24,8 +24,13 @@
 #include "llvm/ExecutionEngine/GenericValue.h"
 #include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/raw_ostream.h"
+#ifdef LLVM28
 #include "llvm/System/Host.h"
 #include "llvm/System/Path.h"
+#else
+#include "llvm/Support/Host.h"
+#include "llvm/Support/Path.h"
+#endif
 #include "llvm/Target/TargetSelect.h"
 #include "llvm/Target/TargetOptions.h"
 
@@ -39,6 +44,7 @@ using namespace clang::driver;
 CJitFuncClang::CJitFuncClang(Interpreter* eval)
 {
   m_eval = eval;
+  ctxt = new llvm::LLVMContext;
 }
 
 CJitFuncClang::~CJitFuncClang()
@@ -52,7 +58,6 @@ bool CJitFuncClang::compile(const std::string &filename,
 			    const std::string &funcname) 
 {
   llvm::InitializeNativeTarget();
-  ctxt = new llvm::LLVMContext;
   TextDiagnosticPrinter *DiagClient =
     new TextDiagnosticPrinter(llvm::errs(), DiagnosticOptions());
   llvm::IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
@@ -93,13 +98,6 @@ bool CJitFuncClang::compile(const std::string &filename,
                                      Diags);
   QString path = GetRootPath() + "/toolbox/jit";
   CI->getHeaderSearchOpts().AddPath(path.toStdString().c_str(),frontend::Quoted,true,false,false);
- 
- // Show the invocation, with -v.
-  if (CI->getHeaderSearchOpts().Verbose) {
-    llvm::errs() << "clang invocation:\n";
-    C->PrintJob(llvm::errs(), C->getJobs(), "\n", true);
-    llvm::errs() << "\n";
-  }
 
   // FIXME: This is copied from cc1_main.cpp; simplify and eliminate.
   // Create a compiler instance to handle the actual work.
@@ -110,21 +108,17 @@ bool CJitFuncClang::compile(const std::string &filename,
   comp->createDiagnostics(int(CCArgs.size()),const_cast<char**>(CCArgs.data()));
   if (!comp->hasDiagnostics()) return false;
   // Create and execute the frontend to generate an LLVM bitcode module.
-  llvm::errs() << "Generating code...\n";
-  llvm::OwningPtr<CodeGenAction> Act(new EmitLLVMOnlyAction());
+  // Pass the LLVM context to the code gen action.  Otherwise, the action
+  // creates a new context and then promptly deletes it when it goes out
+  // of scope. :P
+  llvm::OwningPtr<CodeGenAction> Act(new EmitLLVMOnlyAction(ctxt));
   if (!comp->ExecuteAction(*Act)) return false;
-  llvm::errs() << "Done...\n";
   llvm::JITExceptionHandling = true;
   if (llvm::Module *Module = Act->takeModule())
     {
-      llvm::errs() << (*Module);
       std::string Error;
       EE = llvm::ExecutionEngine::createJIT(Module,&Error);
-      if (!EE)
-	{
-	  llvm::errs() << "Unable to initialize JIT: " << Error;
-	  return false;
-	}
+      if (!EE) return false;
       func =  Module->getFunction(funcname);
       return true;
     }
@@ -136,16 +130,17 @@ bool CJitFuncClang::compile(const Tree & t)
   CJitFunc mcomp;
   mcomp.set_interpreter(m_eval);
   mcomp.compile_tree(t,std::string("testfunc"));
-  //  QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
-  //  file.open();
-  //  std::string codename = file.fileName().toStdString();
-  std::string codename = "/tmp/jit.cpp";
+  QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
+  file.open();
+  std::string codename = file.fileName().toStdString();
   mcomp.writeCode(codename);
   return compile(codename,"testfunc");
 }
 
 int CJitFuncClang::run()
 {
+  llvm::errs() << "********************************************************************************\n";
+  llvm::errs() << (*func);
   std::vector<llvm::GenericValue> args(1);
   args[0].PointerVal = m_eval;
   llvm::GenericValue ret = EE->runFunction(func,args);

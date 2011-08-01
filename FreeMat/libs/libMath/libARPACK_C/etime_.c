@@ -5,7 +5,7 @@
 #define USE_CLOCK
 #endif
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) | defined(__MINGW32__)
 #undef USE_CLOCK
 #define USE_CLOCK
 #endif

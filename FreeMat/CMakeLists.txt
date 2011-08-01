@@ -3,7 +3,7 @@ MACRO(WRITE_OUT_ALL_VARIABLES)
 SET(DstFile ${CMAKE_CURRENT_BINARY_DIR}/AllVariables.txt)
 
 #MESSAGE("DEBUG -- Writing out all variables to file ${DstFile}")
-    
+
 FILE(WRITE ${DstFile} "")
 GET_CMAKE_PROPERTY(VARS VARIABLES)
 FOREACH(var ${VARS})
@@ -21,7 +21,7 @@ SET(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 SET( RESOURCEDIR "${CMAKE_INSTALL_PREFIX}/share/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}" )
 #SET( CMAKE_VERBOSE_MAKEFILE TRUE )
@@ -38,7 +38,7 @@ ENDIF( MSVC )
 
 ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS)
 
-FIND_PACKAGE(OpenGL REQUIRED) 
+FIND_PACKAGE(OpenGL REQUIRED)
 
 SET(QT_USE_QTNETWORK TRUE)
 SET(QT_USE_QTXML TRUE)
@@ -49,7 +49,7 @@ FIND_PACKAGE(Qt4 REQUIRED)
 
 FIND_PACKAGE(PythonInterp REQUIRED)
 
-ADD_DEFINITIONS( ${QT_DEFINITIONS} ) 
+ADD_DEFINITIONS( ${QT_DEFINITIONS} )
 
 MACRO (QT4_GENERATE_UI infile outfile )
      GET_FILENAME_COMPONENT(infile ${infile} ABSOLUTE)
@@ -97,22 +97,22 @@ SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${PCRE_LIBRARY})
 
 FIND_LIBRARY(FFTW_LIBRARY NAMES fftw3 fftw3-3 libfftw3-3 DOC "Location of the FFTW library" PATHS ${LOCAL_PATH} )
 FIND_PATH(FFTW_INCLUDE_DIR NAMES fftw3.h DOC "Location of fftw3.h" PATHS ${LOCAL_PATH} /mingw/include)
-IF( FFTW_LIBRARY AND FFTW_INCLUDE_DIR ) 
+IF( FFTW_LIBRARY AND FFTW_INCLUDE_DIR )
 	ADD_DEFINITIONS( -DHAVE_FFTW )
 	INCLUDE_DIRECTORIES( ${FFTW_INCLUDE_DIR} )
         SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFTW_LIBRARY} )
-ENDIF( FFTW_LIBRARY AND FFTW_INCLUDE_DIR )	
+ENDIF( FFTW_LIBRARY AND FFTW_INCLUDE_DIR )
 
 ######################################################################
 # FFTWF Package
 ######################################################################
 
 FIND_LIBRARY(FFTWF_LIBRARY NAMES fftw3f fftw3f-3 libfftw3f-3 DOC "Location of the FFTW (single precision) library" PATHS ${LOCAL_PATH} )
-IF( FFTWF_LIBRARY AND FFTW_INCLUDE_DIR ) 
+IF( FFTWF_LIBRARY AND FFTW_INCLUDE_DIR )
 	ADD_DEFINITIONS( -DHAVE_FFTWF )
 	INCLUDE_DIRECTORIES( ${FFTW_INCLUDE_DIR} )
         SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFTWF_LIBRARY} )
-ENDIF( FFTWF_LIBRARY AND FFTW_INCLUDE_DIR )	
+ENDIF( FFTWF_LIBRARY AND FFTW_INCLUDE_DIR )
 
 ######################################################################
 # ZLIB Package
@@ -214,7 +214,7 @@ OPTION(FORCE_BUNDLED_PORTAUDIO "Force use of bundled PORTAUDIO" OFF)
 IF ( NOT FORCE_BUNDLED_PORTAUDIO )
   FIND_LIBRARY(PORTAUDIO_SYS_LIBRARY NAMES portaudio DOC "Location of the PORTAUDIO library" PATHS ${LOCAL_PATH})
   FIND_PATH(PORTAUDIO_SYS_INCLUDE_DIR NAMES portaudio.h DOC "Location of portaudio.h" PATHS ${LOCAL_PATH})
-  
+
   IF (PORTAUDIO_SYS_LIBRARY AND PORTAUDIO_SYS_INCLUDE_DIR)
   SET (SYSTEM_PORTAUDIO_AVAILABLE TRUE)
   ELSE (PORTAUDIO_SYS_LIBRARY AND PORTAUDIO_SYS_INCLUDE_DIR)
@@ -295,11 +295,11 @@ IF( USE_LLVM )
   if (MSVC)
     set(LLVM_ROOT "C:/Program Files/LLVM" CACHE PATH "Directory where LLVM is installed")
     macro(FIND_LLVM_MSVC_LIB __libname__  __varname__ )
-      find_library(${__varname__} ${__libname__} DOC "Location of ${__libname__}.lib" 
+      find_library(${__varname__} ${__libname__} DOC "Location of ${__libname__}.lib"
       				  PATHS ${LOCAL_PATH} "${LLVM_ROOT}/lib")
       mark_as_advanced(${__varname__})
     endmacro(FIND_LLVM_MSVC_LIB)
-    find_path(LLVM_INCLUDE_DIR NAMES llvm-c/Core.h DOC "Location of llvm-c" 
+    find_path(LLVM_INCLUDE_DIR NAMES llvm-c/Core.h DOC "Location of llvm-c"
     			       PATHS ${LOCAL_PATH} ${LLVM_ROOT}/include)
     if (LLVM_INCLUDE_DIR)
         FIND_LLVM_MSVC_LIB( LLVMInstrumentation LIB_LLVMInstrumentation )
@@ -323,15 +323,45 @@ IF( USE_LLVM )
     	FIND_LLVM_MSVC_LIB( LLVMSupport LIB_LLVMSupport )
     	FIND_LLVM_MSVC_LIB( LLVMSystem LIB_LLVMSystem )
     	set(LLVM_LIBS ${LIB_LLVMInstrumentation} ${LIB_LLVMipo} ${LIB_LLVMX86CodeGen} ${LIB_LLVMX86Info}
-		  ${LIB_LLVMSelectionDAG} 
-    		  ${LIB_LLVMAsmPrinter} ${LIB_LLVMExecutionEngine} ${LIB_LLVMJIT} ${LIB_LLVMCodeGen} 
-		  ${LIB_LLVMTransformUtils} ${LIB_LLVMipa} ${LIB_LLVMAnalysis} 
-		  ${LIB_LLVMTarget} ${LIB_LLVMCore} ${LIB_LLVMSupport} ${LIB_LLVMMC} ${LIB_LLVMMCParser} ${LIB_LLVMSystem} 
-		  ${LIB_LLVMScalarOpts} ${LIB_LLVMInstCombine} 
+		  ${LIB_LLVMSelectionDAG}
+    		  ${LIB_LLVMAsmPrinter} ${LIB_LLVMExecutionEngine} ${LIB_LLVMJIT} ${LIB_LLVMCodeGen}
+		  ${LIB_LLVMTransformUtils} ${LIB_LLVMipa} ${LIB_LLVMAnalysis}
+		  ${LIB_LLVMTarget} ${LIB_LLVMCore} ${LIB_LLVMSupport} ${LIB_LLVMMC} ${LIB_LLVMMCParser} ${LIB_LLVMSystem}
+		  ${LIB_LLVMScalarOpts} ${LIB_LLVMInstCombine}
 		  CACHE STRING "LLVM Link Libraries" )
-	set(LLVM_VERSION "2.7" CACHE STRING "LLVM Version found")
+	set(LLVM_VERSION "2.9" CACHE STRING "LLVM Version found")
     endif (LLVM_INCLUDE_DIR)
-  else (MSVC)
+  elseif(MINGW)
+    set(LLVM_ROOT ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build CACHE PATH "Root of LLVM install.")
+    include_directories( ${LLVM_ROOT}/include )
+    link_directories( ${LLVM_ROOT}/lib )
+    # A bit of a sanity check:
+    if( NOT EXISTS ${LLVM_ROOT}/include/llvm )
+    message(FATAL_ERROR "LLVM_ROOT (${LLVM_ROOT}) is not a valid LLVM install")
+    endif()
+      set(CMAKE_MODULE_PATH
+        ${CMAKE_MODULE_PATH}
+         ${LLVM_ROOT}/share/llvm/cmake
+        ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/cmake/modules)
+      include(LLVM)
+      include( LLVMConfig )
+    llvm_map_components_to_libraries(LLVM_LIBS jit nativecodegen asmparser bitreader bitwriter codegen ipo instrumentation scalaropts selectiondag)    
+    set(LLVM_LIBDIR ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build/lib)
+    FIND_LIBRARY(CLANGFRONTEND clangFrontend  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGSERIALIZATION clangSerialization   ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGDRIVER  clangDriver  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGCODEGEN  clangCodeGen  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGSEMA  clangSema  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGINDEX  clangIndex  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGANALYSIS  clangAnalysis  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGREWRITE  clangRewrite  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGAST  clangAST  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGPARSE  clangParse  ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGLEX  clangLex ${LLVM_LIBDIR})
+    FIND_LIBRARY(CLANGBASIC  clangBasic ${LLVM_LIBDIR})
+    SET(LLVM_LIBS ${CLANGFRONTEND} ${CLANGSERIALIZATION} ${CLANGDRIVER} ${CLANGCODEGEN} ${CLANGSEMA} ${CLANGCHECKER} ${CLANGINDEX} ${CLANGANALYSIS} ${CLANGREWRITE} ${CLANGAST} ${CLANGPARSE} ${CLANGLEX} ${CLANGBASIC} ${LLVM_LIBS} )
+    set(LLVM_VERSION "2.9" CACHE STRING "LLVM Version found")
+  else(MINGW)
     find_program(LLVM_CONFIG llvm-config)
     execute_process(COMMAND ${LLVM_CONFIG} --libfiles jit nativecodegen asmparser bitreader bitwriter codegen ipo instrumentation scalaropts selectiondag interpreter
     			    OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -373,7 +403,7 @@ ENDIF (USE_LLVM)
 #Extra libraries
 IF(NOT MSVC)
   FIND_LIBRARY(NCURSES_LIBRARY NAMES ncurses DOC "Location of the ncurses library." PATH /mingw/lib)
-  SET(EXTRA_LIBRARIES ${NCURSES_LIBRARY}  )  
+  SET(EXTRA_LIBRARIES ${NCURSES_LIBRARY}  )
 ENDIF(NOT MSVC)
 
 INCLUDE_DIRECTORIES( libs/libFreeMat libs/libGraphics 
@@ -403,7 +433,7 @@ IF( MSVC )
 	FILE(GLOB INST_DLL "dependencies/bin/*.dll" )
 	INSTALL(FILES ${INST_DLL} DESTINATION bin )
 ENDIF( MSVC )
-        
+
 ####################################################################################
 #Setup section
 
@@ -442,7 +472,7 @@ IF(WIN32 AND NOT UNIX)
   #SET(CPACK_NSIS_CONTACT "me@my-personal-home-page.com")
   SET(CPACK_NSIS_MODIFY_PATH ON)
   INSTALL(FILES
-	${QT_LIBRARY_DIR}/qtcore4.dll 
+	${QT_LIBRARY_DIR}/qtcore4.dll
 	${QT_LIBRARY_DIR}/qtgui4.dll
 	${QT_LIBRARY_DIR}/qtnetwork4.dll
 	${QT_LIBRARY_DIR}/qtopengl4.dll
@@ -451,17 +481,17 @@ IF(WIN32 AND NOT UNIX)
 	DESTINATION bin PERMISSIONS WORLD_EXECUTE )
 
   INSTALL(FILES
-	${QT_LIBRARY_DIR}/../plugins/imageformats/qjpeg4.dll 
-	${QT_LIBRARY_DIR}/../plugins/imageformats/qgif4.dll 
-	${QT_LIBRARY_DIR}/../plugins/imageformats/qsvg4.dll 
-	${QT_LIBRARY_DIR}/../plugins/imageformats/qtiff4.dll 
+	${QT_LIBRARY_DIR}/../plugins/imageformats/qjpeg4.dll
+	${QT_LIBRARY_DIR}/../plugins/imageformats/qgif4.dll
+	${QT_LIBRARY_DIR}/../plugins/imageformats/qsvg4.dll
+	${QT_LIBRARY_DIR}/../plugins/imageformats/qtiff4.dll
 	DESTINATION bin/imageformats PERMISSIONS WORLD_EXECUTE )
-	
+
   INSTALL(DIRECTORY toolbox DESTINATION . PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
   INSTALL(DIRECTORY help/html DESTINATION help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
   INSTALL(DIRECTORY help/text DESTINATION help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
   INSTALL(FILES "help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf" DESTINATION help/pdf )
-  
+
 ENDIF(WIN32 AND NOT UNIX)
 
 SET(CPACK_PACKAGE_EXECUTABLES "FreeMat" "FreeMat")

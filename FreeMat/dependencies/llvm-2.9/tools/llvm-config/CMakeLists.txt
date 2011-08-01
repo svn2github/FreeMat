@@ -111,7 +111,7 @@ add_custom_command(OUTPUT ${LLVM_CONFIG}
   COMMAND echo 's!@LLVM_CXXFLAGS@!${CXX_FLGS}!' >> temp.sed
   # TODO: Use general flags for linking! not just for shared libs:
   COMMAND echo 's!@LLVM_LDFLAGS@!${CMAKE_SHARED_LINKER_FLAGS}!' >> temp.sed
-  COMMAND echo 's!@LIBS@!${LLVM_SYSTEM_LIBS}!' >> temp.sed
+  COMMAND echo 's!@LIBS@!"${LLVM_SYSTEM_LIBS}"!' >> temp.sed
   COMMAND echo 's!@LLVM_BUILDMODE@!${CMAKE_BUILD_TYPE}!' >> temp.sed
   COMMAND sed -f temp.sed < ${LLVM_CONFIG_IN} > ${LLVM_CONFIG}
   COMMAND ${CMAKE_COMMAND} -E remove -f temp.sed

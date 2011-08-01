@@ -39,7 +39,7 @@
 //outputs verstring
 //!
 ArrayVector VersionFunction(int nargout, const ArrayVector& arg) {
-  return ArrayVector(Array(QString(VERSION)));
+  return ArrayVector(Array(QString(FREEMAT_VERSION)));
 }
 
 

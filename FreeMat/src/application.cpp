@@ -34,28 +34,6 @@
 #include "PathTool.hpp"
 #include "ToolDock.hpp"
 
-const int about_linecount = 21;
-const char *about_strings[] = {"Julie Maya & Neil - My Fan Club",
-			       "Bruno De Man - New icon, general suggestions, support and FreeMat advocate",
-			       "Thomas Beutlich - MAT file support",
-			       "M. Vogel - Matlab compatibility scripts",
-			       "Brian Yanoff - Compatibility scripts",
-			       "Jeff Fessler - Support and test code, help with  class support",
-			       "Al Danial - Help with sparse matrix support",
-			       "MT19937 - Takuji Nishimura and Makoto Matsumoto's random number generator",
-			       "RANLIB - Random number generator library",
-			       "ATLAS - Optimized BLAS",
-			       "LAPACK - Linear algebra",
-			       "UMFPACK - Sparse linear equation solver",
-			       "ARPACK - Sparse eigenvalue problems",
-			       "FFTW - Fast Fourier Transforms",
-			       "ffcall - Foreign Function interface",
-			       "Qt4 - Cross platform GUI and API",
-			       "libtecla - Inspiration for console interface code",
-			       "wxbasic - Inspiration for interpreter layout",
-			       "kde/konsole - Inspiration for QTTerm (GUI Console)",
-			       "tubeplot - Written by Anders Sandberg",
-			       "nsis - Installer on Win32"};
 
 #define QUOTEME(x) #x
 #define MAKEASCII(x) x.toAscii().constData()
@@ -451,7 +429,7 @@ void ApplicationWindow::cleanhistory() {
 void ApplicationWindow::about() {
   QString text;
   text += "FreeMat Version ";
-  text += QUOTEME(VERSION);
+  text += QUOTEME(FREEMAT_VERSION);
   text += "\n\n";
   text += "Licensed under the GNU Public License Ver 2\n";
   text += "Web: http://freemat.sf.net\n";
@@ -521,8 +499,8 @@ void ApplicationWindow::httpRequestFinished(int requestId, bool error) {
   if (requestId != httpGetId) return;
   const char *qp = m_buffer.data();
 
-  if (atof(QUOTEME(VERSION)) < atof(m_buffer.data())) {
-    sprintf(buffer,"A newer version of FreeMat appears to available. \n Please update by downloading version %s at http://freemat.sourceforge.net.",qp);
+  if (atof(QUOTEME(FREEMAT_VERSION)) < atof(m_buffer.data())) {
+    sprintf(buffer,"A newer version of FreeMat appears to available. \n Please update by downloading version %s at http://freemat.org",qp);
     QMessageBox::information(this,"Update Available",
 			     buffer,QMessageBox::Ok);
   } else 

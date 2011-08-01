@@ -18,8 +18,7 @@ add_custom_command(
 	VERBATIM
 	)
 
-
-ADD_EXECUTABLE( FreeMat WIN32
+ADD_EXECUTABLE( FreeMat MACOSX_BUNDLE WIN32
 ${CMAKE_CURRENT_SOURCE_DIR}/application.moc.cpp 
 application.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/FuncMode.moc.cpp 
@@ -100,5 +99,91 @@ blasref
 #	set_target_properties( FreeMat PROPERTIES LINK_FLAGS "/MANIFEST:NO  /ALLOWISOLATION:NO" )
 #ENDIF( MSVC )
 
-INSTALL(TARGETS FreeMat DESTINATION bin )
+INSTALL(TARGETS FreeMat BUNDLE DESTINATION . COMPONENT Runtime
+		RUNTIME DESTINATION bin COMPONENT Runtime)
+
+# Mac OS X specific packaging info
+IF(APPLE)
+SET(MACOSX_BUNDLE_ICON_FILE ${CMAKE_CURRENT_SOURCE_DIR}/appIcon.icns)
+SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/appIcon.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+
+#  SET(CPACK_BUNDLE_PLIST ${PROJECT_SOURCE_DIR}/tools/Info.plist )
+#  SET(CPACK_BUNDLE_STARTUP_COMMAND ${PROJECT_BINARY_DIR}/src/FreeMat )
+#  SET(CPACK_BUNDLE_NAME "FreeMat")
+#  SET(CPACK_BUNDLE_ICON ${PROJECT_SOURCE_DIR}/src/appIcon.icns)
+
+SET(plugin_dest_dir bin)
+SET(qtconf_dest_dir bin)
+SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/FreeMat")
+IF(APPLE)
+  SET(plugin_dest_dir FreeMat.app/Contents)
+  SET(qtconf_dest_dir FreeMat.app/Contents/Resources)
+  SET(APPS "\${CMAKE_INSTALL_PREFIX}/FreeMat.app")
+ENDIF(APPLE)
+IF(WIN32)
+  SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/FreeMat.exe")
+ENDIF(WIN32)
+
+
+#--------------------------------------------------------------------------------
+# Install needed Qt plugins by copying directories from the qt installation
+# One can cull what gets copied by using 'REGEX "..." EXCLUDE'
+INSTALL(DIRECTORY "${QT_PLUGINS_DIR}/imageformats" DESTINATION ${plugin_dest_dir}/plugins COMPONENT Runtime)
+
+#--------------------------------------------------------------------------------
+# install a qt.conf file
+# this inserts some cmake code into the install script to write the file
+INSTALL(CODE "
+    file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")
+    " COMPONENT Runtime)
+
+
+#--------------------------------------------------------------------------------
+# Use BundleUtilities to get all other dependencies for the application to work.
+# It takes a bundle or executable along with possible plugins and inspects it
+# for dependencies.  If they are not system dependencies, they are copied.
+
+# directories to look for dependencies
+SET(DIRS ${QT_LIBRARY_DIRS})
+
+# Now the work of copying dependencies into the bundle/package
+# The quotes are escaped and variables to use at install time have their $ escaped
+# An alternative is the do a configure_file() on a script and use install(SCRIPT  ...).
+# Note that the image plugins depend on QtSvg and QtXml, and it got those copied
+# over.
+INSTALL(CODE "
+    file(GLOB_RECURSE QTPLUGINS
+      \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+    include(BundleUtilities)
+    fixup_bundle(\"${APPS}\" \"\${QTPLUGINS}\" \"${DIRS}\")
+    " COMPONENT Runtime)
+
+
+# To Create a package, one can run "cpack -G DragNDrop CPackConfig.cmake" on Mac OS X
+# where CPackConfig.cmake is created by including CPack
+# And then there's ways to customize this as well
+set(CPACK_BINARY_DRAGNDROP ON)
+
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/toolbox DESTINATION ${qtconf_dest_dir} PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/help/html DESTINATION ${qtconf_dest_dir}/help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/help/text DESTINATION ${qtconf_dest_dir}/help PATTERN "*" PATTERN  ".svn" EXCLUDE PERMISSIONS WORLD_READ )
+INSTALL(FILES
+"${CMAKE_SOURCE_DIR}/help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf"
+ DESTINATION "${qtconf_dest_dir}/help/pdf" )
+INSTALL(FILES
+"${CMAKE_SOURCE_DIR}/help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf"
+ DESTINATION ".")
+
+INSTALL(DIRECTORY /opt/local/lib/Resources/qt_menu.nib DESTINATION
+${qtconf_dest_dir} COMPONENT Runtime)
+
+ENDIF(APPLE)
+
+if (APPLE)
+INSTALL( FILES ${PROJECT_SOURCE_DIR}/tools/blas.ini DESTINATION FreeMat.app/Contents/MacOS)
+else()
+INSTALL( FILES ${PROJECT_SOURCE_DIR}/tools/blas.ini DESTINATION bin )
+endif()
+
+
 WRITE_OUT_ALL_VARIABLES()

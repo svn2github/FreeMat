@@ -561,7 +561,7 @@ static QString NestedMangleName(QString cfunc, QString fname) {
 }
 
 QString Interpreter::getVersionString() {
-  return QString("FreeMat v" VERSION);
+  return QString("FreeMat v" FREEMAT_VERSION);
 }
 
 // Run the thread function

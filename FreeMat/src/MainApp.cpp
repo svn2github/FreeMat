@@ -379,7 +379,7 @@ void MainApp::CheckNonClosable() {
     wid = new NonClosable;
     wid->setGeometry(0,0,1,1);
     wid->setWindowIcon(QIcon(":/images/freemat_small_mod_64.png"));
-    wid->setWindowTitle("FreeMat v" VERSION);
+    wid->setWindowTitle("FreeMat v" FREEMAT_VERSION);
     wid->show();
   }
 }
@@ -1152,7 +1152,7 @@ QString GetRootPath() {
 #ifdef Q_WS_MAC
     return "";
 #else
-    return QDir(qApp->applicationDirPath()+QString("/../share/FreeMat-" VERSION)).canonicalPath();
+    return QDir(qApp->applicationDirPath()+QString("/../share/FreeMat-" FREEMAT_VERSION)).canonicalPath();
 #endif
 #endif
 }

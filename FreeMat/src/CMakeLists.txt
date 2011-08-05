@@ -75,6 +75,10 @@ XP
 Mex
 MatC
 levmar
+arpack_c
+lapack_c
+dynblas
+blasref
 ${QT_QTCORE_LIBRARY} 
 ${QT_QTGUI_LIBRARY} 
 ${QT_QTNETWORK_LIBRARY} 
@@ -85,10 +89,6 @@ ${QT_QTMAIN_LIBRARY}
 ${OPENGL_LIBRARIES}
 ${EXTRA_LIBRARIES}
 ${OPTIONAL_LIBS}
-arpack_c
-lapack_c
-dynblas
-blasref
 )
 
 #IF(MSVC)

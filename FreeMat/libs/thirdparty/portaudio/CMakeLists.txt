@@ -11,7 +11,6 @@ IF (APPLE)
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_front.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_process.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_ringbuffer.c
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_skeleton.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_stream.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_trace.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/hostapi/coreaudio/pa_mac_core.c
@@ -23,9 +22,6 @@ ENDIF (APPLE)
 
 IF (WIN32)
    ADD_DEFINITIONS(-DPA_USE_WDMKSDEVICE_INFO)
-   ADD_DEFINITIONS( -DPA_NO_ASIO )
-   ADD_DEFINITIONS( -DPA_NO_DS )
-   ADD_DEFINITIONS( -DPA_NO_WASAPI )
 
 
    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/os/win)
@@ -37,7 +33,6 @@ IF (WIN32)
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_dither.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_front.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_process.c
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_skeleton.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_stream.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_trace.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/hostapi/wmme/pa_win_wmme.c
@@ -75,7 +70,6 @@ IF (NOT WIN32 AND NOT APPLE)
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_front.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_process.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_ringbuffer.c
-   ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_skeleton.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_stream.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/common/pa_trace.c
    ${CMAKE_CURRENT_SOURCE_DIR}/src/hostapi/oss/pa_unix_oss.c

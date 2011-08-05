@@ -234,6 +234,9 @@ ELSE (FORCE_BUNDLED_PORTAUDIO OR NOT SYSTEM_PORTAUDIO_AVAILABLE AND NOT FORCE_SY
 ENDIF (FORCE_BUNDLED_PORTAUDIO OR NOT SYSTEM_PORTAUDIO_AVAILABLE AND NOT FORCE_SYSTEM_LIBS)
 ADD_DEFINITIONS( -DHAVE_PORTAUDIO19)
 SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${PORTAUDIO_LIBRARY})
+IF(MINGW)
+        SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} -lwinmm)
+ENDIF(MINGW)
 IF (APPLE)
    FIND_LIBRARY(COREAUDIO_LIBRARY CoreAudio)
    FIND_LIBRARY(AUDIOTOOLBOX_LIBRARY AudioToolbox)
@@ -333,7 +336,11 @@ IF( USE_LLVM )
     endif (LLVM_INCLUDE_DIR)
   elseif(MINGW)
     set(LLVM_ROOT ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build CACHE PATH "Root of LLVM install.")
-    include_directories( ${LLVM_ROOT}/include )
+    include_directories( ${LLVM_ROOT}/include 
+    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/include 
+    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/tools/clang/include 
+    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build/tools/clang/include/clang/Basic
+    )
     link_directories( ${LLVM_ROOT}/lib )
     # A bit of a sanity check:
     if( NOT EXISTS ${LLVM_ROOT}/include/llvm )
@@ -345,7 +352,7 @@ IF( USE_LLVM )
         ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/cmake/modules)
       include(LLVM)
       include( LLVMConfig )
-    llvm_map_components_to_libraries(LLVM_LIBS jit nativecodegen asmparser bitreader bitwriter codegen ipo instrumentation scalaropts selectiondag)    
+    llvm_map_components_to_libraries(LLVM_LIBS jit native support ipo bitwriter asmparser bitreader)    
     set(LLVM_LIBDIR ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build/lib)
     FIND_LIBRARY(CLANGFRONTEND clangFrontend  ${LLVM_LIBDIR})
     FIND_LIBRARY(CLANGSERIALIZATION clangSerialization   ${LLVM_LIBDIR})

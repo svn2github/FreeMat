@@ -1920,7 +1920,10 @@ bool Interpreter::tryJitCode(const Tree & t) {
       if (success) 
 	{
 	  if (ref.JITFunction()->run() == CJIT_Success)
-	    return true;
+	    {
+	      ref.setJITState(JITInfo::SUCCEEDED);
+	      return true;
+	    }
 	  ref.setJITState(JITInfo::FAILED);
 	  return false;
 	}

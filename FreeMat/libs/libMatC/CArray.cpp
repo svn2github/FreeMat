@@ -4,14 +4,20 @@
 #include "Algorithms.hpp"
 #include "Math.hpp"
 
+#ifdef _WIN32
+    #define EXPORT __declspec(dllexport)
+#else
+    #define EXPORT
+#endif
+
 // Copy on write is causing a problem now...
-// if dp is set to the const pointer, then 
+// if dp is set to the const pointer, then
 // doing a write into the array may change
 // two arrays.  For example:
 //  A = zeros(1,100);
 //  B = A;
 //  for i=1:100; A(i) = i; end;
-// 
+//
 struct CArray
 {
   size_t rows;
@@ -65,8 +71,8 @@ void* carray_write_ptr(void* p)
   return q->dp;
 }
 
-extern "C"
-void* carray_scalar(double data, int typecode) 
+extern "C" EXPORT
+void* carray_scalar(double data, int typecode)
 {
   CArray *p = new CArray;
   p->rows = 1;
@@ -92,8 +98,8 @@ void* carray_scalar(double data, int typecode)
   return p;
 }
 
-extern "C"
-void* carray_create(void* interp, double rows, double cols, int typecode, bool *flag) 
+extern "C" EXPORT
+void* carray_create(void* interp, double rows, double cols, int typecode, bool *flag)
 {
   try
     {
@@ -135,23 +141,23 @@ void update_cache(void* arg)
   cp->typecode = cp->sp.dataClass();
 }
 
-extern "C"
-void* carray_empty() 
+extern "C" EXPORT
+void* carray_empty()
 {
   CArray *cp = new CArray;
   return cp;
 }
 
-extern "C"
-void* carray_copy(void* arg) 
+extern "C" EXPORT
+void* carray_copy(void* arg)
 {
   return new CArray(*((CArray*)arg));
 }
 
-extern "C"
-bool carray_download_function(void *interp, void *dst, const char *name) 
+extern "C" EXPORT
+bool carray_download_function(void *interp, void *dst, const char *name)
 {
-  try 
+  try
     {
       Interpreter *eval = (Interpreter*) interp;
       FuncPtr fp;
@@ -217,14 +223,14 @@ void* carray_invoke_2(void* interp, void* func, void* arg1, void* arg2, bool *fl
     }
 }
 
-extern "C"
-bool carray_download_scalar(void *interp, void* dst, const char *name, int typecode) 
+extern "C" EXPORT
+bool carray_download_scalar(void *interp, void* dst, const char *name, int typecode)
 {
   try
     {
       Interpreter *eval = (Interpreter*) interp;
       ArrayReference ptr(eval->getContext()->lookupVariable(name));
-      if (!ptr.valid()) 
+      if (!ptr.valid())
 	{
 	  eval->getContext()->insertVariable(name,Array((DataClass)(typecode),NTuple(1,1)));
 	  ptr = eval->getContext()->lookupVariable(name);
@@ -242,14 +248,14 @@ bool carray_download_scalar(void *interp, void* dst, const char *name, int typec
     }
 }
 
-extern "C"
-bool carray_download_array(void *interp, void *data, const char *name, int typecode) 
+extern "C" EXPORT
+bool carray_download_array(void *interp, void *data, const char *name, int typecode)
 {
   try
     {
       Interpreter *eval = (Interpreter*) interp;
       ArrayReference ptr(eval->getContext()->lookupVariable(name));
-      if (!ptr.valid()) 
+      if (!ptr.valid())
 	{
 	  eval->getContext()->insertVariable(name,Array((DataClass)(typecode),NTuple(1,1)));
 	  ptr = eval->getContext()->lookupVariable(name);
@@ -269,24 +275,24 @@ bool carray_download_array(void *interp, void *data, const char *name, int typec
 }
 
 extern "C"
-bool carray_upload_scalar(void *interp, void* data, const char *name,  
-			  int typecode) 
+bool carray_upload_scalar(void *interp, void* data, const char *name,
+			  int typecode)
 {
   Interpreter *eval = (Interpreter*) interp;
   try
     {
       ArrayReference ptr(eval->getContext()->lookupVariable(name));
-      if (!ptr.valid()) 
+      if (!ptr.valid())
 	{
 	  eval->getContext()->insertVariable(name,Array((DataClass)(typecode),NTuple(1,1)));
 	  ptr = eval->getContext()->lookupVariable(name);
 	}
       if (!ptr->isScalar()) throw Exception("Internal JIT failure!");
-      if (ptr->dataClass() != (DataClass)(typecode)) 
+      if (ptr->dataClass() != (DataClass)(typecode))
 	throw Exception("Internal JIT failure!");
       memcpy(ptr->getVoidPointer(),data,ByteCount(typecode));
       return true;
-    } 
+    }
   catch (Exception &e)
     {
       eval->setLastErrorString(e.msg());
@@ -294,15 +300,15 @@ bool carray_upload_scalar(void *interp, void* data, const char *name,
     }
 }
 
-extern "C"
-bool carray_upload_array(void *interp, void *data, const char *name) 
+extern "C" EXPORT
+bool carray_upload_array(void *interp, void *data, const char *name)
 {
   Interpreter *eval = (Interpreter*) interp;
   try
     {
       ArrayReference ptr(eval->getContext()->lookupVariable(name));
       CArray *cp = cast(data);
-      if (!ptr.valid()) 
+      if (!ptr.valid())
 	{
 	  eval->getContext()->insertVariable(name,cp->sp);
 	  return true;
@@ -318,34 +324,34 @@ bool carray_upload_array(void *interp, void *data, const char *name)
 }
 
 // Delete an array
-extern "C"
-void carray_free(void* arg) 
+extern "C" EXPORT
+void carray_free(void* arg)
 {
   delete (cast(arg));
 }
 
 // Get the number of rows in the array
-extern "C"
-double carray_rows(void* arg) 
+extern "C" EXPORT
+double carray_rows(void* arg)
 {
   return (cast(arg)->rows);
 }
 
 // Get the number of cols in the array
-extern "C"
-double carray_cols(void* arg) 
+extern "C" EXPORT
+double carray_cols(void* arg)
 {
   return (cast(arg)->cols);
 }
 
-extern "C"
-bool carray_set_ss(void* interp, void *arg, double row, double col, double val) 
+extern "C" EXPORT
+bool carray_set_ss(void* interp, void *arg, double row, double col, double val)
 {
   try
     {
       CArray *cp = cast(arg);
       if (!cp->valid_for_writes) validate_writes(cp);
-      if ((row < 1) || (col < 1)) 
+      if ((row < 1) || (col < 1))
 	{
 	  Interpreter *eval = (Interpreter*) interp;
 	  eval->setLastErrorString("index values must be >= 1");
@@ -374,8 +380,8 @@ bool carray_set_ss(void* interp, void *arg, double row, double col, double val)
 	default:
 	  return false;
 	}
-    } 
-  catch (Exception &e) 
+    }
+  catch (Exception &e)
     {
       Interpreter *eval = (Interpreter*) interp;
       eval->setLastErrorString(e.msg());
@@ -383,14 +389,14 @@ bool carray_set_ss(void* interp, void *arg, double row, double col, double val)
   return false;
 }
 
-extern "C"
-bool carray_set_s(void* interp, void *arg, double row, double val) 
+extern "C" EXPORT
+bool carray_set_s(void* interp, void *arg, double row, double val)
 {
   try
     {
       CArray *cp = cast(arg);
-      if (!cp->valid_for_writes) validate_writes(cp);  
-      if (row < 1) 
+      if (!cp->valid_for_writes) validate_writes(cp);
+      if (row < 1)
 	{
 	  Interpreter *eval = (Interpreter*) interp;
 	  eval->setLastErrorString("index values must be >= 1");
@@ -418,8 +424,8 @@ bool carray_set_s(void* interp, void *arg, double row, double val)
 	default:
 	  return false;
 	}
-    } 
-  catch (Exception &e) 
+    }
+  catch (Exception &e)
     {
       Interpreter *eval = (Interpreter*) interp;
       eval->setLastErrorString(e.msg());
@@ -427,8 +433,8 @@ bool carray_set_s(void* interp, void *arg, double row, double val)
   return false;
 }
 
-extern "C"
-bool carray_set_a(void* interp, void* arg, void* ndx, void *val) 
+extern "C" EXPORT
+bool carray_set_a(void* interp, void* arg, void* ndx, void *val)
 {
   try
     {
@@ -440,7 +446,7 @@ bool carray_set_a(void* interp, void* arg, void* ndx, void *val)
       update_cache(ap);
       return true;
     }
-  catch (Exception &e) 
+  catch (Exception &e)
     {
       Interpreter *eval = (Interpreter*) interp;
       eval->setLastErrorString(e.msg());
@@ -448,8 +454,8 @@ bool carray_set_a(void* interp, void* arg, void* ndx, void *val)
   return false;
 }
 
-extern "C"
-bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val) 
+extern "C" EXPORT
+bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val)
 {
   try
     {
@@ -465,23 +471,23 @@ bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val)
       update_cache(ap);
       return true;
     }
-  catch (Exception &e) 
+  catch (Exception &e)
     {
       Interpreter *eval = (Interpreter*) interp;
       eval->setLastErrorString(e.msg());
     }
-  return false; 
+  return false;
 }
 
-extern "C"
-void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag) 
+extern "C" EXPORT
+void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag)
 {
-  try 
+  try
     {
       CArray *ap = cast(arg);
       CArray *nd = cast(ndx);
       return carray_capture(ap->sp.get(nd->sp));
-    } 
+    }
   catch (Exception &e)
     {
       *flag = true;
@@ -491,10 +497,10 @@ void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag)
     }
 }
 
-extern "C"
-void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag) 
+extern "C" EXPORT
+void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag)
 {
-  try 
+  try
     {
       CArray *ap = cast(arg);
       CArray *ndr = cast(rndx);
@@ -510,11 +516,11 @@ void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag)
       Interpreter *eval = (Interpreter*) interp;
       eval->setLastErrorString(e.msg());
       return NULL;
-    }      
+    }
 }
-  
-extern "C"
-double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag) 
+
+extern "C" EXPORT
+double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag)
 {
   try
     {
@@ -542,13 +548,13 @@ double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag
     {
       *flag = true;
       Interpreter *eval = (Interpreter*) interp;
-      eval->setLastErrorString(e.msg()); 
+      eval->setLastErrorString(e.msg());
      return 0;
     }
 }
- 
-extern "C"
-double carray_get_s(void* interp, void* arg, double row, bool *flag) 
+
+extern "C" EXPORT
+double carray_get_s(void* interp, void* arg, double row, bool *flag)
 {
   try
     {
@@ -580,8 +586,8 @@ double carray_get_s(void* interp, void* arg, double row, bool *flag)
     }
 }
 
-extern "C"
-bool carray_duplicate(void *interp, void *a, void *b) 
+extern "C" EXPORT
+bool carray_duplicate(void *interp, void *a, void *b)
 {
   try
     {
@@ -593,13 +599,13 @@ bool carray_duplicate(void *interp, void *a, void *b)
     }
   catch (Exception &e)
     {
-      reinterpret_cast<Interpreter*>(interp)->setLastErrorString(e.msg());      
+      reinterpret_cast<Interpreter*>(interp)->setLastErrorString(e.msg());
       return false;
     }
 }
 
-extern "C"
-void* carray_colon(void *interp, double a, double b, bool *flag) 
+extern "C" EXPORT
+void* carray_colon(void *interp, double a, double b, bool *flag)
 {
   try
     {
@@ -616,8 +622,8 @@ void* carray_colon(void *interp, double a, double b, bool *flag)
     }
 }
 
-extern "C"
-void* carray_dcolon(void *interp, double a, double b, double c, bool *flag) 
+extern "C" EXPORT
+void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
 {
   try
     {
@@ -634,8 +640,8 @@ void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
     }
 }
 
-extern "C"
-bool carray_any(void *interp, void *p, bool *flag) 
+extern "C" EXPORT
+bool carray_any(void *interp, void *p, bool *flag)
 {
   try
     {
@@ -667,7 +673,7 @@ bool carray_any(void *interp, void *p, bool *flag)
 	*flag = true;							\
 	return NULL;							\
       }									\
-  } 
+  }
 
 WrapUnaryOp(carray_neg,Negate);
 WrapUnaryOp(carray_pos,Plus);
@@ -676,7 +682,7 @@ WrapUnaryOp(carray_transpose,Hermitian);
 WrapUnaryOp(carray_dottranspose,Transpose);
 
 #define WrapOp(wrapped,func)						\
-  extern "C"								\
+  extern "C" EXPORT								\
   void* wrapped(void* interp, void *a, void *b, bool *flag)		\
   {									\
     try									\
@@ -694,7 +700,7 @@ WrapUnaryOp(carray_dottranspose,Transpose);
 	reinterpret_cast<Interpreter*>(interp)->setLastErrorString(e.msg()); \
 	return NULL;							\
       }									\
-  }						
+  }
 
 Array HCat(const Array& A, const Array& B)
 {

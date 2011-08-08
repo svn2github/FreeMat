@@ -49,10 +49,16 @@
 #include "DebugStream.hpp"
 #include "CArray.hpp"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define PATHSEP ";"
 #else
 #define PATHSEP ":"
+#endif
+
+#ifdef _WIN32
+    #define EXPORT __declspec(dllexport)
+#else
+    #define EXPORT
 #endif
 
 const int max_line_count = 1000000;
@@ -72,7 +78,7 @@ QMap<int,JITInfo> m_codesegments;
 #define SaveEndInfo  \
   ArrayReference oldEndRef = endRef; \
   int oldEndCount = endCount; \
-  int oldEndTotal = endTotal; 
+  int oldEndTotal = endTotal;
 
 #define RestoreEndInfo \
   endRef = oldEndRef; \
@@ -104,7 +110,7 @@ void Interpreter::setPath(QString path) {
   if (path == m_userCachePath) return;
   QStringList pathset(path.split(PATHSEP,QString::SkipEmptyParts));
   m_userPath.clear();
-  for (int i=0;i<pathset.size();i++) 
+  for (int i=0;i<pathset.size();i++)
     if (pathset[i] != ".") {
       QDir tpath(TildeExpand(pathset[i]));
       m_userPath << tpath.absolutePath();
@@ -118,23 +124,23 @@ void Interpreter::setPath(QString path) {
 QString Interpreter::getTotalPath() {
   QString retpath;
   QStringList totalPath(QStringList() << m_basePath << m_userPath);
-  for (int i=0;i<totalPath.size()-1;i++) 
+  for (int i=0;i<totalPath.size()-1;i++)
     retpath = retpath + totalPath[i] + PATHSEP;
-  if (totalPath.size() > 0) 
+  if (totalPath.size() > 0)
     retpath = retpath + totalPath[totalPath.size()-1];
   return retpath;
 }
-  
+
 QString Interpreter::getPath() {
   QString retpath;
   QStringList totalPath(m_userPath);
-  for (int i=0;i<totalPath.size()-1;i++) 
+  for (int i=0;i<totalPath.size()-1;i++)
     retpath = retpath + totalPath[i] + PATHSEP;
-  if (totalPath.size() > 0) 
+  if (totalPath.size() > 0)
     retpath = retpath + totalPath[totalPath.size()-1];
   return retpath;
 }
-  
+
 void Interpreter::setLiveUpdateFlag(bool t) {
   m_liveUpdateFlag = t;
   if (t) {
@@ -177,7 +183,7 @@ void Interpreter::changeDir(QString path) {
   rescanPath();
   //  updateFileTool();
 }
-				 
+
 void Interpreter::updateVariablesTool() {
   if (!m_liveUpdateFlag) return;
   StringVector varList(context->listAllVariables());
@@ -201,10 +207,10 @@ void Interpreter::updateVariablesTool() {
       // bytes min, max, range, mean, var, std
       entry << QVariant(double(dp->bytes()));
       entry += ComputeVariableStats(dp);
-    } 
+    }
     for (int i=entry.size();i<10;i++)
       entry << QVariant();
-    vars << QVariant(entry); 
+    vars << QVariant(entry);
   }
   emit updateVarView(QVariant(vars));
 }
@@ -229,7 +235,7 @@ static QString GetStackToolDescription(Context *context) {
 void Interpreter::updateStackTool() {
   QStringList stackInfo;
   // Do a complete dump...
-  // Suppose we start with 
+  // Suppose we start with
   int f_depth = context->scopeDepth();
   context->restoreBypassedScopes();
   int t_depth = context->scopeDepth();
@@ -240,13 +246,13 @@ void Interpreter::updateStackTool() {
   }
   bool firstline = true;
   for (int i=0;i<f_depth;i++) {
-    if (!InKeyboardScope(context) && 
+    if (!InKeyboardScope(context) &&
 	!InSpecificScope(context,"docli","builtin") &&
 	!context->scopeDetailString().isEmpty()) {
       if (firstline) {
 	stackInfo << QString("*") + GetStackToolDescription(context);
 	firstline = false;
-      } else 
+      } else
 	stackInfo << GetStackToolDescription(context);
     }
     context->bypassScope(1);
@@ -307,7 +313,7 @@ void Interpreter::rescanPath() {
   scanDirectory(QDir::currentPath(),true,"");
   updateFileTool();
 }
-  
+
 
 void Interpreter::setBasePath(QStringList pth) {
   m_basePath = pth;
@@ -316,7 +322,7 @@ void Interpreter::setBasePath(QStringList pth) {
 void Interpreter::setUserPath(QStringList pth) {
   m_userPath = pth;
 }
-  
+
 static QString mexExtension() {
 #ifdef Q_OS_LINUX
   return "fmxglx";
@@ -329,12 +335,12 @@ static QString mexExtension() {
 #endif
   return "fmx";
 }
-  
+
 void Interpreter::scanDirectory(QString scdir, bool tempfunc,
 				QString prefix) {
   QDir dir(scdir);
   dir.setFilter(QDir::Files|QDir::Dirs|QDir::NoDotAndDotDot);
-  dir.setNameFilters(QStringList() << "*.m" << "*.p" 
+  dir.setNameFilters(QStringList() << "*.m" << "*.p"
 		     << "@*" << "private" << "*."+mexExtension());
   QFileInfoList list(dir.entryInfoList());
   for (int i=0;i<((int)list.size());i++) {
@@ -342,7 +348,7 @@ void Interpreter::scanDirectory(QString scdir, bool tempfunc,
     QString fileSuffix(fileInfo.suffix());
     QString fileBaseName(fileInfo.baseName());
     QString fileAbsoluteFilePath(fileInfo.absoluteFilePath());
-    if (fileSuffix == "m" || fileSuffix == "M") 
+    if (fileSuffix == "m" || fileSuffix == "M")
       if (prefix.isEmpty())
 	procFileM(fileBaseName,fileAbsoluteFilePath,tempfunc);
       else
@@ -354,13 +360,13 @@ void Interpreter::scanDirectory(QString scdir, bool tempfunc,
 	procFileP(prefix + ":" + fileBaseName,fileAbsoluteFilePath,tempfunc);
     else if (fileBaseName[0] == '@')
       scanDirectory(fileAbsoluteFilePath,tempfunc,fileBaseName);
-    else if (fileBaseName == "private") 
+    else if (fileBaseName == "private")
       scanDirectory(fileAbsoluteFilePath,tempfunc,fileAbsoluteFilePath);
     else
       procFileMex(fileBaseName,fileAbsoluteFilePath,tempfunc);
   }
 }
-  
+
 void Interpreter::procFileM(QString fname, QString fullname, bool tempfunc) {
   MFunctionDef *adef;
   adef = new MFunctionDef();
@@ -368,12 +374,12 @@ void Interpreter::procFileM(QString fname, QString fullname, bool tempfunc) {
   adef->fileName = fullname;
   adef->temporaryFlag = tempfunc;
   FuncPtr val;
-  if (context->lookupFunction(fname,val)) 
-    if (val->type() == FM_BUILT_IN_FUNCTION) 
+  if (context->lookupFunction(fname,val))
+    if (val->type() == FM_BUILT_IN_FUNCTION)
       warningMessage("built in function " + fname + " will be shadowed by the script " + fullname);
   context->insertFunction(adef, tempfunc);
 }
-  
+
 void Interpreter::procFileP(QString fname, QString fullname, bool tempfunc) {
   throw Exception("P-files are not supported in this version of FreeMat");
 }
@@ -403,7 +409,7 @@ void Interpreter::RegisterGfxError(QString msg) {
   mutex.unlock();
 }
 
-ArrayVector Interpreter::doFunction(FuncPtr f, ArrayVector& m, 
+ArrayVector Interpreter::doFunction(FuncPtr f, ArrayVector& m,
 				    int narg_out, VariableTable *vtable) {
   CLIDisabler dis(this);
   PopContext saver(context,0);
@@ -463,7 +469,7 @@ void Interpreter::diaryMessage(QString msg) {
 
 void Interpreter::outputMessage(QString msg) {
   if (m_diaryState) diaryMessage(msg);
-  if (m_captureState) 
+  if (m_captureState)
     m_capture += msg;
   else
     if (m_quietlevel < 2)
@@ -481,7 +487,7 @@ void Interpreter::outputMessage(const char* format,...) {
 
 void Interpreter::errorMessage(QString msg) {
   if (m_diaryState) diaryMessage("Error: " + msg + "\n");
-  if (m_captureState) 
+  if (m_captureState)
     m_capture += "Error: " + msg + "\n";
   else
     if (m_quietlevel < 2)
@@ -493,7 +499,7 @@ void Interpreter::warningMessage(QString msg) {
   static bool lastWarningRepeat = false;
   if (!m_enableWarnings) return;
   if (m_diaryState) diaryMessage("Warning: " + msg + "\n");
-  if (m_captureState) 
+  if (m_captureState)
     m_capture += "Warning: " + msg + "\n";
   else
     if (m_quietlevel < 2) {
@@ -513,7 +519,7 @@ void Interpreter::warningMessage(QString msg) {
 static bool isMFile(QString arg) {
   // Not completely right...
   return (((arg[arg.size()-1] == 'm') ||
-	   (arg[arg.size()-1] == 'p')) && 
+	   (arg[arg.size()-1] == 'p')) &&
 	  (arg[arg.size()-2] == '.'));
 }
 
@@ -570,19 +576,19 @@ void Interpreter::run() {
     try {
       m_threadFuncRets = doFunction(m_threadFunc,m_threadFuncArgs,m_threadNargout);
     } catch (Exception &e) {
-      m_threadErrorState = true;      
+      m_threadErrorState = true;
       lasterr = e.msg();
     } catch (InterpreterQuitException &e) {
-      m_threadErrorState = true;      
+      m_threadErrorState = true;
       lasterr = "'quit' called in non-main thread";
     } catch (InterpreterKillException &e) {
       m_kill = false;
     } catch (InterpreterRetallException &e) {
     } catch (exception& e) {
-      m_threadErrorState = true;      
+      m_threadErrorState = true;
       lasterr = "thread crashed!! - you have encountered a bug in FreeMat - please file bug report describing what happened";
     } catch (...) {
-      m_threadErrorState = true;      
+      m_threadErrorState = true;
       lasterr = "thread crashed!! - you have encountered a bug in FreeMat - please file bug report describing what happened";
     }
   }
@@ -596,7 +602,7 @@ void Interpreter::doCLI() {
     sendGreeting();
   try {
     while (1) {
-      int scope_stackdepth = context->scopeDepth(); 
+      int scope_stackdepth = context->scopeDepth();
       try {
 	evalCLI();
       } catch (InterpreterRetallException) {
@@ -656,7 +662,7 @@ void Interpreter::debugDump() {
 //@]
 //!
 void Interpreter::dbup() {
-  // The stack should look like -- 
+  // The stack should look like --
   // base, foo, keyboard, dbup
   // so to do a dbup, we have to save the top two of the
   // stack, move foo to the backup stack, and then restore
@@ -669,11 +675,11 @@ void Interpreter::dbup() {
   // main: base foo1 keyboard keyboard dbup
   // bypass foo2
   //
-  // Suppose we 
+  // Suppose we
   // We need the "keyboard" states on the stack because they
   // capture the context updates for the command line routines.
-  // 
-  if (InSpecificScope(context,"docli","builtin")) 
+  //
+  if (InSpecificScope(context,"docli","builtin"))
     return;
   context->reserveScope();
   while (InKeyboardScope(context))
@@ -721,22 +727,22 @@ QString Interpreter::getLocalMangledName(QString fname) {
 
 QString Interpreter::getPrivateMangledName(QString fname) {
   QString ret;
-  if (isMFile(context->scopeName())) 
+  if (isMFile(context->scopeName()))
     ret = PrivateMangleName(context->scopeName(),fname);
   else {
-    ret = QDir::currentPath() + 
-      QString(QDir::separator()) + 
+    ret = QDir::currentPath() +
+      QString(QDir::separator()) +
       QString("private:" + fname);
   }
-  return ret; 
+  return ret;
 }
 
 QString Interpreter::getMFileName() {
-  if (isMFile(context->scopeName())) 
+  if (isMFile(context->scopeName()))
     return TrimFilename(TrimExtension(context->scopeName()));
   // TESTME
   //   for (int i=cstack.size()-1;i>=0;i--)
-  //     if (isMFile(cstack[i].cname)) 
+  //     if (isMFile(cstack[i].cname))
   //       return TrimFilename(TrimExtension(cstack[i].cname));
   return QString("");
 }
@@ -746,21 +752,21 @@ QString Interpreter::getInstructionPointerFileName() {
   if (!InCLI) return QString("");
   ParentScopeLocker lock(context);
   QString filename(context->scopeName());
-  if (isMFile(filename)) 
+  if (isMFile(filename))
     return filename;
   return QString("");
 }
 
-Array Interpreter::DoBinaryOperator(const Tree & t, BinaryFunc fnc, 
+Array Interpreter::DoBinaryOperator(const Tree & t, BinaryFunc fnc,
 				    QString funcname) {
   Array a(expression(t.first()));
   Array b(expression(t.second()));
-  if (!(a.isUserClass() || b.isUserClass())) 
+  if (!(a.isUserClass() || b.isUserClass()))
     return fnc(a,b);
   return ClassBinaryOperator(a,b,funcname,this);
 }
 
-Array Interpreter::DoUnaryOperator(const Tree & t, UnaryFunc fnc, 
+Array Interpreter::DoUnaryOperator(const Tree & t, UnaryFunc fnc,
 				   QString funcname) {
   Array a(expression(t.first()));
   if (!a.isUserClass())
@@ -771,11 +777,11 @@ Array Interpreter::DoUnaryOperator(const Tree & t, UnaryFunc fnc,
 void Interpreter::setPrintLimit(int lim) {
   printLimit = lim;
 }
-  
+
 int Interpreter::getPrintLimit() {
   return(printLimit);
 }
- 
+
 //!
 //@Module MATRIX Matrix Definitions
 //@@Section VARIABLES
@@ -892,7 +898,7 @@ int Interpreter::getPrintLimit() {
 //@{ test_matcat7.m
 //% Check that matrix cat works properly with spaces before the continuation
 //function test_val = test_matcat7
-//a = [1;2;...   
+//a = [1;2;...
 //     3;4; ...
 //     5;6];
 //b = [1, 2, 3, ...
@@ -917,7 +923,7 @@ int Interpreter::getPrintLimit() {
 //Works
 Array Interpreter::matrixDefinition(const Tree & t) {
   ArrayMatrix m;
-  if (t.numChildren() == 0) 
+  if (t.numChildren() == 0)
     return EmptyConstructor();
   for (int i=0;i<t.numChildren();i++) {
     const Tree & s(t.child(i));
@@ -930,7 +936,7 @@ Array Interpreter::matrixDefinition(const Tree & t) {
   bool anyuser = false;
   for (int i=0;i<m.size() && !anyuser;i++)
     for (int j=0;j<m[i].size() && !anyuser;j++)
-      if (m[i][j].isUserClass()) 
+      if (m[i][j].isUserClass())
 	anyuser = true;
   if (!anyuser)
     return MatrixConstructor(m);
@@ -944,7 +950,7 @@ Array Interpreter::matrixDefinition(const Tree & t) {
 //@@Usage
 //The cell array is a fairly powerful array type that is available
 //in FreeMat.  Generally speaking, a cell array is a heterogenous
-//array type, meaning that different elements in the array can 
+//array type, meaning that different elements in the array can
 //contain variables of different type (including other cell arrays).
 //For those of you familiar with @|C|, it is the equivalent to the
 //@|void *| array.  The general syntax for their construction is
@@ -987,7 +993,7 @@ Array Interpreter::cellDefinition(const Tree & t) {
   for (int i=0;i<t.numChildren();i++) {
     const Tree & s(t.child(i));
     ArrayVector n;
-    for (int j=0;j<s.numChildren();j++) 
+    for (int j=0;j<s.numChildren();j++)
       multiexpr(s.child(j),n);
     m.push_back(n);
   }
@@ -1003,7 +1009,7 @@ Array Interpreter::ShortCutOr(const Tree &  t) {
     // A is a scalar - is it true?
     if (a.toClass(Bool).constRealScalar<bool>())
       retval = a.toClass(Bool);
-    else 
+    else
       retval = DoBinaryOperator(t,Or,"or");
   }
   return retval;
@@ -1020,7 +1026,7 @@ Array Interpreter::ShortCutAnd(const Tree & t) {
     // A is a scalar - is it false?
     if (!a.toClass(Bool).constRealScalar<bool>())
       retval = a.toClass(Bool);
-    else 
+    else
       retval = DoBinaryOperator(t,And,"and");
   }
   return retval;
@@ -1039,7 +1045,7 @@ ArrayVector Interpreter::handleReindexing(const Tree & t, const ArrayVector &p) 
 	r = p[0];
       else
 	r = EmptyConstructor();
-      for (int index = 2;index < t.numChildren();index++) 
+      for (int index = 2;index < t.numChildren();index++)
 	deref(r,t.child(index));
       return ArrayVector() << r;
     }
@@ -1065,7 +1071,7 @@ void Interpreter::multiexpr(const Tree & t, ArrayVector &q, index_t lhsCount, bo
       return;
     }
     Array r(*ptr);
-    for (int index = 1;index < t.numChildren()-1;index++) 
+    for (int index = 1;index < t.numChildren()-1;index++)
       deref(r,t.child(index));
     SaveEndInfo;
     endRef = &r;
@@ -1117,7 +1123,7 @@ void Interpreter::multiexpr(const Tree & t, ArrayVector &q, index_t lhsCount, bo
 
 Array Interpreter::expression(const Tree & t) {
   switch(t.token()) {
-  case TOK_VARIABLE: 
+  case TOK_VARIABLE:
     return rhs(t);
   case TOK_REAL:
   case TOK_IMAG:
@@ -1161,7 +1167,7 @@ Array Interpreter::expression(const Tree & t) {
       return dummy;
     }
   case TOK_END:
-    if (!endRef.valid()) 
+    if (!endRef.valid())
       throw Exception("END keyword not allowed for undefined variables");
     if (endTotal == 1)
       return Array(double(endRef->length()));
@@ -1176,85 +1182,85 @@ Array Interpreter::expression(const Tree & t) {
       return unitColon(t);
     }
     break;
-  case TOK_MATDEF: 
-    return matrixDefinition(t); 
+  case TOK_MATDEF:
+    return matrixDefinition(t);
     break;
-  case TOK_CELLDEF: 
-    return cellDefinition(t); 
+  case TOK_CELLDEF:
+    return cellDefinition(t);
     break;
-  case '+': 
-    return DoBinaryOperator(t,Add,"plus"); 
+  case '+':
+    return DoBinaryOperator(t,Add,"plus");
     break;
-  case '-': 
-    return DoBinaryOperator(t,Subtract,"minus"); 
+  case '-':
+    return DoBinaryOperator(t,Subtract,"minus");
     break;
-  case '*': 
-    return DoBinaryOperator(t,Multiply,"mtimes"); 
+  case '*':
+    return DoBinaryOperator(t,Multiply,"mtimes");
     break;
-  case '/': 
+  case '/':
     return DoBinaryOperator(t,RightDivide,"mrdivide");
     break;
-  case '\\': 
-    return DoBinaryOperator(t,LeftDivide,"mldivide"); 
+  case '\\':
+    return DoBinaryOperator(t,LeftDivide,"mldivide");
     break;
-  case TOK_SOR: 
-    return ShortCutOr(t); 
+  case TOK_SOR:
+    return ShortCutOr(t);
     break;
-  case '|': 
+  case '|':
     return DoBinaryOperator(t,Or,"or");
     break;
-  case TOK_SAND: 
-    return ShortCutAnd(t); 
+  case TOK_SAND:
+    return ShortCutAnd(t);
     break;
-  case '&': 
+  case '&':
     return DoBinaryOperator(t,And,"and");
-  case '<': 
-    return DoBinaryOperator(t,LessThan,"lt"); 
+  case '<':
+    return DoBinaryOperator(t,LessThan,"lt");
     break;
-  case TOK_LE: 
-    return DoBinaryOperator(t,LessEquals,"le"); 
+  case TOK_LE:
+    return DoBinaryOperator(t,LessEquals,"le");
     break;
-  case '>': 
-    return DoBinaryOperator(t,GreaterThan,"gt"); 
+  case '>':
+    return DoBinaryOperator(t,GreaterThan,"gt");
     break;
-  case TOK_GE: 
-    return DoBinaryOperator(t,GreaterEquals,"ge"); 
+  case TOK_GE:
+    return DoBinaryOperator(t,GreaterEquals,"ge");
     break;
-  case TOK_EQ: 
-    return DoBinaryOperator(t,Equals,"eq"); 
+  case TOK_EQ:
+    return DoBinaryOperator(t,Equals,"eq");
     break;
-  case TOK_NE: 
-    return DoBinaryOperator(t,NotEquals,"ne"); 
+  case TOK_NE:
+    return DoBinaryOperator(t,NotEquals,"ne");
     break;
-  case TOK_DOTTIMES: 
-    return DoBinaryOperator(t,DotMultiply,"times"); 
+  case TOK_DOTTIMES:
+    return DoBinaryOperator(t,DotMultiply,"times");
     break;
-  case TOK_DOTRDIV: 
-    return DoBinaryOperator(t,DotRightDivide,"rdivide"); 
+  case TOK_DOTRDIV:
+    return DoBinaryOperator(t,DotRightDivide,"rdivide");
     break;
-  case TOK_DOTLDIV: 
-    return DoBinaryOperator(t,DotLeftDivide,"ldivide"); 
+  case TOK_DOTLDIV:
+    return DoBinaryOperator(t,DotLeftDivide,"ldivide");
     break;
-  case TOK_UNARY_MINUS: 
-    return DoUnaryOperator(t,Negate,"uminus"); 
+  case TOK_UNARY_MINUS:
+    return DoUnaryOperator(t,Negate,"uminus");
     break;
-  case TOK_UNARY_PLUS: 
-    return DoUnaryOperator(t,Plus,"uplus"); 
+  case TOK_UNARY_PLUS:
+    return DoUnaryOperator(t,Plus,"uplus");
     break;
-  case '~': 
-    return DoUnaryOperator(t,Not,"not"); 
+  case '~':
+    return DoUnaryOperator(t,Not,"not");
     break;
-  case '^': 
-    return DoBinaryOperator(t,Power,"mpower"); 
+  case '^':
+    return DoBinaryOperator(t,Power,"mpower");
     break;
-  case TOK_DOTPOWER: 
-    return DoBinaryOperator(t,DotPower,"power"); 
+  case TOK_DOTPOWER:
+    return DoBinaryOperator(t,DotPower,"power");
     break;
-  case '\'': 
-    return DoUnaryOperator(t,Hermitian,"ctranspose"); 
+  case '\'':
+    return DoUnaryOperator(t,Hermitian,"ctranspose");
     break;
-  case TOK_DOTTRANSPOSE: 
-    return DoUnaryOperator(t,Transpose,"transpose"); 
+  case TOK_DOTTRANSPOSE:
+    return DoUnaryOperator(t,Transpose,"transpose");
     break;
   case '@':
     return FunctionPointer(t);
@@ -1269,7 +1275,7 @@ Array Interpreter::FunctionPointer(const Tree & t) {
    } else {
      FuncPtr val;
      if (!lookupFunction(t.first().text(),val))
-       throw Exception("unable to resolve " + t.first().text() + 
+       throw Exception("unable to resolve " + t.first().text() +
 		       " to a function call");
      return FuncPtrConstructor(this,val);
    }
@@ -1291,10 +1297,10 @@ Array Interpreter::FunctionPointer(const Tree & t) {
 //\[
 //  y = [a,a+b,a+2b,\ldots,a+nb]
 //\]
-//where @|a+nb <= c|.  There is a third form of the colon operator, the 
+//where @|a+nb <= c|.  There is a third form of the colon operator, the
 //no-argument form used in indexing (see @|indexing| for more details).
 //@@Function Internals
-//The colon operator turns out to be trickier to implement than one might 
+//The colon operator turns out to be trickier to implement than one might
 //believe at first, primarily because the floating point versions should
 //do the right thing, which is not the obvious behavior.  For example,
 //suppose the user issues a three point colon command
@@ -1315,9 +1321,9 @@ Array Interpreter::FunctionPointer(const Tree & t) {
 //   n \in \left[\frac{(c-a) \rightarrow 0}{b \rightarrow \infty},
 //               \frac{(c-a) \rightarrow \infty}{b \rightarrow 0} \right] + 1
 //\]
-//where 
+//where
 //\[
-//  x \rightarrow y 
+//  x \rightarrow y
 //\]
 //means we replace x by the floating point number that is closest to it
 //in the direction of y.  Once we have determined the number of points
@@ -1338,25 +1344,25 @@ Array Interpreter::FunctionPointer(const Tree & t) {
 //be different depending on the nature of the sum.  FreeMat uses the
 //following strategy to compute the double-colon vector:
 //\begin{enumerate}
-//\item The value @|n| is computed by taking the floor of the larger 
+//\item The value @|n| is computed by taking the floor of the larger
 // value in the interval defined above.
-//\item If @|n| falls inside the interval defined above, then it is 
-//assumed that the user intended @|c = a + n*b|, and the symmetric 
+//\item If @|n| falls inside the interval defined above, then it is
+//assumed that the user intended @|c = a + n*b|, and the symmetric
 //algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
 //\item The symmetric algorithm computes the vector via
 //\[
 //  [a, a+b, a+2b,\ldots,c-2b,c-b,c]
 //\]
-//working symmetrically from both ends of the vector 
+//working symmetrically from both ends of the vector
 //(hence the nomenclature), while the nonsymmetric algorithm computes
 //\[
 //  [a, a+b ,a+2b,\ldots,a+nb]
 //\]
-//In practice, the entries are computed by repeated accumulation instead 
+//In practice, the entries are computed by repeated accumulation instead
 //of multiplying the step size by an integer.
 //\item The real interval calculation is modified so that we get the
 //exact same result with @|a:b:c| and @|c:-b:a| (which basically means
-//that instead of moving towards infinity, we move towards the signed 
+//that instead of moving towards infinity, we move towards the signed
 //infinity where the sign is inherited from @|b|).
 //\end{enumerate}
 //If you think this is all very obscure, it is.  But without it, you will
@@ -1461,11 +1467,11 @@ Array Interpreter::unitColon(const Tree & t) {
 
 void Interpreter::deleteHandleClass(StructArray *ap)
 {
-  // We need to call the destructor on 
+  // We need to call the destructor on
   Array b(*ap);
   delete ap;
   FuncPtr val;
-  if (b.isUserClass() && ClassResolveFunction(this,b,"delete",val)) 
+  if (b.isUserClass() && ClassResolveFunction(this,b,"delete",val))
     {
       val->updateCode(this);
       ArrayVector args(b);
@@ -1562,7 +1568,7 @@ void Interpreter::tryStatement(const Tree & t) {
       autostop = autostop_save;
       block(t.second().first());
     }
-  } 
+  }
   autostop = autostop_save;
   intryblock = intryblock_save;
 }
@@ -1587,7 +1593,7 @@ void Interpreter::tryStatement(const Tree & t) {
 //@]
 //The @|otherwise| clause is optional.  Note that each test
 //expression can either be a scalar value, a string to test
-//against (if the switch expression is a string), or a 
+//against (if the switch expression is a string), or a
 //@|cell-array| of expressions to test against.  Note that
 //unlike @|C| @|switch| statements, the FreeMat @|switch|
 //does not have fall-through, meaning that the statements
@@ -1619,7 +1625,7 @@ void Interpreter::tryStatement(const Tree & t) {
 //@{ test_switch1.m
 //% Test the switch statement with a string argument
 //function test_val = test_switch1
-//      
+//
 //test_val = 0;
 //x = 'astring';
 //
@@ -1638,7 +1644,7 @@ void Interpreter::tryStatement(const Tree & t) {
 //% Test the switch statement with a string argument and one integer case
 //% The type mismatch should not present a problem.
 //function test_val = test_switch2
-//      
+//
 //test_val = 0;
 //x = 'astring';
 //
@@ -1712,7 +1718,7 @@ void Interpreter::tryStatement(const Tree & t) {
 //@{ test_switch6.m
 //% Test the switch statement with a string argument and a cell array
 //function test_val = test_switch6
-//      
+//
 //test_val = 0;
 //x = 'astring';
 //
@@ -1730,7 +1736,7 @@ void Interpreter::tryStatement(const Tree & t) {
 //@{ test_switch7.m
 //% Test the switch statement with a numerical argument and a cell array
 //function test_val = test_switch7
-//      
+//
 //test_val = 0;
 //x = 5;
 //
@@ -1797,7 +1803,7 @@ void Interpreter::switchStatement(const Tree & t) {
 //    statements_N
 //  end
 //@]
-//Note that a conditional expression is considered true if 
+//Note that a conditional expression is considered true if
 //the real part of the result of the expression contains
 //any non-zero elements (this strange convention is adopted
 //for compatibility with MATLAB).
@@ -1896,11 +1902,11 @@ static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref) 
     success = true;
     ref.setJITState(JITInfo::SUCCEEDED);
     ref.setJITFunction(cg);
-    dbout << "Block JIT compiled at line " 
+    dbout << "Block JIT compiled at line "
 	  << LineNumber(interp->getContext()->scopeTokenID())
 	  << " of " << interp->getContext()->scopeName() << "\n";
   } catch (Exception &e) {
-    dbout << "JIT compile failed:" << e.msg() << " at line " 
+    dbout << "JIT compile failed:" << e.msg() << " at line "
       	  << LineNumber(interp->getContext()->scopeTokenID())
 	  << " of " << interp->getContext()->scopeName() << "\n";
     delete cg;
@@ -1911,13 +1917,13 @@ static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref) 
 }
 
 bool Interpreter::tryJitCode(const Tree & t) {
-  // Try to compile this block to an instruction stream  
+  // Try to compile this block to an instruction stream
   if (jitcontrol) {
     int UID = t.node().UID();
     JITInfo & ref = m_codesegments[UID];
     if (ref.JITState() == JITInfo::UNTRIED) {
       bool success = compileJITBlock(this,t,ref);
-      if (success) 
+      if (success)
 	{
 	  if (ref.JITFunction()->run() == CJIT_Success)
 	    {
@@ -1953,14 +1959,14 @@ bool Interpreter::tryJitCode(const Tree & t) {
 //@@Section FLOW
 //@@Usage
 //The @|while| loop executes a set of statements as long as
-//a the test condition remains @|true|.  The syntax of a 
+//a the test condition remains @|true|.  The syntax of a
 //@|while| loop is
 //@[
 //  while test_expression
 //     statements
 //  end
 //@]
-//Note that a conditional expression is considered true if 
+//Note that a conditional expression is considered true if
 //the real part of the result of the expression contains
 //any non-zero elements (this strange convention is adopted
 //for compatibility with MATLAB).
@@ -2050,7 +2056,7 @@ void Interpreter::whileStatement(const Tree & t) {
     if (!breakEncountered) {
       condVar = expression(testCondition);
       conditionTrue = !RealAllZeros(condVar);
-    } 
+    }
   }
   context->exitLoop();
 }
@@ -2072,7 +2078,7 @@ inline bool IsIntegerDataClass( const Array& a )
 }
 
 template <class T>
-void ForLoopHelper(const Tree & codeBlock, const Array& indexSet, 
+void ForLoopHelper(const Tree & codeBlock, const Array& indexSet,
 		   index_t count, const QString& indexName, Interpreter *eval) {
   for (index_t m=1;m<=count;m++) {
     Array *vp = eval->getContext()->lookupVariableLocally( indexName );
@@ -2087,11 +2093,11 @@ void ForLoopHelper(const Tree & codeBlock, const Array& indexSet,
     } catch (InterpreterContinueException &) {
     } catch (InterpreterBreakException &) {
       break;
-    } 
+    }
   }
 }
 
-void ForLoopIterator( const Tree & codeBlock, QString indexName, 
+void ForLoopIterator( const Tree & codeBlock, QString indexName,
 		     Array& first, Array& last, Array& step, Interpreter *eval)
 {
     int nsteps;
@@ -2119,12 +2125,12 @@ void ForLoopIterator( const Tree & codeBlock, QString indexName,
 	    *vp = Add( first, DotMultiply( Array(m), step ) );
 	    try {
 		eval->block(codeBlock);
-	    } 
+	    }
 	    catch (InterpreterContinueException &e) {
-	    } 
+	    }
 	    catch (InterpreterBreakException &e) {
 		break;
-	    } 
+	    }
 	}
     }
     else{
@@ -2135,44 +2141,44 @@ void ForLoopIterator( const Tree & codeBlock, QString indexName,
 	double s = step.asDouble();
 
 	if( bFloatLoop )
-	    nsteps = num_for_loop_iter_f(f, s, l);  
+	    nsteps = num_for_loop_iter_f(f, s, l);
 	else
 	    nsteps = num_for_loop_iter(f, s, l);
-        
+
 	for (double m=0;m<nsteps;m++) { //array variable should be of type double for correct typing of DotMultiply
 	    *vp = Add( first, DotMultiply( Array(m), step ) );
 	    try {
 		eval->block(codeBlock);
-	    } 
-	    catch (InterpreterContinueException &) {} 
+	    }
+	    catch (InterpreterContinueException &) {}
 	    catch (InterpreterBreakException &) {
 		break;
-	    } 
+	    }
 	}
     }
 }
 
-extern "C"
+extern "C" EXPORT
 float num_for_loop_iter_f( float first, float step, float last )
 {
     int signum = (step > 0) - (step < 0);
-    int nsteps = (int) floor( ( last - first ) / step ) + 1;  
-    if( nsteps < 0 ) 
+    int nsteps = (int) floor( ( last - first ) / step ) + 1;
+    if( nsteps < 0 )
 	return 0;
 
     float mismatch = signum*(first + nsteps*step - last);
     if( (mismatch > 0) && ( mismatch < 3.*fepsf(last) ) && ( step != rint(step) ) ) //allow overshoot by 3 eps in some cases
 	nsteps++;
-    
+
     return nsteps;
 }
 
-extern "C"
+extern "C" EXPORT
 double num_for_loop_iter( double first, double step, double last )
 {
     int signum = (step > 0) - (step < 0);
-    int nsteps = (int) floor( ( last - first ) / step ) + 1;  
-    if( nsteps < 0 ) 
+    int nsteps = (int) floor( ( last - first ) / step ) + 1;
+    if( nsteps < 0 )
 	return 0;
 
     double mismatch = signum*(first + nsteps*step - last);
@@ -2186,7 +2192,7 @@ double num_for_loop_iter( double first, double step, double last )
 //@Module FOR For Loop
 //@@Section FLOW
 //@@Usage
-//The @|for| loop executes a set of statements with an 
+//The @|for| loop executes a set of statements with an
 //index variable looping through each element in a vector.
 //The syntax of a @|for| loop is one of the following:
 //@[
@@ -2289,7 +2295,7 @@ void Interpreter::forStatement(const Tree & t) {
     indexVarName = t.first().first().text();
 
     if( t.first().second().is(TOK_MATDEF) ||
-	t.first().second().is(TOK_VARIABLE) )   { 
+	t.first().second().is(TOK_VARIABLE) )   {
 	  //case "for j=[1:10]"
 	  //case "for j=K" skb
     	/* Evaluate the index set */
@@ -2360,9 +2366,9 @@ void Interpreter::forStatement(const Tree & t) {
 	}
     }
     else if( t.first().second().token() == ':' ){
-	if (t.first().second().numChildren() == 0) 
+	if (t.first().second().numChildren() == 0)
 	    throw Exception( "Incorrect format of loop operator parameters" );
-  
+
 	Array first, step, last;
 	const Tree & codeBlock(t.second());
 	ContextLoopLocker lock(context);
@@ -2373,7 +2379,7 @@ void Interpreter::forStatement(const Tree & t) {
 	  last = expression(t.first().second().second());
 	  ForLoopIterator( codeBlock, indexVarName, first, last, step, this);
 	    //return doubleColon(t);
-	} 
+	}
 	else {
 	  first = expression(t.first().second().first());
 	  last = expression(t.first().second().second());
@@ -2389,7 +2395,7 @@ void Interpreter::forStatement(const Tree & t) {
 //@@Section VARIABLES
 //@@Usage
 //Global variables are shared variables that can be
-//seen and modified from any function or script that 
+//seen and modified from any function or script that
 //declares them.  The syntax for the @|global| statement
 //is
 //@[
@@ -2508,7 +2514,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //The @|continue| statement is used to change the order of
 //execution within a loop.  The @|continue| statement can
 //be used inside a @|for| loop or a @|while| loop.  The
-//syntax for its use is 
+//syntax for its use is
 //@[
 //   continue
 //@]
@@ -2567,7 +2573,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //function accum = break_ex
 //  accum = 0;
 //  i = 1;
-//  while (i<=10) 
+//  while (i<=10)
 //    accum = accum + i;
 //    if (i == 5)
 //      break;
@@ -2587,7 +2593,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //@@Section FLOW
 //@@Usage
 //The @|return| statement is used to immediately return from
-//a function, or to return from a @|keyboard| session.  The 
+//a function, or to return from a @|keyboard| session.  The
 //syntax for its use is
 //@[
 //  return
@@ -2598,7 +2604,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //resume where the @|keyboard| session started.
 //@@Example
 //In the first example, we define a function that uses a
-//@|return| to exit the function if a certain test condition 
+//@|return| to exit the function if a certain test condition
 //is satisfied.
 //@{ return_func.m
 //function ret = return_func(a,b)
@@ -2659,7 +2665,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //The @|retall| statement is used to return to the base workspace
 //from a nested @|keyboard| session.  It is equivalent to forcing
 //execution to return to the main prompt, regardless of the level
-//of nesting of @|keyboard| sessions, or which functions are 
+//of nesting of @|keyboard| sessions, or which functions are
 //running.  The syntax is simple
 //@[
 //   retall
@@ -2720,7 +2726,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //the name of the function we are executing, or @|base| otherwise).
 //And @|n| is the depth of the @|keyboard| session. If, for example,
 //we are in a @|keyboard| session, and we call a function that issues
-//another @|keyboard| session, the depth of that second session 
+//another @|keyboard| session, the depth of that second session
 //will be one higher.  Put another way, @|n| is the number of @|return|
 //statements you have to issue to get back to the base workspace.
 //Incidentally, a @|return| is how you exit the @|keyboard| session
@@ -2731,7 +2737,7 @@ void Interpreter::persistentStatement(const Tree & t) {
 //The @|keyboard| statement is an excellent tool for debugging
 //FreeMat code, and along with @|eval| provide a unique set of
 //capabilities not usually found in compiled environments.  Indeed,
-//the @|keyboard| statement is equivalent to a debugger breakpoint in 
+//the @|keyboard| statement is equivalent to a debugger breakpoint in
 //more traditional environments, but with significantly more inspection
 //power.
 //@@Example
@@ -2798,7 +2804,7 @@ void Interpreter::expressionStatement(const Tree & s, bool printIt) {
   ArrayVector m;
   if (!s.is(TOK_EXPR)) throw Exception("Unexpected statement type!");
   const Tree & t(s.first());
-  // There is a special case to consider here - when a 
+  // There is a special case to consider here - when a
   // function call is made as a statement, we do not require
   // that the function have an output.
   Array b;
@@ -2812,7 +2818,7 @@ void Interpreter::expressionStatement(const Tree & s, bool printIt) {
       if (m.size() == 0) {
 	b = EmptyConstructor();
 	emptyOutput = true;
-      } else 
+      } else
 	b = m[0];
       if (printIt && (!emptyOutput)) {
 	outputMessage(QString("\nans = \n"));
@@ -2842,7 +2848,7 @@ void Interpreter::expressionStatement(const Tree & s, bool printIt) {
     if (printIt) {
       outputMessage(QString("\nans = \n"));
       displayArray(b);
-    } 
+    }
   }
   context->insertVariable("ans",b);
 }
@@ -2853,7 +2859,7 @@ void Interpreter::multiassign(ArrayReference r, const Tree & s, ArrayVector &dat
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
     endTotal = s.numChildren();
-    if (s.numChildren() == 0) 
+    if (s.numChildren() == 0)
       throw Exception("The expression A() is not legal unless A is a function");
     for (int p = 0; p < s.numChildren(); p++) {
       endCount = m.size();
@@ -2894,7 +2900,7 @@ void Interpreter::multiassign(ArrayReference r, const Tree & s, ArrayVector &dat
 
 void Interpreter::assign(ArrayReference r, const Tree & s, Array &data) {
   SaveEndInfo;
-  endRef = r;  
+  endRef = r;
   if (s.is(TOK_PARENS)) {
     ArrayVector m;
     endTotal = s.numChildren();
@@ -2961,16 +2967,16 @@ ArrayReference Interpreter::createVariable(QString name) {
     // (nested) scope.  Now, we start walking down the chain looking for
     // someone who accesses this variable
     while (!context->currentScopeVariableAccessed(name) &&
-	   context->scopeName() != localScopeName) 
+	   context->scopeName() != localScopeName)
       context->restoreScope(1);
     // Either we are back in the local scope, or we are pointing to
-    // a scope that (at least theoretically) accesses a variable with 
+    // a scope that (at least theoretically) accesses a variable with
     // the given name.
     context->insertVariable(name,EmptyConstructor());
-  } 
+  }
   ArrayReference np(context->lookupVariable(name));
-  if (!np.valid()) 
-    throw Exception("error creating variable name " + name + 
+  if (!np.valid())
+    throw Exception("error creating variable name " + name +
 		    " with scope " + context->scopeName());
   return np;
 }
@@ -2995,14 +3001,14 @@ ArrayReference Interpreter::createVariable(QString name) {
     //   a3 = a2.foo   stack[1] = stack[0].foo
     //   a4 = a3.goo   stack[2] = stack[1].goo
     //   a3{3} = rhs   data{3} = rhs
-    //   a2.foo = a3   
+    //   a2.foo = a3
     //   id(etc) = a2;
 
 //!
 //@Module ASSIGN Making assignments
 //@@Section ARRAY
 //@@Usage
-//FreeMat assignments take a number of different forms, depending 
+//FreeMat assignments take a number of different forms, depending
 //on the type of the variable you want to make an assignment to.
 //For numerical arrays and strings, the form of an assignment
 //is either
@@ -3023,8 +3029,8 @@ ArrayReference Interpreter::createVariable(QString name) {
 //right hand side @|val| must either be a scalar, an empty matrix, or of the
 //same size as the indices.  If @|val| is an empty matrix, the assignment acts
 //like a delete.  Note that the type of @|a| may be modified by the assignment.
-//So, for example, assigning a @|double| value to an element of a @|float| 
-//array @|a| will cause the array @|a| to become @|double|.  
+//So, for example, assigning a @|double| value to an element of a @|float|
+//array @|a| will cause the array @|a| to become @|double|.
 //
 //For cell arrays, the above forms of assignment will still work, but only
 //if @|val| is also a cell array.  If you want to assign the contents of
@@ -3180,7 +3186,7 @@ ArrayReference Interpreter::createVariable(QString name) {
 //  q(:,1) = y(:);
 //  p = [x,x];
 //  p(1,:) = y(:);
-//  test_val = all(vec(z==x)) && all(q(:,1) == y(:)) && all(p(1,:).' == y(:)); 
+//  test_val = all(vec(z==x)) && all(q(:,1) == y(:)) && all(p(1,:).' == y(:));
 //@}
 //@{ test_assign17.m
 //function test_val = test_assign17
@@ -3449,12 +3455,12 @@ ArrayReference Interpreter::createVariable(QString name) {
 void Interpreter::assignment(const Tree & var, bool printIt, Array &b) {
   QString name(var.first().text());
   ArrayReference ptr(context->lookupVariable(name));
-  if (!ptr.valid()) 
+  if (!ptr.valid())
     ptr = createVariable(name);
   if (var.numChildren() == 1) {
     (*ptr) = b;
-  } else if (ptr->isUserClass() && 
-	     !inMethodCall(ptr->className()) && 
+  } else if (ptr->isUserClass() &&
+	     !inMethodCall(ptr->className()) &&
 	     !stopoverload) {
     ClassAssignExpression(ptr,var,b,this);
   } else if (var.numChildren() == 2)
@@ -3498,7 +3504,7 @@ void Interpreter::assignment(const Tree & var, bool printIt, Array &b) {
 
 void Interpreter::processBreakpoints(const Tree & t) {
   for (int i=0;i<bpStack.size();i++) {
-    if ((bpStack[i].cname == context->scopeName()) && 
+    if ((bpStack[i].cname == context->scopeName()) &&
 	((LineNumber(context->scopeTokenID()) == bpStack[i].tokid))) {
       doDebugCycle();
       context->setScopeTokenID(t.context());
@@ -3512,7 +3518,7 @@ void Interpreter::processBreakpoints(const Tree & t) {
     }
   }
   if (context->scopeStepTrap() > 0) {
-    if ((LineNumber(context->scopeTokenID())) != 
+    if ((LineNumber(context->scopeTokenID())) !=
 	context->scopeStepCurrentLine()) {
       context->setScopeStepTrap(context->scopeStepTrap()-1);
       if (context->scopeStepTrap() == 0)
@@ -3526,7 +3532,7 @@ void Interpreter::statementType(const Tree & t, bool printIt) {
   context->setScopeTokenID(t.context());
   processBreakpoints(t);
   switch(t.token()) {
-  case '=': 
+  case '=':
     {
       Array b(expression(t.second()));
       assignment(t.first(),printIt,b);
@@ -3548,11 +3554,11 @@ void Interpreter::statementType(const Tree & t, bool printIt) {
     ifStatement(t);
     break;
   case TOK_BREAK:
-    if (context->inLoop()) 
+    if (context->inLoop())
       throw InterpreterBreakException();
     break;
   case TOK_CONTINUE:
-    if (context->inLoop()) 
+    if (context->inLoop())
       throw InterpreterContinueException();
     break;
   case TOK_DBSTEP:
@@ -3609,7 +3615,7 @@ void Interpreter::statementType(const Tree & t, bool printIt) {
 //Trapping at the statement level is much better! - two
 //problems... try/catch and multiline statements (i.e.,atell.m)
 //The try-catch one is easy, I think...  When a try occurs,
-//we capture the stack depth... if an exception occurs, we 
+//we capture the stack depth... if an exception occurs, we
 //unwind the stack to this depth..
 //The second one is trickier - suppose we have a conditional
 //statement
@@ -3621,7 +3627,7 @@ void Interpreter::statementType(const Tree & t, bool printIt) {
 //this is represented in the parse tree as a single construct...
 //
 
-// 
+//
 //Works
 void Interpreter::statement(const Tree & t) {
   try {
@@ -3660,7 +3666,7 @@ void Interpreter::block(const Tree & t) {
 	stackTrace();
 	m_interrupt = false;
 	doDebugCycle();
-      } else 
+      } else
 	statement(*i);
     }
   } catch (Exception &e) {
@@ -3690,7 +3696,7 @@ index_t Interpreter::countLeftHandSides(const Tree & t) {
   if (t.last().is(TOK_BRACES)) {
     const Tree & s(t.last());
     ArrayVector m;
-    for (int p = 0; p < s.numChildren(); p++) 
+    for (int p = 0; p < s.numChildren(); p++)
       multiexpr(s.child(p),m);
     subsindex(m);
     if (m.size() == 0)
@@ -3704,7 +3710,7 @@ index_t Interpreter::countLeftHandSides(const Tree & t) {
       int i=0;
       index_t outputCount=1;
       while (i<m.size()) {
-	if (IsColonOp(m[i])) 
+	if (IsColonOp(m[i]))
 	  outputCount *= lhs.dimensions()[i];
 	else {
 	  outputCount *= IndexArrayFromArray(m[i]).length();
@@ -3714,7 +3720,7 @@ index_t Interpreter::countLeftHandSides(const Tree & t) {
       return (outputCount);
     }
   }
-  if (t.last().is('.')) 
+  if (t.last().is('.'))
     return std::max((index_t)1,lhs.length());
   return 1;
 }
@@ -3723,12 +3729,12 @@ Array Interpreter::AllColonReference(Array v, int index, int count) {
   if (v.isUserClass()) return EmptyConstructor();
   return Array(QString(":"));
 }
-  
+
 //test
 void Interpreter::specialFunctionCall(const Tree & t, bool printIt) {
   ArrayVector m;
   StringVector args;
-  for (int index=0;index < t.numChildren();index++) 
+  for (int index=0;index < t.numChildren();index++)
     args.push_back(t.child(index).text());
   if (args.empty()) return;
   ArrayVector n;
@@ -3740,17 +3746,17 @@ void Interpreter::specialFunctionCall(const Tree & t, bool printIt) {
   if (val->updateCode(this)) refreshBreakpoints();
   m = doFunction(val,n,0);
 }
- 
+
 void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
   FuncPtr val;
   bool isFun = lookupFunction(bp.detail,val);
   if (!isFun) {
-    warningMessage(QString("unable to find function ") + 
+    warningMessage(QString("unable to find function ") +
 		   bp.detail + " to set breakpoint");
     return;
   }
   if (val->type() != FM_M_FUNCTION) {
-    warningMessage("function " + bp.detail + 
+    warningMessage("function " + bp.detail +
 		   " is not an m-file, and does not support breakpoints");
     return;
   }
@@ -3760,7 +3766,7 @@ void Interpreter::setBreakpoint(stackentry bp, bool enableFlag) {
   //     e.printMe(this);
   //   }
 }
- 
+
 void Interpreter::addBreakpoint(stackentry bp) {
   bpStack.push_back(bp);
   refreshBreakpoints();
@@ -3788,7 +3794,7 @@ void Interpreter::refreshBreakpoints() {
 //
 //Where this will fail is in one case.  If expr_i is a cell reference for a variable that does not exist, and has a sized argument, something like
 //[eg{1:3}]
-//in which case the lhscount += 3, even though eg does not exist. 
+//in which case the lhscount += 3, even though eg does not exist.
 // WORKS
 void Interpreter::multiFunctionCall(const Tree & t, bool printIt) {
   ArrayVector m;
@@ -3801,10 +3807,10 @@ void Interpreter::multiFunctionCall(const Tree & t, bool printIt) {
   s = t.first().children();
   // We have to make multiple passes through the LHS part of the AST.
   // The first pass is to count how many function outputs are actually
-  // being requested. 
+  // being requested.
   // Calculate how many lhs objects there are
   lhsCount = 0;
-  for (int ind=0;ind<s.size();ind++) 
+  for (int ind=0;ind<s.size();ind++)
     lhsCount += countLeftHandSides(s[ind]);
 
   multiexpr(t.second(),m,lhsCount);
@@ -3814,10 +3820,10 @@ void Interpreter::multiFunctionCall(const Tree & t, bool printIt) {
     const Tree & var(s[index]);
     QString name(var.first().text());
     ArrayReference ptr(context->lookupVariable(name));
-    if (!ptr.valid()) 
+    if (!ptr.valid())
       ptr = createVariable(name);
-    if (ptr->isUserClass() && 
-	!inMethodCall(ptr->className()) && 
+    if (ptr->isUserClass() &&
+	!inMethodCall(ptr->className()) &&
 	!stopoverload && (var.numChildren() > 1)) {
       ClassAssignExpression(ptr,var,m.front(),this);
       m.pop_front();
@@ -3889,15 +3895,15 @@ int getArgumentIndex(StringVector list, QString t) {
 //@@Section FUNCTIONS
 //@@Usage
 //There are several forms for function declarations in FreeMat.
-//The most general syntax for a function declaration is the 
+//The most general syntax for a function declaration is the
 //following:
 //@[
 //  function [out_1,...,out_M,varargout] = fname(in_1,...,in_N,varargin)
 //@]
 //where @|out_i| are the output parameters, @|in_i| are the input
 //parameters, and @|varargout| and @|varargin| are special keywords
-//used for functions that have variable inputs or outputs.  For 
-//functions with a fixed number of input or output parameters, the 
+//used for functions that have variable inputs or outputs.  For
+//functions with a fixed number of input or output parameters, the
 //syntax is somewhat simpler:
 //@[
 //  function [out_1,...,out_M] = fname(in_1,...,in_N)
@@ -3931,16 +3937,16 @@ int getArgumentIndex(StringVector list, QString t) {
 //in which case @|in_2| is passed by reference and not by value.
 //Also, FreeMat works like @|C| in that the caller does not have
 //to supply the full list of arguments.  Also, when @|keywords|
-//(see help @|keywords|) are used, an arbitrary subset of the 
-//parameters may be unspecified. To assist in deciphering 
+//(see help @|keywords|) are used, an arbitrary subset of the
+//parameters may be unspecified. To assist in deciphering
 //the exact parameters that were passed,
 //FreeMat also defines two variables inside the function context:
 //@|nargin| and @|nargout|, which provide the number of input
-//and output parameters of the caller, respectively. See help for 
-//@|nargin| and @|nargout| for more details.  In some 
+//and output parameters of the caller, respectively. See help for
+//@|nargin| and @|nargout| for more details.  In some
 //circumstances, it is necessary to have functions that
 //take a variable number of arguments, or that return a variable
-//number of results.  In these cases, the last argument to the 
+//number of results.  In these cases, the last argument to the
 //parameter list is the special argument @|varargin|.  Inside
 //the function, @|varargin| is a cell-array that contains
 //all arguments passed to the function that have not already
@@ -3950,10 +3956,10 @@ int getArgumentIndex(StringVector list, QString t) {
 //
 //The function name @|fname| can be any legal FreeMat identifier.
 //Functions are stored in files with the @|.m| extension.  Note
-//that the name of the file (and not the function name @|fname| 
+//that the name of the file (and not the function name @|fname|
 //used in the declaration) is how the function appears in FreeMat.
 //So, for example, if the file is named @|foo.m|, but the declaration
-//uses @|bar| for the name of the function, in FreeMat, it will 
+//uses @|bar| for the name of the function, in FreeMat, it will
 //still appear as function @|foo|.  Note that this is only true
 //for the first function that appears in a @|.m| file.  Additional
 //functions that appear after the first function are known as
@@ -3983,7 +3989,7 @@ int getArgumentIndex(StringVector list, QString t) {
 //addtest(1,3)
 //addtest(3,0)
 //@>
-//Suppose, however, we want to replace the value of the first 
+//Suppose, however, we want to replace the value of the first
 //argument by the computed sum.  A first attempt at doing so
 //has no effect:
 //@{ addtest2.m
@@ -3998,7 +4004,7 @@ int getArgumentIndex(StringVector list, QString t) {
 //arg2
 //@>
 //The values of @|arg1| and @|arg2| are unchanged, because they are
-//passed by value, so that any changes to @|a| and @|b| inside 
+//passed by value, so that any changes to @|a| and @|b| inside
 //the function do not affect @|arg1| and @|arg2|.  We can change
 //that by passing the first argument by reference:
 //@{ addtest3.m
@@ -4085,7 +4091,7 @@ int getArgumentIndex(StringVector list, QString t) {
 //@{ test_fcall1.m
 //% Check to RHS function calls with multiple return values (b989865)
 //function test_val = test_fcall1
-//try 
+//try
 //b = 1:10;
 //B = addthem(min(b),max(b));
 //test_val = test(B == 11);
@@ -4165,10 +4171,10 @@ int getArgumentIndex(StringVector list, QString t) {
 //@@Section FUNCTIONS
 //@@Usage
 //A feature of IDL that FreeMat has adopted is a modified
-//form of @|keywords|.  The purpose of @|keywords| is to 
+//form of @|keywords|.  The purpose of @|keywords| is to
 //allow you to call a function with the arguments to the
 //function specified in an arbitrary order.  To specify
-//the syntax of @|keywords|, suppose there is a function 
+//the syntax of @|keywords|, suppose there is a function
 //with prototype
 //@[
 //  function [out_1,...,out_M] = foo(in_1,...,in_N)
@@ -4202,8 +4208,8 @@ int getArgumentIndex(StringVector list, QString t) {
 //and forcing explicit empty brackets for don't care parameters.
 //@{ keyfunc.m
 //function c = keyfunc(a,b,operation,printit)
-//  if (~isset('a') | ~isset('b')) 
-//    error('keyfunc requires at least the first two 2 arguments'); 
+//  if (~isset('a') | ~isset('b'))
+//    error('keyfunc requires at least the first two 2 arguments');
 //  end;
 //  if (~isset('operation'))
 //    % user did not define the operation, default to '+'
@@ -4215,7 +4221,7 @@ int getArgumentIndex(StringVector list, QString t) {
 //  end
 //  % simple operation...
 //  eval(['c = a ' operation ' b;']);
-//  if (printit) 
+//  if (printit)
 //    printf('%f %s %f = %f\n',a,operation,b,c);
 //  end
 //@}
@@ -4238,14 +4244,14 @@ int getArgumentIndex(StringVector list, QString t) {
 //This special keyword indicates that all arguments to the
 //function (beyond the last non-@|varargin| keyword) are assigned
 //to a cell array named @|varargin| available to the function.
-//Variable argument functions are usually used when writing 
+//Variable argument functions are usually used when writing
 //driver functions, i.e., functions that need to pass arguments
 //to another function.  The general syntax for a function that
 //takes a variable number of arguments is
 //@[
 //  function [out_1,...,out_M] = fname(in_1,..,in_M,varargin)
 //@]
-//Inside the function body, @|varargin| collects the arguments 
+//Inside the function body, @|varargin| collects the arguments
 //to @|fname| that are not assigned to the @|in_k|.
 //@@Example
 //Here is a simple wrapper to @|feval| that demonstrates the
@@ -4316,7 +4322,7 @@ int getArgumentIndex(StringVector list, QString t) {
 //etc, made inside a script are visible to the caller (which
 //is not the case for functions.
 //@@Example
-//Here is an example of a script that makes some simple 
+//Here is an example of a script that makes some simple
 //assignments and @|printf| statements.
 //@{ tscript.m
 //a = 13;
@@ -4377,10 +4383,10 @@ int getArgumentIndex(StringVector list, QString t) {
 //!
 void Interpreter::collectKeywords(const Tree & q, ArrayVector &keyvals,
 				  TreeList &keyexpr, StringVector &keywords) {
-  // Search for the keyword uses - 
+  // Search for the keyword uses -
   // To handle keywords, we make one pass through the arguments,
   // recording a list of keywords used and using ::expression to
-  // evaluate their values. 
+  // evaluate their values.
   for (int index=0;index < q.numChildren();index++) {
     if (q.child(index).is(TOK_KEYWORD)) {
       keywords.push_back(q.child(index).first().text());
@@ -4417,7 +4423,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, StringVector &keywords,
   holes = maxndx + 1 - keywords.size();
   // At this point, holes is the number of missing arguments
   // If holes > m.size(), then the total number of arguments
-  // is just maxndx+1.  Otherwise, its 
+  // is just maxndx+1.  Otherwise, its
   // maxndx+1+(m.size() - holes)
   int totalCount;
   if (holes > m.size())
@@ -4451,7 +4457,7 @@ int* Interpreter::sortKeywords(ArrayVector &m, StringVector &keywords,
       filled[p] = true;
       argTypeMap[p] = -2;
       n++;
-    } 
+    }
     p++;
   }
   // Finally, fill in empty matrices for the
@@ -4470,13 +4476,13 @@ int* Interpreter::sortKeywords(ArrayVector &m, StringVector &keywords,
 // arguments is exactly what it should be - the vector of arguments
 // m is vector of argument values
 // keywords is the list of values passed as keywords
-// keyexpr is the   
+// keyexpr is the
 void Interpreter::handlePassByReference(Tree q, StringVector arguments,
-					ArrayVector m,StringVector keywords, 
+					ArrayVector m,StringVector keywords,
 					TreeList keyexpr, int* argTypeMap) {
   Tree p;
   // M functions can modify their arguments
-  int maxsearch = m.size(); 
+  int maxsearch = m.size();
   if (maxsearch > arguments.size()) maxsearch = arguments.size();
   int qindx = 0;
   for (int i=0;i<maxsearch;i++) {
@@ -4502,8 +4508,8 @@ void Interpreter::handlePassByReference(Tree q, StringVector arguments,
 }
 
 //Test
-void Interpreter::functionExpression(const Tree & t, 
-				     int narg_out, 
+void Interpreter::functionExpression(const Tree & t,
+				     int narg_out,
 				     bool outputOptional,
 				     ArrayVector &output) {
   ArrayVector m, n;
@@ -4512,7 +4518,7 @@ void Interpreter::functionExpression(const Tree & t,
   TreeList keyexpr;
   FuncPtr funcDef;
   int* argTypeMap;
-  // Because of the introduction of user-defined classes, we have to 
+  // Because of the introduction of user-defined classes, we have to
   // first evaluate the keywords and the arguments, before we know
   // which function to call.
   // First, check for arguments
@@ -4533,11 +4539,11 @@ void Interpreter::functionExpression(const Tree & t,
       else
 	throw;
     }
-  } 
-  // Now that the arguments have been evaluated, we have to 
+  }
+  // Now that the arguments have been evaluated, we have to
   // find the dominant class
   if (!lookupFunction(t.first().text(),funcDef,m))
-    throw Exception("Undefined function or variable " + 
+    throw Exception("Undefined function or variable " +
 		    t.first().text());
   if (funcDef->updateCode(this)) refreshBreakpoints();
   if (funcDef->scriptFlag) {
@@ -4560,23 +4566,23 @@ void Interpreter::functionExpression(const Tree & t,
   } else {
     // We can now adjust the keywords (because we know the argument list)
     // Apply keyword mapping
-    if (!keywords.empty()) 
+    if (!keywords.empty())
       argTypeMap = sortKeywords(m,keywords,funcDef->arguments,keyvals);
     else
       argTypeMap = NULL;
-    if ((funcDef->inputArgCount() >= 0) && 
+    if ((funcDef->inputArgCount() >= 0) &&
 	(m.size() > funcDef->inputArgCount()))
       throw Exception(QString("Too many inputs to function ")+t.first().text());
-    if ((funcDef->outputArgCount() >= 0) && 
+    if ((funcDef->outputArgCount() >= 0) &&
 	(narg_out > funcDef->outputArgCount() && !outputOptional))
       throw Exception(QString("Too many outputs to function ")+t.first().text());
     n = doFunction(funcDef,m,narg_out);
     // Check for any pass by reference
-    if (t.hasChildren() && (funcDef->arguments.size() > 0)) 
+    if (t.hasChildren() && (funcDef->arguments.size() > 0))
       handlePassByReference(t,funcDef->arguments,m,keywords,keyexpr,argTypeMap);
   }
   // Some routines (e.g., min and max) will return more outputs
-  // than were actually requested... so here we have to trim 
+  // than were actually requested... so here we have to trim
   // any elements received that we didn't ask for.
   // preserve one output if we were called as an expression (for ans)
   if (outputOptional) narg_out = (narg_out == 0) ? 1 : narg_out;
@@ -4589,7 +4595,7 @@ void Interpreter::functionExpression(const Tree & t,
 void Interpreter::toggleBP(QString fname, int lineNumber) {
   if (isBPSet(fname,lineNumber)) {
     QString fname_string(fname);
-    for (int i=0;i<bpStack.size();i++) 
+    for (int i=0;i<bpStack.size();i++)
       if ((bpStack[i].cname == fname_string) &&
 	  (LineNumber(bpStack[i].tokid) == lineNumber)) {
 	deleteBreakpoint(bpStack[i].number);
@@ -4597,7 +4603,7 @@ void Interpreter::toggleBP(QString fname, int lineNumber) {
       }
   } else {
     addBreakpoint(fname,lineNumber);
-  }    
+  }
 }
 
 MFunctionDef* Interpreter::lookupFullPath(QString fname) {
@@ -4627,7 +4633,7 @@ void Interpreter::addBreakpoint(QString name, int line) {
     fullFileName = name;
   // Get a list of all functions
   StringVector allFuncs(context->listAllFunctions());
-  // We make one pass through the functions, and update 
+  // We make one pass through the functions, and update
   // those functions that belong to the given filename
   for (int i=0;i<allFuncs.size();i++) {
     bool isFun = context->lookupFunction(allFuncs[i],val);
@@ -4678,7 +4684,7 @@ void Interpreter::addBreakpoint(QString name, int line) {
 }
 
 bool Interpreter::isBPSet(QString fname, int lineNumber) {
-  for (int i=0;i<bpStack.size();i++) 
+  for (int i=0;i<bpStack.size();i++)
     if ((bpStack[i].cname == fname) &&
 	(LineNumber(bpStack[i].tokid) == lineNumber)) return true;
   return false;
@@ -4703,12 +4709,12 @@ void Interpreter::listBreakpoints() {
 }
 
 void Interpreter::deleteBreakpoint(int number) {
-  for (int i=0;i<bpStack.size();i++) 
+  for (int i=0;i<bpStack.size();i++)
     if (bpStack[i].number == number) {
       bpStack.remove(i);
       emit RefreshBPLists();
       return;
-    } 
+    }
   warningMessage("Unable to delete specified breakpoint (does not exist)");
   emit RefreshBPLists();
   return;
@@ -4726,7 +4732,7 @@ void Interpreter::stackTrace(int skiplevels) {
     }
     if (firstline) {
       firstline = false;
-    } else 
+    } else
       outputMessage(QString("    "));
     outputMessage(QString("In ") + context->scopeName() + "("
 		  + context->scopeDetailString() + ")");
@@ -4766,12 +4772,12 @@ QString StripNestLevel(QString basename) {
 
 // Look up a function by name.  Use the arguments (if available) to assist
 // in resolving method calls for objects
-bool Interpreter::lookupFunction(QString funcName, FuncPtr& val, 
+bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 				 ArrayVector &args, bool disableOverload) {
   int passcount = 0;
   while(passcount < 2) {
     // This is the order for function dispatch according to the Matlab manual
-    // Nested functions - not explicitly listed in the Matlab manual, but 
+    // Nested functions - not explicitly listed in the Matlab manual, but
     // I figure they have the highest priority in the current scope.
     if (isMFile(context->scopeName()) &&
 	(context->lookupFunction(NestedMangleName(context->scopeDetailString(),funcName),val)))
@@ -4790,7 +4796,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
       }
     }
     // Subfunctions
-    if (inMFile() && 
+    if (inMFile() &&
 	(context->lookupFunction(getLocalMangledName(funcName),val)))
       return true;
     // Private functions
@@ -4836,7 +4842,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //where @|func| is the name to point to.  The function @|func| must exist
 //at the time we make the call.  It can be a local function (i.e., a
 //subfunction).  To use the @|handle|, we can either pass it to @|feval|
-//via 
+//via
 //@[
 //   [x,y] = feval(handle,arg1,arg2).
 //@]
@@ -4850,14 +4856,14 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //@Module INDEXING Indexing Expressions
 //@@Section VARIABLES
 //@@Usage
-//There are three classes of indexing expressions available 
+//There are three classes of indexing expressions available
 //in FreeMat: @|()|, @|{}|, and @|.|  Each is explained below
 //in some detail, and with its own example section.
 //@@Array Indexing
 //We start with array indexing @|()|,
 //which is the most general indexing expression, and can be
-//used on any array.  There are two general forms for the 
-//indexing expression - the N-dimensional form, for which 
+//used on any array.  There are two general forms for the
+//indexing expression - the N-dimensional form, for which
 //the general syntax is
 //@[
 //  variable(index_1,index_2,...,index_n)
@@ -4869,7 +4875,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //Here each index expression is either a scalar, a range
 //of integer values, or the special token @|:|, which is
 //shorthand for @|1:end|.  The keyword @|end|, when included
-//in an indexing expression, is assigned the length of the 
+//in an indexing expression, is assigned the length of the
 //array in that dimension.  The concept is easier to demonstrate
 //than explain.  Consider the following examples:
 //@<
@@ -4883,7 +4889,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //C = A(2:3,1:end)
 //@>
 //Note that we used the @|end| keyword to avoid having to know
-//that @|A| has 4 columns.  Of course, we could also use the 
+//that @|A| has 4 columns.  Of course, we could also use the
 //@|:| token instead:
 //@<
 //C = A(2:3,:)
@@ -4907,12 +4913,12 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //@>
 //
 //The N-dimensional form of the variable index is limited
-//to accessing only (hyper-) rectangular regions of the 
+//to accessing only (hyper-) rectangular regions of the
 //array.  You cannot, for example, use it to access only
 //the diagonal elements of the array.  To do that, you use
 //the second form of the array access (or a loop).  The
 //vector form treats an arbitrary N-dimensional array as though
-//it were a column vector.  You can then access arbitrary 
+//it were a column vector.  You can then access arbitrary
 //subsets of the arrays elements (for example, through a @|find|
 //expression) efficiently.  Note that in vector form, the @|end|
 //keyword takes the meaning of the total length of the array
@@ -4973,7 +4979,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //where @|fieldname| is one of the fields on the structure.  Note that
 //in FreeMat, fields are allocated dynamically, so if you reference
 //a field that does not exist in an assignment, it is created automatically
-//for you.  If variable is an array, then the result of the @|.| 
+//for you.  If variable is an array, then the result of the @|.|
 //reference is an expression list, exactly like the @|{}| operator.  Hence,
 //we can use structure indexing in a simple fashion:
 //@<
@@ -4995,8 +5001,8 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //A(2).maxreturn = [];
 //[A.maxreturn] = max(randn(1,4))
 //@>
-//FreeMat now also supports the so called dynamic-field indexing 
-//expressions.  In this mode, the fieldname is supplied through 
+//FreeMat now also supports the so called dynamic-field indexing
+//expressions.  In this mode, the fieldname is supplied through
 //an expression instead of being explicitly provided.  For example,
 //suppose we have a set of structure indexed by color,
 //@<
@@ -5020,7 +5026,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //@<
 //Z{3}.foo(2) = pi
 //@>
-//From this statement, FreeMat infers that Z is a cell-array of 
+//From this statement, FreeMat infers that Z is a cell-array of
 //length 3, that the third element is a structure array (with one
 //element), and that this structure array contains a field named
 //'foo' with two double elements, the second of which is assigned
@@ -5227,7 +5233,7 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 
 
 // This has a few shortcomings that prevent it from being
-// 100% correct.  
+// 100% correct.
 //
 //   1.  subsindex is not called for argument
 //       expressions of user-defined classes.
@@ -5246,16 +5252,16 @@ bool Interpreter::lookupFunction(QString funcName, FuncPtr& val,
 //
 //   _t = end(t,2)
 //
-// This is done in Transform.cpp...  
+// This is done in Transform.cpp...
 //
 // This does not cover:
 //    Function pointers
 //    subsindex
 //
-// 
- 
 //
-// 
+
+//
+//
 void Interpreter::deref(Array &r, const Tree & s) {
   SaveEndInfo;
   endRef = &r;
@@ -5301,7 +5307,7 @@ void Interpreter::deref(Array &r, const Tree & s) {
   }
   RestoreEndInfo;
 }
- 
+
  Array Interpreter::rhs(const Tree & t) {
    ArrayReference ptr(context->lookupVariable(t.first().text()));
    if (!ptr.valid()) {
@@ -5323,12 +5329,12 @@ void Interpreter::deref(Array &r, const Tree & s) {
        return EmptyConstructor();
    }
    Array r(*ptr);
-   for (int index = 1;index < t.numChildren();index++) 
+   for (int index = 1;index < t.numChildren();index++)
      deref(r,t.child(index));
    return r;
  }
 
-  
+
 int Interpreter::getErrorCount() {
   int retval = errorCount;
   errorCount = 0;
@@ -5483,7 +5489,7 @@ void Interpreter::evaluateString(QString line, bool propogateExceptions) {
     e.printMe(this);
   }
 }
-  
+
 QString Interpreter::getLastErrorString() {
   return lasterr;
 }
@@ -5564,7 +5570,7 @@ void Interpreter::evalCLI() {
       QString scopename = context->scopeDetailString();
       if (scopename == "builtin")
 	scopename = context->scopeName();
-      if (scopename == "docli") 
+      if (scopename == "docli")
 	scopename = "base";
       prompt = QString("[%1,%2]--> ").arg(scopename).arg(line);
       context->restoreScope(bypasscount);
@@ -5574,7 +5580,7 @@ void Interpreter::evalCLI() {
       tracetrap = 0;
       context->setScopeStepTrap(0);
     }
-    if (m_captureState) 
+    if (m_captureState)
       m_capture += prompt;
     else {
       if (!m_noprompt) emit SetPrompt(prompt);
@@ -5589,15 +5595,15 @@ void Interpreter::evalCLI() {
     QString cmdline;
     emit EnableRepaint();
     mutex.lock();
-    
-    while ((cmdset.isEmpty() || 
+
+    while ((cmdset.isEmpty() ||
 	    NeedsMoreInput(this,cmdset)) && (!m_interrupt)) {
       if (cmd_buffer.isEmpty())
 	bufferNotEmpty.wait(&mutex);
       cmdline = cmd_buffer.front();
       cmd_buffer.erase(cmd_buffer.begin());
       cmdset += cmdline;
-      if (m_captureState) 
+      if (m_captureState)
 	m_capture += cmdline;
     }
     mutex.unlock();
@@ -5606,7 +5612,7 @@ void Interpreter::evalCLI() {
       m_interrupt = false;
       continue;
     }
-    int scope_stackdepth = context->scopeDepth(); 
+    int scope_stackdepth = context->scopeDepth();
     setInCLI(true);
     dbdown_executed = false;
     evaluateString(cmdset,false);
@@ -5616,10 +5622,10 @@ void Interpreter::evalCLI() {
   }
 }
 
-  
+
 //
 // Convert a list of variable into indexing expressions
-//  - for user defined classes, we call subsindex for 
+//  - for user defined classes, we call subsindex for
 //  - the object
 Array Interpreter::subsindex(const Array &m) {
   if (m.isUserClass() && !stopoverload) {

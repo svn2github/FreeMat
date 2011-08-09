@@ -3,10 +3,10 @@
 \subsection{Usage}
 
 A feature of IDL that FreeMat has adopted is a modified
-form of \verb|keywords|.  The purpose of \verb|keywords| is to 
+form of \verb|keywords|.  The purpose of \verb|keywords| is to
 allow you to call a function with the arguments to the
 function specified in an arbitrary order.  To specify
-the syntax of \verb|keywords|, suppose there is a function 
+the syntax of \verb|keywords|, suppose there is a function
 with prototype
 \begin{verbatim}
   function [out_1,...,out_M] = foo(in_1,...,in_N)
@@ -42,8 +42,8 @@ and forcing explicit empty brackets for don't care parameters.
 \begin{verbatim}
     keyfunc.m
 function c = keyfunc(a,b,operation,printit)
-  if (~isset('a') | ~isset('b')) 
-    error('keyfunc requires at least the first two 2 arguments'); 
+  if (~isset('a') | ~isset('b'))
+    error('keyfunc requires at least the first two 2 arguments');
   end;
   if (~isset('operation'))
     % user did not define the operation, default to '+'
@@ -55,7 +55,7 @@ function c = keyfunc(a,b,operation,printit)
   end
   % simple operation...
   eval(['c = a ' operation ' b;']);
-  if (printit) 
+  if (printit)
     printf('%f %s %f = %f\n',a,operation,b,c);
   end
 \end{verbatim}
@@ -79,7 +79,7 @@ ans =
  -1 
 
 --> keyfunc(4,/operation='*',/printit) % error as b is unspecified
-In /home/sbasu/Devel/FreeMat/help/tmp/keyfunc.m(keyfunc) at line 3
+In /home/sbasu/Devel/FreeMat4/help/tmp/keyfunc.m(keyfunc) at line 3
     In scratch() at line 1
     In base(base)
     In base()

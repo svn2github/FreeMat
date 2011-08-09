@@ -1352,8 +1352,13 @@ ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
     } else if (cmdp[0].asString().toUpper() == "PAGE") {
       prnt.newPage();
     } else if (cmdp[0].asString().toUpper() == "BRUSH") {
-      if (cmdp.size() != 2) throw Exception("malformed line: " + cmd);
-      pnt.setBrush(QBrush(QColor(cmdp[1].asString())));
+      if (cmdp.size() != 2 && cmdp.size() != 4) throw Exception("malformed line: " + cmd);
+      if (cmdp.size() == 2)
+	pnt.setBrush(QBrush(QColor(cmdp[1].asString())));
+      else
+	pnt.setBrush(QBrush(QColor(cmdp[1].asDouble(),
+				   cmdp[2].asDouble(),
+				   cmdp[3].asDouble()))); 
     } else if (cmdp[0].asString().toUpper() == "PEN") {
       QPen pen(pnt.pen());
       pen.setColor(QColor(cmdp[1].asString()));

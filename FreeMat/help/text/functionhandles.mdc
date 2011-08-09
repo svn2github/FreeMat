@@ -12,7 +12,7 @@ a function handle is to use the notation
 where func is the name to point to.  The function func must exist
 at the time we make the call.  It can be a local function (i.e., a
 subfunction).  To use the handle, we can either pass it to feval
-via 
+via
 
    [x,y] = feval(handle,arg1,arg2).
 

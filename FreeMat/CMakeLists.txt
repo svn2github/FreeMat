@@ -145,7 +145,7 @@ SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${ZLIB_LIBRARY})
 ######################################################################
 
 FIND_LIBRARY(FFI_LIBRARY NAMES ffi DOC "Location of the FFI library" PATHS ${LOCAL_PATH})
-FIND_PATH(FFI_INCLUDE_DIR ffi.h doc "Location of ffi.h" PATHS ${LOCAL_PATH} /usr/include/ffi)
+FIND_PATH(FFI_INCLUDE_DIR ffi.h doc "Location of ffi.h" PATHS ${LOCAL_PATH} /usr/include/ffi /usr/lib64/libffi-3.0.9/include)
 SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LIBRARY})
 INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIR})
 
@@ -515,7 +515,7 @@ INCLUDE(CPack)
 add_custom_target( helpgen
 	COMMENT "Building help files"
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
-	COMMAND ${FreeMat_Loc} "-nogui" "-f" "fraggen ${CMAKE_SOURCE_DIR}/help/tmp"
+	COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/help/tmp"
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
 	VERBATIM

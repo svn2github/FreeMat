@@ -11,5 +11,5 @@ and the three argument form
   y = a : b : c
 
 The two argument form is exactly equivalent to a:1:c.  The output y is the vector
-where a+nb <= c.  There is a third form of the colon operator, the 
+where a+nb <= c.  There is a third form of the colon operator, the
 no-argument form used in indexing (see indexing for more details).

@@ -1,6 +1,6 @@
 % Test the switch statement with a string argument
 function test_val = test_switch1
-      
+
 test_val = 0;
 x = 'astring';
 

@@ -3,7 +3,7 @@ RETURN Return From Function
 Usage
 
 The return statement is used to immediately return from
-a function, or to return from a keyboard session.  The 
+a function, or to return from a keyboard session.  The
 syntax for its use is
 
   return

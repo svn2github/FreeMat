@@ -12,7 +12,7 @@
 Section: <A HREF=sec_functions.html> Functions and Scripts </A>
 <H3>Usage</H3>
 There are several forms for function declarations in FreeMat.
-The most general syntax for a function declaration is the 
+The most general syntax for a function declaration is the
 following:
 <PRE>
   function [out_1,...,out_M,varargout] = fname(in_1,...,in_N,varargin)
@@ -20,8 +20,8 @@ following:
 <P>
 where <code>out_i</code> are the output parameters, <code>in_i</code> are the input
 parameters, and <code>varargout</code> and <code>varargin</code> are special keywords
-used for functions that have variable inputs or outputs.  For 
-functions with a fixed number of input or output parameters, the 
+used for functions that have variable inputs or outputs.  For
+functions with a fixed number of input or output parameters, the
 syntax is somewhat simpler:
 <PRE>
   function [out_1,...,out_M] = fname(in_1,...,in_N)
@@ -60,16 +60,16 @@ before the name of the input, e.g.
 in which case <code>in_2</code> is passed by reference and not by value.
 Also, FreeMat works like <code>C</code> in that the caller does not have
 to supply the full list of arguments.  Also, when <code>keywords</code>
-(see help <code>keywords</code>) are used, an arbitrary subset of the 
-parameters may be unspecified. To assist in deciphering 
+(see help <code>keywords</code>) are used, an arbitrary subset of the
+parameters may be unspecified. To assist in deciphering
 the exact parameters that were passed,
 FreeMat also defines two variables inside the function context:
 <code>nargin</code> and <code>nargout</code>, which provide the number of input
-and output parameters of the caller, respectively. See help for 
-<code>nargin</code> and <code>nargout</code> for more details.  In some 
+and output parameters of the caller, respectively. See help for
+<code>nargin</code> and <code>nargout</code> for more details.  In some
 circumstances, it is necessary to have functions that
 take a variable number of arguments, or that return a variable
-number of results.  In these cases, the last argument to the 
+number of results.  In these cases, the last argument to the
 parameter list is the special argument <code>varargin</code>.  Inside
 the function, <code>varargin</code> is a cell-array that contains
 all arguments passed to the function that have not already
@@ -79,10 +79,10 @@ See help <code>varargin</code> and <code>varargout</code> for more details.
 <P>
 The function name <code>fname</code> can be any legal FreeMat identifier.
 Functions are stored in files with the <code>.m</code> extension.  Note
-that the name of the file (and not the function name <code>fname</code> 
+that the name of the file (and not the function name <code>fname</code>
 used in the declaration) is how the function appears in FreeMat.
 So, for example, if the file is named <code>foo.m</code>, but the declaration
-uses <code>bar</code> for the name of the function, in FreeMat, it will 
+uses <code>bar</code> for the name of the function, in FreeMat, it will
 still appear as function <code>foo</code>.  Note that this is only true
 for the first function that appears in a <code>.m</code> file.  Additional
 functions that appear after the first function are known as
@@ -123,7 +123,7 @@ ans =
 ans = 
  3 
 </PRE>
-Suppose, however, we want to replace the value of the first 
+Suppose, however, we want to replace the value of the first
 argument by the computed sum.  A first attempt at doing so
 has no effect:
 <P>
@@ -157,7 +157,7 @@ ans =
  3 
 </PRE>
 The values of <code>arg1</code> and <code>arg2</code> are unchanged, because they are
-passed by value, so that any changes to <code>a</code> and <code>b</code> inside 
+passed by value, so that any changes to <code>a</code> and <code>b</code> inside
 the function do not affect <code>arg1</code> and <code>arg2</code>.  We can change
 that by passing the first argument by reference:
 <P>

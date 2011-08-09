@@ -3,7 +3,7 @@ GLOBAL Global Variables
 Usage
 
 Global variables are shared variables that can be
-seen and modified from any function or script that 
+seen and modified from any function or script that
 declares them.  The syntax for the global statement
 is
 

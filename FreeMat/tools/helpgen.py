@@ -333,16 +333,16 @@ class HTMLWriter(Writer):
         f.close()
         f = open(self.sourcepath + '/help/html/modules.txt','w')
         modulenames = []
-        for section in self.section_descriptors:
+        for section in self.section_order:
             if (section in self.sectables):
                 modules = sorted(self.sectables[section].iterkeys())
                 for module in modules:
                     modulenames.append(module + ' (' + section + ')')
-        for mod in modulenames:
+        for mod in sorted(modulenames):
             f.write(mod + '\n')
         f.close()
         f = open(self.sourcepath + '/help/html/sectable.txt','w')
-        for section in self.section_descriptors:
+        for section in self.section_order:
             f.write(self.section_descriptors[section] + '\n')
             if (section in self.sectables):
                 for module in self.sectables[section]:
@@ -1043,6 +1043,7 @@ class HelpGen:
                 self.writers.endmodule()
         self.fp.close()    
 
+makepath('../help/tmp/')
 dirname = sys.argv[1]
 h = HelpGen(dirname)
 h.process_dir(dirname)

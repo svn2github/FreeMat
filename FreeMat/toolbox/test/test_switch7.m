@@ -1,6 +1,6 @@
 % Test the switch statement with a numerical argument and a cell array
 function test_val = test_switch7
-      
+
 test_val = 0;
 x = 5;
 

@@ -13,4 +13,4 @@ function test_val = test_assign16
   q(:,1) = y(:);
   p = [x,x];
   p(1,:) = y(:);
-  test_val = all(vec(z==x)) && all(q(:,1) == y(:)) && all(p(1,:).' == y(:)); 
+  test_val = all(vec(z==x)) && all(q(:,1) == y(:)) && all(p(1,:).' == y(:));

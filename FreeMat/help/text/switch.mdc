@@ -17,7 +17,7 @@ The general syntax for a switch statement is
 
 The otherwise clause is optional.  Note that each test
 expression can either be a scalar value, a string to test
-against (if the switch expression is a string), or a 
+against (if the switch expression is a string), or a
 cell-array of expressions to test against.  Note that
 unlike C switch statements, the FreeMat switch
 does not have fall-through, meaning that the statements

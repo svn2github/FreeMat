@@ -3,15 +3,15 @@
 \subsection{Usage}
 
 There are several forms for function declarations in FreeMat.
-The most general syntax for a function declaration is the 
+The most general syntax for a function declaration is the
 following:
 \begin{verbatim}
   function [out_1,...,out_M,varargout] = fname(in_1,...,in_N,varargin)
 \end{verbatim}
 where \verb|out\_i| are the output parameters, \verb|in\_i| are the input
 parameters, and \verb|varargout| and \verb|varargin| are special keywords
-used for functions that have variable inputs or outputs.  For 
-functions with a fixed number of input or output parameters, the 
+used for functions that have variable inputs or outputs.  For
+functions with a fixed number of input or output parameters, the
 syntax is somewhat simpler:
 \begin{verbatim}
   function [out_1,...,out_M] = fname(in_1,...,in_N)
@@ -45,16 +45,16 @@ before the name of the input, e.g.
 in which case \verb|in\_2| is passed by reference and not by value.
 Also, FreeMat works like \verb|C| in that the caller does not have
 to supply the full list of arguments.  Also, when \verb|keywords|
-(see help \verb|keywords|) are used, an arbitrary subset of the 
-parameters may be unspecified. To assist in deciphering 
+(see help \verb|keywords|) are used, an arbitrary subset of the
+parameters may be unspecified. To assist in deciphering
 the exact parameters that were passed,
 FreeMat also defines two variables inside the function context:
 \verb|nargin| and \verb|nargout|, which provide the number of input
-and output parameters of the caller, respectively. See help for 
-\verb|nargin| and \verb|nargout| for more details.  In some 
+and output parameters of the caller, respectively. See help for
+\verb|nargin| and \verb|nargout| for more details.  In some
 circumstances, it is necessary to have functions that
 take a variable number of arguments, or that return a variable
-number of results.  In these cases, the last argument to the 
+number of results.  In these cases, the last argument to the
 parameter list is the special argument \verb|varargin|.  Inside
 the function, \verb|varargin| is a cell-array that contains
 all arguments passed to the function that have not already
@@ -64,10 +64,10 @@ See help \verb|varargin| and \verb|varargout| for more details.
 
 The function name \verb|fname| can be any legal FreeMat identifier.
 Functions are stored in files with the \verb|.m| extension.  Note
-that the name of the file (and not the function name \verb|fname| 
+that the name of the file (and not the function name \verb|fname|
 used in the declaration) is how the function appears in FreeMat.
 So, for example, if the file is named \verb|foo.m|, but the declaration
-uses \verb|bar| for the name of the function, in FreeMat, it will 
+uses \verb|bar| for the name of the function, in FreeMat, it will
 still appear as function \verb|foo|.  Note that this is only true
 for the first function that appears in a \verb|.m| file.  Additional
 functions that appear after the first function are known as
@@ -106,7 +106,7 @@ ans =
 ans = 
  3 
 \end{verbatim}
-Suppose, however, we want to replace the value of the first 
+Suppose, however, we want to replace the value of the first
 argument by the computed sum.  A first attempt at doing so
 has no effect:
 \begin{verbatim}
@@ -137,7 +137,7 @@ ans =
  3 
 \end{verbatim}
 The values of \verb|arg1| and \verb|arg2| are unchanged, because they are
-passed by value, so that any changes to \verb|a| and \verb|b| inside 
+passed by value, so that any changes to \verb|a| and \verb|b| inside
 the function do not affect \verb|arg1| and \verb|arg2|.  We can change
 that by passing the first argument by reference:
 \begin{verbatim}

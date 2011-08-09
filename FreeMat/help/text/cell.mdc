@@ -1,21 +1,22 @@
-CELL Cell Array of Empty Matrices
+CELL Cell Array Definitions
 
 Usage
 
-Creates a cell array of empty matrix entres.  Two seperate 
-syntaxes are possible.  The first syntax specifies the array 
-dimensions as a sequence of scalar dimensions:
+The cell array is a fairly powerful array type that is available
+in FreeMat.  Generally speaking, a cell array is a heterogenous
+array type, meaning that different elements in the array can
+contain variables of different type (including other cell arrays).
+For those of you familiar with C, it is the equivalent to the
+void * array.  The general syntax for their construction is
 
-   y = cell(d1,d2,...,dn).
+   A = {row_def1;row_def2;...;row_defN}
 
-The resulting array has the given dimensions, and is filled with
-all zeros.  The type of y is cell, a cell array.  
-    
-The second syntax specifies the array dimensions as a vector,
-where each element in the vector specifies a dimension length:
+where each row consists of one or more elements, seperated by
+commas
 
-   y = cell([d1,d2,...,dn]).
+  row_defi = element_i1,element_i2,...,element_iM
 
-This syntax is more convenient for calling zeros using a 
-variable for the argument.  In both cases, specifying only one
-dimension results in a square matrix output.
+Each element can be any type of FreeMat variable, including
+matrices, arrays, cell-arrays, structures, strings, etc.  The
+restriction on the definition is that each row must have the
+same number of elements in it.

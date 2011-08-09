@@ -3,14 +3,14 @@ WHILE While Loop
 Usage
 
 The while loop executes a set of statements as long as
-a the test condition remains true.  The syntax of a 
+a the test condition remains true.  The syntax of a
 while loop is
 
   while test_expression
      statements
   end
 
-Note that a conditional expression is considered true if 
+Note that a conditional expression is considered true if
 the real part of the result of the expression contains
 any non-zero elements (this strange convention is adopted
 for compatibility with MATLAB).

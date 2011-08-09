@@ -3,10 +3,10 @@ KEYWORDS Function Keywords
 Usage
 
 A feature of IDL that FreeMat has adopted is a modified
-form of keywords.  The purpose of keywords is to 
+form of keywords.  The purpose of keywords is to
 allow you to call a function with the arguments to the
 function specified in an arbitrary order.  To specify
-the syntax of keywords, suppose there is a function 
+the syntax of keywords, suppose there is a function
 with prototype
 
   function [out_1,...,out_M] = foo(in_1,...,in_N)

@@ -302,7 +302,6 @@ void Interpreter::updateFileTool() {
 
 void Interpreter::rescanPath() {
   if (m_disablerescan) return;
-  qDebug() << "RESCAN!!!";
   if (!context) return;
   context->flushTemporaryGlobalFunctions();
   for (int i=0;i<m_basePath.size();i++)

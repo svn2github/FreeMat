@@ -11,14 +11,14 @@
 <P>
 Section: <A HREF=sec_variables.html> Variables and Arrays </A>
 <H3>Usage</H3>
-There are three classes of indexing expressions available 
+There are three classes of indexing expressions available
 in FreeMat: <code>()</code>, <code>{}</code>, and <code>.</code>  Each is explained below
 in some detail, and with its own example section.
 <H3>Array Indexing</H3>
 We start with array indexing <code>()</code>,
 which is the most general indexing expression, and can be
-used on any array.  There are two general forms for the 
-indexing expression - the N-dimensional form, for which 
+used on any array.  There are two general forms for the
+indexing expression - the N-dimensional form, for which
 the general syntax is
 <PRE>
   variable(index_1,index_2,...,index_n)
@@ -32,7 +32,7 @@ and the vector form, for which the general syntax is
 Here each index expression is either a scalar, a range
 of integer values, or the special token <code>:</code>, which is
 shorthand for <code>1:end</code>.  The keyword <code>end</code>, when included
-in an indexing expression, is assigned the length of the 
+in an indexing expression, is assigned the length of the
 array in that dimension.  The concept is easier to demonstrate
 than explain.  Consider the following examples:
 <PRE>
@@ -68,7 +68,7 @@ C =
          0    0.9485   -0.6864         0 
 </PRE>
 Note that we used the <code>end</code> keyword to avoid having to know
-that <code>A</code> has 4 columns.  Of course, we could also use the 
+that <code>A</code> has 4 columns.  Of course, we could also use the
 <code>:</code> token instead:
 <PRE>
 --&gt; C = A(2:3,:)
@@ -145,12 +145,12 @@ A =
 </PRE>
 <P>
 The N-dimensional form of the variable index is limited
-to accessing only (hyper-) rectangular regions of the 
+to accessing only (hyper-) rectangular regions of the
 array.  You cannot, for example, use it to access only
 the diagonal elements of the array.  To do that, you use
 the second form of the array access (or a loop).  The
 vector form treats an arbitrary N-dimensional array as though
-it were a column vector.  You can then access arbitrary 
+it were a column vector.  You can then access arbitrary
 subsets of the arrays elements (for example, through a <code>find</code>
 expression) efficiently.  Note that in vector form, the <code>end</code>
 keyword takes the meaning of the total length of the array
@@ -244,7 +244,7 @@ be applied to structure arrays, and has the general syntax
 where <code>fieldname</code> is one of the fields on the structure.  Note that
 in FreeMat, fields are allocated dynamically, so if you reference
 a field that does not exist in an assignment, it is created automatically
-for you.  If variable is an array, then the result of the <code>.</code> 
+for you.  If variable is an array, then the result of the <code>.</code>
 reference is an expression list, exactly like the <code>{}</code> operator.  Hence,
 we can use structure indexing in a simple fashion:
 <PRE>
@@ -285,8 +285,8 @@ A =
 1x2 struct array with fields:
     maxreturn
 </PRE>
-FreeMat now also supports the so called dynamic-field indexing 
-expressions.  In this mode, the fieldname is supplied through 
+FreeMat now also supports the so called dynamic-field indexing
+expressions.  In this mode, the fieldname is supplied through
 an expression instead of being explicitly provided.  For example,
 suppose we have a set of structure indexed by color,
 <PRE>
@@ -325,7 +325,7 @@ that exercises all three indexing expressions in one assignment.
 Z = 
  [0] [0] [1x1 struct array] 
 </PRE>
-From this statement, FreeMat infers that Z is a cell-array of 
+From this statement, FreeMat infers that Z is a cell-array of
 length 3, that the third element is a structure array (with one
 element), and that this structure array contains a field named
 'foo' with two double elements, the second of which is assigned

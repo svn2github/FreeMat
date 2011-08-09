@@ -12,10 +12,10 @@
 Section: <A HREF=sec_functions.html> Functions and Scripts </A>
 <H3>Usage</H3>
 A feature of IDL that FreeMat has adopted is a modified
-form of <code>keywords</code>.  The purpose of <code>keywords</code> is to 
+form of <code>keywords</code>.  The purpose of <code>keywords</code> is to
 allow you to call a function with the arguments to the
 function specified in an arbitrary order.  To specify
-the syntax of <code>keywords</code>, suppose there is a function 
+the syntax of <code>keywords</code>, suppose there is a function
 with prototype
 <PRE>
   function [out_1,...,out_M] = foo(in_1,...,in_N)
@@ -56,8 +56,8 @@ and forcing explicit empty brackets for don't care parameters.
 <PRE>
      keyfunc.m
 function c = keyfunc(a,b,operation,printit)
-  if (~isset('a') | ~isset('b')) 
-    error('keyfunc requires at least the first two 2 arguments'); 
+  if (~isset('a') | ~isset('b'))
+    error('keyfunc requires at least the first two 2 arguments');
   end;
   if (~isset('operation'))
     % user did not define the operation, default to '+'
@@ -69,7 +69,7 @@ function c = keyfunc(a,b,operation,printit)
   end
   % simple operation...
   eval(['c = a ' operation ' b;']);
-  if (printit) 
+  if (printit)
     printf('%f %s %f = %f\n',a,operation,b,c);
   end
 
@@ -95,7 +95,7 @@ ans =
  -1 
 
 --&gt; keyfunc(4,/operation='*',/printit) % error as b is unspecified
-In /home/sbasu/Devel/FreeMat/help/tmp/keyfunc.m(keyfunc) at line 3
+In /home/sbasu/Devel/FreeMat4/help/tmp/keyfunc.m(keyfunc) at line 3
     In scratch() at line 1
     In base(base)
     In base()

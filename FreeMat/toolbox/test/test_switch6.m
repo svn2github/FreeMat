@@ -1,6 +1,6 @@
 % Test the switch statement with a string argument and a cell array
 function test_val = test_switch6
-      
+
 test_val = 0;
 x = 'astring';
 

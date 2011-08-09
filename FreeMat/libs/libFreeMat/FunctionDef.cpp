@@ -655,7 +655,7 @@ static Array DoCIFCall(ffi_cif cif, GenericFuncPointer address,
     ffi_call(&cif, address, &retval, &values[0]);
   else
     ffi_call(&cif, address, &retval, NULL);
-  return Array::Array(retval);
+  return Array::create(retval);
 }
 
 /**

@@ -27,10 +27,10 @@ The two argument form is exactly equivalent to <code>a:1:c</code>.  The output <
 <IMG SRC="colon_eqn1.png">
 </DIV>
 <P>
-where <code>a+nb &lt;= c</code>.  There is a third form of the colon operator, the 
+where <code>a+nb &lt;= c</code>.  There is a third form of the colon operator, the
 no-argument form used in indexing (see <code>indexing</code> for more details).
 <H3>Function Internals</H3>
-The colon operator turns out to be trickier to implement than one might 
+The colon operator turns out to be trickier to implement than one might
 believe at first, primarily because the floating point versions should
 do the right thing, which is not the obvious behavior.  For example,
 suppose the user issues a three point colon command
@@ -55,7 +55,7 @@ calculation) is to compute the bounding values (for b positive)
 <IMG SRC="colon_eqn3.png">
 </DIV>
 <P>
-where 
+where
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colon_eqn4.png">
@@ -86,10 +86,10 @@ for some n.  The reason is that the roundoff in the calculations may
 be different depending on the nature of the sum.  FreeMat uses the
 following strategy to compute the double-colon vector:
 \begin{enumerate}
-\item The value <code>n</code> is computed by taking the floor of the larger 
+\item The value <code>n</code> is computed by taking the floor of the larger
  value in the interval defined above.
-\item If <code>n</code> falls inside the interval defined above, then it is 
-assumed that the user intended <code>c = a + n*b</code>, and the symmetric 
+\item If <code>n</code> falls inside the interval defined above, then it is
+assumed that the user intended <code>c = a + n*b</code>, and the symmetric
 algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
 \item The symmetric algorithm computes the vector via
 <P>
@@ -97,18 +97,18 @@ algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
 <IMG SRC="colon_eqn8.png">
 </DIV>
 <P>
-working symmetrically from both ends of the vector 
+working symmetrically from both ends of the vector
 (hence the nomenclature), while the nonsymmetric algorithm computes
 <P>
 <DIV ALIGN="CENTER">
 <IMG SRC="colon_eqn9.png">
 </DIV>
 <P>
-In practice, the entries are computed by repeated accumulation instead 
+In practice, the entries are computed by repeated accumulation instead
 of multiplying the step size by an integer.
 \item The real interval calculation is modified so that we get the
 exact same result with <code>a:b:c</code> and <code>c:-b:a</code> (which basically means
-that instead of moving towards infinity, we move towards the signed 
+that instead of moving towards infinity, we move towards the signed
 infinity where the sign is inherited from <code>b</code>).
 \end{enumerate}
 If you think this is all very obscure, it is.  But without it, you will

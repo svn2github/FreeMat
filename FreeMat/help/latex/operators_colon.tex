@@ -14,11 +14,11 @@ The two argument form is exactly equivalent to \verb|a:1:c|.  The output \verb|y
 \[
   y = [a,a+b,a+2b,\ldots,a+nb]
 \]
-where \verb|a+nb <= c|.  There is a third form of the colon operator, the 
+where \verb|a+nb <= c|.  There is a third form of the colon operator, the
 no-argument form used in indexing (see \verb|indexing| for more details).
 \subsection{Function Internals}
 
-The colon operator turns out to be trickier to implement than one might 
+The colon operator turns out to be trickier to implement than one might
 believe at first, primarily because the floating point versions should
 do the right thing, which is not the obvious behavior.  For example,
 suppose the user issues a three point colon command
@@ -39,9 +39,9 @@ calculation) is to compute the bounding values (for b positive)
    n \in \left[\frac{(c-a) \rightarrow 0}{b \rightarrow \infty},
                \frac{(c-a) \rightarrow \infty}{b \rightarrow 0} \right] + 1
 \]
-where 
+where
 \[
-  x \rightarrow y 
+  x \rightarrow y
 \]
 means we replace x by the floating point number that is closest to it
 in the direction of y.  Once we have determined the number of points
@@ -62,25 +62,25 @@ for some n.  The reason is that the roundoff in the calculations may
 be different depending on the nature of the sum.  FreeMat uses the
 following strategy to compute the double-colon vector:
 \begin{enumerate}
-\item The value \verb|n| is computed by taking the floor of the larger 
+\item The value \verb|n| is computed by taking the floor of the larger
  value in the interval defined above.
-\item If \verb|n| falls inside the interval defined above, then it is 
-assumed that the user intended \verb|c = a + n*b|, and the symmetric 
+\item If \verb|n| falls inside the interval defined above, then it is
+assumed that the user intended \verb|c = a + n*b|, and the symmetric
 algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
 \item The symmetric algorithm computes the vector via
 \[
   [a, a+b, a+2b,\ldots,c-2b,c-b,c]
 \]
-working symmetrically from both ends of the vector 
+working symmetrically from both ends of the vector
 (hence the nomenclature), while the nonsymmetric algorithm computes
 \[
   [a, a+b ,a+2b,\ldots,a+nb]
 \]
-In practice, the entries are computed by repeated accumulation instead 
+In practice, the entries are computed by repeated accumulation instead
 of multiplying the step size by an integer.
 \item The real interval calculation is modified so that we get the
 exact same result with \verb|a:b:c| and \verb|c:-b:a| (which basically means
-that instead of moving towards infinity, we move towards the signed 
+that instead of moving towards infinity, we move towards the signed
 infinity where the sign is inherited from \verb|b|).
 \end{enumerate}
 If you think this is all very obscure, it is.  But without it, you will

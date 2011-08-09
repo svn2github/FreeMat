@@ -1,6 +1,6 @@
 % Check to RHS function calls with multiple return values (b989865)
 function test_val = test_fcall1
-try 
+try
 b = 1:10;
 B = addthem(min(b),max(b));
 test_val = test(B == 11);

@@ -2,6 +2,6 @@ INDEXING Indexing Expressions
 
 Usage
 
-There are three classes of indexing expressions available 
+There are three classes of indexing expressions available
 in FreeMat: (), {}, and .  Each is explained below
 in some detail, and with its own example section.

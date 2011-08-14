@@ -19,23 +19,23 @@ add_custom_command(
 	)
 
 ADD_EXECUTABLE( FreeMat MACOSX_BUNDLE WIN32
-${CMAKE_CURRENT_SOURCE_DIR}/application.moc.cpp 
+${CMAKE_CURRENT_SOURCE_DIR}/application.moc.cpp
 application.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/FuncMode.moc.cpp 
-${CMAKE_CURRENT_SOURCE_DIR}/ScriptMode.moc.cpp 
+${CMAKE_CURRENT_SOURCE_DIR}/FuncMode.moc.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/ScriptMode.moc.cpp
 FuncMode.cpp
 ScriptMode.cpp
-FuncTerminal.cpp 
+FuncTerminal.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/MainApp.moc.cpp
-MainApp.cpp 
-main.cpp 
+MainApp.cpp
+main.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/DumbTerminal.moc.cpp
-DumbTerminal.cpp 
+DumbTerminal.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/Terminal.moc.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
-Terminal.cpp 
+Terminal.cpp
 ${FreeMat_qrc}
-freemat.rc 
+freemat.rc
 )
 
 #${X86TARGET_OBJ}
@@ -50,7 +50,7 @@ ENDIF( USE_DYNLINK )
 
 
 if (USE_VTK)
-set (VTK_WRAPPER_LIBS 
+set (VTK_WRAPPER_LIBS
 vtkCommonWrapper        vtkIOWrapper
 vtkFilteringWrapper  vtkParallelWrapper
 vtkGeovisWrapper        vtkRenderingWrapper
@@ -64,14 +64,14 @@ if (USE_ITK)
 set (ITK_WRAPPER_LIBS itkWrapper)
 endif (USE_ITK)
 
-TARGET_LINK_LIBRARIES( FreeMat 
-Core 
-FN 
+TARGET_LINK_LIBRARIES( FreeMat
+Core
+FN
 ${VTK_WRAPPER_LIBS}
 ${ITK_WRAPPER_LIBS}
-Graphics 
-FreeMatlib 
-XP 
+Graphics
+FreeMatlib
+XP
 Mex
 MatC
 levmar
@@ -79,17 +79,18 @@ arpack_c
 lapack_c
 dynblas
 blasref
-${QT_QTCORE_LIBRARY} 
-${QT_QTGUI_LIBRARY} 
-${QT_QTNETWORK_LIBRARY} 
-${QT_QTOPENGL_LIBRARY} 
-${QT_QTXML_LIBRARY} 
-${QT_QTSVG_LIBRARY} 
+${QT_QTCORE_LIBRARY}
+${QT_QTGUI_LIBRARY}
+${QT_QTNETWORK_LIBRARY}
+${QT_QTOPENGL_LIBRARY}
+${QT_QTXML_LIBRARY}
+${QT_QTSVG_LIBRARY}
 ${QT_QTMAIN_LIBRARY}
 ${OPENGL_LIBRARIES}
 ${EXTRA_LIBRARIES}
 ${OPTIONAL_LIBS}
 )
+
 
 #IF(MSVC)
 #  SET_TARGET_PROPERTIES(FreeMat PROPERTIES LINK_FLAGS "/INCLUDE:_X86TargetMachineModule")

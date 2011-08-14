@@ -36,6 +36,10 @@ ELSE( MSVC )
 	SET(CMAKE_SHARED_MODULE_LINK_CXX_FLAGS "${CMAKE_SHARED_MODULE_LINK_CXX_FLAGS} -export-dynamic")
 ENDIF( MSVC )
 
+IF( MINGW )
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -shared-libgcc -shared-libstdc++")
+ENDIF(MINGW)
+
 ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS)
 
 FIND_PACKAGE(OpenGL REQUIRED)
@@ -336,9 +340,9 @@ IF( USE_LLVM )
     endif (LLVM_INCLUDE_DIR)
   elseif(MINGW)
     set(LLVM_ROOT ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build CACHE PATH "Root of LLVM install.")
-    include_directories( ${LLVM_ROOT}/include 
-    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/include 
-    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/tools/clang/include 
+    include_directories( ${LLVM_ROOT}/include
+    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/include
+    ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/tools/clang/include
     ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build/tools/clang/include/clang/Basic
     )
     link_directories( ${LLVM_ROOT}/lib )
@@ -352,7 +356,7 @@ IF( USE_LLVM )
         ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/cmake/modules)
       include(LLVM)
       include( LLVMConfig )
-    llvm_map_components_to_libraries(LLVM_LIBS jit native support ipo bitwriter asmparser bitreader)    
+    llvm_map_components_to_libraries(LLVM_LIBS jit native support ipo bitwriter asmparser bitreader)
     set(LLVM_LIBDIR ${CMAKE_SOURCE_DIR}/dependencies/llvm-2.9/build/lib)
     FIND_LIBRARY(CLANGFRONTEND clangFrontend  ${LLVM_LIBDIR})
     FIND_LIBRARY(CLANGSERIALIZATION clangSerialization   ${LLVM_LIBDIR})
@@ -376,7 +380,7 @@ IF( USE_LLVM )
     execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-    separate_arguments(LLVM_LIBS) 
+    separate_arguments(LLVM_LIBS)
 # These shouldn't be necessary, but for now... I have added them
     FIND_LIBRARY(PTHREADS_LIB pthread)
     FIND_LIBRARY(DL_LIB dl)
@@ -398,7 +402,7 @@ IF( USE_LLVM )
   if (NOT LLVM_VERSION STREQUAL "2.9" AND NOT LLVM_VERSION STREQUAL "2.8")
     message(FATAL_ERROR "LLVM version 2.9 or 2.8 required.")
     set(USE_LLVM FALSE)
-  else () 
+  else ()
     set(LLVM_FOUND TRUE)
     include_directories( ${LLVM_INCLUDE_DIR} )
     add_definitions( -DHAVE_LLVM )
@@ -417,9 +421,9 @@ IF(NOT MSVC)
   SET(EXTRA_LIBRARIES ${NCURSES_LIBRARY}  )
 ENDIF(NOT MSVC)
 
-INCLUDE_DIRECTORIES( libs/libFreeMat libs/libGraphics 
-libs/libMex libs/libXP libs/libCore libs/libFN libs/libMatC 
-libs/libMath/libDynBlas ${QT_LIBRARIES} src src/toolbox/jit)   
+INCLUDE_DIRECTORIES( libs/libFreeMat libs/libGraphics
+libs/libMex libs/libXP libs/libCore libs/libFN libs/libMatC
+libs/libMath/libDynBlas ${QT_LIBRARIES} src src/toolbox/jit)
 
 
 ##############################################################################
@@ -472,7 +476,7 @@ IF(UNIX AND NOT WIN32 AND NOT APPLE)
   INSTALL(FILES "help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf" DESTINATION "${INST_DIR}/help/pdf" )
 ENDIF(UNIX AND NOT WIN32 AND NOT APPLE)
 
-IF(WIN32 AND NOT UNIX)
+IF(WIN32)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
   #SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
@@ -483,12 +487,12 @@ IF(WIN32 AND NOT UNIX)
   #SET(CPACK_NSIS_CONTACT "me@my-personal-home-page.com")
   SET(CPACK_NSIS_MODIFY_PATH ON)
   INSTALL(FILES
-	${QT_LIBRARY_DIR}/qtcore4.dll
-	${QT_LIBRARY_DIR}/qtgui4.dll
-	${QT_LIBRARY_DIR}/qtnetwork4.dll
-	${QT_LIBRARY_DIR}/qtopengl4.dll
-	${QT_LIBRARY_DIR}/qtxml4.dll
-	${QT_LIBRARY_DIR}/qtsvg4.dll
+	${QT_LIBRARY_DIR}/QtCore4.dll
+	${QT_LIBRARY_DIR}/QtGui4.dll
+	${QT_LIBRARY_DIR}/QtNetwork4.dll
+	${QT_LIBRARY_DIR}/QtOpenGL4.dll
+	${QT_LIBRARY_DIR}/QtXml4.dll
+	${QT_LIBRARY_DIR}/QtSvg4.dll
 	DESTINATION bin PERMISSIONS WORLD_EXECUTE )
 
   INSTALL(FILES
@@ -503,7 +507,15 @@ IF(WIN32 AND NOT UNIX)
   INSTALL(DIRECTORY help/text DESTINATION help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
   INSTALL(FILES "help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf" DESTINATION help/pdf )
 
-ENDIF(WIN32 AND NOT UNIX)
+ENDIF(WIN32)
+
+IF( MINGW )
+FIND_LIBRARY(LIBSTDCPP_DLL libstdc++-6.dll)
+  INSTALL(FILES
+    LIBSTDCPP_DLL
+	DESTINATION bin PERMISSIONS WORLD_EXECUTE )
+
+ENDIF( MINGW )
 
 SET(CPACK_PACKAGE_EXECUTABLES "FreeMat" "FreeMat")
 

@@ -6,6 +6,7 @@
 
 #ifdef _WIN32
     #define EXPORT __declspec(dllexport)
+    //extern __declspec(dllexport) void *__cxa_allocate_exception(size_t thrown_size) throw();
 #else
     #define EXPORT
 #endif
@@ -274,7 +275,7 @@ bool carray_download_array(void *interp, void *data, const char *name, int typec
     }
 }
 
-extern "C"
+extern "C" EXPORT
 bool carray_upload_scalar(void *interp, void* data, const char *name,
 			  int typecode)
 {

@@ -148,10 +148,19 @@ SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${ZLIB_LIBRARY})
 # AVCALL Package
 ######################################################################
 
-FIND_LIBRARY(FFI_LIBRARY NAMES ffi DOC "Location of the FFI library" PATHS ${LOCAL_PATH})
-FIND_PATH(FFI_INCLUDE_DIR ffi.h doc "Location of ffi.h" PATHS ${LOCAL_PATH} /usr/include/ffi /usr/lib64/libffi-3.0.9/include)
-SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LIBRARY})
-INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIR})
+if(MINGW)
+    FIND_LIBRARY(FFI_LIBRARY_DLL NAMES ffi-5 DOC "Location of the FFI dll library" PATHS /mingw/bin ${PROJECT_SOURCE_DIR}/dependencies/libffi/build/.libs )
+    FIND_LIBRARY(FFI_LIBRARY NAMES ffi DOC "Location of the FFI library" PATHS /mingw/bin ${PROJECT_SOURCE_DIR}/dependencies/libffi/build/.libs )
+    FIND_PATH(FFI_INCLUDE_DIR ffi.h doc "Location of ffi.h" PATHS ${LOCAL_PATH} ${PROJECT_SOURCE_DIR}/dependencies/libffi/build/include /mingw/include/ffi)
+    SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LIBRARY})
+    INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIR})
+    INSTALL(FILES ${FFI_LIBRARY_DLL} DESTINATION bin )
+else(MINGW)
+    FIND_LIBRARY(FFI_LIBRARY NAMES ffi DOC "Location of the FFI library" PATHS ${LOCAL_PATH})
+    FIND_PATH(FFI_INCLUDE_DIR ffi.h doc "Location of ffi.h" PATHS ${LOCAL_PATH} /usr/include/ffi /usr/lib64/libffi-3.0.9/include)
+    SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LIBRARY})
+    INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIR})
+endif(MINGW)
 
 ######################################################################
 # UMFPACK Package
@@ -510,9 +519,11 @@ IF(WIN32)
 ENDIF(WIN32)
 
 IF( MINGW )
-FIND_LIBRARY(LIBSTDCPP_DLL libstdc++-6.dll)
+    FIND_LIBRARY(LIBSTDCPP_DLL libstdc++-6.dll)
+    FIND_LIBRARY(LIBSTDC_DLL libgcc_s_sjlj-1.dll)
+    FIND_LIBRARY(LIBBLAS_GENERIC blas_generic.dll ${LOCAL_PATH} )
   INSTALL(FILES
-    LIBSTDCPP_DLL
+    ${LIBSTDCPP_DLL} ${LIBSTDC_DLL} ${FFTW_LIBRARY} ${FFTWF_LIBRARY} ${LIBBLAS_GENERIC}
 	DESTINATION bin PERMISSIONS WORLD_EXECUTE )
 
 ENDIF( MINGW )

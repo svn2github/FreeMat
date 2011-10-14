@@ -157,6 +157,7 @@ HandleWindow::HandleWindow(unsigned ahandle, Interpreter *eval) : QMainWindow(),
   //child = new BaseFigureQt(this,hfig);
   child = new BaseFigureGL(this,hfig);
   band = NULL;
+  zoom_active = false;
   setMinimumSize(50,50);
   createActions();
   createMenus();

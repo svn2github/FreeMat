@@ -369,8 +369,13 @@ ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
       x = (X.isScalar()) ? X.constRealScalar<double>() : X.real<double>()[i];
       y = (Y.isScalar()) ? Y.constRealScalar<double>() : Y.real<double>()[i];
       z = (Z.isScalar()) ? Z.constRealScalar<double>() : Z.real<double>()[i];
-      result[i] = boost::math::ibeta( y, z, x );
-    }
+	  try{
+		result[i] = boost::math::ibeta( y, z, x );
+	  }
+	  catch(...){
+		throw Exception("Error evaluating ibeta");
+      }
+	}
     retVec.push_back( result );
   }
   else if( X.dataClass() == Float && Y.dataClass() == Float && Z.dataClass() == Float ){
@@ -380,7 +385,12 @@ ArrayVector BetaIncFunction(int nargout, const ArrayVector& arg) {
       x = (X.isScalar()) ? X.realScalar<float>() : X.real<float>()[i];
       y = (Y.isScalar()) ? Y.realScalar<float>() : Y.real<float>()[i];
       z = (Z.isScalar()) ? Z.realScalar<float>() : Z.real<float>()[i];
-      result[i] = boost::math::ibeta( y, z, x );
+	  try{
+		result[i] = boost::math::ibeta( y, z, x );
+	  }
+	  catch(...){
+		throw Exception("Error evaluating ibeta");
+	  }
     }
     retVec.push_back( result );
   }
@@ -456,7 +466,12 @@ ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
     if( n.isScalar() ){
       for( int i=1; i<=x.length(); ++i ){
 	double xt = (x.isScalar()) ? x.constRealScalar<double>() : x.real<double>()[i];
-	result[i]=boost::math::legendre_p<double>(n.constRealScalar<double>(), xt);
+	try{
+		result[i]=boost::math::legendre_p<double>(n.constRealScalar<double>(), xt);
+	}
+	catch(...){
+		throw Exception("Error evaluating legendre");
+	}
       }
     }
     retVec.push_back(result); 
@@ -466,7 +481,12 @@ ArrayVector LegendreFunction(int nargout, const ArrayVector& arg) {
     if( n.isScalar() ){
       for( int i=1; i<=x.length(); ++i ){
 	float xt = (x.isScalar()) ? x.constRealScalar<float>() : x.real<float>()[i];
-	result[i]=boost::math::legendre_p<float>(n.constRealScalar<float>(), xt);
+	try{
+		result[i]=boost::math::legendre_p<float>(n.constRealScalar<float>(), xt);
+	}
+	catch(...){
+		throw Exception("Error evaluating legendre");
+	}
       }
     }
     retVec.push_back(result); 

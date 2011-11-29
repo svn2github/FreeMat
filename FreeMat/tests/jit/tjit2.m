@@ -1,5 +1,5 @@
 function tjit2
-A = zeros(1,1000,'int32');
+A = zeros(1,1000);
 j = 4;
 p = 1f;
 q = 0f;
@@ -15,4 +15,3 @@ for i=1:1000
   end
   A(i) = k;
 end
-

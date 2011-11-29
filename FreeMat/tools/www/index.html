@@ -53,13 +53,14 @@ Open Source. FreeMat is available under the GPL license.
 
 <h1>News</h1>
 <a name="news"/>
-<h2>Latest News - 2011-11-18 - FreeMat 4.1 Released</h2>
+<h2>Latest News - 2011-11-28 - FreeMat 4.1 Released</h2>
 <p>We are pleased to annouce the release of FreeMat 4.1.  This version provides some significant performance improvements over FreeMat 4.0, as well as a host of bug fixes.  Here is a brief list of changes:</p>
 <ul>
 <li>New Just In Time (JIT) compiler -- the new version uses C++ as a backend for code generation, which means a much more substantial set of FreeMat code can now be JIT compiled.  FreeMat uses CLANG-LLVM to provide run time compilation of the generated C++ code.</li>
 <li>Universal builds will no longer be officially generated for Mac OS X.  However, we are working on a build for Mac OS X that can utilize Macports.  This should enable PowerPC Mac OS X users to build their own FreeMat from sources.</li>
 <li>VTK Integration -- FreeMat gets a significant improvement in its ability to perform sophisticated renderings of multidimensional datasets by integrating the Visualization Toolkit (VTK).  Simple FreeMat scripts can access nearly all of VTKs functionality.</li>
-<li>ITK Integration -- FreeMat also wraps a number of image and volume processing functions from the Insight Toolkit (ITK).  This includes filtering, and segmentation algorithms.
+<li>Octave Integration -- FreeMat 4.1 has the initial version of an Octave file parser.  This parser will allow you to use your existing Octave scripts from within FreeMat.  It is still a work in progress, but FreeMat 4.1 ships with a few Octave functions (like factor).</li>
+<!-- <li>ITK Integration -- FreeMat also wraps a number of image and volume processing functions from the Insight Toolkit (ITK).  This includes filtering, and segmentation algorithms. -->
 </ul>
 
 <h1>Screenshots</h1>
@@ -100,11 +101,9 @@ These are quite dated and need to be replaced.
 <h1>Downloads</h1>
 <a name="download"/>
 <ul>
-<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-4.1_Setup.exe"> Click to download FreeMat for Windows <img src="ico-win.png"> </a> </li>
-<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-4.1.dmg"> Click to download FreeMat for Mac OS X (Intel only) <img src="ico-osx-uni.png"> </a> </li>
-<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-4.1-1.fc14.x64.rpm"> Click to download FreeMat for Fedora Core 14 Linux 64 bit (RPM) <img src="ico-tux.png"> </a> </li>
-<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-4.1.tar.gz"> Click to download FreeMat Source Code (All platforms) </a> </li>
-<li> <a href="http://downloads.sourceforge.net/freemat/FreeMat-4.1.pdf"> Click to download FreeMat Manual in PDF form <img src="ico-pdf.gif"> </a> </li>
+<li> <a href="https://sourceforge.net/projects/freemat/files/latest/download"> Click to download FreeMat (will attempt to autodetect which version you need) </a></li>
+<li> <a href="https://sourceforge.net/projects/freemat/files/FreeMat4/"> Click to be taken to the list of all available downloads </a></li>
+<li> <a href="http://sourceforge.net/projects/freemat/files/FreeMat4/FreeMat-4.1.pdf/download"> Click to download FreeMat Manual in PDF form <img src="ico-pdf.gif"> </a> </li>
 </ul>
 
 <h1>Getting Help</h1>
@@ -122,7 +121,7 @@ There are three sources of help (beyond the user manual, of course).
 <a name="documentation"/>
 <ul>
 <!-- <li> The documentation for FreeMat is browseable online here. </li> -->
-<li> The manual is available as a PDF <a href="http://downloads.sourceforge.net/freemat/FreeMat-4.1.pdf"> here </a> </li>
+<li> The manual is available as a PDF <a href="http://sourceforge.net/projects/freemat/files/FreeMat4/FreeMat-4.1.pdf/download"> here </a> </li>
 <li> Built-in interactive help (Online Help), from the FreeMat Console by typing:</li>
 <blockquote>
 <p>--> helpwin</p>

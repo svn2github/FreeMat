@@ -245,7 +245,15 @@ struct OpGamma {
 ArrayVector GammaFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("gamma requires at least one argument");
-  return ArrayVector(UnaryOp<OpGamma>(arg[0]));
+  
+  ArrayVector ret;
+  try{
+	ret = UnaryOp<OpGamma>(arg[0]);
+  }
+  catch(...){
+	throw Exception("Error evaluating gamma function");
+  }
+  return ret;
 }
 
 JitScalarFunc1(gamma,OpGamma::func);

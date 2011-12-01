@@ -38,6 +38,13 @@ struct ExplicitSymbolsDeleter {
 
 static ExplicitSymbolsDeleter Dummy;
 
+/** \brief
+ *
+ * \param
+ * \param
+ * \return
+ *
+ */
 void llvm::sys::DynamicLibrary::AddSymbol(const char* symbolName,
                                           void *symbolValue) {
   if (ExplicitSymbols == 0)

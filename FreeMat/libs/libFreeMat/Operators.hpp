@@ -1199,15 +1199,20 @@ static inline Array StringOp(const Array &arg) {
 
 // These macros are defined here -- they are used to map
 // operators to jit scalar functions under special circumstances.
+#ifdef _WIN32
+    #define EXPORT __declspec(dllexport)
+#else
+    #define EXPORT
+#endif
 
 #define JitScalarFunc2(name,func) \
-  extern "C" { double _jit_ ## name(double a, double b) { return func(a,b); } }
+  extern "C" { EXPORT double _jit_ ## name(double a, double b) { return func(a,b); } }
 
 #define JitScalarFunc1(name,func) \
-  extern "C" { double _jit_ ## name(double a) { return func(a); } }
+  extern "C" { EXPORT double _jit_ ## name(double a) { return func(a); } }
 
 #define JitScalarFunc0(name,func) \
-  extern "C" { double _jit_ ## name() { return func; } }
+  extern "C" { EXPORT double _jit_ ## name() { return func; } }
 
 
 #endif

@@ -8,4 +8,5 @@ ADD_LIBRARY( MatC
 	CArray.cpp
 )
 
-ADD_DEPENDENCIES(MatC jitgen)
+# Uncommenting for now... needs work
+#ADD_DEPENDENCIES(MatC jitgen)

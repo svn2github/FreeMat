@@ -569,6 +569,19 @@ ArrayVector FreadFunction(int nargout, const ArrayVector& arg) {
 //fwrite(fp,A,'single');
 //fclose(fp);
 //@>
+//@@Tests
+//@{ test_file1.m
+//% Test reading and writing a scalar to a file
+//function test_val = test_file1
+//fp = fopen('junk.dat','w');
+//p = uint32(4);
+//fwrite(fp,p);
+//fclose(fp);
+//fp = fopen('junk.dat','r');
+//q = fread(fp,1,'uint32');
+//fclose(fp);
+//return (p==q);
+//@}
 //@@Signature
 //function fwrite FwriteFunction
 //inputs handle A type
@@ -606,6 +619,7 @@ ArrayVector FwriteFunction(int nargout, const ArrayVector& arg) {
     x = x.toClass(processPrecisionString(prec));
   }
   if (x.isString()) x = x.toClass(UInt8);
+  x.ensureNotScalarEncoded();
   switch (x.dataClass()) {
   default: throw Exception("data type not supported for fwrite");
     MacroExpandCasesSimple(MacroWrite);

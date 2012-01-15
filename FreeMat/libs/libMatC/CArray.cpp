@@ -658,6 +658,22 @@ bool carray_any(void *interp, void *p, bool *flag)
     }
 }
 
+extern "C" EXPORT
+bool carray_all(void *interp, void *p, bool *flag)
+{
+  try
+    {
+      CArray *pp = cast(p);
+      return RealAllNonZeros(pp->sp);
+    }
+  catch (Exception &e)
+    {
+      *flag = true;
+      reinterpret_cast<Interpreter*>(interp)->setLastErrorString(e.msg());
+      return false;
+    }
+}
+
 #define WrapUnaryOp(wrapped,func)					\
   void* wrapped(void* interp, void *a, bool *flag)			\
   {									\

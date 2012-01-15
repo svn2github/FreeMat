@@ -105,6 +105,7 @@ inline Array EmptyConstructor() {return Array(Double);}
 
 bool TestForCaseMatch(const Array &s, const Array &r);
 bool RealAllZeros(const Array &t);
+bool RealAllNonZeros(const Array &t);
 
 Type ScalarType(Type x);
 

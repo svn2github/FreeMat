@@ -512,6 +512,13 @@ bool AllZeros(const BasicArray<T>& arg) {
 }
 
 template <typename T>
+bool AllNonZeros(const BasicArray<T>& arg) {
+  for (index_t i=1;i<=arg.length();i++)
+    if (arg.getNoBoundsCheck(i) == T(0)) return false;
+  return true;
+}
+
+template <typename T>
 bool AnyNotFinite(const BasicArray<T>& arg) {
   for (index_t i=1;i<=arg.length();i++) 
     if (!IsFinite(arg.getNoBoundsCheck(i))) return true;

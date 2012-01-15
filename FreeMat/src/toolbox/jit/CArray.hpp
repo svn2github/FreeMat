@@ -107,6 +107,7 @@ extern "C"
   void* carray_transpose(void* interp, void *a, bool *flag);
   void* carray_dottranspose(void* interp, void *a, bool *flag);
   bool carray_any(void* interp, void *a, bool *flag);
+  bool carray_all(void* interp, void *a, bool *flag);
   // Compute iterations for a loop
   double num_for_loop_iter(double first, double step, double last);
   void* carray_invoke_1(void* interp, void* func, void* arg, bool *flag);
@@ -343,6 +344,7 @@ inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &
 }
 
 template <class T> bool Any(void*, T a) {return ((bool) a);}
+template <class T> bool All(void*, T a) {return ((bool) a);}
 template <class T> bool Not(void*, T a) {return !((bool) a);}
 template <class T> T Neg(void*, T a) {return -a;}
 template <class T> T Pos(void*, T a) {return a;}
@@ -461,6 +463,14 @@ template <class T> bool Any(void *interp, const JITArray<T> &a)
 {
   bool flag = false;
   bool ret = carray_any(interp,a.data(),&flag);
+  if (flag) throw JITException();
+  return ret;
+}
+
+template <class T> bool All(void *interp, const JITArray<T> &a) 
+{
+  bool flag = false;
+  bool ret = carray_all(interp,a.data(),&flag);
   if (flag) throw JITException();
   return ret;
 }

@@ -1804,7 +1804,7 @@ void Interpreter::switchStatement(const Tree & t) {
 //@]
 //Note that a conditional expression is considered true if
 //the real part of the result of the expression contains
-//any non-zero elements (this strange convention is adopted
+//all non-zero elements (this strange convention is adopted
 //for compatibility with MATLAB).
 //@@Examples
 //Here is an example of a function that uses an @|if| statement
@@ -1863,17 +1863,26 @@ void Interpreter::switchStatement(const Tree & t) {
 //  test_val = 0;
 //end
 //@}
+//@{ test_if4.m
+//% test the partially true args
+//function test_val = test_if4
+//if ([0,1,1,0])
+//  test_val = 0;
+//else
+//  test_val = 1;
+//end
+//@}
 //!
 //Works
 void Interpreter::ifStatement(const Tree & t) {
-  bool condtest = !(RealAllZeros(expression(t.first())));
+  bool condtest = RealAllNonZeros(expression(t.first()));
   if (condtest) {
     block(t.second());
     return;
   } else {
     int n=2;
     while (n < t.numChildren() && t.child(n).is(TOK_ELSEIF)) {
-      if (!(RealAllZeros(expression(t.child(n).first())))) {
+      if (RealAllNonZeros(expression(t.child(n).first()))) {
 	block(t.child(n).second());
 	return;
       }
@@ -2036,7 +2045,7 @@ void Interpreter::whileStatement(const Tree & t) {
   const Tree & codeBlock(t.second());
   bool breakEncountered = false;
   Array condVar(expression(testCondition));
-  bool conditionTrue = !RealAllZeros(condVar);
+  bool conditionTrue = RealAllNonZeros(condVar);
   context->enterLoop();
   breakEncountered = false;
   while (conditionTrue && !breakEncountered) {
@@ -2054,7 +2063,7 @@ void Interpreter::whileStatement(const Tree & t) {
     }
     if (!breakEncountered) {
       condVar = expression(testCondition);
-      conditionTrue = !RealAllZeros(condVar);
+      conditionTrue = RealAllNonZeros(condVar);
     }
   }
   context->exitLoop();

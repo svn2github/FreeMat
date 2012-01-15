@@ -220,6 +220,7 @@ void force_linkage()
   carray_transpose(0,0,0);
   carray_dottranspose(0,0,0);
   carray_any(0,0,0);
+  carray_all(0,0,0);
   carray_invoke_1(0,0,0,0);
   carray_invoke_2(0,0,0,0,0);
 }

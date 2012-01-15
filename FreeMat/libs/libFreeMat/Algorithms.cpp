@@ -1127,6 +1127,26 @@ bool RealAllZeros(const Array &t) {
 }
 
 template <typename T>
+static bool RealAllNonZeros(const Array &t) {
+  if (t.isScalar()) 
+    return (t.constRealScalar<T>() != 0);
+  else if (t.isSparse())
+    return AllNonZeros(t.asDenseArray().constReal<T>());
+  else
+    return AllNonZeros(t.constReal<T>());
+}
+
+#define MacroRealNonZeros(ctype,cls)		\
+  case cls: return RealAllNonZeros<ctype>(t);
+
+bool RealAllNonZeros(const Array &t) {
+  switch (t.dataClass()) {
+  default: throw Exception("Unhandled case -- argument must be numeric");
+    MacroExpandCasesSimple(MacroRealNonZeros);
+  }
+}
+
+template <typename T>
 static Array TPermute(const Array &x, const NTuple &dp) {
   if (x.allReal()) 
     return Array(Permute(x.constReal<T>(),dp));

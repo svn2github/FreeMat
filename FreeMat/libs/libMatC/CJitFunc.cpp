@@ -163,7 +163,7 @@ void CWriter::Upload(CSymbol sym) {
 
 void CWriter::Indent() {for (int i=0;i<m_indent;i++) o << "  "; }
 void CWriter::Operator(std::string op) { o << op; }
-void CWriter::BeginWhile() { o << "while (Any(interp,";}
+void CWriter::BeginWhile() { o << "while (All(interp,";}
 void CWriter::EndWhile() {o << "))";}
 void CWriter::BeginParen() { o << "("; }
 void CWriter::EndParen() { o << ")"; }
@@ -186,9 +186,9 @@ CSymbol CWriter::BeginLoop(CSymbol loopvar, CSymbol loopcount) {
   BeginScope();
   return loopvar;
 }
-void CWriter::BeginIf() {Indent(); o << "if (Any(interp,";}
+void CWriter::BeginIf() {Indent(); o << "if (All(interp,";}
 void CWriter::EndIf() {o << "))\n";}
-void CWriter::BeginElseIf() {Indent(); o << "else if (Any(interp,";};
+void CWriter::BeginElseIf() {Indent(); o << "else if (All(interp,";};
 void CWriter::EndElseIf() {o << "))\n";}
 void CWriter::BeginElse() {Indent(); o << "else\n";}
 void CWriter::EndElse() {}

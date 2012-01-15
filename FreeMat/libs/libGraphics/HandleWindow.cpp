@@ -135,7 +135,8 @@ void HandleWindow::closeEvent(QCloseEvent* e) {
 }
 
 void HandleWindow::redraw() {
-  child->updateGL();
+  child->update();
+  //  child->updateGL();
 }
   
 bool HandleWindow::event(QEvent* e) {
@@ -154,8 +155,8 @@ HandleWindow::HandleWindow(unsigned ahandle, Interpreter *eval) : QMainWindow(),
   char buffer[1000];
   sprintf(buffer,"Figure %d",ahandle+1);
   setWindowTitle(buffer);
-  //child = new BaseFigureQt(this,hfig);
-  child = new BaseFigureGL(this,hfig);
+  child = new BaseFigureQt(this,hfig);
+  //child = new BaseFigureGL(this,hfig);
   band = NULL;
   zoom_active = false;
   setMinimumSize(50,50);

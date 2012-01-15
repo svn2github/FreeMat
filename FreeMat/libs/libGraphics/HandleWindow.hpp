@@ -55,7 +55,7 @@ protected:
   unsigned handle;
   bool glActive;
   //QGLWidget *glchild;
-  QGLWidget *child;
+  QWidget *child;
   HandleFigure *hfig;
   //QStackedWidget *layout;
   QToolBar *toolBar;

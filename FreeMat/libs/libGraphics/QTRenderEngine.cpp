@@ -606,14 +606,14 @@ void QTRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp,
   float data_x2 = xp->Data()[1];
   float data_y2 = yp->Data()[1];
 
-  qDebug() << "data = " << data_x1 << " " << data_y1 << " " << data_x2 << " " << data_y2;
+  //  qDebug() << "data = " << data_x1 << " " << data_y1 << " " << data_x2 << " " << data_y2;
 
   float lim_x1 = xlim->Data()[0];
   float lim_y1 = ylim->Data()[0];
   float lim_x2 = xlim->Data()[1];
   float lim_y2 = ylim->Data()[1];
 
-  qDebug() << "lib = " << lim_x1 << " " << lim_y1 << " " << lim_x2 << " " << lim_y2;
+  //  qDebug() << "lib = " << lim_x1 << " " << lim_y1 << " " << lim_x2 << " " << lim_y2;
 
   // Create the intersection of lim and data
   float vis_x1 = qMax(qMin(lim_x1,data_x2),data_x1);
@@ -621,7 +621,7 @@ void QTRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp,
   float vis_y1 = qMax(qMin(lim_y1,data_y2),data_y1);
   float vis_y2 = qMax(qMin(lim_y2,data_y2),data_y1);
 
-  qDebug() << "vis = " << vis_x1 << " " << vis_y1 << " " << vis_x2 << " " << vis_y2;
+  //  qDebug() << "vis = " << vis_x1 << " " << vis_y1 << " " << vis_x2 << " " << vis_y2;
   
   // Map these to physical coordinates
   float img_x1 = (vis_x1-data_x1)*(pic.width()-1)/(data_x2-data_x1);
@@ -629,7 +629,7 @@ void QTRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp,
   float img_y1 = (vis_y1-data_y1)*(pic.height()-1)/(data_y2-data_y1);
   float img_y2 = (vis_y2-data_y1)*(pic.height()-1)/(data_y2-data_y1);
 
-  qDebug() << "img = " << img_x1 << " " << img_y1 << " " << img_x2 << " " << img_y2;
+  //  qDebug() << "img = " << img_x1 << " " << img_y1 << " " << img_x2 << " " << img_y2;
 
   if (yflip) {
     vis_y1 = lim_y1+lim_y2-vis_y1;
@@ -653,8 +653,8 @@ void QTRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp,
     img_x1 = img_x1_t;
   }
 
-  qDebug() << "vis = " << vis_x1 << " " << vis_y1 << " " << vis_x2 << " " << vis_y2;
-  qDebug() << "img = " << img_x1 << " " << img_y1 << " " << img_x2 << " " << img_y2;
+  //  qDebug() << "vis = " << vis_x1 << " " << vis_y1 << " " << vis_x2 << " " << vis_y2;
+  //  qDebug() << "img = " << img_x1 << " " << img_y1 << " " << img_x2 << " " << img_y2;
   
   img_x2++;
   img_y2++;
@@ -664,8 +664,8 @@ void QTRenderEngine::drawImage(HPTwoVector* xp, HPTwoVector* yp,
   QRectF target(topLeft,botRight);
   QRectF source(QPointF(img_x1,img_y1),QPointF(img_x2,img_y2));
 
-  qDebug() << "topleft = " << topLeft;
-  qDebug() << "botRight = " << botRight;
+  //  qDebug() << "topleft = " << topLeft;
+  //  qDebug() << "botRight = " << botRight;
 
   float xscale = xflip ? -1 : 1;
   float yscale = (!yflip) ? -1 : 1;

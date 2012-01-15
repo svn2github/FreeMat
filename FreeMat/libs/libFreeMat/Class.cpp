@@ -965,8 +965,11 @@ Array IndexExpressionToStruct(Interpreter* eval, const Tree & t, Array r) {
       //        m = eval->varExpressionList(t[index].children(),r);
       //        // Scan through the expressions... adjust for "colon" calls
       //        AdjustColonCalls(m,t[index].children());
-      if (m.size() == 0) 
-	throw Exception("Expected indexing expression!");
+
+      // Removing to fix bug 3354203
+      //      if (m.size() == 0) 
+      //	throw Exception("Expected indexing expression!");
+
       // Take the arguments and push them into a cell array...
       ArrayMatrix q;	q.push_back(m);
       type_args.push_back(Array(QString("()")));

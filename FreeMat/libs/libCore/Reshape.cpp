@@ -30,7 +30,16 @@
 //   y = reshape(x,d1,d2,...,dn).
 //@]
 //The resulting array has the given dimensions, and is filled with
-//the contents of @|x|.  The type of @|y| is the same as @|x|.  
+//the contents of @|x|.  The type of @|y| is the same as @|x|.
+//
+//As a special case, you can specify exactly one of the dimensions
+//as an empty matrix @|[]|, in which case FreeMat will compute the
+//size required in that dimension to make the reshape work.  The
+//syntax for this version is
+//@[
+//   y = reshape(x,d1,...,da,[],db,...,dn)
+//@]
+//
 //The second syntax specifies the array dimensions as a vector,
 //where each element in the vector specifies a dimension length:
 //@[
@@ -72,6 +81,14 @@
 //  c = reshape(a,3,2);
 //  test_val = issame(b,c);
 //@} 
+//@{ test_reshape2.m
+//function test_val = test_reshape2
+//  a = rand(3,4);
+//  b = reshape(a,6,2);
+//  c = reshape(a,6,[]);
+//  d = reshape(a,[],2);
+//  test_val = issame(b,c) && issame(b,d);
+//@}
 //@@Signature
 //function reshape ReshapeFunction jitsafe
 //inputs x varargin
@@ -83,7 +100,30 @@ ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 1) return arg;
   ArrayVector arg_copy(arg);
   arg_copy.pop_front();
+  // Check for the special case of exactly one of the dimensions being
+  // empty.
+  int empty_count = 0;
+  int empty_slot = 0;
+  for (int i=0;i<arg_copy.size();i++)
+    if (arg_copy[i].isEmpty()) 
+      {
+	empty_count++;
+	empty_slot = i;
+      }
+  if (empty_count > 1)
+    throw Exception("reshape can take exactly one empty dimension argument");
+  if (empty_count == 1)
+    arg_copy[empty_slot] = Array(int(1));
   NTuple dims(ArrayVectorAsDimensions(arg_copy));
+  if (empty_count == 1)
+    {
+      int A_count = arg[0].length();
+      int Desired_count = dims.count();
+      // Check to see if A_count is a multiple of Desired_count
+      if (A_count % Desired_count != 0)
+	throw Exception("reshape cannot be done");
+      dims[empty_slot] = int(A_count/Desired_count);
+    }
   Array y(arg[0]);
   y.reshape(dims);
   return ArrayVector(y);

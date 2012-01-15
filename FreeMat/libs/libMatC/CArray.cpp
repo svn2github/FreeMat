@@ -146,6 +146,7 @@ extern "C" EXPORT
 void* carray_empty()
 {
   CArray *cp = new CArray;
+  cp->sp = EmptyConstructor();
   return cp;
 }
 

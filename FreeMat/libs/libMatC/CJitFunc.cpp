@@ -731,6 +731,12 @@ CTypeInfo CJitFunc::compile_rowdef(const Tree & t) {
 
 CTypeInfo CJitFunc::compile_matdef(const Tree & t) {
   int N = t.numChildren();
+  if (N == 0)
+    {
+      cs.BeginFuncCall("JITArray<double>");
+      cs.EndFuncCall();
+      return CTypeInfo(CDOUBLE,false);
+    }
   for (int i=0;i<N-1;i++)
     {
       cs.BeginFuncCall("VCat");

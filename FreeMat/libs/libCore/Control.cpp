@@ -546,6 +546,16 @@
 //    B(i) = A(i);
 //  end
 //@}
+//@{ jit_test054.m
+//function A = jit_test054
+//  A = [];
+//  for i=1:1000; A = []; end
+//@}
+//@{ jit_test055.m
+//function A = jit_test055
+//  A = [];
+//  for i=1:1000; A = 3+[]; end
+//@}
 //@{ test_jit.m
 //function success = test_jit
 //  tests = dir('jit_test*.m');

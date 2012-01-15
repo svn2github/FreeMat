@@ -186,7 +186,7 @@ Tree Parser::functionDefinition() {
       } else 
 	ident = identifier();
       args.addChild(ident);
-      if (match(',')) consume();
+      if (!match(')')) expect(',');
     }
     expect(')');
     root.addChild(args);
@@ -356,7 +356,7 @@ void Parser::indexingExpressions(Tree &root, bool blankRefOK) {
 	  sub.addChild(keyword());
 	else
 	  sub.addChild(expression());
-	if (match(',')) consume();
+	if (!match(')')) expect(',');
       }
       if ((sub.numChildren() == 0) && (!blankRefOK)) 
 	{
@@ -374,7 +374,7 @@ void Parser::indexingExpressions(Tree &root, bool blankRefOK) {
 	  sub.addChild(expect(':'));
 	else
 	  sub.addChild(expression());
-	if (match(',')) consume();
+	if (!match('}')) expect(',');
       }
       if (sub.numChildren() == 0) 
 	serror("The expression A{} is not allowed.");

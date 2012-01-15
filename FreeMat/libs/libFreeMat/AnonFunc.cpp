@@ -88,7 +88,17 @@ ArrayVector AnonFuncSubsrefFunction(int nargout, const ArrayVector& arg, Interpr
   const Array &var(LOOKUP(arg[0],"workspace"));
   const StructArray &sp(var.constStructPtr());
   Context *context = eval->getContext();
-  context->pushScope("anonymous");
+  // Borrow the callers scope name and detail... hope this doesn't
+  // have unintended side effects... err...
+  QString scopeName;
+  QString scopeDetail;
+  {
+    ParentScopeLocker lock(context);
+    scopeName = context->scopeName();
+    scopeDetail = context->scopeDetailString();
+  }
+  context->pushScope(scopeName);
+  context->setScopeDetailString(scopeDetail);
   for (int i=0;i<sp.fieldCount();i++)
     context->insertVariableLocally(sp.fieldName(i),sp[i].get(1));
   // Retrieve the arguments...
@@ -129,8 +139,17 @@ ArrayVector AnonFuncFevalFunction(int nargout, const ArrayVector& arg, Interpret
   const Array &var(LOOKUP(arg[0],"workspace"));
   const StructArray &sp(var.constStructPtr());
   Context *context = eval->getContext();
-  context->pushScope("anonymous");
-  context->setScopeDetailString(LOOKUP(arg[0],"expr").asString());
+  // Borrow the callers scope name and detail... hope this doesn't
+  // have unintended side effects... err...
+  QString scopeName;
+  QString scopeDetail;
+  {
+    ParentScopeLocker lock(context);
+    scopeName = context->scopeName();
+    scopeDetail = context->scopeDetailString();
+  }
+  context->pushScope(scopeName);
+  context->setScopeDetailString(scopeDetail);
   for (int i=0;i<sp.fieldCount();i++)
     context->insertVariableLocally(sp.fieldName(i),sp[i].get(1));
   // Assign the arguments to internal variables.

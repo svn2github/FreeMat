@@ -167,6 +167,107 @@ class WriterGroup(Writer):
             writer.writeindex()
         return
 
+
+class DocWriter(Writer):
+    myfile = []
+    sectables = {}
+    eqnlist = []
+    verbatim = False
+    modulename = ''
+    groupname = ''
+    ignore = False
+    section_descriptors = {}
+    section_order = []
+    sourcepath = ''
+    fp = -1
+    def expand_codes(self,text):
+        text = re.sub(r'\@\|([^\|]*)\|','<tt>'r'\1''</tt>',text)
+        return text
+    def setsectioninfo(self,section_descriptors,section_order):
+        self.section_descriptors = section_descriptors
+        self.section_order = section_order
+        return
+    def begingroup(self,groupname):
+        self.groupname = groupname
+        if (groupname.lower() == 'tests'):
+            self.ignore = True
+        else:
+            self.fp.write('\\section %s\n'%(groupname))
+            self.ignore = False
+        return
+    def beginmodule(self,sourcepath,modname,moddesc,secname):
+        self.moddesc = moddesc
+        self.secname = secname.lower()
+        self.modulename = modname.lower()
+        self.sourcepath = sourcepath
+        self.eqnlist = []
+        filename = sourcepath + '/help/doc/' + self.secname + '_' + self.modulename + '.doc'
+        self.fp = open(filename,'w')
+        self.fp.write('/*!\n');
+        self.fp.write('\\addtogroup %s\n'%(self.secname))
+        self.fp.write('\\page %s %s\n'%(self.secname+'_'+self.modulename,moddesc))
+        self.fp.write('<P>\n')
+        self.fp.write('Section: <A HREF=sec_%s.html> %s </A>\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
+        self.verbatim = False
+        self.ignore = False
+        return
+    def beginverbatim(self):
+        self.fp.write('\\verbatim\n')
+        self.verbatim = True
+        return
+    def docomputeblock(self,cmds,errorsexpected,filename):
+        (head,tail) = os.path.split(filename)
+        self.fp.write('\\verbinclude ' + tail + '.out \n')
+        return
+    def doenumerate(self,enums):
+        self.fp.write('<OL>\n')
+        for item in enums:
+            self.fp.write('<LI> %s </LI>\n'%(self.expand_codes(item)))
+        self.fp.write('</OL>\n')
+        return
+    def doequation(self,eqn):
+        self.fp.write('\\f[\n%s\\f]\n'%(eqn))
+        return
+    def dofigure(self,figname):
+        self.fp.write('\image html %s.png\n'%(figname))
+        self.fp.write('\image latex %s.eps\n'%(figname))
+        return
+    def dofile(self,filename,text):
+        if (self.ignore):
+            return
+        self.fp.write('\\verbatim\n     %s\n\\endverbatim\n'%(filename))
+        self.fp.write('\\verbinclude ' + filename + '\n')
+        return
+    def doitemize(self,enums):
+        self.fp.write('<UL>\n')
+        for item in enums:
+            self.fp.write('<LI> %s </LI>\n'%(self.expand_codes(item)))
+        self.fp.write('</UL>\n')
+        return
+        return
+    def endmodule(self):
+        self.fp.write('*/\n')
+        self.fp.close()
+        self.fp = -1
+        return
+    def endverbatim(self):
+        self.fp.write('\\endverbatim\n')
+        self.verbatim = False
+        return
+    def outputtext(self,text):
+        if (self.ignore):
+            return
+        if (self.verbatim):
+            self.fp.write(text)
+        else:
+            self.fp.write(self.expand_codes(text))
+        return
+    def writeindex(self):
+        return
+    def writesectiontable(self,secname,modules):
+        return
+
+
 def latin_filter(text):
     text = text.replace('&','&amp;')
     text = text.replace('<','&lt;')
@@ -864,6 +965,7 @@ class HelpGen:
         self.writers.addwriter(TextWriter())
         self.writers.addwriter(BBTestWriter())
         self.writers.addwriter(HTMLWriter())
+        self.writers.addwriter(DocWriter())
         self.writers.addwriter(LaTeXWriter())
         self.writers.addwriter(TestWriter())
         self.sourcepath = sourcepath

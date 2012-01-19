@@ -1128,6 +1128,7 @@ bool RealAllZeros(const Array &t) {
 
 template <typename T>
 static bool RealAllNonZeros(const Array &t) {
+  if (t.isEmpty()) return false;
   if (t.isScalar()) 
     return (t.constRealScalar<T>() != 0);
   else if (t.isSparse())

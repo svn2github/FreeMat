@@ -201,13 +201,16 @@ class DocWriter(Writer):
         self.modulename = modname.lower()
         self.sourcepath = sourcepath
         self.eqnlist = []
-        filename = sourcepath + '/help/doc/' + self.secname + '_' + self.modulename + '.doc'
+        makepath(sourcepath+'/doc/'+self.secname+'/')
+        filename = sourcepath + '/doc/' + self.secname + '/' + self.modulename + '.doc'
+        if (not self.secname in self.sectables):
+            self.sectables[self.secname] = {}
+        self.sectables[self.secname][self.modulename] = self.moddesc;        
         self.fp = open(filename,'w')
         self.fp.write('/*!\n');
-        self.fp.write('\\addtogroup %s\n'%(self.secname))
         self.fp.write('\\page %s %s\n'%(self.secname+'_'+self.modulename,moddesc))
-        self.fp.write('<P>\n')
-        self.fp.write('Section: <A HREF=sec_%s.html> %s </A>\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
+        self.fp.write('<p>\n')
+        self.fp.write('Section: \\ref %s "%s"\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
         self.verbatim = False
         self.ignore = False
         return
@@ -217,7 +220,15 @@ class DocWriter(Writer):
         return
     def docomputeblock(self,cmds,errorsexpected,filename):
         (head,tail) = os.path.split(filename)
-        self.fp.write('\\verbinclude ' + tail + '.out \n')
+        # Read the fragment file in
+        fragfile = open(filename,'rU')
+        self.fp.write('\n\if FRAGMENT\n')
+        self.fp.write(tail + '\n')
+        for line in fragfile:
+            self.fp.write(line)
+        self.fp.write('\endif\n\n')
+        fragfile.close()
+        self.fp.write('\n\\verbinclude ' + tail + '.out \n\n')
         return
     def doenumerate(self,enums):
         self.fp.write('<OL>\n')
@@ -263,8 +274,34 @@ class DocWriter(Writer):
             self.fp.write(self.expand_codes(text))
         return
     def writeindex(self):
+        for secname in self.section_descriptors:
+            if secname in self.sectables:
+                self.writesectiontable(secname,self.sectables[secname])
+        f = open('%s/doc/index.doc'%(self.sourcepath),'w')
+        f.write('/*!\n')
+        f.write('\\mainpage FreeMat Documentation\n')
+        f.write('\n')
+        f.write('<H2> Documentation Sections </H2>\n')
+        f.write('<UL>\n')
+        for secname in self.section_order:
+            if (len(secname) > 0):
+                f.write('<LI> \\subpage sec_%s "%s" </LI>\n'%(secname,self.section_descriptors[secname]))
+        f.write('</UL>\n')
+        f.write('*/')
+        f.close()
         return
     def writesectiontable(self,secname,modules):
+        f = open('%s/doc/sec_%s.doc'%(self.sourcepath,secname),'w')
+        f.write('/*!\n')
+        f.write('\\page sec_%s %s\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
+        f.write('\n')
+        f.write('<P>\n')
+        f.write('<UL>\n')
+        for module in sorted(modules.iterkeys()):
+            f.write('<LI> \\subpage %s_%s "%s" </LI>\n'%(secname,module,self.sectables[secname][module][:-1]))
+        f.write('</UL>\n')
+        f.write('*/')
+        f.close()
         return
 
 
@@ -1099,7 +1136,7 @@ class HelpGen:
         if (re.search('(\+octave)',filename)):
             print('skipped');
             return
-        self.fp = open(filename,'r')
+        self.fp = open(filename,'rU')
         self.finished = False
         while not self.finished:
             self.pline = self.fp.readline()

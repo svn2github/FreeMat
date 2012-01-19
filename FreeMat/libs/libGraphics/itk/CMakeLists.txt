@@ -39,6 +39,9 @@ ThresholdLabeler.cpp
 WhiteTopHat.cpp
 )
 
+set(CMAKE_CXX_FLAGS "-fpermissive")
+#set_source_files_properties(AdaptiveHistogramEqualization.cpp PROPERTIES COMPILE_FLAGS -fpermissive)
+
 add_custom_command(
 	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Loader.cpp
 	DEPENDS ${ITK_SRC}

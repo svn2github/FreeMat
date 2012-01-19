@@ -246,8 +246,10 @@ class DocWriter(Writer):
     def dofile(self,filename,text):
         if (self.ignore):
             return
+        self.fp.write('\n\\if FILE\n')
+        self.fp.write(filename+'\n%s\\endif\n'%(text))
         self.fp.write('\\verbatim\n     %s\n\\endverbatim\n'%(filename))
-        self.fp.write('\\verbinclude ' + filename + '\n')
+        self.fp.write('\n\\verbinclude ' + filename + '\n\n')
         return
     def doitemize(self,enums):
         self.fp.write('<UL>\n')
@@ -291,7 +293,8 @@ class DocWriter(Writer):
         f.close()
         return
     def writesectiontable(self,secname,modules):
-        f = open('%s/doc/sec_%s.doc'%(self.sourcepath,secname),'w')
+        makepath(self.sourcepath+'/doc/sections/')
+        f = open('%s/doc/sections/sec_%s.doc'%(self.sourcepath,secname),'w')
         f.write('/*!\n')
         f.write('\\page sec_%s %s\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
         f.write('\n')

@@ -210,7 +210,7 @@ class DocWriter(Writer):
         self.fp.write('/*!\n');
         self.fp.write('\\page %s %s\n'%(self.secname+'_'+self.modulename,moddesc))
         self.fp.write('<p>\n')
-        self.fp.write('Section: \\ref %s "%s"\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
+        self.fp.write('Section: \\ref sec_%s "%s"\n'%(secname.lower(),self.section_descriptors[secname.lower()]))
         self.verbatim = False
         self.ignore = False
         return
@@ -241,7 +241,7 @@ class DocWriter(Writer):
         return
     def dofigure(self,figname):
         self.fp.write('\image html %s.png\n'%(figname))
-        self.fp.write('\image latex %s.eps\n'%(figname))
+        self.fp.write('\image latex %s.eps "%s" width=12cm\n'%(figname,figname))
         return
     def dofile(self,filename,text):
         if (self.ignore):

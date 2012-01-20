@@ -42,7 +42,7 @@ def visit(arg, dirname, names):
                 if (line.find('if FRAGMENT') != -1):
                     fragfilename = f.readline()[:-1]
                     print('Fragment %s'%(fragfilename))
-                    q = open(basedir+'/fragments/'+fragfilename,'w')
+                    q = open(basedir+'/doc/fragments/'+fragfilename,'w')
                     line = f.readline()
                     while (line.find(r'\endif') == -1):
                         q.write(line)
@@ -51,7 +51,7 @@ def visit(arg, dirname, names):
                 if (line.find('if FILE') != -1):
                     filefilename = f.readline()[:-1]
                     print('File %s'%(filefilename))
-                    q = open(basedir+'/fragments/'+filefilename,'w')
+                    q = open(basedir+'/doc/fragments/'+filefilename,'w')
                     line = f.readline()
                     while (line.find(r'\endif') == -1):
                         q.write(line)
@@ -60,7 +60,7 @@ def visit(arg, dirname, names):
                 line = f.readline()
 
 basedir = sys.argv[1]
-makepath(basedir+'/fragments/')
+makepath(basedir+'/doc/fragments/')
 os.path.walk(basedir, visit, '')
 
 

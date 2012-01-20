@@ -1151,10 +1151,12 @@ QString FormatListAsString() {
 //x = linspace(-1,1);
 //y = cos(5*pi*x);
 //plot(x,y,'r-');
+//print('printfig1.eps')
 //print('printfig1.jpg')
 //print('printfig1.png')
 //@>
-//which creates two plots @|printfig1.png|, which is a Portable
+//which creates three plots @|printfig.eps|, which is an Encapsulated PostScript
+//file, @|printfig1.png|, which is a Portable
 //Net Graphics file, and @|printfig1.jpg| which is a JPEG file.
 //@figure printfig1
 //@@Signature

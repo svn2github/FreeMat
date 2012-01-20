@@ -258,6 +258,11 @@ void MainApp::PathTool() {
 int __global_return_value = 0;
 
 //!
+//@Module SAVERETVALUE Save Return Value Of Function
+//@@Section FREEMAT
+//@@Usage
+//saves the given argument value for return when FreeMat (the application)
+//exits.
 //@@Signature
 //function saveretvalue SaveRetValueFunction
 //inputs value

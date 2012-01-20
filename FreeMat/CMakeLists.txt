@@ -548,6 +548,12 @@ add_custom_target( helpgen
 	VERBATIM
 	)
 
+add_custom_target( fragdb
+  COMMENT "Building fragment database"
+  COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/doc/fragments"
+  VERBATIM
+  )
+
 add_custom_target( helpgen_fast
 	COMMENT "Building help files (no fragment generation)"
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
@@ -574,10 +580,13 @@ add_custom_target( jitgen
 	VERBATIM
 	)
 
-#add_custom_target( fraggen
-#	COMMENT "Generating help files"
-#	VERBATIM
-#	)
+add_custom_target( fraggen
+	COMMENT "Extracting fragments"
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/extract_fragments.py ${CMAKE_SOURCE_DIR}
+	VERBATIM
+	)
 
 WRITE_OUT_ALL_VARIABLES()
 
+add_subdirectory(tests/suite)
+enable_testing()

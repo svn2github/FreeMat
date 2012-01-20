@@ -40,6 +40,8 @@ MainApp *m_app;
 FuncMode *m_func;
 ScriptMode *m_script;
 
+extern int __global_return_value;
+
 void usage() {
   printf("%s\n  Command Line Help\n",qPrintable(Interpreter::getVersionString()));
   printf(" You can invoke FreeMat with the following command line options:\n");
@@ -180,5 +182,6 @@ int main(int argc, char *argv[]) {
  		     m_app->GetKeyManager(),SLOT(QueueSilent(QString)));
     QTimer::singleShot(0,m_script,SLOT(Fire()));
   }
-  return app->exec();
+  app->exec();
+  return __global_return_value;
 }

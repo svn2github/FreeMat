@@ -255,6 +255,22 @@ void MainApp::PathTool() {
   PathToolFunction(0,dummy,m_eval);
 }
 
+int __global_return_value = 0;
+
+//!
+//@@Signature
+//function saveretvalue SaveRetValueFunction
+//inputs value
+//outputs none
+//!
+ArrayVector SaveRetValueFunction(int nargout, const ArrayVector& arg)
+{
+  if (arg.size() == 0) throw Exception("saveretvalue requires an argument");
+  __global_return_value = arg[0].asInteger();
+  return ArrayVector();
+}
+
+
 //!
 //@Module EDITOR Open Editor Window
 //@@Section FREEMAT

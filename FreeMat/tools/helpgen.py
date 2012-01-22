@@ -763,6 +763,11 @@ class TestWriter(Writer):
         funcname = 'wbtest_%s_%d'%(self.modulename,self.num)
         makepath('%s/toolbox/test/reference'%(self.sourcepath))
         # Write the test file
+        clistname = self.sourcepath + '/tests/' + self.secname + '/CMakeLists.txt'
+        makepath(clistname)
+        zp = open(clistname,'a+')
+        zp.write('ADD_TEST(%s ${FreeMat_Loc} "-e" "-nogui" "-nogreet" "-p" "${CMAKE_SOURCE_DIR}/tests/%s" "-f" "wb_test(\'%s\',\'%s\',${CMAKE_SOURCE_DIR}/tests/reference)")\n'%(funcname,self.secname,text,funcname))
+        zp.close()
         filename = '%s/toolbox/test/%s.m'%(self.sourcepath,funcname)
         fp = open(filename,'w')
         if (not fp):
@@ -1070,6 +1075,15 @@ class HelpGen:
         zp.close()
         zp = open(self.sourcepath + '/toolbox/test/' + fname,'w+')
         zp.write(fn)
+        zp.close()
+        pname = self.sourcepath + '/tests/' + self.secname + '/' + fname
+        makepath(pname)
+        zp = open(pname,'w')
+        zp.write(fn)
+        zp.close()
+        clistname = self.sourcepath + '/tests/' + self.secname + '/CMakeLists.txt'
+        zp = open(clistname,'a')
+        zp.write('ADD_TEST(%s ${FreeMat_Loc} "-e" "-nogui" "-nogreet" "-p" "${CMAKE_SOURCE_DIR}/tests/%s" "-f" "wrap_test(\'%s\')")\n'%(fname[:-2],self.secname,fname[:-2]))
         zp.close()
         if (not re.search('test_\w+',fname)):
             self.writers.dofile(fname,fn)

@@ -54,6 +54,8 @@ void usage() {
 #endif
   printf("     -noX          Disables the graphics subsystem.\n");
   printf("     -nogreet      Skips the greeting when starting.\n");
+  printf("     -t            Test mode -- by default FreeMat will\n");
+  printf("                   exit with code 1 in this mode.\n");
   printf("     -e            uses a dumb terminal interface \n");
   printf("                   (no command line editing, etc.)\n");
   printf("                   This flag is primarily used when \n");
@@ -117,9 +119,15 @@ int main(int argc, char *argv[]) {
   int pathMode = parseFlagArg(argc,argv,"-p",true);
   int scriptMode = parseFlagArg(argc,argv,"-s",true);
   int rootpathMode = parseFlagArg(argc,argv,"-r",true);
+  bool testMode = parseFlagArg(argc,argv,"-t",false);
 
   signal(SIGINT,sigDoNothing);
   
+  if (testMode)
+    __global_return_value = 1;
+  else
+    __global_return_value = 0;
+
   if (installMode) {
     app = new QCoreApplication(argc, argv);
     QSettings settings("FreeMat", Interpreter::getVersionString());

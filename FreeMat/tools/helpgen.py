@@ -75,7 +75,7 @@ class ExpressionSet:
     
 class Writer:
     """The base class for writers..."""
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         return
     def begingroup(self,groupname):
         return
@@ -110,9 +110,9 @@ class WriterGroup(Writer):
         self.writers.append(writer)
         return
     """The base class for writers..."""
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         for writer in self.writers:
-            writer.setsectioninfo(section_descriptors,section_order)
+            writer.setsectioninfo(section_descriptors,section_order,sourcepath)
         return
     def begingroup(self,groupname):
         for writer in self.writers:
@@ -183,7 +183,7 @@ class DocWriter(Writer):
     def expand_codes(self,text):
         text = re.sub(r'\@\|([^\|]*)\|','<tt>'r'\1''</tt>',text)
         return text
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         self.section_descriptors = section_descriptors
         self.section_order = section_order
         return
@@ -336,7 +336,7 @@ class HTMLWriter(Writer):
         if (text == '\n'):
             text = '<P>\n'
         return text
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         self.section_descriptors = section_descriptors
         self.section_order = section_order
         return
@@ -564,7 +564,7 @@ class LaTeXWriter(Writer):
         text = re.sub('\\\\li','',text)
         text = refilter(text)
         return text
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         self.section_descriptors = section_descriptors
         self.section_order = section_order
         return
@@ -680,7 +680,7 @@ class BBTestWriter(Writer):
     sourcepath = ''
     filename = ''
     fp = []
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         self.section_descriptors = section_descriptors
         self.section_order = section_order
         return
@@ -725,9 +725,20 @@ class TestWriter(Writer):
     filename = ''
     fp = []
     num = 1
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         self.section_descriptors = section_descriptors
         self.section_order = section_order
+        for section in section_descriptors:
+            cml = sourcepath + "/tests/" + section + "/CMakeLists.txt"
+            makepath(cml)
+            sp = open(cml,'w')
+            sp.write('ENABLE_TESTING()\n');
+            sp.close()
+        sp = open(sourcepath + "/tests/CMakeLists.txt",'w')
+        sp.write('ENABLE_TESTING()\n')
+        for section in section_descriptors:
+            if (section):  sp.write('add_subdirectory(' + section + ')\n')
+        sp.close
         return
     def begingroup(self,groupname):
         self.groupname = groupname
@@ -766,7 +777,9 @@ class TestWriter(Writer):
         clistname = self.sourcepath + '/tests/' + self.secname + '/CMakeLists.txt'
         makepath(clistname)
         zp = open(clistname,'a+')
-        zp.write('ADD_TEST(%s ${FreeMat_Loc} "-e" "-nogui" "-nogreet" "-p" "${CMAKE_SOURCE_DIR}/tests/%s" "-f" "wb_test(\'%s\',\'%s\',${CMAKE_SOURCE_DIR}/tests/reference)")\n'%(funcname,self.secname,text,funcname))
+        ptext = text.replace(r"'",r"''")
+        ptext = ptext.replace("\\","\\\\\\\\")
+        zp.write('ADD_TEST(%s ${FreeMat_Loc} "-e" "-nogui" "-t" "-nogreet" "-p" "${CMAKE_SOURCE_DIR}/tests/%s" "-f" "wb_test(\'%s\',\'%s\',\'${CMAKE_SOURCE_DIR}/tests/reference\')")\n'%(funcname,self.secname,ptext,funcname))
         zp.close()
         filename = '%s/toolbox/test/%s.m'%(self.sourcepath,funcname)
         fp = open(filename,'w')
@@ -930,7 +943,7 @@ class TextWriter(Writer):
     sourcepath = ''
     def expand_codes(self,text):
         return re.sub(r'\@\|([^\|]*)\|',r'\1',text)
-    def setsectioninfo(self,section_descriptors,section_order):
+    def setsectioninfo(self,section_descriptors,section_order,sourcepath):
         self.section_descriptors = section_descriptors
         self.section_order = section_order
         return
@@ -1020,7 +1033,7 @@ class HelpGen:
             self.section_descriptors[m.group(1)] = m.group(2)
             self.section_order.append(m.group(1))
         fp.close()
-        self.writers.setsectioninfo(self.section_descriptors,self.section_order)
+        self.writers.setsectioninfo(self.section_descriptors,self.section_order,sourcepath)
         return
     def testmatch(self,rtext):
         return re.search(rtext,self.pline,re.DOTALL)
@@ -1081,10 +1094,11 @@ class HelpGen:
         zp = open(pname,'w')
         zp.write(fn)
         zp.close()
-        clistname = self.sourcepath + '/tests/' + self.secname + '/CMakeLists.txt'
-        zp = open(clistname,'a')
-        zp.write('ADD_TEST(%s ${FreeMat_Loc} "-e" "-nogui" "-nogreet" "-p" "${CMAKE_SOURCE_DIR}/tests/%s" "-f" "wrap_test(\'%s\')")\n'%(fname[:-2],self.secname,fname[:-2]))
-        zp.close()
+        if (re.search('^test_',fname,re.DOTALL)):
+            clistname = self.sourcepath + '/tests/' + self.secname + '/CMakeLists.txt'
+            zp = open(clistname,'a')
+            zp.write('ADD_TEST(%s ${FreeMat_Loc} "-e" "-nogui" "-t" "-nogreet" "-p" "${CMAKE_SOURCE_DIR}/tests/%s" "-f" "wrap_test(\'%s\')")\n'%(fname[:-2],self.secname,fname[:-2]))
+            zp.close()
         if (not re.search('test_\w+',fname)):
             self.writers.dofile(fname,fn)
         self.nextline()

@@ -1,9 +1,0 @@
-QUIT Quit Program
-
-Usage
-
-The quit statement is used to immediately exit the FreeMat
-application.  The syntax for its use is
-
-   quit
-

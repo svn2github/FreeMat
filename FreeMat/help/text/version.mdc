@@ -1,9 +1,0 @@
-VERSION The Current Version Number
-
-Usage
-
-The version function returns the current version number for
-FreeMat (as a string).  The general syntax for its use is
-
-    v = version
-

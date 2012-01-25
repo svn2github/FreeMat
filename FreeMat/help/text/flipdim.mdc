@@ -1,9 +1,0 @@
-FLIPDIM Reverse a Matrix Along a Given Dimension
-
-Usage
-
-Reverses an array along the given dimension.  The syntax for its use is
-
-   y = flipdim(x,n)
-
-where x is matrix, and n is the dimension to reverse.

@@ -1,9 +1,0 @@
-CLC Clear Dislplay
-
-Usage
-
-The clc function clears the current display.  The syntax for
-its use is
-
-   clc
-

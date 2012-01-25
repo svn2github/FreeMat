@@ -1,8 +1,0 @@
-FDUMP Dump Information on Function
-
-Usage
-
-Dumps information about a function (diagnostic information only)
-
-   fdump fname
-

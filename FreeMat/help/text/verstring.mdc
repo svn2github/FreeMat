@@ -1,9 +1,0 @@
-VERSTRING The Current Version String
-
-Usage
-
-The verstring function returns the current version string for
-FreeMat.  The general syntax for its use is
-
-    version = verstring
-

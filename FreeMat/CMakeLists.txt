@@ -588,5 +588,6 @@ add_custom_target( fraggen
 
 WRITE_OUT_ALL_VARIABLES()
 
-add_subdirectory(tests/suite)
-enable_testing()
+#add_subdirectory(tests/suite)
+ENABLE_TESTING()
+add_subdirectory(tests)

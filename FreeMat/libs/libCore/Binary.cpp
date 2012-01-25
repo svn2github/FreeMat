@@ -67,34 +67,11 @@ struct OpBitCmp {
   }
 };
 
-//!
-//@Module BITAND Bitwise Boolean And Operation
-//@@Section BINARY
-//@@Usage
-//Performs a bitwise binary and operation on the two arguments and
-//returns the result.  The syntax for its use is
-//@[
-//   y = bitand(a,b)
-//@]
-//where @|a| and @|b| are multi-dimensional unsigned integer arrays.
-//The and operation is performed using 32 bit unsigned intermediates.  Note that if a
-//or b is a scalar, then each element of the other array is and'ed with
-// that scalar.  Otherwise the two arrays must match in size.
-//@@Example
-//@<
-//bitand(uint16([1,16,255]),uint16([3,17,128]))
-//bitand(uint16([1,16,255]),uint16(3))
-//@>
-//@@Tests
-//@{ test_bitand1.m
-//function test_val = test_bitand1
-// test_val = all(bitand([1,5,42],3) == [1 1 2]);
-//@}
 //@@Signature
 //function bitand BitandFunction jitsafe
 //inputs a b
 //outputs y
-//!
+//DOCBLOCK binary_bitand
 ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("bitand requires at least two arguments");
@@ -103,34 +80,11 @@ ArrayVector BitandFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc2(bitand,OpBitAnd::func);
 
-//!
-//@Module BITOR Bitwise Boolean Or Operation
-//@@Section BINARY
-//@@Usage
-//Performs a bitwise binary or operation on the two arguments and
-//returns the result.  The syntax for its use is
-//@[
-//   y = bitor(a,b)
-//@]
-//where @|a| and @|b| are multi-dimensional unsigned integer arrays.
-//The and operation is performed using 32 bit unsigned intermediates.  Note that if a
-//or b is a scalar, then each element of the other array is or'ed with
-//that scalar.  Otherwise the two arrays must match in size.
-//@@Example
-//@<
-//bitand(uint16([1,16,255]),uint16([3,17,128]))
-//bitand(uint16([1,16,255]),uint16(3))
-//@>
-//@@Tests
-//@{ test_bitor1.m
-//function test_val = test_bitor1
-//  test_val = all(bitor([1,5,42],3) == [3 7 43]);
-//@}
 //@@Signature
 //function bitor BitorFunction jitsafe
 //inputs a b
 //outputs y
-//!
+//DOCBLOCK binary_bitor
 ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("bitor requires at least two arguments");
@@ -139,34 +93,11 @@ ArrayVector BitorFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc2(bitor,OpBitOr::func);
 
-//!
-//@Module BITXOR Bitwise Boolean Exclusive-Or (XOR) Operation
-//@@Section BINARY
-//@@Usage
-//Performs a bitwise binary xor operation on the two arguments and
-//returns the result.  The syntax for its use is
-//@[
-//   y = bitxor(a,b)
-//@]
-//where @|a| and @|b| are multi-dimensional unsigned integer arrays.
-//The and operation is performed using 32 bit unsigned intermediates.  Note that if a
-//or b is a scalar, then each element of the other array is xor'ed with
-// that scalar.  Otherwise the two arrays must match in size.
-//@@Example
-//@<
-//bitand(uint16([1,16,255]),uint16([3,17,128]))
-//bitand(uint16([1,16,255]),uint16(3))
-//@>
-//@@Tests
-//@{ test_bitxor1.m
-//function test_val = test_bitxor1
-//  test_val = all(bitxor([1,5,42],3) == [2 6 41]);
-//@}
 //@@Signature
 //function bitxor BitxorFunction jitsafe
 //inputs a b
 //outputs y
-//!
+//DOCBLOCK binary_bitxor
 ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2)
     throw Exception("bitxor requires at least two arguments");
@@ -175,38 +106,11 @@ ArrayVector BitxorFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc2(bitxor,OpBitXor::func);
 
-//!
-//@Module BITCMP Bitwise Boolean Complement Operation
-//@@Section BINARY
-//@@Usage
-// Usage
-// 
-// Performs a bitwise binary complement operation on the argument and
-// returns the result.  The syntax for its use is
-//@[
-//    y = bitcmp(a)
-//@]
-// where a is an unsigned integer arrays.  This version of the command
-// uses as many bits as required by the type of a.  For example, if 
-// a is an uint8 type, then the complement is formed using 8 bits.
-// The second form of bitcmp allows you to specify the number of bits
-// to use, 
-//@[
-//    y = bitcmp(a,n)
-//@]
-// in which case the complement is taken with respect to n bits, where n must be 
-// less than the length of the integer type.
-//
-//@@Example
-//@<
-//bitcmp(uint16(2^14-2))
-//bitcmp(uint16(2^14-2),14)
-//@>
 //@@Signature
 //function bitcmp BitcmpFunction jitsafe
 //inputs a n
 //outputs y
-//!
+//DOCBLOCK binary_bitcmp
 
 template <typename T>
 static Array TBitCmpFunc(const BasicArray<T> &x, double maxval) {
@@ -249,37 +153,11 @@ ArrayVector BitcmpFunction(int nargout, const ArrayVector& arg) {
   }
 }
 
-//!
-//@Module INT2BIN Convert Integer Arrays to Binary
-//@@Section TYPECAST
-//@@Usage
-//Computes the binary decomposition of an integer array to the specified
-//number of bits.  The general syntax for its use is
-//@[
-//   y = int2bin(x,n)
-//@]
-//where @|x| is a multi-dimensional integer array, and @|n| is the number
-//of bits to expand it to.  The output array @|y| has one extra dimension
-//to it than the input.  The bits are expanded along this extra dimension.
-//@@Example
-//The following piece of code demonstrates various uses of the int2bin
-//function.  First the simplest example:
-//@<
-//A = [2;5;6;2]
-//int2bin(A,8)
-//A = [1;2;-5;2]
-//int2bin(A,8)
-//@>
-//@@Tests
-//@{ test_int2bin1.m
-//function test_val = test_int2bin1
-//  test_val = all(int2bin([4;3;2;1],3)==[1,0,0;0,1,1;0,1,0;0,0,1]);
-//@}
 //@@Signature
 //function int2bin Int2BinFunction
 //inputs x bits
 //outputs y
-//!
+//DOCBLOCK typecast_int2bin
 
 struct OpInt2Bin {
   template <typename T>
@@ -318,49 +196,11 @@ ArrayVector Int2BinFunction(int nargout, const ArrayVector& arg) {
 					 qMax(1,arg[0].dimensions().lastSingular())).toClass(Bool));
 }
 
-//!
-//@Module BIN2INT Convert Binary Arrays to Integer
-//@@Section TYPECAST
-//@@Usage
-//Converts the binary decomposition of an integer array back
-//to an integer array.  The general syntax for its use is
-//@[
-//   y = bin2int(x)
-//@]
-//where @|x| is a multi-dimensional logical array, where the last
-//dimension indexes the bit planes (see @|int2bin| for an example).
-//By default, the output of @|bin2int| is unsigned @|uint32|.  To
-//get a signed integer, it must be typecast correctly.  A second form for
-//@|bin2int| takes a @|'signed'| flag
-//@[
-//   y = bin2int(x,'signed')
-//@]
-//in which case the output is signed.
-//@@Example
-//The following piece of code demonstrates various uses of the int2bin
-//function.  First the simplest example:
-//@<
-//A = [2;5;6;2]
-//B = int2bin(A,8)
-//bin2int(B)
-//A = [1;2;-5;2]
-//B = int2bin(A,8)
-//bin2int(B)
-//int32(bin2int(B))
-//@>
-//@@Tets
-//@{ test_bin2int1.m
-//function test_val = bin2int1
-//   A = floor(rand(4,4,3)*10);
-//   B = int2bin(A,4);
-//   C = bin2int(B);
-//   test_val = issame(A,C);
-//@}
 //@@Signature
 //function bin2int Bin2IntFunction
 //inputs x flag
 //outputs y
-//!
+//DOCBLOCK typecast_bin2int
 struct OpBin2Int {
   template <typename T>
   static inline void func(const ConstSparseIterator<T> &, SparseSlice<T>&) {

@@ -1,25 +1,4 @@
-%!
-%@Module TYPE Type Contents of File or Function
-%@@Section IO
-%@@Usage
-%Displays the contents of a file or a function to the screen
-%or console.  The syntax for its use is
-%@[
-%   type filename
-%   type('filename')
-%@]
-%or
-%@[
-%   type function
-%   type('function')
-%@]
-%in which case the function named @|'function.m'| will be displayed.
-%@@Example
-%Here we use @|type| to display the contents of itself 
-%@<
-%type('type')
-%@>
-%!
+% DOCBLOCK io_type
 
 function type(filename)
 fp = fopen(filename,'r');

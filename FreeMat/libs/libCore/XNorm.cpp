@@ -19,22 +19,11 @@
 #include "Array.hpp"
 #include "LAPACK.hpp"
 
-//!
-//@Module XNRM2 BLAS Norm Calculation
-//@@Section ARRAY
-//@@Usage
-//Calculates the 2-norm of a vector.  The syntax for its use
-//is
-//@[
-//   y = xnrm2(A)
-//@]
-//where @|A| is the n-dimensional array to analyze.  This form
-//uses the underlying BLAS implementation to compute the 2-norm.
 //@@Signature
 //function xnrm2 XNrm2Function jitsafe
 //inputs A
 //outputs y
-//!
+//DOCBLOCK array_xnrm2
 ArrayVector XNrm2Function(int nargout, const ArrayVector& arg) {
   int one = 1;
   if (arg.size() < 1)

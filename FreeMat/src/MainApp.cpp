@@ -257,17 +257,11 @@ void MainApp::PathTool() {
 
 int __global_return_value = 0;
 
-//!
-//@Module SAVERETVALUE Save Return Value Of Function
-//@@Section FREEMAT
-//@@Usage
-//saves the given argument value for return when FreeMat (the application)
-//exits.
 //@@Signature
 //function saveretvalue SaveRetValueFunction
 //inputs value
 //outputs none
-//!
+//DOCBLOCK freemat_saveretvalue
 ArrayVector SaveRetValueFunction(int nargout, const ArrayVector& arg)
 {
   if (arg.size() == 0) throw Exception("saveretvalue requires an argument");
@@ -276,20 +270,11 @@ ArrayVector SaveRetValueFunction(int nargout, const ArrayVector& arg)
 }
 
 
-//!
-//@Module EDITOR Open Editor Window
-//@@Section FREEMAT
-//@@Usage
-//Brings up the editor window.  The @|editor| function takes no
-//arguments:
-//@[
-//  editor
-//@]
 //@@Signature
 //sgfunction editor EditorFunction
 //inputs none
 //outputs none
-//!
+//DOCBLOCK freemat_editor
 ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   createEditor(eval);
   edit->loadLastSession();
@@ -299,20 +284,11 @@ ArrayVector EditorFunction(int nargout, const ArrayVector& arg, Interpreter* eva
   return ArrayVector();
 }
 
-//!
-//@Module EDIT Open Editor Window
-//@@Section FREEMAT
-//@@Usage
-//Brings up the editor window.  The arguments of @|edit| function  
-//are names of files for editing:
-//@[
-//  edit file1 file2 file3
-//@]
 //@@Signature
 //sgfunction edit EditFunction
 //inputs varargin
 //outputs none
-//!
+//DOCBLOCK freemat_edit
 ArrayVector EditFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   //Open the editor
   createEditor(eval);
@@ -415,67 +391,20 @@ void MainApp::DoGraphicsCall(Interpreter* interp, FuncPtr f, ArrayVector m, int 
   }
 }
 
-//!
-//@Module THREADID Get Current Thread Handle
-//@@Section THREAD
-//@@Usage
-//The @|threadid| function in FreeMat tells you which thread
-//is executing the context you are in.  Normally, this is thread
-//1, the main thread.  However, if you start a new thread using
-//@|threadnew|, you will be operating in a new thread, and functions
-//that call @|threadid| from the new thread will return their 
-//handles.
-//@@Example
-//From the main thread, we have
-//@<
-//threadid
-//@>
-//But from a launched auxilliary thread, we have
-//@<
-//t_id = threadnew
-//id = threadcall(t_id,1000,'threadid')
-//threadfree(t_id);
-//@>
 //@@Signature
 //sfunction threadid ThreadIDFunction
 //inputs none
 //outputs id
-//!
+//DOCBLOCK thread_threadid
 ArrayVector ThreadIDFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   return ArrayVector(Array(double(eval->getThreadID())));
 }
 
-//!
-//@Module PAUSE Pause Script Execution
-//@@Section IO
-//@@Usage
-//The @|pause| function can be used to pause execution of FreeMat
-//scripts.  There are several syntaxes for its use.  The first form
-//is
-//@[
-//   pause
-//@]
-//This form of the @|pause| function pauses FreeMat until you press
-//any key.  The second form of the @|pause| function takes an argument
-//@[
-//   pause(p)
-//@]
-//where @|p| is the number of seconds to pause FreeMat for.  The pause
-//argument should be accurate to a millisecond on all supported platforms.
-//Alternately, you can control all @|pause| statements using:
-//@[
-//   pause on
-//@]
-//which enables pauses and
-//@[
-//   pause off
-//@]
-//which disables all @|pause| statements, both with and without arguments.
 //@@Signature
 //sgfunction pause PauseFunction
 //inputs flag
 //outputs none
-//!
+//DOCBLOCK io_pause
 static bool pause_active = true;
 
 ArrayVector PauseFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
@@ -500,21 +429,11 @@ ArrayVector PauseFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   return ArrayVector();
 }
 
-//!
-//@Module SLEEP Sleep For Specified Number of Seconds
-//@@Section FREEMAT
-//@@Usage
-//Suspends execution of FreeMat for the specified number
-//of seconds.  The general syntax for its use is
-//@[
-//  sleep(n),
-//@]
-//where @|n| is the number of seconds to wait.
 //@@Signature
 //sgfunction sleep SleepFunction
 //inputs n
 //outputs none
-//!
+//DOCBLOCK freemat_sleep
 ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("sleep function requires 1 argument");
@@ -525,37 +444,11 @@ ArrayVector SleepFunction(int nargout, const ArrayVector& arg, Interpreter* eval
 }
 
 
-//!
-//@Module THREADNEW Create a New Thread
-//@@Section THREAD
-//@@Usage
-//The @|threadnew| function creates a new FreeMat thread, and
-//returns a handle to the resulting thread.   The @|threadnew|
-//function takes no arguments.  They general syntax for the
-//@|threadnew| function is
-//@[
-//   handle = threadnew
-//@]
-//Once you have a handle to a thread, you can start the thread
-//on a computation using the @|threadstart| function.  The
-//threads returned by @|threadnew| are in a dormant state (i.e.,
-//not running).  Once you are finished with the thread you
-//must call @|threadfree| to free the resources associated with
-//that thread.
-//
-//Some additional important information.  Thread functions operate
-//in their own context or workspace, which means that data cannot
-//be shared between threads.  The exception is @|global| variables,
-//which provide a thread-safe way for multiple threads to share data.
-//Accesses to global variables are serialized so that they can 
-//be used to share data.  Threads and FreeMat are a new feature, so
-//there is room for improvement in the API and behavior.  The best
-//way to improve threads is to experiment with them, and send feedback.
 //@@Signature
 //sfunction threadnew ThreadNewFunction
 //inputs none
 //outputs handle
-//!
+//DOCBLOCK thread_threadnew
 ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   // Create a new thread
   int threadID = m_app->StartNewInterpreterThread();
@@ -567,108 +460,11 @@ ArrayVector ThreadNewFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector(Array(double(threadID)));
 }
 
-//!
-//@Module THREADSTART Start a New Thread Computation
-//@@Section THREAD
-//@@Usage
-//The @|threadstart| function starts a new computation on a
-//FreeMat thread, and you must provide a function (no scripts 
-//are allowed) to run inside the thread, pass any parameters that
-//the thread function requires, as well as the number of output
-//arguments expected.  The general syntax for the 
-//@|threadstart| function is
-//@[
-//   threadstart(threadid,function,nargout,arg1,arg2,...)
-//@]
-//where @|threadid| is a thread handle (returned by @|threadnew|),
-//where @|function| is a valid function name (it can be a built-in
-//imported or M-function), @|nargout| is the number of output arguments
-//expected from the function, and @|arg1| is the first argument that
-//is passed to the function.  Because the function runs in its 
-//own thread, the return values of the function are not available
-//imediately.  Instead, execution of that function will continue
-//in parallel with the current thread.  To retrieve the output
-//of the thread function, you must wait for the thread to complete
-//using the @|threadwait| function, and then call @|threadvalue|
-// to retrieve the result.  You can also stop the running thread
-//prematurely by using the @|threadkill| function.  It is important
-//to call @|threadfree| on the handle you get from @|threadnew|
-//when you are finished with the thread to ensure that the resoures
-//are properly freed.  
-//
-//It is also perfectly reasonable to use a single thread multiple
-//times, calling @|threadstart| and @|threadreturn| multiple times
-//on a single thread.  The context is preserved between threads.
-//When calling @|threadstart| on a pre-existing thread, FreeMat
-//will attempt to wait on the thread.  If the wait fails, then
-//an error will occur.
-//
-//Some additional important information.  Thread functions operate
-//in their own context or workspace, which means that data cannot
-//be shared between threads.  The exception is @|global| variables,
-//which provide a thread-safe way for multiple threads to share data.
-//Accesses to global variables are serialized so that they can 
-//be used to share data.  Threads and FreeMat are a new feature, so
-//there is room for improvement in the API and behavior.  The best
-//way to improve threads is to experiment with them, and send feedback.
-//
-//@@Example
-//Here we do something very simple.  We want to obtain a listing of
-//all files on the system, but do not want the results to stop our
-//computation.  So we run the @|system| call in a thread.
-//@<
-//a = threadnew;                         % Create the thread
-//threadstart(a,'system',1,'ls -lrt /'); % Start the thread
-//b = rand(100)\rand(100,1);             % Solve some equations simultaneously
-//c = threadvalue(a);                    % Retrieve the file list
-//size(c)                                % It is large!
-//threadfree(a);
-//@>
-//The possibilities for threads are significant.  For example,
-//we can solve equations in parallel, or take Fast Fourier Transforms
-//on multiple threads.  On multi-processor machines or multicore CPUs,
-//these threaded calculations will execute in parallel.  Neat.
-//
-//The reason for the  @|nargout| argument is best illustrated with
-//an example.  Suppose we want to compute the Singular Value 
-//Decomposition @|svd| of a matrix @|A| in a thread.  
-//The documentation for the @|svd| function tells us that
-//the behavior depends on the number of output arguments we request.
-//For example, if we want a full decomposition, including the left 
-//and right singular vectors, and a diagonal singular matrix, we
-//need to use the three-output syntax, instead of the single output
-//syntax (which returns only the singular values in a column vector):
-//@<
-//A = float(rand(4))
-//[u,s,v] = svd(A)    % Compute the full decomposition
-//sigmas = svd(A)     % Only want the singular values
-//@>
-//
-//Normally, FreeMat uses the left hand side of an assignment to calculate
-//the number of outputs for the function.  When running a function in a
-//thread, we separate the assignment of the output from the invokation
-//of the function.  Hence, we have to provide the number of arguments at the
-//time we invoke the function.  For example, to compute a full decomposition
-//in a thread, we specify that we want 3 output arguments:
-//@<
-//a = threadnew;               % Create the thread
-//threadstart(a,'svd',3,A);    % Start a full decomposition 
-//[u1,s1,v1] = threadvalue(a); % Retrieve the function values
-//threadfree(a);
-//@>
-//If we want to compute just the singular values, we start the thread
-//function with only one output argument:
-//@<
-//a = threadnew;
-//threadstart(a,'svd',1,A);
-//sigmas = threadvalue(a);
-//threadfree(a)
-//@>
 //@@Signature
 //sfunction threadstart ThreadStartFunction
 //inputs threadid function nargout varargin
 //outputs none
-//!
+//DOCBLOCK thread_threadstart
 ArrayVector ThreadStartFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 3) throw Exception("threadstart requires at least three arguments (the thread id, the function to spawn, and the number of output arguments)");
   int32 handle = arg[0].asInteger();
@@ -693,66 +489,11 @@ ArrayVector ThreadStartFunction(int nargout, const ArrayVector& arg, Interpreter
   return ArrayVector();
 }
 
-//!
-//@Module THREADVALUE Retrieve the return values from a thread
-//@@Section THREAD
-//@@Usage
-//The @|threadvalue| function retrieves the values returned
-//by the function specified in the @|threadnew| call.  The
-//syntax for its use is
-//@[
-//   [arg1,arg2,...,argN] = threadvalue(handle)
-//@]
-//where @|handle| is the value returned by a @|threadnew| call.
-//Note that there are issues with @|nargout|.  See the examples
-//section of @|threadnew| for details on how to work around this
-//limitation.  Because the function you have spawned with @|threadnew|
-//may still be executing, @|threadvalue| must first @|threadwait|
-//for the function to complete before retrieving the output values.
-//This wait may take an arbitrarily long time if the thread function
-//is caught in an infinite loop.  Hence, you can also specify
-//a timeout parameter to @|threadvalue| as
-//@[
-//   [arg1,arg2,...,argN] = threadvalue(handle,timeout)
-//@]
-//where the @|timeout| is specified in milliseconds.  If the
-//wait times out, an error is raised (that can be caught with a
-//@|try| and @|catch| block.  
-//
-//In either case, if the thread function itself caused an error
-//and ceased execution abruptly, then calling @|threadvalue| will
-//cause that function to raise an error, allowing you to retrieve
-//the error that was caused and correct it.  See the examples section
-//for more information.
-//@@Example
-//Here we do something very simple.  We want to obtain a listing of
-//all files on the system, but do not want the results to stop our
-//computation.  So we run the @|system| call in a thread.
-//@<
-//a = threadnew;                         % Create the thread
-//threadstart(a,'system',1,'ls -lrt /'); % Start the thread
-//b = rand(100)\rand(100,1);             % Solve some equations simultaneously
-//c = threadvalue(a);                    % Retrieve the file list
-//size(c)                                % It is large!
-//threadfree(a);
-//@>
-//In this example, we force the threaded function to cause an
-//exception (by calling the @|error| function as the thread 
-//function).  When we call @|threadvalue|, we get an error, instead
-//of the return value of the function
-//@<1
-//a = threadnew
-//threadstart(a,'error',0,'Hello world!'); % Will immediately stop due to error
-//c = threadvalue(a)                     % The error comes to us
-//threadfree(a)
-//@>
-//Note that the error has the text @|Thread:| prepended to the message
-//to help you identify that this was an error in a different thread.
 //@@Signature
 //function threadvalue ThreadValueFunction
 //inputs handle timeout
 //outputs varargout
-//!
+//DOCBLOCK thread_threadvalue
 ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadvalue requires at least one argument (thread id to retrieve value from)");
   int32 handle = arg[0].asInteger();
@@ -767,49 +508,11 @@ ArrayVector ThreadValueFunction(int nargout, const ArrayVector& arg) {
   return thread->getThreadFuncReturn();
 }
 
-//!
-//@Module THREADWAIT Wait on a thread to complete execution
-//@@Section THREAD
-//@@Usage
-//The @|threadwait| function waits for the given thread to complete
-//execution, and stops execution of the current thread (the one calling
-//@|threadwait|) until the given thread completes.  The syntax for its
-//use is 
-//@[
-//   success = threadwait(handle)
-//@]
-//where @|handle| is the value returned by @|threadnew| and @|success|
-//is a @|logical| vaariable that will be @|1| if the wait was successful
-//or @|0| if the wait times out.  By default, the wait is indefinite.  It
-//is better to use the following form of the function
-//@[
-//   success = threadwait(handle,timeout)
-//@]
-//where @|timeout| is the amount of time (in milliseconds) for 
-//the @|threadwait| function to wait before a timeout occurs.  
-//If the @|threadwait| function succeeds, then the return 
-//value is a logical @|1|, and if it fails, the return value 
-//is a logical @|0|.  Note that you can call @|threadwait| multiple
-//times on a thread, and if the thread is completed, each one
-//will succeed.
-//@@Example
-//Here we lauch the @|sleep| function in a thread with a time delay of 
-//10 seconds.  This means that the thread function will not complete
-//until 10 seconds have elapsed.  When we call @|threadwait| on this
-//thread with a short timeout, it fails, but not when the timeout
-//is long enough to capture the end of the function call.
-//@<
-//a = threadnew;
-//threadstart(a,'sleep',0,10);  % start a thread that will sleep for 10
-//threadwait(a,2000)            % 2 second wait is not long enough
-//threadwait(a,10000)           % 10 second wait is long enough
-//threadfree(a)
-//@>
 //@@Signature
 //function threadwait ThreadWaitFunction
 //inputs handle timeout
 //outputs success
-//!
+//DOCBLOCK thread_threadwait
 ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadwait requires at least one argument (thread id to wait on)");
   int32 handle = arg[0].asInteger();
@@ -824,59 +527,11 @@ ArrayVector ThreadWaitFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(bool(retval)));
 }
 
-//!
-//@Module THREADKILL Halt execution of a thread
-//@@Section THREAD
-//@@Usage
-//The @|threadkill| function stops (or attempts to stop) execution
-//of the given thread.  It works only for functions defined in M-files
-//(i.e., not for built in or imported functions), and it works by 
-//setting a flag that causes the thread to stop execution at the next
-//available statement.  The syntax for this function is 
-//@[
-//  threadkill(handle)
-//@]
-//where @|handle| is the value returned by a @|threadnew| call.  
-//Note that the @|threadkill| function returns immediately.  It 
-//is still your responsibility to call @|threadfree| to free
-//the thread you have halted.
-//
-//You cannot kill the main thread (thread id @|1|).
-//@@Example
-//Here is an example of stopping a runaway thread using @|threadkill|.
-//Note that the thread function in this case is an M-file function.
-//We start by setting up a free running counter, where we can access 
-//the counter from the global variables.  
-//@{ freecount.m
-//function freecount
-//  global count
-//  if (~exist('count')) count = 0; end  % Initialize the counter
-//  while (1)
-//    count = count + 1;                 % Update the counter
-//  end
-//@}
-//We now launch this function in a thread, and use @|threadkill| to
-//stop it:
-//@<
-//a = threadnew;
-//global count                   % register the global variable count
-//count = 0;
-//threadstart(a,'freecount',0)   % start the thread
-//count                          % it is counting
-//sleep(1)                       % Wait a bit
-//count                          % it is still counting
-//threadkill(a)                  % kill the counter
-//threadwait(a,1000)             % wait for it to finish
-//count                          % The count will no longer increase
-//sleep(1)
-//count
-//threadfree(a)
-//@>
 //@@Signature
 //function threadkill ThreadKillFunction
 //inputs handle
 //outputs none
-//!
+//DOCBLOCK thread_threadkill
 ArrayVector ThreadKillFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadkill requires at least one argument (thread id to kill)");
   int32 handle = arg[0].asInteger();
@@ -887,31 +542,11 @@ ArrayVector ThreadKillFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module THREADFREE Free thread resources
-//@@Section THREAD
-//@@Usage
-//The @|threadfree| is a function to free the resources claimed
-//by a thread that has finished.  The syntax for its use is
-//@[
-//   threadfree(handle)
-//@]
-//where @|handle| is the handle returned by the call to @|threadnew|.
-//The @|threadfree| function requires that the thread be completed.  
-//Otherwise it will wait for the thread to complete, potentially 
-//for an arbitrarily long period of time.  To fix this, you can
-//either call @|threadfree| only on threads that are known to have
-//completed, or you can call it using the syntax
-//@[
-//   threadfree(handle,timeout)
-//@]
-//where @|timeout| is a time to wait in milliseconds.  If the thread
-//fails to complete before the timeout expires, an error occurs.
 //@@Signature
 //function threadfree ThreadFreeFunction
 //inputs handle timeout
 //outputs none
-//!
+//DOCBLOCK thread_threadfree
 ArrayVector ThreadFreeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) throw Exception("threadfree requires at least one argument (thread id to wait on) - the optional second argument is the timeout to wait for the thread to finish");
   int32 handle = arg[0].asInteger();
@@ -927,20 +562,11 @@ ArrayVector ThreadFreeFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module CLC Clear Dislplay
-//@@Section FREEMAT
-//@@Usage
-//The @|clc| function clears the current display.  The syntax for
-//its use is
-//@[
-//   clc
-//@]
 //@@Signature
 //gfunction clc ClcFunction
 //inputs none
 //outputs none
-//!
+//DOCBLOCK freemat_clc
 ArrayVector ClcFunction(int nargout, const ArrayVector& arg) {
   m_app->GetKeyManager()->ClearDisplayCommand();
   return ArrayVector();
@@ -980,42 +606,11 @@ public:
     static bool CompSample( SampleList p1, SampleList p2 ){ return p1.samples > p2.samples; }
 };
 
-//!
-//@Module PROFILER Control Profiling
-//@@Section FREEMAT
-//@@Usage
-//The @|profile| function allows you to control the FreeMat profiler.
-//It has two modes of operation.  The first is to enable-disable
-//the profiler.  To turn on profiling:
-//@[
-//  profiler on
-//@]
-//to turn off profiling, use
-//@[
-//  profiler off
-//@]
-//Note that regardless of the state of the profiler, only functions
-//and scripts are profiled.  Commands entered on the command line
-//are not profiled.  To see information that has accumulated in a
-//profile, you use the variant of the command:
-//@[
-//  profiler list
-//@]
-//which lists current sorted profiling resuls. You can use this form to obtain 
-//profiler results as a cell array
-//@[
-//  r=profiler('list')
-//@]
-//If you want to see current profile
-//status issue a @|profile| command with no arguments.
-//@[
-//   profiler
-//@]
 //@@Signature
 //sfunction profiler ProfilerFunction
 //inputs varargin
 //outputs varargout
-//!
+//DOCBLOCK freemat_profiler
 ArrayVector ProfilerFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
 	ArrayVector retall;
 	ArrayVector ret;
@@ -1219,49 +814,11 @@ void MainApp::UpdatePaths() {
   }
 }
 
-//!
-//@Module ROOTPATH Set FreeMat Root Path
-//@@Section FREEMAT
-//@@Usage
-//In order to function properly, FreeMat needs to know where to
-//find the @|toolbox| directory as well as the @|help| directory.
-//These directories are located on what is known as the @|root path|.
-//Normally, FreeMat should know where these directories are located.
-//However under some circumstances (usually when FreeMat is installed
-//into a non-default location), it may be necessary to indicate
-//a different root path location, or to specify a particular one.
-//Note that on the Mac OS platform, FreeMat is installed as a bundle,
-//and will use the toolbox that is installed in the bundle regardless of
-//the setting for @|rootpath|.
-//For Linux, FreeMat will typically use @|/usr/local/share/FreeMat-<Version>/|
-//for the root path.  Installations from source code will generally work,
-//but binary installations (e.g., from an @|RPM|) may need to have the
-//rootpath set.
-//
-//The @|rootpath| function has two forms.  The first form takes no arguments
-//and returns the current root path
-//@[
-//   rootpath
-//@]
-//The second form will set a rootpath directly from the command line
-//@[
-//   rootpath(path)
-//@]
-//where @|path| is the full path to where the @|toolbox| and @|help| 
-//directories are located.  For example, @|rootpath('/usr/share/FreeMat-4.0')|.
-//The third form enables the GUI form 
-//@[
-//   rootpath gui
-//@]
-//which activates a dialog box to pick a directory that is the root directory
-//of the FreeMat installation (e.g., where @|help| and @|toolbox| are located.
-//Changes to @|rootpath| are persistent (you do not need to run it every
-//time you start FreeMat).
 //@@Signature
 //sgfunction rootpath RootPathFunction
 //inputs path
 //outptus none
-//!
+//DOCBLOCK freemat_rootpath
 ArrayVector RootPathFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (inBundleMode()) 
     eval->warningMessage("FreeMat is in bundle mode.  The rootpath function has no effect.");

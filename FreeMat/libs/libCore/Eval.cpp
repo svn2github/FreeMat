@@ -21,89 +21,11 @@
 #include "Interpreter.hpp"
 #include "Algorithms.hpp"
 
-//!
-//@Module EVAL Evaluate a String
-//@@Section FREEMAT
-//@@Usage
-//The @|eval| function evaluates a string.  The general syntax
-//for its use is
-//@[
-//   eval(s)
-//@]
-//where @|s| is the string to evaluate.  If @|s| is an expression
-//(instead of a set of statements), you can assign the output
-//of the @|eval| call to one or more variables, via
-//@[
-//   x = eval(s)
-//   [x,y,z] = eval(s)
-//@]
-//
-//Another form of @|eval| allows you to specify an expression or
-//set of statements to execute if an error occurs.  In this 
-//form, the syntax for @|eval| is
-//@[
-//   eval(try_clause,catch_clause),
-//@]
-//or with return values,
-//@[
-//   x = eval(try_clause,catch_clause)
-//   [x,y,z] = eval(try_clause,catch_clause)
-//@]
-//These later forms are useful for specifying defaults.  Note that
-//both the @|try_clause| and @|catch_clause| must be expressions,
-//as the equivalent code is
-//@[
-//  try
-//    [x,y,z] = try_clause
-//  catch
-//    [x,y,z] = catch_clause
-//  end
-//@]
-//so that the assignment must make sense in both cases.
-//@@Example
-//Here are some examples of @|eval| being used.
-//@<
-//eval('a = 32')
-//b = eval('a')
-//@>
-//The primary use of the @|eval| statement is to enable construction
-//of expressions at run time.
-//@<
-//s = ['b = a' ' + 2']
-//eval(s)
-//@>
-//Here we demonstrate the use of the catch-clause to provide a 
-//default value
-//@<
-//a = 32
-//b = eval('a','1')
-//b = eval('z','a+1')
-//@>
-//Note that in the second case, @|b| takes the value of 33, indicating
-//that the evaluation of the first expression failed (because @|z| is
-//not defined).
-//@@Tests
-//@{ test_eval1.m
-//function test_val = test_eval1
-//  eval('test_val = true');
-//@}
-//@{ test_eval2.m
-//function test_val = test_eval2
-//  a = rand(10);
-//  [s1,v1,d1] = svd(a);
-//  [s2,v2,d2] = eval('svd(a)');
-//  test_val = issame(s1,s2) && issame(v1,v2) && issame(d1,d2);
-//@}
-//@{ test_eval3.m
-//function test_val = test_eval3
-//  test_val = false;
-//  eval('b=a','test_val=true');
-//@}
 //@@Signature
 //sfunction eval EvalFunction
 //inputs try_clause catch_clause
 //outputs varargout
-//!
+//DOCBLOCK freemat_eval
 static QString PrePendCallVars(QString line, int nargout) {
   QString gp;
   if (nargout > 1)
@@ -205,53 +127,11 @@ ArrayVector EvalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   return EvalNoTryFunction(nargout, arg, eval, 0);
 }
 
-//!
-//@Module EVALIN Evaluate a String in Workspace
-//@@Section FREEMAT
-//@@Usage
-//The @|evalin| function is similar to the @|eval| function, with an additional
-//argument up front that indicates the workspace that the expressions are to 
-//be evaluated in.  The various syntaxes for @|evalin| are:
-//@[
-//   evalin(workspace,expression)
-//   x = evalin(workspace,expression)
-//   [x,y,z] = evalin(workspace,expression)
-//   evalin(workspace,try_clause,catch_clause)
-//   x = evalin(workspace,try_clause,catch_clause)
-//   [x,y,z] = evalin(workspace,try_clause,catch_clause)
-//@]
-//The argument @|workspace| must be either 'caller' or 'base'.  If it is
-//'caller', then the expression is evaluated in the caller's work space.
-//That does not mean the caller of @|evalin|, but the caller of the current
-//function or script.  On the other hand if the argument is 'base', then
-//the expression is evaluated in the base work space.   See @|eval| for
-//details on the use of each variation.
-//@@Tests
-//@{ test_evalin1.m
-//function test_val = test_evalin1
-//   test_val = false;
-//   do_test_evalin1_subfunc;
-//end
-//
-//function do_test_evalin1_subfunc
-//   evalin('caller','test_val = true');
-//   evalin('caller','test_val = true','test_val=false');
-//end
-//@}
-//@{ test_evalin2.m
-//function test_val = test_evalin2
-//   evalin('base','qv32 = true;');
-//   if (exist('qv32'))
-//     test_val = false;
-//     return;
-//   end;
-//   test_val = evalin('base','qv32');
-//@}
 //@@Signature
 //sfunction evalin EvalInFunction
 //inputs varargin
 //outputs x y z
-//!
+//DOCBLOCK freemat_evalin
 ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 2)
     throw Exception("evalin function requires a workspace (scope) specifier (either 'caller' or 'base') and an expression to evaluate");
@@ -271,43 +151,11 @@ ArrayVector EvalInFunction(int nargout, const ArrayVector& arg, Interpreter* eva
     return EvalNoTryFunction(nargout,argcopy,eval,popspec);
 }
 
-//!
-//@Module ASSIGNIN Assign Variable in Workspace
-//@@Section FREEMAT
-//@@Usage
-//The @|assignin| function allows you to assign a value to a variable
-//in either the callers work space or the base work space.  The syntax
-//for @|assignin| is
-//@[
-//   assignin(workspace,variablename,value)
-//@]
-//The argument @|workspace| must be either 'caller' or 'base'.  If it is
-//'caller' then the variable is assigned in the caller's work space.
-//That does not mean the caller of @|assignin|, but the caller of the
-//current function or script.  On the other hand if the argument is 'base',
-//then the assignment is done in the base work space.  Note that the
-//variable is created if it does not already exist.
-//@@Tests
-//@{ test_assignin1.m
-//function test_val = test_assignin1
-//  test_val = false;
-//  do_test_assignin1_subfunc;
-//end
-//
-//function do_test_assignin1_subfunc
-//  assignin('caller','test_val',true);
-//end
-//@}
-//@{ test_assignin2.m
-//function test_val = test_assignin2
-//  assignin('base','qv43',true);
-//  test_val = evalin('base','qv43');
-//@}
 //@@Signature
 //sfunction assignin AssignInFunction
 //inputs workspace variablename value
 //outputs none
-//!
+//DOCBLOCK freemat_assignin
 ArrayVector AssignInFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 3)
     throw Exception("assignin function requires a workspace (scope) specifier (either 'caller' or 'base') a variable name and a value to assign");
@@ -342,62 +190,11 @@ ArrayVector TraceFunction(int nargout, const ArrayVector& arg, Interpreter* eval
   return ArrayVector();
 }
 
-//!
-//@Module FEVAL Evaluate a Function
-//@@Section FREEMAT
-//@@Usage
-//The @|feval| function executes a function using its name.
-//The syntax of @|feval| is
-//@[
-//  [y1,y2,...,yn] = feval(f,x1,x2,...,xm)
-//@]
-//where @|f| is the name of the function to evaluate, and
-//@|xi| are the arguments to the function, and @|yi| are the
-//return values.
-//
-//Alternately, @|f| can be a function handle to a function
-//(see the section on @|function handles| for more information).
-//
-//Finally, FreeMat also supports @|f| being a user defined class
-//in which case it will atttempt to invoke the @|subsref| method
-//of the class.
-//@@Example
-//Here is an example of using @|feval| to call the @|cos| 
-//function indirectly.
-//@<
-//feval('cos',pi/4)
-//@>
-//Now, we call it through a function handle
-//@<
-//c = @cos
-//feval(c,pi/4)
-//@>
-//Here we construct an inline object (which is a user-defined class)
-//and use @|feval| to call it
-//@<
-//afunc = inline('cos(t)+sin(t)','t')
-//feval(afunc,pi)
-//afunc(pi)
-//@>
-//In both cases, (the @|feval| call and the direct invokation), FreeMat
-//calls the @|subsref| method of the class, which computes the requested 
-//function.
-//@@Tests
-//@$exact#y1=feval(@cos,x1)
-//@$exact#y1=feval(inline('cos(t)'),x1)
-//@{ test_feval1.m
-//function test_val = test_feval1
-//y = 0;
-//test_val = feval('test_feval1_local_func',y);
-//
-//function z = test_feval1_local_func(x)
-//z = 1;
-//@}
 //@@Signature
 //sfunction feval FevalFunction
 //inputs varargin
 //outputs varargout
-//!
+//DOCBLOCK freemat_feval
 ArrayVector FevalFunction(int nargout, const ArrayVector& arg,Interpreter* eval){
   if (arg.size() == 0)
     throw Exception("feval function requires at least one argument");

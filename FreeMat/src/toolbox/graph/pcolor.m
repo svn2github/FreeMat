@@ -1,19 +1,4 @@
-%!
-%@Module PCOLOR Pseudocolor Plot
-%@@Section HANDLE
-%@@Usage
-%This routine is used to create a pseudocolor plot of the data.
-%A pseudocolor plot is a essentially a surface plot seen from 
-%above.  There are two forms for the @|pcolor| command:
-%@[
-%   pcolor(C)
-%@]
-%which uses a rectangular grid.  Alternately, you can specify
-%@|X,Y| matrices or vectors.
-%@[
-%   pcolor(X,Y,C)
-%@]
-%!
+% DOCBLOCK handle_pcolor
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

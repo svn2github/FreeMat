@@ -1,29 +1,4 @@
-%!
-%@Module PATH Get or Set FreeMat Path
-%@@Section FREEMAT
-%@@Usage
-%The @|path| routine has one of the following syntaxes.  In the first form
-%@[
-%  x = path
-%@]
-%@|path| simply returns the current path.  In the second, the current path
-%is replaced by the argument string @|'thepath'|
-%@[
-%  path('thepath')
-%@]
-%In the third form, a new path is appended to the current search path
-%@[
-%  path(path,'newpath')
-%@]
-%In the fourth form, a new path is prepended to the current search path
-%@[
-%  path('newpath',path)
-%@]
-%In the final form, the path command prints out the current path
-%@[
-%  path
-%@]
-%!
+% DOCBLOCK freemat_path
 
 % Copyright (c) 2002-2006 Samit Basu
 % Licensed under the GPL

@@ -319,28 +319,11 @@ CTable::CTable() {
 }
 
 
-//!
-//@Module CENUM Lookup Enumerated C Type
-//@@Section EXTERNAL
-//@@Usage
-//The @|cenum| function allows you to use the textual strings of C 
-//enumerated types (that have been defined using @|ctypedefine|) in
-//your FreeMat scripts isntead of the hardcoded numerical values.  The
-//general syntax for its use is
-//@[
-//  enum_int = cenum(enum_type,enum_string)
-//@]
-//which looks up the integer value of the enumerated type based on the
-//string.  You can also supply an integer argument, in which case
-//@|cenum| will find the matching string
-//@[
-//  enum_string = cenum(enum_type,enum_int)
-//@]
 //@@Signature
 //function cenum CenumFunction
 //inputs enumtype enumint
 //outputs enumstring
-//!
+//DOCBLOCK external_cenum
 ArrayVector CenumFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) throw Exception("cenum requires at least two arguments");
   QString enumname = arg[0].asString();
@@ -358,63 +341,11 @@ ArrayVector CenumFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module CTYPEDEFINE Define C Type
-//@@Section EXTERNAL
-//@@Usage
-//The @|ctypedefine| function allows you to define C types for use
-//with FreeMat.  Three variants of C types can be used.  You can
-//use structures, enumerations, and aliases (typedefs).  All three are defined
-//through a single function @|ctypedefine|.  The general syntax for
-//its use is
-//@[
-//  ctypedefine(typeclass,typename,...)
-//@]
-//where @|typeclass| is the variant of the type (legal values are
-//@|'struct'|, @|'alias'|, @|'enum'|).  The second argument is the
-//name of the C type.  The remaining arguments depend on what the
-//class of the typedef is.  
-//
-//To define a C structure, use the @|'struct'| type class.  The usage
-//in this case is:
-//@[
-//  ctypedefine('struct',typename,field1,type1,field2,type2,...)
-//@]
-//The argument @|typename| must be a valid identifier string.  Each of
-//of the @|field| arguments is also a valid identifier string that 
-//describe in order, the elements of the C structure.  The @|type| arguments
-//are @|typespecs|.  They can be of three types:
-//\begin{itemize}
-//\item Built in types, e.g. @|'uint8'| or @|'double'| to name a couple of
-//      examples.
-//\item C types that have previously been defined with a call to 
-//      @|ctypedefine|, e.g. @|'mytype'| where @|'mytype'| has already been
-//      defined through a call to @|ctypedefine|.
-//\item Arrays of either built in types or previously defined C types
-//      with the length of the array coded as an integer in square brackets, 
-//      for example: @|'uint8[10]'| or @|'double[1000]'|.
-//\end{itemize}
-//
-//To define a C enumeration, use the @|'enum'| type class.  The usage
-//in this case is:
-//  ctypedefine('enum',typename,name1,value1,name2,value2,...)
-//@]
-//The argument @|typename| must be a valid identifier string.  Each of the
-//@|name| arguments must also be valid identifier strings that describe
-//the possible values that the enumeration can take an, and their corresponding
-//integer values.  Note that the names should be unique.  The behavior of
-//the various @|cenum| functions is undefined if the names are not unique.
-//
-//To define a C alias (or typedef), use the following form of @|ctypedefine|:
-//@[
-//  ctypedefine('alias',typename,aliased_typename)
-//@]
-//where @|aliased_typename| is the type that is being aliased to.
 //@@Signature
 //function ctypedefine CtypeDefineFunction
 //inputs varargin
 //outputs none
-//!
+//DOCBLOCK external_ctypedefine
 ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) return ArrayVector();
   if (arg.size() < 3) throw Exception("ctypedefine requires at least three arguments - the typeclass ('struct','alias','enum'), the typename, and some type definition information");
@@ -472,23 +403,11 @@ ArrayVector CtypeDefineFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module CTYPEPRINT Print C Type
-//@@Section EXTERNAL
-//@@Usage
-//The @|ctypeprint| function prints a C type on the console.  The 
-//usage is
-//@[
-//  ctypeprint(typename)
-//@]
-//where @|typename| is a string containing the name of the C type to print.
-//Depending on the class of the C type (e.g., structure, alias or enumeration)
-//the @|ctypeprint| function will dump information about the type definition.
 //@@Signature
 //sfunction ctypeprint CtypePrintFunction
 //inputs typename
 //outputs none
-//!
+//DOCBLOCK external_ctypeprint
 ArrayVector CtypePrintFunction(int nargout, const ArrayVector& arg, Interpreter *m_eval) {
   if (arg.size() < 1) return ArrayVector();
   QString tname = arg[0].asString();
@@ -501,27 +420,11 @@ ArrayVector CtypePrintFunction(int nargout, const ArrayVector& arg, Interpreter 
   return ArrayVector();  
 }
 
-//!
-//@Module CTYPEFREEZE Convert FreeMat Structure to C Type
-//@@Section EXTERNAL
-//@@Usage
-//The @|ctypefreeze| function is used to convert a FreeMat structure into
-//a C struct as defined by a C structure typedef.  To use the @|cstructfreeze|
-//function, you must first define the type of the C structure using the 
-//@|ctypedefine| function.  The @|ctypefreeze| function then serializes
-//a FreeMat structure to a set of bytes, and returns it as an array.  The
-//usage for @|ctypefreeze| is
-//@[
-//  byte_array = ctypefreeze(mystruct, 'typename')
-//@]
-//where @|mystruct| is the array we want to 'freeze' to a memory array,
-//and @|typename| is the name of the C type that we want the resulting
-//byte array to conform to.
 //@@Signature
 //sfunction ctypefreeze CtypeFreezeFunction
 //inputs mystruct typename
 //outputs bytearray
-//!
+//DOCBLOCK external_ctypefreeze
 ArrayVector CtypeFreezeFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {
   if (arg.size() != 2) 
     throw Exception("ctypefreeze requires two arguments - the structure to freeze and the typename to use");
@@ -536,33 +439,11 @@ ArrayVector CtypeFreezeFunction(int nargout, const ArrayVector& arg, Interpreter
   return ArrayVector() << retvec;
 }
 
-//!
-//@Module CTYPESIZE Compute Size of C Struct
-//@@Section EXTERNAL
-//@@Usage
-//The @|ctypesize| function is used to compute the size of a C structure
-//that is defined using the @|ctypedefine| function.  The usage of 
-//@|ctypesize| is 
-//@[
-//   size = ctypesize('typename')
-//@]
-//where @|typename| is the name of the C structure you want to compute
-//the size of.  The returned count is measured in bytes.  Note that as
-//indicated in the help for @|ctypedefine| that FreeMat does not 
-//automatically pad the entries of the structure to match the particulars
-//of your C compiler.  Instead, the assumption is that you have adequate
-//padding entries in your structure to align the FreeMat members with the
-//C ones.  See @|ctypedefine| for more details.  You can also specify
-//an optional count parameter if you want to determine how large multiple
-//structures are
-//@[
-//   size = ctypesize('typename',count)
-//@]
 //@@Signature
 //function ctypesize CtypeSizeFunction
 //inputs type count
 //outputs size
-//!
+//DOCBLOCK external_ctypesize
 ArrayVector CtypeSizeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("ctypesize requires an argument - the structure name");
@@ -575,49 +456,11 @@ ArrayVector CtypeSizeFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector() << Array(double(CtypeTable.lookup(ttype)->size(count)));
 }
 
-//!
-//@Module CTYPETHAW Convert C Struct to FreeMat Structure
-//@@Section EXTERNAL
-//@@Usage
-//The @|ctypethaw| function is used to convert a C structure that is
-//encoded in a byte array into a FreeMat structure using a C structure
-//typedef.  To use the @|ctypethaw| function, you must first define
-//the type of the C structure using the @|ctypedefine| function.  The
-//usage of @|ctypethaw| is
-//@[
-//  mystruct = ctypethaw(byte_array, 'typename')
-//@]
-//where @|byte_array| is a @|uint8| array containing the bytes that encode
-//the C structure, and @|typename| is a string that contains the type
-//description as registered with @|ctypedefine|.  If you want to
-//retrieve multiple structures from a single byte array, you can specify
-//a count as
-//@[
-//  mystruct = ctypethaw(byte_array, 'typename', count)
-//@]
-//where @|count| is an integer containing the number of structures to 
-//retrieve.  Sometimes it is also useful to retrieve only part of the
-//structure from a byte array, and then (based on the contents of the
-//structure) retrieve more data.  In this case, you can retrieve the
-//residual byte array using the optional second output argument of
-//@|ctypethaw|:
-//@[
-//  [mystruct,byte_array_remaining] = ctypethaw(byte_array, 'typename',...)
-//@]
-//@@Tests
-//@{ test_ctype1.m
-//function test_val = test_ctype1
-//  ctypedefine('struct','tstruct','v1','int32','v2','double','v3','float','v4','uint32[5]');
-//  g.v1 = int32(54); g.v2 = pi; g.v3 = float(exp(1)); g.v4 = uint32(1:5);
-//  h = ctypefreeze(g,'tstruct');
-//  k = ctypethaw(h,'tstruct');
-//  test_val = issame(k,g);
-//@}
 //@@Signature
 //sfunction ctypethaw CtypeThawFunction
 //inputs x type count
 //outputs mystruct byarray
-//!
+//DOCBLOCK external_ctypethaw
 ArrayVector CtypeThawFunction(int nargout, const ArrayVector& arg, Interpreter* m_eval) {
   if (arg.size() < 2)
     throw Exception("ctypethaw requires two arguments - the uint8 array to thaw the structure from, and the typename to use");

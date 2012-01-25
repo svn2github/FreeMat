@@ -19,68 +19,11 @@
 
 #include "Array.hpp"
 
-//!
-//@Module SIZE Size of a Variable
-//@@Section INSPECTION
-//@@Usage
-//Returns the size of a variable.  There are two syntaxes for its
-//use.  The first syntax returns the size of the array as a vector
-//of integers, one integer for each dimension
-//@[
-//  [d1,d2,...,dn] = size(x)
-//@]
-//The other format returns the size of @|x| along a particular
-//dimension:
-//@[
-//  d = size(x,n)
-//@]
-//where @|n| is the dimension along which to return the size.
-//@@Example
-//@<
-//a = randn(23,12,5);
-//size(a)
-//@>
-//Here is an example of the second form of @|size|.
-//@<
-//size(a,2)
-//@>
-//@@Tests
-//@{ test_size1.m
-//% Check the size function with an n-dim argument & one output
-//function test_val = test_size1
-//a = [];
-//a(3,7,2) = 1.0;
-//c = size(a);
-//test_val = test(c(1) == 3) & test(c(2) == 7) & test(c(3) == 2);
-//@}
-//@{ test_size2.m
-//% Check the size function with an n-dim argument & multiple outputs
-//function test_val = test_size2
-//a = [1,2,3;4,5,6];
-//[c1,c2,c3] = size(a);
-//test_val = test(c1 == 2) & test(c2 == 3) & test(c3 == 1);
-//@}
-//@{ test_size3.m
-//% Check the size function with two arguments and one output
-//function test_val = test_size3
-//a = [1,2,3;4,5,6];
-//n = size(a,2);
-//test_val = test(n == 3);
-//@}
-//@{ test_size4.m
-//% Check the size function with two arguments and two outputs
-//function test_val = test_size4
-//a = [1,2,3;4,5,6];
-//test_val = 0;
-//[c,d] = size(a,2);
-//test_val = (c == 3);
-//@}
-//@$exact#y1=size(x1)
 //@@Signature
 //function size SizeFunction
 //inputs x dim
 //outputs varargout
-//!
+//DOCBLOCK inspection_size
 ArrayVector SizeFunction(int nargout, const ArrayVector& arg) {
   ArrayVector retval;
   if (arg.size() < 1)

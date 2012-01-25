@@ -1,26 +1,4 @@
-%!
-%@Module IFFTN N-Dimensional Inverse FFT 
-%@@Section TRANSFORMS
-%@@Usage
-%Computes the inverse DFT of an N-dimensional numerical array along all
-%dimensions.  The general syntax for its use is
-%@[
-%  y = ifftn(x)
-%@]
-%which computes the same-size inverse  FFTs for each dimension of @|x|.
-%Alternately, you can specify the size vector
-%@[
-%  y = ifftn(x,dims)
-%@]
-%where @|dims| is a vector of sizes.  The array @|x| is zero padded
-%or truncated as necessary in each dimension so that the output
-%is of size @|dims|. The @|ifftn| function is implemented by a sequence
-%of calls to @|ifft|.
-%@@Tests
-%@$near#y1=ifftn(x1)
-%@$near#y1=ifftn(x1,2)
-%@$near#y1=ifftn(x1,3)
-%!
+% DOCBLOCK transforms_ifftn
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

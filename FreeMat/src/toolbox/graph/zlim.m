@@ -1,25 +1,4 @@
-%!
-%@Module ZLIM Adjust Z Axis limits of plot
-%@@Section HANDLE
-%@@Usage
-%There are several ways to use @|zlim| to adjust the Z axis limits of
-%a plot.  The various syntaxes are
-%@[
-%   zlim
-%   zlim([lo,hi])   
-%   zlim('auto')
-%   zlim('manual')
-%   zlim('mode')
-%   zlim(handle,...)
-%@]
-%The first form (without arguments), returns a 2-vector containing the
-%current limits.  The second form sets the limits on the plot to @|[lo,hi]|.
-%The third and fourth form set the mode for the limit to @|auto| and @|manual|
-%respectively.  In @|auto| mode, FreeMat chooses the range for the axis 
-%automatically.  The @|zlim('mode')| form returns the current mode for the axis
-%(either @|'auto'| or @|'manual'|).  Finally, you can specify the handle of an
-%axis to manipulate instead of using the current one.
-%!
+% DOCBLOCK handle_zlim
 
 %Copyright (c) 2004,2006 Brian Yanoff, Samit Basu
 % Licensed under the GPL

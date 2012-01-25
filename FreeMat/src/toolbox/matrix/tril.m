@@ -1,23 +1,4 @@
-%!
-%@Module TRIL Lower Triangular Matrix Function
-%@@Section ARRAY
-%@@Usage
-% 
-% Returns the lower triangular matrix of a square matrix. The general
-% syntax for its use is
-%@[
-%   y = tril(x)
-%@]
-% where |x| is a square matrix. This returns the lower triangular matrix
-% (i.e.: all cells on or above the diagonal are set to 0). You can also
-% specify a different diagonal using the alternate form
-%@[
-%   y = tril(x,n)
-%@]
-% where n is the diagonal offset. In this mode, the diagonal specified 
-% is not set to zero in the returned matrix (e.g.: tril(x) and tril(x,-1))
-% will return the same value.
-%!
+% DOCBLOCK array_tril
 
 % Copyright (c) 2008 Samit Basu
 % Licensed under the GPL

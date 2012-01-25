@@ -1,18 +1,4 @@
-%!
-%@Module CONV Convolution Function
-%@@Section SIGNAL
-%@@Usage
-%The @|conv| function performs a one-dimensional convolution of two
-%vector arguments.  The syntax for its use is
-%@[
-%     z = conv(x,y)
-%@]
-%where @|x| and @|y| are vectors.  The output is of length @|nx + ny -1|.
-%The @|conv| function calls @|conv2| to do the calculation.  See its
-%help for more details.
-%@@Tests
-%@$near#y1=conv(x1,x2)#(any(loopi==[50:52])||any(loopj==[50:52]))
-%!
+% DOCBLOCK signal_conv
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

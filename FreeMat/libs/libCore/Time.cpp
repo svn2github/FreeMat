@@ -19,28 +19,11 @@
 #include <QtCore>
 #include "Array.hpp"
 
-//!
-//@Module TIC Start Stopwatch Timer
-//@@Section FREEMAT
-//@@Usage
-//Starts the stopwatch timer, which can be used to time tasks in FreeMat.
-//The @|tic| takes no arguments, and returns no outputs.  You must use
-//@|toc| to get the elapsed time.  The usage is
-//@[
-//  tic
-//@]
-//@@Example
-//Here is an example of timing the solution of a large matrix equation.
-//@<
-//A = rand(100);
-//b = rand(100,1);
-//tic; c = A\b; toc
-//@>
 //@@Signature
 //function tic TicFunction jitsafe
 //inputs none
 //outputs none
-//!
+//DOCBLOCK freemat_tic
   
 static QTime ticvalue;
 
@@ -49,28 +32,11 @@ ArrayVector TicFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module CLOCK Get Current Time
-//@@Section FreeMat
-//@@Usage
-//Returns the current date and time as a vector.  The syntax for its use is
-//@[
-//   y = clock
-//@]
-//where @|y| has the following format:
-//@[
-//   y = [year month day hour minute seconds]
-//@]
-//@@Example
-//Here is the time that this manual was last built:
-//@<
-//clock
-//@>
 //@@Signature
 //function clock ClockFunction jitsafe
 //inputs none
 //outputs y
-//!
+//DOCBLOCK freemat_clock
 ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
   QDateTime ctime(QDateTime::currentDateTime());
   Array retvec(Double,NTuple(1,6));
@@ -84,36 +50,11 @@ ArrayVector ClockFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(retvec);
 }
 
-//!
-//@Module CLOCKTOTIME Convert Clock Vector to Epoch Time
-//@@Section FreeMat
-//@@Usage
-//Given the output of the @|clock| command, this function computes
-//the epoch time, i.e, the time in seconds since January 1,1970 
-//at 00:00:00 UTC.  This function is most useful for calculating elapsed
-//times using the clock, and should be accurate to less than a millisecond
-//(although the true accuracy depends on accuracy of the argument vector). 
-//The usage for @|clocktotime| is
-//@[
-//   y = clocktotime(x)
-//@]
-//where @|x| must be in the form of the output of @|clock|, that is
-//@[
-//   x = [year month day hour minute seconds]
-//@]
-//@@Example
-//Here is an example of using @|clocktotime| to time a delay of 1 second
-//@<
-//x = clock
-//sleep(1)
-//y = clock
-//clocktotime(y) - clocktotime(x)
-//@>
 //@@Signature
 //function clocktotime ClockToTimeFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK freemat_clocktotime
 ArrayVector ClockToTimeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("clocktotime expects 1 argument - a vector in clock format: [year month day hour minute seconds]");
@@ -131,28 +72,11 @@ ArrayVector ClockToTimeFunction(int nargout, const ArrayVector& arg) {
 }
   
 
-//!
-//@Module TOC Stop Stopwatch Timer
-//@@Section FREEMAT
-//@@Usage
-//Stop the stopwatch timer, which can be used to time tasks in FreeMat.
-//The @|toc| function takes no arguments, and returns no outputs.  You must use
-//@|toc| to get the elapsed time.  The usage is
-//@[
-//  toc
-//@]
-//@@Example
-//Here is an example of timing the solution of a large matrix equation.
-//@<
-//A = rand(100);
-//b = rand(100,1);
-//tic; c = A\b; toc
-//@>
 //@@Signature
 //function toc TocFunction jitsafe
 //inputs none
 //outputs y
-//!
+//DOCBLOCK freemat_toc
 ArrayVector TocFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(ticvalue.elapsed()/1.0e3));
 }

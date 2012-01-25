@@ -27,23 +27,11 @@
 #include "IEEEFP.hpp"
 
 
-//!
-//@Module LOG1P Natural Logarithm of 1+P Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|log| function for one plus its argument.  The general
-//syntax for its use is
-//@[
-//  y = log1p(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//@@Tests
-//@$near#y1=log1p(x1)
 //@@Signature
 //function log1p Log1PFunction
 //inputs x
 //output y
-//!
+//DOCBLOCK mathfunctions_log1p
 
 struct OpLog1P {
   static inline float func(float x) {return log1pf(x);}
@@ -70,51 +58,11 @@ ArrayVector Log1PFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpLog1P>(input).toClass(input.dataClass()));
 }
 
-//!
-//@Module LOG Natural Logarithm Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|log| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = log(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|log| function.  Output @|y| is of the
-//same size as the input @|x|. For strictly positive, real inputs, 
-//the output type is the same as the input.
-//For negative and complex arguments, the output is complex.
-//@@Function Internals
-//Mathematically, the @|log| function is defined for all real
-//valued arguments @|x| by the integral
-//\[
-//  \log x \equiv \int_1^{x} \frac{d\,t}{t}.
-//\]
-//For complex-valued arguments, @|z|, the complex logarithm is
-//defined as
-//\[
-//  \log z \equiv \log |z| + i \arg z,
-//\]
-//where @|arg| is the complex argument of @|z|.
-//@@Example
-//The following piece of code plots the real-valued @|log|
-//function over the interval @|[1,100]|:
-//@<
-//x = linspace(1,100);
-//plot(x,log(x))
-//xlabel('x');
-//ylabel('log(x)');
-//mprint('logplot');
-//@>
-//@figure logplot
-//@@Tests
-//@$near#y1=log(x1)
 //@@Signature
 //function log LogFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_log
 
 struct OpLog {
   static inline float func(float x) {return logf(x);}
@@ -141,32 +89,11 @@ ArrayVector LogFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpLog>(input));
 }
 
-//!
-//@Module SQRT Square Root of an Array
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the square root of the argument matrix.  The general
-//syntax for its use is
-//@[
-//   y = sqrt(x)
-//@]
-//where @|x| is an N-dimensional numerical array.
-//@@Example
-//Here are some examples of using @|sqrt|
-//@<
-//sqrt(9)
-//sqrt(i)
-//sqrt(-1)
-//x = rand(4)
-//sqrt(x)
-//@>
-//@@Tests
-//@$near#y1=sqrt(x1)
 //@@Signature
 //function sqrt SqrtFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_sqrt
 
 struct OpSqrt {
   static inline float func(float x) {return sqrtf(x);}
@@ -192,35 +119,11 @@ ArrayVector SqrtFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module TANH Hyperbolic Tangent Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the hyperbolic tangent of the argument.
-//The syntax for its use is
-//@[
-//   y = tanh(x)
-//@]
-//@@Function Internals
-//The @|tanh| function is computed from the formula
-//\[
-//   \tanh(x) = \frac{\sinh(x)}{\cosh(x)}
-//\]
-//@@Examples
-//Here is a simple plot of the hyperbolic tangent function
-//@<
-//x = linspace(-5,5);
-//plot(x,tanh(x)); grid('on');
-//mprint('tanhplot');
-//@>
-//@figure tanhplot
-//@@Tests
-//@$near#y1=tanh(x1)
 //@@Signature
 //function tanh TanhFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_tanh
 
 //  e^r*c(i)+e^(-r)*c(-i)/2 + i
 
@@ -255,37 +158,11 @@ ArrayVector TanhFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(tanh,OpTanh::func);
 
-//!
-//@Module ACOSH Inverse Hyperbolic Cosine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the inverse hyperbolic cosine of its argument.  The general
-//syntax for its use is
-//@[
-//  y = acosh(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//@@Function Internals
-//The @|acosh| function is computed from the formula
-//\[
-//   \cosh^{-1}(x) = \log\left(x + (x^2 - 1)^0.5\right)
-//\]
-//where the @|log| (and square root) is taken in its most general sense.
-//@@Examples
-//Here is a simple plot of the inverse hyperbolic cosine function
-//@<
-//x = linspace(1,pi);
-//plot(x,acosh(x)); grid('on');
-//mprint('acoshplot');
-//@>
-//@figure acoshplot
-//@@Tests
-//@$near#y1=acosh(x1)
 //@@Signature
 //function acosh ArccoshFunction 
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_acosh
 
 // log(x+sqrt(x^2-1))
 struct OpArccosh {
@@ -324,37 +201,11 @@ ArrayVector ArccoshFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpArccosh>(input));
 }
 
-//!
-//@Module ASINH Inverse Hyperbolic Sine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the inverse hyperbolic sine of its argument.  The general
-//syntax for its use is
-//@[
-//  y = asinh(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//@@Function Internals
-//The @|asinh| function is computed from the formula
-//\[
-//   \sinh^{-1}(x) = \log\left(x + (x^2 + 1)^0.5\right)
-//\]
-//where the @|log| (and square root) is taken in its most general sense.
-//@@Examples
-//Here is a simple plot of the inverse hyperbolic sine function
-//@<
-//x = -5:.01:5;
-//plot(x,asinh(x)); grid('on');
-//mprint('asinhplot');
-//@>
-//@figure asinhplot
-//@@Tests
-//@$near#y1=asinh(x1)
 //@@Signature
 //function asinh ArcsinhFunction 
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_asinh
 
 // log(x+sqrt(x^2-1))
 struct OpArcsinh {
@@ -380,37 +231,11 @@ ArrayVector ArcsinhFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module ASECH Inverse Hyperbolic Secant Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the inverse hyperbolic secant of its argument.  The general
-//syntax for its use is
-//@[
-//  y = asech(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//@@Function Internals
-//The @|asech| function is computed from the formula
-//\[
-//   \mathrm{sech}^{-1}(x) = \cosh^{-1}\left(\frac{1}{x}\right)
-//\]
-//@@Examples
-//Here is a simple plot of the inverse hyperbolic secant function
-//@<
-//x1 = -20:.01:-1;
-//x2 = 1:.01:20;
-//plot(x1,imag(asech(x1)),x2,imag(asech(x2))); grid('on');
-//mprint('asechplot');
-//@>
-//@figure asechplot
-//@@Tests
-//@$near#y1=asech(x1)
 //@@Signature
 //function asech ArcsechFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_asech
 struct OpArcsech {
   template <typename T>
   static inline T func(T x) {
@@ -445,37 +270,11 @@ ArrayVector ArcsechFunction(int nargout, const ArrayVector& arg) {
 
 
 
-//!
-//@Module ATANH Inverse Hyperbolic Tangent Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the inverse hyperbolic tangent of its argument.  The general
-//syntax for its use is
-//@[
-//  y = atanh(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//@@Function Internals
-//The @|atanh| function is computed from the formula
-//\[
-//   \tanh^{-1}(x) = \frac{1}{2}\log\left(\frac{1+x}{1-x}\right)
-//\]
-//where the @|log| (and square root) is taken in its most general sense.
-//@@Examples
-//Here is a simple plot of the inverse hyperbolic tangent function
-//@<
-//x = -0.99:.01:0.99;
-//plot(x,atanh(x)); grid('on');
-//mprint('atanhplot');
-//@>
-//@figure atanhplot
-//@@Tests
-//@$near#y1=atanh(x1)
 //@@Signature
 //function atanh ArctanhFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_atanh
 struct OpArctanh {
   static inline float func(float x) {return atanhf(x);}
   static inline double func(double x) {return atanh(x);}
@@ -517,39 +316,11 @@ ArrayVector ArctanhFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpArctanh>(input));
 }
 
-//!
-//@Module COSH Hyperbolic Cosine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the hyperbolic cosine of the argument.
-//The syntax for its use is
-//@[
-//   y = cosh(x)
-//@]
-//@@Function Internals
-//The @|cosh| function is computed from the formula
-//\[
-//   \cosh(x) = \frac{e^x+e^{-x}}{2}
-//\]
-//For @|x| complex, it follows that
-//\[
-//   \cosh(a+i*b) = \frac{e^a(\cos(b)+i*\sin(b)) + e^{-a}(\cos(-b)+i*\sin(-b))}{2}
-//\]
-//@@Examples
-//Here is a simple plot of the hyperbolic cosine function
-//@<
-//x = linspace(-5,5);
-//plot(x,cosh(x)); grid('on');
-//mprint('coshplot');
-//@>
-//@figure coshplot
-//@@Tests
-//@$near#y1=cosh(x1)
 //@@Signature
 //function cosh CoshFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_cosh
 
 struct OpCosh {
   static inline float func(float x) {return coshf(x);}
@@ -572,35 +343,11 @@ ArrayVector CoshFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(cosh,OpCosh::func);
 
-//!
-//@Module SINH Hyperbolic Sine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the hyperbolic sine of the argument.
-//The syntax for its use is
-//@[
-//   y = sinh(x)
-//@]
-//@@Function Internals
-//The @|sinh| function is computed from the formula
-//\[
-//   \sinh(x) = \frac{e^x-e^{-x}}{2}
-//\]
-//@@Examples
-//Here is a simple plot of the hyperbolic sine function
-//@<
-//x = linspace(-5,5);
-//plot(x,sinh(x)); grid('on');
-//mprint('sinhplot');
-//@>
-//@figure sinhplot
-//@@Tests
-//@$near#y1=sinh(x1)
 //@@Signature
 //function sinh SinhFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_sinh
 
 struct OpSinh {
   static inline float func(float x) {return sinhf(x);}
@@ -623,61 +370,11 @@ ArrayVector SinhFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(sinh,OpSinh::func);
 
-//!
-//@Module EXP Exponential Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|exp| function for its argument.  The general
-//syntax for its use is
-//@[
-//   y = exp(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|exp| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).
-//@@Function Internals
-//Mathematically, the @|exp| function is defined for all real
-//valued arguments @|x| as
-//\[
-//  \exp x \equiv e^{x},
-//\]
-//where
-//\[
-//  e = \sum_{0}^{\infty} \frac{1}{k!}
-//\]
-//and is approximately @|2.718281828459045| (returned by the function 
-//@|e|).  For complex values
-//@|z|, the famous Euler formula is used to calculate the 
-//exponential
-//\[
-//  e^{z} = e^{|z|} \left[ \cos \Re z + i \sin \Re z \right]
-//\]
-//@@Example
-//The following piece of code plots the real-valued @|exp|
-//function over the interval @|[-1,1]|:
-//@<
-//x = linspace(-1,1);
-//plot(x,exp(x))
-//mprint('expplot1');
-//@>
-//@figure expplot1
-//In the second example, we plot the unit circle in the 
-//complex plane @|e^{i 2 pi x}| for @|x in [-1,1]|.
-//@<
-//x = linspace(-1,1);
-//plot(exp(-i*x*2*pi))
-//mprint('expplot2');
-//@>
-//@figure expplot2
-//@@Tests
-//@$near#y1=exp(x1)
 //@@Signature
 //function exp ExpFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_exp
 
 struct OpExp {
   static inline float func(float x) {return expf(x);}
@@ -700,23 +397,11 @@ ArrayVector ExpFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(exp,OpExp::func);
 
-//!
-//@Module EXPM1 Exponential Minus One Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes @|exp(x)-1| function accurately for @|x|
-//small.  The syntax for its use is
-//@[
-//   y = expm1(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//@@Tests
-//@$near#y1=expm1(x1)
 //@@Signature
 //function expm1 ExpM1Function jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_expm1
 
 // exp(x)-1 for x = xr+i*xi
 // exp(xr+i*xi) - 1 = exp(xr)*cos(xi) + i*exp(xr)*sin(xi) - 1

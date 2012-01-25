@@ -33,22 +33,11 @@
 #include <QtCore>
 
 
-//!
-//@Module PCODE Convert a Script or Function to P-Code
-//@@Section FREEMAT
-//@@Usage
-//Writes out a script or function as a P-code function.
-//The general syntax for its use is:
-//@[
-//   pcode fun1 fun2 ...
-//@]
-//The compiled functions are written to the current
-//directory.
 //@@Signature
 //sfunction pcode PCodeFunction
 //inputs varargin
 //outputs none
-//!
+//DOCBLOCK freemat_pcode
 ArrayVector PCodeFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   throw Exception("P-code functions currently unsupported");
 }

@@ -54,50 +54,11 @@ struct OpVecCumProd {
   }
 };
 
-//!
-//@Module CUMPROD Cumulative Product Function
-//@@Section ELEMENTARY
-//@@Usage
-//Computes the cumulative product of an n-dimensional array along a given
-//dimension.  The general syntax for its use is
-//@[
-//  y = cumprod(x,d)
-//@]
-//where @|x| is a multidimensional array of numerical type, and @|d|
-//is the dimension along which to perform the cumulative product.  The
-//output @|y| is the same size of @|x|.  Integer types are promoted
-//to @|int32|. If the dimension @|d| is not specified, then the
-//cumulative sum is applied along the first non-singular dimension.
-//@@Function Internals
-//The output is computed via
-//\[
-//  y(m_1,\ldots,m_{d-1},j,m_{d+1},\ldots,m_{p}) = 
-//  \prod_{k=1}^{j} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}).
-//\]
-//@@Example
-//The default action is to perform the cumulative product along the
-//first non-singular dimension.
-//@<
-//A = [5,1,3;3,2,1;0,3,1]
-//cumprod(A)
-//@>
-//To compute the cumulative product along the columns:
-//@<
-//cumprod(A,2)
-//@>
-//The cumulative product also works along arbitrary dimensions
-//@<
-//B(:,:,1) = [5,2;8,9];
-//B(:,:,2) = [1,0;3,0]
-//cumprod(B,3)
-//@>
-//@@Tests
-//@$exact#y1=cumprod(x1)
 //@@Signature jitsafe
 //function cumprod CumprodFunction
 //inputs x dimensions
 //outputs y
-//!
+//DOCBLOCK elementary_cumprod
 
 ArrayVector CumprodFunction(int nargout, const ArrayVector& arg) {
   // Get the data argument

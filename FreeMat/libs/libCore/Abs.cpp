@@ -31,41 +31,11 @@ struct OpAbs {
   }
 };
 
-//!
-//@Module ABS Absolute Value Function
-//@@Section ELEMENTARY
-//@@Usage
-//Returns the absolute value of the input array for all elements.  The 
-//general syntax for its use is
-//@[
-//   y = abs(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.  The output 
-//is the same numerical type as the input, unless the input is @|complex|
-//or @|dcomplex|.  For @|complex| inputs, the absolute value is a floating
-//point array, so that the return type is @|float|.  For @|dcomplex|
-//inputs, the absolute value is a double precision floating point array, so that
-//the return type is @|double|.
-//@@Example
-//The following demonstrates the @|abs| applied to a complex scalar.
-//@<
-//abs(3+4*i)
-//@>
-//The @|abs| function applied to integer and real values:
-//@<
-//abs([-2,3,-4,5])
-//@>
-//For a double-precision complex array,
-//@<
-//abs([2.0+3.0*i,i])
-//@>
-//@@Tests
-//@$exact#y1=abs(x1)
 //@@Signature
 //function abs AbsFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK elementary_abs
 ArrayVector AbsFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("abs function requires 1 argument");

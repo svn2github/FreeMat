@@ -1,15 +1,4 @@
-%!
-%@Module TRACE Sum Diagonal Elements of an Array
-%@@Section ARRAY
-%@@Usage
-% 
-% Returns the sum of the diagonal elements of a square matrix. The general
-% syntax for its use is
-%@[
-%   y = trace(x)
-%@]
-% where x is a square matrix.
-%!
+% DOCBLOCK array_trace
 
 % Copyright (c) 2008 Samit Basu
 % Licensed under the GPL

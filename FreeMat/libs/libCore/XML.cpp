@@ -25,51 +25,17 @@
 #include "XML.hpp"
 #include "Algorithms.hpp"
 
-//!
-//@Module XMLREAD Read an XML Document into FreeMat
-//@@Section IO
-//@@Usage
-//Given a filename, reads an XML document, parses it, and
-//returns the result as a FreeMat data structure.  The syntax for its
-//use is:
-//@[
-//   p = xmlread(filename)
-//@]
-//where @|filename| is a @|string|.  The
-//resulting object @|p| is a data structure containing the information
-//in the document.  Note that the returned object @|p| is not the same
-//object as the one returned by MATLAB's @|xmlread|, although the 
-//information content is the same.  The output is largely compatible with the 
-//output of the parseXML example in the @|xmlread| documentation of the
-//MATLAB API.
 //@@Signature
 //function xmlread XMLReadFunction
 //inputs filename
 //outputs p
-//!
+//DOCBLOCK io_xmlread
 
-//!
-//@Module HTMLREAD Read an HTML Document into FreeMat
-//@@Section IO
-//@@Usage
-//Given a filename, reads an HTML document, (attempts to) parse it, and
-//returns the result as a FreeMat data structure.  The syntax for its
-//use is:
-//@[
-//   p = htmlread(filename)
-//@]
-//where @|filename| is a @|string|.  The
-//resulting object @|p| is a data structure containing the information
-//in the document.  Note that this function works by internally converting
-//the HTML document into something closer to XHTML, and then using the
-//XML parser to parse it.  In some cases, the converted HTML cannot be properly
-//parsed.  In such cases, a third party tool such as "tidy" will probably do
-//a better job.
 //@@Signature
 //function htmlread HTMLReadFunction
 //inputs filename
 //outputs p
-//!
+//DOCBLOCK io_htmlread
 
 // private (recursively called) function to convert a QDomElement into
 // a FreeMat Array.  The structure of a node is a struct with:
@@ -180,24 +146,11 @@ ArrayVector HTMLReadFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector() << QDomElementToArray(docElem);
 }
 
-//!
-//@Module URLWRITE Retrieve a URL into a File
-//@@Section IO
-//@@Usage
-//Given a URL and a timeout, attempts to retrieve the URL and write the
-//contents to a file.  The syntax is
-//@[
-//   f = urlwrite(url,filename,timeout)
-//@]
-//The @|timeout| is in milliseconds.  Note that the URL must be a complete
-//spec (i.e., including the name of the resource you wish to retrieve).  So
-//for example, you cannot use @|http://www.google.com| as a URL, but must 
-//instead use @|http://www.google.com/index.html|.
 //@@Signature
 //function urlwrite URLWriteFunction
 //inputs url filename timeout
 //outouts filename
-//!
+//DOCBLOCK io_urlwrite
 
 void URLRetriever::requestFinished(int id, bool err) {
   if (id != m_httpGetId)

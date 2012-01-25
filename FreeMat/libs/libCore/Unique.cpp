@@ -22,65 +22,11 @@
 #include "Algorithms.hpp"
 #include <QtCore>
 
-//!
-//@Module UNIQUE Unique
-//@@Section ARRAY
-//@@Usage
-//Returns a vector containing the unique elements of an array.  The first
-//form is simply
-//@[
-//   y = unique(x)
-//@]
-//where @|x| is either a numerical array or a cell-array of strings.  The 
-//result is sorted in increasing order.  You can also retrieve two sets
-//of index vectors
-//@[
-//   [y, m, n] = unique(x)
-//@]
-//such that @|y = x(m)| and @|x = y(n)|.  If the argument @|x| is a matrix,
-//you can also indicate that FreeMat should look for unique rows in the
-//matrix via
-//@[
-//   y = unique(x,'rows')
-//@]
-//and
-//@[
-//   [y, m, n] = unique(x,'rows')
-//@]
-//@@Example
-//Here is an example in row mode
-//@<
-//A = randi(1,3*ones(15,3))
-//unique(A,'rows')
-//[b,m,n] = unique(A,'rows');
-//b
-//A(m,:)
-//b(n,:)
-//@>
-//Here is an example in vector mode
-//@<
-//A = randi(1,5*ones(10,1))
-//unique(A)
-//[b,m,n] = unique(A,'rows');
-//b
-//A(m)
-//b(n)
-//@>
-//For cell arrays of strings.
-//@<
-//A = {'hi','bye','good','tell','hi','bye'}
-//unique(A)
-//@>
-//@@Tests
-//@$exact#y1=unique(x1)
-//@$exact#[y1,y2,y3]=unique(x1)
-//@$exact#y1=unique(x1,'rows')
-//@$exact#[y1,y2,y3]=unique(x1,'rows')
 //@@Signature
 //function unique UniqueFunction
 //inputs A mode
 //outputs y m n
-//!
+//DOCBLOCK array_unique
 template <class T>
 class UniqueEntryReal {
 public:

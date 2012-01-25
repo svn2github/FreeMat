@@ -1,12 +1,4 @@
-%!
-%@Module DATACURSORMODE Interactive Data Cursor
-%@@Section HANDLE
-%@@Usage
-%Toggles the data cursor which allows interactive data exploration. 
-%@[
-%   datacursormode('on')
-%@]
-%!
+% DOCBLOCK handle_datacursormode
 
 % Copyright (c) 2010 Eugene Ingerman
 % Licensed under the GPL

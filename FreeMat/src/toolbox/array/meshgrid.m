@@ -1,34 +1,4 @@
-%!
-%@Module MESHGRID Generate Grid Mesh For Plots
-%@@Section ARRAY
-%@@Usage
-%The @|meshgrid| function generates arrays that can be used for the
-%generation of surface plots.  The syntax is one of 
-%@[
-%  [X,Y] = meshgrid(x)
-%  [X,Y] = meshgrid(x,y)
-%  [X,Y,Z] = meshgrid(x,y,z)
-%@]
-%where @|x,y,z| are vectors, and @|X,Y,Z| are matrices.  In the first
-%case @|[X,Y] = meshgrid(x)|, the rows of @|X| and the columns of @|Y|
-%contain copies of the vector @|x|.  In the second case 
-%@|[X,Y] = meshgrid(x,y)|, the rows of @|X| contain copies of @|x|, and
-%the columns of @|Y| contain copies of @|y|.  In the third case, each
-%input is copied along the row, column or slice direction of the
-%corresponding output variable.
-%@@Example
-%In the first example:
-%@<
-%[X,Y] = meshgrid(-2:.4:2)
-%@>
-%Next, we use different vectors for @|X| and for @|Y|:
-%@<
-%[X,Y] = meshgrid([1,2,3,4],[6,7,8])
-%@>
-%@@Tests
-%@$near#[y1,y2] = meshgrid(-2:.4:2)
-%@$exact#[y1,y2] = meshgrid([1,2,3,4],[6,7,8])
-%!
+% DOCBLOCK array_meshgrid
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

@@ -1,19 +1,4 @@
-%!
-%@Module REGEXPREP Regular Expression Replacement Function
-%@@Section STRING
-%@@Usage
-%Replaces regular expressions in the provided string.  The syntax for its
-%use is 
-%@[
-%  outstring = regexprep(instring,pattern,replacement,modes)
-%@]
-%Here @|instring| is the string to be operated on.  And @|pattern| is a regular
-%expression of the type accepted by @|regexp|.  For each match, the contents
-%of the matched string are replaced with the replacement text.  Tokens in the
-%regular expression can be used in the replacement text using @|$N| where @|N|
-%is the number of the token to use.  You can also specify the same @|mode| 
-%flags that are used by @|regexp|.
-%!
+% DOCBLOCK string_regexprep
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

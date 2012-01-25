@@ -27,24 +27,11 @@
 
 extern MainApp *m_app;
 
-//!
-//@Module HELP Help
-//@@Section FREEMAT
-//@@Usage
-//Displays help on a function available in FreeMat.  The help function
-//takes one argument:
-//@[
-//  help topic
-//@]
-//where @|topic| is the topic to look for help on.  For scripts, the 
-//result of running @|help| is the contents of the comments at the top
-//of the file.  If FreeMat finds no comments, then it simply displays
-//the function declaration.
 //@@Signature
 //sfunction help HelpFunction
 //inputs function
 //outputs none
-//!
+//DOCBLOCK freemat_help
 ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 {
   PathSearcher psearch(eval->getTotalPath());
@@ -101,21 +88,11 @@ static HelpWindow *m_helpwin=0;
 bool inBundleMode();
 QString GetRootPath();
 
-//!
-//@Module HELPWIN Online Help Window
-//@@Section FREEMAT
-//@@Usage
-//Brings up the online help window with the FreeMat manual.  The
-//@|helpwin| function takes no arguments:
-//@[
-//  helpwin
-//  helpwin FunctionName
-//@]
 //@@Signature
 //sgfunction helpwin HelpWinFunction
 //inputs functionname
 //outputs none
-//!
+//DOCBLOCK freemat_helpwin
 ArrayVector HelpWinFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {  
   QDir dir(GetRootPath()+"/help/html");
   if (!m_helpwin){

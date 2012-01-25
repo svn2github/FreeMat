@@ -1,48 +1,4 @@
-%!
-%@Module GRID Plot Grid Toggle Function
-%@@Section HANDLE
-%@@Usage
-%Toggles the drawing of grid lines on the currently active plot.  The
-%general syntax for its use is
-%@[
-%   grid(state)
-%@]
-%where @|state| is either
-%@[
-%   grid('on')
-%@]
-%to activate the grid lines, or
-%@[
-%   grid('off')
-%@]
-%to deactivate the grid lines.  If you specify no argument then
-%@|grid| toggles the state of the grid:
-%@[
-%   grid
-%@]
-%You can also specify a particular axis to the grid command
-%@[
-%   grid(handle,...)
-%@]
-%where @|handle| is the handle for a particular axis.
-%@@Example
-%Here is a simple plot without grid lines.
-%@<
-%x = linspace(-1,1);
-%y = cos(3*pi*x);
-%plot(x,y,'r-');
-%mprint grid1
-%@>
-%@figure grid1
-%
-%Next, we activate the grid lines.
-%@<
-%plot(x,y,'r-');
-%grid on
-%mprint grid2
-%@>
-%@figure grid2
-%!
+% DOCBLOCK handle_grid
 
 % Copyright (c) 2002-2006 Samit Basu
 % Licensed under the GPL

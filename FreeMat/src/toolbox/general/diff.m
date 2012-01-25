@@ -1,41 +1,4 @@
-%!
-%@Module DIFF Difference Function
-%@@Section ELEMENTARY
-%@@Usage
-%@[
-%	y=diff(x)
-%	y=diff(x,k)
-%	y=diff(x,k,dim)
-%@]
-% Produce difference of successive vector elements.
-% 
-% If @|x| is a vector of length n, @|diff (x)| is the
-% vector of first differences
-% \[
-%  [x_2 - x_1, ..., x_n - x_{n-1}].
-% \]
-%
-% If @|x| is a matrix, @|diff (x)| is the matrix of column
-% differences along the first non-singleton dimension.
-%
-% The second argument is optional.  If supplied, @|diff (x,k)|,
-% where @|k| is a nonnegative integer, returns the
-% @|k|-th differences. It is possible that @|k| is larger than
-% then first non-singleton dimension of the matrix. In this case,
-% @|diff| continues to take the differences along the next
-% non-singleton dimension.
-%
-% The dimension along which to take the difference can be explicitly
-% stated with the optional variable @|dim|. In this case the 
-% @|k|-th order differences are calculated along this dimension.
-% In the case where @|k| exceeds @|size (x, dim)|
-% then an empty matrix is returned.
-%
-%@@Tests
-%@$exact#y1=diff(x1)
-%@$exact#y1=diff(x1,2)
-%@$exact#y1=diff(x1,2,2)
-%!
+% DOCBLOCK elementary_diff
 
 % Copyright (C) 1995, 1996, 1999, 2000, 2002, 2004, 2005, 2006, 2007
 %               Kurt Hornik

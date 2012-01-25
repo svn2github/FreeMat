@@ -27,47 +27,11 @@
 
 #define DEG2RAD M_PI/180.0
 
-//!
-//@Module COS Trigonometric Cosine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|cos| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = cos(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|cos| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|cos| function is defined for all real
-//valued arguments @|x| by the infinite summation
-//\[
-//  \cos x \equiv \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!}.
-//\]
-//For complex valued arguments @|z|, the cosine is computed via
-//\[
-//  \cos z \equiv \cos \Re z \cosh \Im z - \sin \Re z
-//  \sinh \Im z.
-//\]
-//@@Tests
-//@$near#y1=cos(x1)
-//@@Example
-//The following piece of code plots the real-valued @|cos(2 pi x)|
-//function over one period of @|[0,1]|:
-//@<
-//x = linspace(0,1);
-//plot(x,cos(2*pi*x))
-//mprint('cosplot');
-//@>
-//@figure cosplot
 //@@Signature
 //function cos CosFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_cos
 
 struct OpCos {
   static inline float func(float x) {
@@ -94,32 +58,11 @@ ArrayVector CosFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(cos,OpCos::func);
 
-//!
-//@Module COSD Cosine Degrees Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the cosine of the argument, but takes
-//the argument in degrees instead of radians (as is the case
-//for @|cos|). The syntax for its use is
-//@[
-//   y = cosd(x)
-//@]
-//@@Examples
-//The cosine of 45 degrees should be @|sqrt(2)/2|
-//@<
-//cosd(45)
-//@>
-//and the cosine of @|60| degrees should be 0.5:
-//@<
-//cosd(60)
-//@>
-//@@Tests
-//@$near#y1=cosd(x1)
 //@@Signature
 //function cosd CosdFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_cosd
 struct OpCosd {
   template <typename T>
   static inline T func(T x) {
@@ -139,47 +82,11 @@ ArrayVector CosdFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(cosd,OpCosd::func);
 
-//!
-//@Module SIN Trigonometric Sine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|sin| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = sin(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|sin| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|sin| function is defined for all real
-//valued arguments @|x| by the infinite summation
-//\[
-//  \sin x \equiv \sum_{n=1}^{\infty} \frac{(-1)^{n-1} x^{2n-1}}{(2n-1)!}.
-//\]
-//For complex valued arguments @|z|, the sine is computed via
-//\[
-//  \sin z \equiv \sin \Re z \cosh \Im z - i \cos \Re z
-//  \sinh \Im z.
-//\]
-//@@Example
-//The following piece of code plots the real-valued @|sin(2 pi x)|
-//function over one period of @|[0,1]|:
-//@<
-//x = linspace(0,1);
-//plot(x,sin(2*pi*x))
-//mprint('sinplot')
-//@>
-//@figure sinplot
-//@@Tests
-//@$near#y1=sin(x1)#(loopi==5)
 //@@Signature 
 //function sin SinFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_sin
 
 struct OpSin {
   static inline float func(float x) {
@@ -206,32 +113,11 @@ ArrayVector SinFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(sin,OpSin::func);
 
-//!
-//@Module SIND Sine Degrees Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the sine of the argument, but takes
-//the argument in degrees instead of radians (as is the case
-//for @|cos|). The syntax for its use is
-//@[
-//   y = sind(x)
-//@]
-//@@Examples
-//The sine of 45 degrees should be @|sqrt(2)/2|
-//@<
-//sind(45)
-//@>
-//and the sine of @|30| degrees should be 0.5:
-//@<
-//sind(30)
-//@>
-//@@Tests
-//@$near#y1=sind(x1)
 //@@Signature
 //function sind SindFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_sind
 
 struct OpSind {
   template <typename T>
@@ -252,51 +138,11 @@ ArrayVector SindFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(sind,OpSind::func);
 
-//!
-//@Module TAN Trigonometric Tangent Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|tan| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = tan(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|tan| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|tan| function is defined for all real
-//valued arguments @|x| by the infinite summation
-//\[
-//  \tan x \equiv x + \frac{x^3}{3} + \frac{2x^5}{15} + \cdots,
-//\]
-//or alternately by the ratio
-//\[
-//  \tan x \equiv \frac{\sin x}{\cos x}
-//\]
-//For complex valued arguments @|z|, the tangent is computed via
-//\[
-//  \tan z \equiv \frac{\sin 2 \Re z + i \sinh 2 \Im z}
-//                     {\cos 2 \Re z + \cosh 2 \Im z}.
-//\]
-//@@Example
-//The following piece of code plots the real-valued @|tan(x)|
-//function over the interval @|[-1,1]|:
-//@<
-//t = linspace(-1,1);
-//plot(t,tan(t))
-//mprint('tanplot');
-//@>
-//@figure tanplot
-//@@Tests
-//@$near#y1=tan(x1)#(loopi==5)
 //@@Signature
 //function tan TanFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_tan
 
 struct OpTan {
   static inline float func(float x) {
@@ -323,28 +169,11 @@ ArrayVector TanFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(tan,OpTan::func);
 
-//!
-//@Module TAND Tangent Degrees Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the tangent of the argument, but takes
-//the argument in degrees instead of radians (as is the case
-//for @|cos|). The syntax for its use is
-//@[
-//   y = tand(x)
-//@]
-//@@Examples
-//The tangent of 45 degrees should be @|1|
-//@<
-//tand(45)
-//@>
-//@@Tests
-//@$near#y1=tand(x1)#(loopi==54)
 //@@Signature
 //function tand TandFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_tand
 struct OpTand {
   template <typename T>
   static inline T func(T x) {
@@ -364,43 +193,11 @@ ArrayVector TandFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(tand,OpTand::func);
 
-//!
-//@Module CSC Trigonometric Cosecant Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|csc| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = csc(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|csc| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|csc| function is defined for all arguments
-//as
-//\[
-//   \csc x \equiv \frac{1}{\sin x}.
-//\]
-//@@Example
-//The following piece of code plots the real-valued @|csc(2 pi x)|
-//function over the interval of @|[-1,1]|:
-//@<
-//t = linspace(-1,1,1000);
-//plot(t,csc(2*pi*t))
-//axis([-1,1,-10,10]);
-//mprint('cscplot');
-//@>
-//@figure cscplot
-//@@Tests
-//@$near#y1=csc(x1)#(any(loopi==[5,55]))
 //@@Signature
 //function csc CscFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_csc
 
 struct OpCsc {
   static inline float func(float x) {
@@ -429,23 +226,11 @@ ArrayVector CscFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(csc,OpCsc::func);
 
-//!
-//@Module CSCD Cosecant Degrees Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the cosecant of the argument, but takes
-//the argument in degrees instead of radians (as is the case
-//for @|csc|). The syntax for its use is
-//@[
-//   y = cscd(x)
-//@]
-//@@Tests
-//@$near#y1=cscd(x1)
 //@@Signature
 //function cscd CscdFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_cscd
 
 struct OpCscd {
   static inline float func(float x) {
@@ -474,43 +259,11 @@ ArrayVector CscdFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(cscd,OpCscd::func);
 
-//!
-//@Module SEC Trigonometric Secant Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|sec| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = sec(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|sec| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|sec| function is defined for all arguments
-//as
-//\[
-//   \sec x \equiv \frac{1}{\cos x}.
-//\]
-//@@Example
-//The following piece of code plots the real-valued @|sec(2 pi x)|
-//function over the interval of @|[-1,1]|:
-//@<
-//t = linspace(-1,1,1000);
-//plot(t,sec(2*pi*t))
-//axis([-1,1,-10,10]);
-//mprint('secplot');
-//@>
-//@figure secplot
-//@@Tests
-//@$near#y1=sec(x1)
 //@@Signature
 //function sec SecFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_sec
 
 struct OpSec {
   static inline float func(float x) {
@@ -539,23 +292,11 @@ ArrayVector SecFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(sec,OpSec::func);
 
-//!
-//@Module SECD Secant Degrees Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the secant of the argument, but takes
-//the argument in degrees instead of radians (as is the case
-//for @|sec|). The syntax for its use is
-//@[
-//   y = secd(x)
-//@]
-//@@Tests
-//@$near#y1=secd(x1)#(loopi==54)
 //@@Signature
 //function secd SecdFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_secd
 
 struct OpSecd {
   static inline float func(float x) {
@@ -580,47 +321,11 @@ ArrayVector SecdFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(secd,OpSecd::func);
 
-//!
-//@Module COT Trigonometric Cotangent Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|cot| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = cot(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|cot| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|cot| function is defined for all 
-//arguments @|x| as
-//\[
-//  \cot x \equiv \frac{\cos x}{\sin x}
-//\]
-//For complex valued arguments @|z|, the cotangent is computed via
-//\[
-//  \cot z \equiv \frac{\cos 2 \Re z + \cosh 2 \Im z}{\sin 2 \Re z + 
-//  i \sinh 2 \Im z}.
-//\]
-//@@Example
-//The following piece of code plots the real-valued @|cot(x)|
-//function over the interval @|[-1,1]|:
-//@<
-//t = linspace(-1,1);
-//plot(t,cot(t))
-//mprint('cotplot');
-//@>
-//@figure cotplot
-//@@Tests
-//@$near#y1=cot(x1)#(any(loopi==[5,55]))
 //@@Signature
 //function cot CotFunction jitsafe
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_cot
 
 struct OpCot {
   template <typename T>
@@ -645,24 +350,7 @@ ArrayVector CotFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(cot,OpCot::func);
 
-//!
-//@Module COTD Cotangent Degrees Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the cotangent of the argument, but takes
-//the argument in degrees instead of radians (as is the case
-//for @|cot|). The syntax for its use is
-//@[
-//   y = cotd(x)
-//@]
-//@@Examples
-//The cotangent of 45 degrees should be 1.
-//@<
-//cotd(45)
-//@>
-//@@Tests
-//@$near#y1=cotd(x1)
-//!
+//DOCBLOCK mathfunctions_cotd
 
 struct OpCotd {
   static inline float func(float x) {return 1.0f/tanf(x*DEG2RAD);}
@@ -685,49 +373,11 @@ ArrayVector CotdFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(cotd,OpCotd::func);
 
-//!
-//@Module ACOS Inverse Trigonometric Arccosine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|acos| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = acos(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|acos| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|acos| function is defined for all 
-//arguments @|x| as
-//\[
-// \mathrm{acos} x \equiv \frac{pi}{2} + i \log \left(i x + 
-//  \sqrt{1-x^2}\right).
-//\]
-//For real valued variables @|x| in the range @|[-1,1]|, the function is
-//computed directly using the standard C library's numerical @|acos|
-//function. For both real and complex arguments @|x|, note that generally
-//\[
-//  \mathrm{acos}(\cos(x)) \neq x,
-//\] due to the periodicity of @|cos(x)|.
-//@@Example
-//The following code demonstates the @|acos| function over the range 
-//@|[-1,1]|.
-//@<
-//t = linspace(-1,1);
-//plot(t,acos(t))
-//mprint('acosplot');
-//@>
-//@figure acosplot
-//@@Tests
-//@$near#y1=acos(x1)
 //@@Signature
 //function acos ArccosFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_acos
 
 struct OpAcos {
   static inline float func(float x) {return acosf(x);}
@@ -775,50 +425,11 @@ ArrayVector ArccosFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpAcos>(input));
 }
 
-//!
-//@Module ASIN Inverse Trigonometric Arcsine Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|asin| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = asin(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|asin| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|asin| function is defined for all 
-//arguments @|x| as
-//\[ 
-//   \mathrm{asin} x \equiv - i \log \left(i x + 
-//   \sqrt{1-x^2}\right).
-//\]
-//For real valued variables @|x| in the range @|[-1,1]|, the function is
-//computed directly using the standard C library's numerical @|asin|
-//function. For both real and complex arguments @|x|, note that generally
-//\[
-//   \mathrm{asin}(\sin(x)) \neq x,
-//\] 
-//due to the periodicity of @|sin(x)|.
-//@@Example
-//The following code demonstates the @|asin| function over the range 
-//@|[-1,1]|.
-//@<
-//t = linspace(-1,1);
-//plot(t,asin(t))
-//mprint('asinplot');
-//@>
-//@figure asinplot
-//@@Tests
-//@$near#y1=asin(x1)
 //@@Signature
 //function asin ArcsinFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_asin
 
 struct OpAsin {
   static inline float func(float x) {return asinf(x);}
@@ -861,50 +472,11 @@ ArrayVector ArcsinFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(UnaryOp<OpAsin>(input));
 }
 
-//!
-//@Module ATAN Inverse Trigonometric Arctangent Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|atan| function for its argument.  The general
-//syntax for its use is
-//@[
-//  y = atan(x)
-//@]
-//where @|x| is an @|n|-dimensional array of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|atan| function.  Output @|y| is of the
-//same size and type as the input @|x|, (unless @|x| is an
-//integer, in which case @|y| is a @|double| type).  
-//@@Function Internals
-//Mathematically, the @|atan| function is defined for all 
-//arguments @|x| as
-//\[ 
-//   \mathrm{atan} x \equiv \frac{i}{2}\left(\log(1-i x) - \log(i x + 1)\right).
-//\]
-//For real valued variables @|x|, the function is computed directly using 
-//the standard C library's numerical @|atan| function. For both 
-//real and complex arguments @|x|, note that generally
-//
-//\[
-//    \mathrm{atan}(\tan(x)) \neq x,
-//\]
-// due to the periodicity of @|tan(x)|.
-//@@Example
-//The following code demonstates the @|atan| function over the range 
-//@|[-1,1]|.
-//@<
-//t = linspace(-1,1);
-//plot(t,atan(t))
-//mprint('atanplot');
-//@>
-//@figure atanplot
-//@@Tests
-//@$near#y1=atan(x1)
 //@@Signature
 //function atan ArcTanFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK mathfunctions_atan
 
 struct OpAtan {
   static inline float func(float x) {return atanf(x);}
@@ -928,57 +500,11 @@ ArrayVector ArcTanFunction(int nargout, const ArrayVector& arg) {
 
 JitScalarFunc1(atan,OpAtan::func);
 
-//!
-//@Module ATAN2 Inverse Trigonometric 4-Quadrant Arctangent Function
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Computes the @|atan2| function for its argument.  The general
-//syntax for its use is
-//@[
-//  z = atan2(y,x)
-//@]
-//where @|x| and @|y| are @|n|-dimensional arrays of numerical type.
-//Integer types are promoted to the @|double| type prior to
-//calculation of the @|atan2| function. The size of the output depends
-//on the size of @|x| and @|y|.  If @|x| is a scalar, then @|z|
-//is the same size as @|y|, and if @|y| is a scalar, then @|z|
-//is the same size as @|x|.  The type of the output is equal to the type of
-//|y/x|.  
-//@@Function Internals
-//The function is defined (for real values) to return an 
-//angle between @|-pi| and @|pi|.  The signs of @|x| and @|y|
-//are used to find the correct quadrant for the solution.  For complex
-//arguments, the two-argument arctangent is computed via
-//\[
-//  \mathrm{atan2}(y,x) \equiv -i \log\left(\frac{x+i y}{\sqrt{x^2+y^2}} \right)
-//\]
-//For real valued arguments @|x,y|, the function is computed directly using 
-//the standard C library's numerical @|atan2| function. For both 
-//real and complex arguments @|x|, note that generally
-//\[
-//  \mathrm{atan2}(\sin(x),\cos(x)) \neq x,
-//\]
-//due to the periodicities of  @|cos(x)| and @|sin(x)|.
-//@@Example
-//The following code demonstates the difference between the @|atan2| 
-//function and the @|atan| function over the range @|[-pi,pi]|.
-//@<
-//x = linspace(-pi,pi);
-//sx = sin(x); cx = cos(x);
-//plot(x,atan(sx./cx),x,atan2(sx,cx))
-//mprint('atan2plot');
-//@>
-//@figure atan2plot
-//Note how the two-argument @|atan2| function (green line) 
-//correctly ``unwraps'' the phase of the angle, while the @|atan| 
-//function (red line) wraps the angle to the interval @|[-\pi/2,\pi/2]|.
-//@@Tests
-//@$near#y1=atan(x1,x2)
 //@@Signature
 //function atan2 Arctan2Function jitsafe
 //inputs y x
 //outputs z
-//!
+//DOCBLOCK mathfunctions_atan2
 
 struct OpAtan2 {
   static inline float func(float y, float x) {return atan2f(y,x);}

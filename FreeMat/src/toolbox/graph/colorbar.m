@@ -1,19 +1,4 @@
-%!
-%@Module COLORBAR Add Colorbar to Current Plot
-%@@Section HANDLE
-%@@Usage
-%There are a number of syntaxes for the @|colorbar| command.  The first
-%takes no arguments, and adds a vertical colorbar to the right of the current
-%axes.
-%@[
-%  colorbar
-%@]
-%You can also pass properties to the newly created axes object using
-%the second syntax for colorbar
-%@[
-%  colorbar(properties...)
-%@]
-%!
+% DOCBLOCK handle_colorbar
 
 % Copyright (c) 2002-2006 Samit Basu
 % Licensed under the GPL

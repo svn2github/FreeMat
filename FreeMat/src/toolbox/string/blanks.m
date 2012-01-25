@@ -1,19 +1,4 @@
-%!
-%@Module BLANKS Create a blank string
-%@@Section String
-%@@Usage
-%@[
-%    str = blanks(n)
-%@]
-%Create a string @|str| containing @|n| blank charaters.
-%@@Example
-%A simple example:
-%@<
-%sprintf(['x0123456789y\n','x',blanks(10),'y\n'])
-%@>
-%@@Tests
-%@$exact#y1=['x',blanks(5),'y']
-%!
+% DOCBLOCK string_blanks
 
 function str = blanks(n)
   if ~isscalar(n)

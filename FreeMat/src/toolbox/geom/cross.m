@@ -1,16 +1,4 @@
-%!
-%@Module CROSS Cross Product of Two Vectors
-%@@Section MATHFUNCTIONS
-%@@Usage
-%Computes the cross product of two vectors.  The general syntax
-%for its use is
-%@[
-%    c = cross(a,b)
-%@]
-%where @|a| and @|b| are 3-element vectors.
-%@@Tests
-%@$exact#y1=cross([1,2,3],[7,5,2])
-%!
+% DOCBLOCK mathfunctions_cross
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

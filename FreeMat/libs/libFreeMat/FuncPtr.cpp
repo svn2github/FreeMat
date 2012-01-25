@@ -96,32 +96,7 @@ Array FuncPtrConstructor(Interpreter *eval, FuncPtr val) {
   return ret;
 }
 
-//!
-//@Module FUNC2STR Function to String conversion
-//@@Section FUNCTIONS
-//@@Usage
-//The @|func2str| function converts a function pointer into a
-//string.  The syntax is
-//@[
-//    y = func2str(funcptr)
-//@]
-//where @|funcptr| is a function pointer.  If @|funcptr| is a 
-//pointer to a function, then @|y| is the name of the function.
-//On the other hand, if @|funcptr| is an anonymous function then
-//@|func2str| returns the definition of the anonymous function.
-//@@Example
-//Here is a simple example of using @|func2str|
-//@<
-//y = @sin
-//x = func2str(y)
-//@>
-//If we use an anonymous function, then @|func2str|
-//returns the definition of the anonymous function
-//@<
-//y = @(x) x.^2
-//x = func2str(y)
-//@>
-//!
+//DOCBLOCK functions_func2str
 //@@Signature
 //sfunction func2str Func2StrFunction
 //input ptr
@@ -136,39 +111,7 @@ ArrayVector Func2StrFunction(int nargout, const ArrayVector& arg, Interpreter *e
   throw Exception("func2str requires either a function pointer or anonymous pointer as an argument");
 }
 
-//!
-//@Module STR2FUNC String to Function conversion
-//@@Section FUNCTIONS
-//@@Usage
-//The @|str2func| function converts a function name into a 
-//function pointer.  The syntax is 
-//@[
-//    y = str2func('funcname')
-//@]
-//where @|funcname| is the name of the function. The return
-//variable @|y| is a function handle that points to the given
-//function.
-//
-//An alternate syntax is used to construct an anonymous function
-//given an expression.  They syntax is
-//@[
-//    y = str2func('anonymous def')
-//@]
-//where @|anonymous def| is an expression that defines an
-//anonymous function, for example @|'@(x) x.^2'|.
-//@@Example
-//Here is a simple example of using @|str2func|.
-//@<
-//sin(.5)              % Calling the function directly
-//y = str2func('sin')  % Convert it into a function handle
-//y(.5)                % Calling 'sin' via the function handle
-//@>
-//Here we use @|str2func| to define an anonymous function
-//@<
-//y = str2func('@(x) x.^2')
-//y(2)
-//@>
-//!
+//DOCBLOCK functions_str2func
 //@@Signature
 //sfunction str2func Str2FuncFunction
 //input name

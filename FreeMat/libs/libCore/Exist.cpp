@@ -82,90 +82,11 @@ static int ExistAllFunction(QString fname, Interpreter* eval) {
   return 0;
 }
 
-//!
-//@Module EXIST Test for Existence
-//@@Section INSPECTION
-//@@Usage
-//Tests for the existence of a variable, function, directory or
-//file.  The general syntax for its use is
-//@[
-//  y = exist(item,kind)
-//@]
-//where @|item| is a string containing the name of the item
-//to look for, and @|kind| is a string indicating the type 
-//of the search.  The @|kind| must be one of 
-//\begin{itemize}
-//\item @|'builtin'| checks for built-in functions
-//\item @|'dir'| checks for directories
-//\item @|'file'| checks for files
-//\item @|'var'| checks for variables
-//\item @|'all'| checks all possibilities (same as leaving out @|kind|)
-//\end{itemize}
-//You can also leave the @|kind| specification out, in which case
-//the calling syntax is
-//@[
-//  y = exist(item)
-//@]
-//The return code is one of the following:
-//\begin{itemize}
-//\item 0 - if @|item| does not exist
-//\item 1 - if @|item| is a variable in the workspace
-//\item 2 - if @|item| is an M file on the search path, a full pathname
-// to a file, or an ordinary file on your search path
-//\item 5 - if @|item| is a built-in FreeMat function
-//\item 7 - if @|item| is a directory
-//\end{itemize}
-//Note: previous to version @|1.10|, @|exist| used a different notion
-//of existence for variables: a variable was said to exist if it 
-//was defined and non-empty.  This test is now performed by @|isset|.
-//@@Example
-//Some examples of the @|exist| function.  Note that generally @|exist|
-//is used in functions to test for keywords.  For example,
-//@[
-//  function y = testfunc(a, b, c)
-//  if (~exist('c'))
-//    % c was not defined, so establish a default
-//    c = 13;
-//  end
-//  y = a + b + c;
-//@]
-//An example of @|exist| in action.
-//@<
-//a = randn(3,5,2)
-//b = []
-//who
-//exist('a')
-//exist('b')
-//exist('c')
-//@>
-//@@Tests
-//@{ test_exist1.m
-//function x = test_exist1
-//x = test_exist1_assist;
-//x = test_exist1_assist;
-//
-//function y = test_exist1_assist
-//persistent x
-//if (exist('x'))
-//  y = 1;
-//else
-//  y = 0;
-//  x = 1;
-//end
-//@}
-//@{ test_exist2.m
-//function x = test_exist2
-//persistent y
-//x = 1;
-//if (~exist('y'))
-//  x = 0;
-//end
-//@}
 //@@Signature
 //sfunction exist ExistFunction
 //inputs item kind
 //outputs y
-//!
+//DOCBLOCK inspection_exist
 ArrayVector ExistFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 1)
     throw Exception("exist function takes at least one argument - the name of the object to check for");

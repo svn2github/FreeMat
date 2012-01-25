@@ -26,27 +26,11 @@
 #include "Interpreter.hpp"
 #include "Math.hpp"
 
-//!
-//@Module IMREAD Read Image File To Matrix
-//@@Section IO
-//@@Usage
-//Reads the image data from the given file into a matrix.  Note that
-//FreeMat's support for @|imread| is not complete.  Only some of the
-//formats specified in the MATLAB API are implemented.  The syntax
-//for its use is
-//@[
-//  [A,map,alpha] = imread(filename)
-//@]
-//where @|filename| is the name of the file to read from.  The returned
-//arrays @|A| contain the image data, @|map| contains the colormap information
-//(for indexed images), and @|alpha| contains the alphamap (transparency).
-//The returned values will depend on the type of the original image.  Generally
-//you can read images in the @|jpg,png,xpm,ppm| and some other formats.
 //@@Signature
 //sgfunction imread ImReadFunction
 //inputs filename
 //outputs A map alpha
-//!
+//DOCBLOCK io_imread
 static ArrayVector imreadHelperIndexed(QImage img) {
   QVector<QRgb> colorTable(img.colorTable());
   int numcol = colorTable.size();
@@ -167,60 +151,11 @@ ArrayVector ImReadFunction(int nargout, const ArrayVector& arg,
   return ArrayVector();
 }
 
-//!
-//@Module IMWRITE Write Matrix to Image File
-//@@Section IO
-//@@Usage
-//Write the image data from the matrix into a given file.  Note that
-//FreeMat's support for @|imwrite| is not complete.
-//You can write images in the @|jpg,png,xpm,ppm| and some other formats.
-//The syntax for its use is
-//@[
-//  imwrite(A, filename)
-//  imwrite(A, map, filename)
-//  imwrite(A, map, filename, 'Alpha', alpha)
-//
-//or Octave-style syntax:
-//  imwrite(filename, A)
-//  imwrite(filename, A, map)
-//  imwrite(filename, A, map, alpha)
-//@]
-//where @|filename| is the name of the file to write to.  The input array 
-//@|A| contains the image data (2D for gray or indexed, and 3D for color).  
-//If @|A| is an integer array (int8, uint8, int16, uint16, int32, uint32), 
-//the values of its elements should be within 0-255.  If @|A| is a 
-//floating-point array (float or double), the value of its elements should
-//be in the range [0,1].  @|map| contains the colormap information
-//(for indexed images), and @|alpha| the alphamap (transparency).
-//@@Example
-//Here is a simple example of @|imread|/@|imwrite|.  First, we generate
-//a grayscale image and save it to an image file.
-//@<
-//a =  uint8(255*rand(64));
-//figure(1), image(a), colormap(gray)
-//title('image to save')
-//imwrite(a, 'test.bmp')
-//@>
-//Then, we read image file and show it:
-//@<
-//b = imread('test.bmp');
-//figure(2), image(b), colormap(gray)
-//title('loaded image')
-//@>
-//@@Tests
-//@{ test_imwrite_imread.m
-//% Test the imwrite and imread capability with random grayscale image
-//function test_val = test_imwrite_imread
-//   a =  uint8(255*rand(64));
-//   imwrite(a, 'test.bmp')
-//   b = imread('test.bmp');
-//   test_val = issame(a,b);
-//@}
 //@@Signature
 //sgfunction imwrite ImWriteFunction
 //inputs filename A map alpha
 //outputs none
-//!
+//DOCBLOCK io_imwrite
 static QImage imwriteHelperIndexed(Array A, Array ctable, Array trans) {
   QImage img(int(A.columns()), int(A.rows()), QImage::Format_Indexed8);
   uint8 *img_data_dp = A.real<uint8>().data();

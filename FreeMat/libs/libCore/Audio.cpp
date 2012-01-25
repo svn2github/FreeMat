@@ -294,34 +294,11 @@ void DoRecord(void *data, int count, int channels,
 #endif
 
 
-//!
-//@Module WAVPLAY
-//@@Section IO
-//@@Usage
-//Plays a linear PCM set of samples through the audio system.  This
-//function is only available if the @|portaudio| library was available
-//when FreeMat was built.  The syntax for the command is one of:
-//@[
-//   wavplay(y)
-//   wavplay(y,sampling_rate)
-//   wavplay(...,mode)
-//@]
-//where @|y| is a matrix of audio samples.  If @|y| has two columns, then
-//the audio playback is in stereo.  The @|y| input can be of types 
-//@|float, double, int32, int16, int8, uint8|.  For @|float| and 
-//@|double| types, the sample values in @|y| must be between @|-1| and
-//@|1|.  The @|sampling_rate| specifies the rate at which the data is 
-//recorded.  If not specified, the @|sampling_rate| defaults to @|11025Hz|.
-//Finally, you can specify a playback mode of @|'sync'| which is synchronous
-//playback or a playback mode of @|'async'| which is asynchronous playback.
-//For @|'sync'| playback, the wavplay function returns when the playback is
-//complete.  For @|'async'| playback, the function returns immediately (unless
-//a former playback is still issuing).
 //@@Signature
 //function wavplay WavPlayFunction
 //inputs y sampling_rate mode
 //outputs none
-//!
+//DOCBLOCK io_wavplay
 ArrayVector WavPlayFunction(int nargout, const ArrayVector& argv) {
 #if HAVE_PORTAUDIO18 || HAVE_PORTAUDIO19
   if(argv.size() == 0)
@@ -377,28 +354,11 @@ ArrayVector WavPlayFunction(int nargout, const ArrayVector& argv) {
   return ArrayVector();
 }
 
-//!
-//@Module WAVRECORD
-//@@Section IO
-//@@Usage
-//Records linear PCM sound from the audio system.  This function is
-//only available if the @|portaudio| library was available when FreeMat
-//was built.  The syntax for this command is one of:
-//@[
-//  y = wavrecord(samples,rate)
-//  y = wavrecord(...,channels)
-//  y = wavrecord(...,'datatype')
-//@]
-//where @|samples| is the number of samples to record, and @|rate| is the
-//sampling rate.  If not specified, the @|rate| defaults to @|11025Hz|.
-//If you want to record in stero, specify @|channels = 2|.  Finally, you
-//can specify the type of the recorded data (defaults to @|FM_DOUBLE|).
-//Valid choices are @|float, double, int32, int16, int8, uint8|.
 //@@Signature
 //function wavrecord WavRecordFunction
 //inputs varargin
 //outputs y
-//!
+//DOCBLOCK io_wavrecord
 
 template <class T>
 static Array WavRecord(int samples, int channels, unsigned long SampleFormat, int Rate) {

@@ -45,68 +45,11 @@ static int convspec(char c) {
 }
 
 
-//!
-//@Module STRCMP String Compare Function
-//@@Section STRING
-//@@USAGE
-//Compares two strings for equality.  The general
-//syntax for its use is
-//@[
-//  p = strcmp(x,y)
-//@]
-//where @|x| and @|y| are two strings.  Returns @|true| if @|x|
-//and @|y| are the same size, and are equal (as strings).  Otherwise,
-//it returns @|false|.
-//In the second form, @|strcmp| can be applied to a cell array of
-//strings.  The syntax for this form is
-//@[
-//  p = strcmp(cellstra,cellstrb)
-//@]
-//where @|cellstra| and @|cellstrb| are cell arrays of a strings
-//to compare.  Also, you can also supply a character matrix as
-//an argument to @|strcmp|, in which case it will be converted
-//via @|cellstr| (so that trailing spaces are removed), before being
-//compared.
-//@@Example
-//The following piece of code compares two strings:
-//@<
-//x1 = 'astring';
-//x2 = 'bstring';
-//x3 = 'astring';
-//strcmp(x1,x2)
-//strcmp(x1,x3)
-//@>
-//Here we use a cell array strings
-//@<
-//x = {'astring','bstring',43,'astring'}
-//p = strcmp(x,'astring')
-//@>
-//Here we compare two cell arrays of strings
-//@<
-//strcmp({'this','is','a','pickle'},{'what','is','to','pickle'})
-//@>
-//Finally, the case where one of the arguments is a matrix
-//string
-//@<
-//strcmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'])
-//@>
-//@@Tests
-//@$exact#y1=strcmp(x1,x2)
-//@{ test_strcmp1.m
-//    % Check the strcmp function for a match
-//function test_val = test_strcmp1
-//test_val = test(strcmp('complex','complex'));
-//@}
-//@{ test_strcmp2.m
-//    % Check the strcmp function for a match
-//function test_val = test_strcmp2
-//test_val = test(~strcmp('dasdfas','complex'));
-//@}
 //@@Signature
 //function strcmp StrCmpFunction
 //inputs string1 string2
 //outputs flag
-//!
+//DOCBLOCK string_strcmp
 struct OpStrCmp {
     static inline bool func(const ArrayVector& arg) {
 	Array x(arg[0]);
@@ -121,24 +64,11 @@ ArrayVector StrCmpFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(StringOp<bool,OpStrCmp>(arg));
 }
 
-//!
-//@Module STRCMPI String Compare Case Insensitive Function
-//@@Section STRING
-//@@Usage
-//Compares two strings for equality ignoring case.  The general
-//syntax for its use is 
-//@[
-//   p = strcmpi(x,y)
-//@]
-//where @|x| and @|y| are two strings, or cell arrays of strings.
-//See @|strcmp| for more help.
-//@@Tests
-//@$exact#y1=strcmpi(x1,x2)
 //@@Signature
 //function strcmpi StrCmpiFunction
 //inputs string1 string2
 //outputs flag
-//!
+//DOCBLOCK string_strcmpi
 struct OpStrCmpi {
     static inline bool func(const ArrayVector& arg) {
 	Array x(arg[0]);
@@ -152,61 +82,11 @@ ArrayVector StrCmpiFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(StringOp<bool,OpStrCmpi>(arg));
 }
 
-//!
-//@Module STRNCMP String Compare Function To Length N 
-//@@Section STRING
-//@@USAGE
-//Compares two strings for equality, but only looks at the
-//first N characters from each string.  The general syntax 
-//for its use is
-//@[
-//  p = strncmp(x,y,n)
-//@]
-//where @|x| and @|y| are two strings.  Returns @|true| if @|x|
-//and @|y| are each at least @|n| characters long, and if the
-//first @|n| characters from each string are the same.  Otherwise,
-//it returns @|false|.
-//In the second form, @|strncmp| can be applied to a cell array of
-//strings.  The syntax for this form is
-//@[
-//  p = strncmp(cellstra,cellstrb,n)
-//@]
-//where @|cellstra| and @|cellstrb| are cell arrays of a strings
-//to compare.  Also, you can also supply a character matrix as
-//an argument to @|strcmp|, in which case it will be converted
-//via @|cellstr| (so that trailing spaces are removed), before being
-//compared.
-//@@Example
-//The following piece of code compares two strings:
-//@<
-//x1 = 'astring';
-//x2 = 'bstring';
-//x3 = 'astring';
-//strncmp(x1,x2,4)
-//strncmp(x1,x3,4)
-//@>
-//Here we use a cell array strings
-//@<
-//x = {'ast','bst',43,'astr'}
-//p = strncmp(x,'ast',3)
-//@>
-//Here we compare two cell arrays of strings
-//@<
-//strncmp({'this','is','a','pickle'},{'think','is','to','pickle'},3)
-//@>
-//Finally, the case where one of the arguments is a matrix
-//string
-//@<
-//strncmp({'this','is','a','pickle'},['peter ';'piper ';'hated ';'pickle'],4);
-//@>
-//@@Tests
-//@$exact#y1=strncmp(x1,x2,4)
-//@$exact#y1=strncmp(x1,x2,3)
 //@@Signature
 //function strncmp StrnCmpFunction
 //inputs string1 string2 len
 //outputs flag
-//!
+//DOCBLOCK string_strncmp
 struct OpStrnCmp {
     static inline bool func(const ArrayVector& arg) {
 	Array x(arg[0]);
@@ -222,33 +102,11 @@ struct OpStrnCmp {
 ArrayVector StrnCmpFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(StringOp<bool,OpStrnCmp>(arg));
 }
-//!
-//@Module STRSTR String Search Function
-//@@Section STRING
-//@@Usage
-//Searches for the first occurance of one string inside another.
-//The general syntax for its use is
-//@[
-//   p = strstr(x,y)
-//@]
-//where @|x| and @|y| are two strings.  The returned integer @|p|
-//indicates the index into the string @|x| where the substring @|y|
-//occurs.  If no instance of @|y| is found, then @|p| is set to
-//zero.
-//@@Example
-//Some examples of @|strstr| in action
-//@<
-//strstr('hello','lo')
-//strstr('quick brown fox','own')
-//strstr('free stuff','lunch')
-//@>
-//@@Tests
-//@$exact#y1=strstr(x1,x2)
 //@@Signature
 //function strstr StrStrFunction
 //inputs x y
 //outputs flag
-//!
+//DOCBLOCK string_strstr
 ArrayVector StrStrFunction(int nargout, const ArrayVector& arg) {
     Array retval, arg1, arg2;
     if (arg.size() != 2)
@@ -261,37 +119,11 @@ ArrayVector StrStrFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module STRREP String Replace Function
-//@@Section STRING
-//@@Usage
-//Replace every occurance of one string with another.  The
-//general syntax for its use is
-//@[
-//  p = strrep(source,find,replace)
-//@]
-//Every instance of the string @|find| in the string @|source| is
-//replaced with the string @|replace|.  Any of @|source|, @|find|
-//and @|replace| can be a cell array of strings, in which case
-//each entry has the replace operation applied.
-//@@Example
-//Here are some examples of the use of @|strrep|.  First the case
-//where are the arguments are simple strings
-//@<
-//strrep('Matlab is great','Matlab','FreeMat')
-//@>
-//And here we have the replace operation for a number of strings:
-//@<
-//strrep({'time is money';'A stitch in time';'No time for games'},'time','money')
-//@>
-//@@Tests
-//@$exact#y1=strrep(x1,'Matlab','FreeMat')
-//@$exact#y1=strrep(x1,'time','money')
 //@@Signature
 //function strrep StrRepFunction
 //inputs source pattern replace
 //outputs y
-//!
+//DOCBLOCK string_strrep
 static Array StrRepFunc(const Array &source, const Array &pattern, const Array &replace) {
     if (!source.isString() || !pattern.isString() || !replace.isString()) 
 	return source;
@@ -348,87 +180,6 @@ ArrayVector StrRepFunction(int nargout, const ArrayVector& arg) {
 	return ArrayVector(retvec);
 }
 
-//!
-//@Module REGEXP Regular Expression Matching Function
-//@@Section STRING
-//@@Usage
-//Matches regular expressions in the provided string.  This function is
-//complicated, and compatibility with MATLABs syntax is not perfect.  The
-//syntax for its use is
-//@[
-//  regexp('str','expr')
-//@]
-//which returns a row vector containing the starting index of each substring
-//of @|str| that matches the regular expression described by @|expr|.  The
-//second form of @|regexp| returns six outputs in the following order:
-//@[
-//  [start stop tokenExtents match tokens names] = regexp('str','expr')
-//@]
-//where the meaning of each of the outputs is defined below.
-//\begin{itemize}
-//\item @|start| is a row vector containing the starting index of each 
-//substring that matches the regular expression.
-//\item @|stop| is a row vector containing the ending index of each 
-//substring that matches the regular expression.
-//\item @|tokenExtents| is a cell array containing the starting and ending
-//indices of each substring that matches the @|tokens| in the regular
-//expression.  A token is a captured part of the regular expression.
-//If the @|'once'| mode is used, then this output is a @|double| array.
-//\item @|match| is a cell array containing the text for each substring
-//that matches the regular expression.  In @|'once'| mode, this is a 
-//string.
-//\item @|tokens| is a cell array of cell arrays of strings that correspond
-//to the tokens in the regular expression.  In @|'once'| mode, this is a
-//cell array of strings.
-//\item @|named| is a structure array containing the named tokens captured
-//in a regular expression. Each named token is assigned a field in the resulting
-//structure array, and each element of the array corresponds to a different
-//match.
-//\end{itemize}
-//If you want only some of the the outputs,  you can use the 
-//following variant of @|regexp|:
-//@[
-//  [o1 o2 ...] = regexp('str','expr', 'p1', 'p2', ...)
-//@]
-//where @|p1| etc. are the names of the outputs (and the order we want
-//the outputs in).  As a final variant, you can supply some mode 
-//flags to @|regexp|
-//@[
-//  [o1 o2 ...] = regexp('str','expr', p1, p2, ..., 'mode1', 'mode2')
-//@]
-//where acceptable @|mode| flags are:
-//\begin{itemize}
-//\item @|'once'| - only the first match is returned.
-//\item @|'matchcase'| - letter case must match (selected by default for @|regexp|)
-//\item @|'ignorecase'| - letter case is ignored (selected by default for @|regexpi|)
-//\item @|'dotall'| - the @|'.'| operator matches any character (default)
-//\item @|'dotexceptnewline'| - the @|'.'| operator does not match the newline character
-//\item @|'stringanchors'| - the @|^| and @|$| operators match at the beginning and 
-//end (respectively) of a string.
-//\item @|'lineanchors'| - the @|^| and @|$| operators match at the beginning and
-//end (respectively) of a line.
-//\item @|'literalspacing'| - the space characters and comment characters @|#| are matched
-//as literals, just like any other ordinary character (default).
-//\item @|'freespacing'| - all spaces and comments are ignored in the regular expression.
-//You must use '\ ' and '\#' to match spaces and comment characters, respectively.
-//\end{itemize}
-//Note the following behavior differences between MATLABs regexp and FreeMats:
-//\begin{itemize}
-//\item If you have an old version of @|pcre| installed, then named tokens must use the
-//older @|<?P<name>| syntax, instead of the new @|<?<name>| syntax.  
-//\item The @|pcre| library is pickier about named tokens and their appearance in 
-//expressions.  So, for example, the regexp from the MATLAB 
-//manual @|'(?<first>\\w+)\\s+(?<last>\\w+)|(?<last>\\w+),\\s+(?<first>\\w+)'|
-//does not work correctly (as of this writing) because the same named 
-//tokens appear multiple
-//times.  The workaround is to assign different names to each token, and then collapse
-//the results later.
-//\end{itemize}
-//@@Example
-//Some examples of using the @|regexp| function
-//@<
-//[start,stop,tokenExtents,match,tokens,named] = regexp('quick down town zoo','(.)own')
-//@>
 //@@Signature
 //function regexp RegExpFunction
 //inputs string expr varargin
@@ -441,7 +192,7 @@ ArrayVector StrRepFunction(int nargout, const ArrayVector& arg) {
 //function regexprepdriver RegExpRepDriverFunction
 //inputs varargin
 //outputs y
-//!
+//DOCBLOCK string_regexp
 #if HAVE_PCRE
 static bool isSlotSpec(QString t) {
     return ((t == "start") ||
@@ -1200,42 +951,11 @@ ArrayVector RegExpRepDriverFunction(int nargout, const ArrayVector& arg) {
 
 
 
-//!
-//@Module DEBLANK Remove trailing blanks from a string
-//@@Section String
-//@@Usage
-//The @|deblank| function removes spaces at the end of a string
-//when used with the syntax
-//@[
-//   y = deblank(x)
-//@]
-//where @|x| is a string, in which case, all of the extra spaces
-//in @|x| are stripped from the end of the string.  Alternately,
-//you can call @|deblank| with a cell array of strings
-//@[
-//   y = deblank(c)
-//@]
-//in which case each string in the cell array is deblanked.
-//@@Example
-//A simple example
-//@<
-//deblank('hello   ')
-//@>
-//and a more complex example with a cell array of strings
-//@<
-//deblank({'hello  ','there ','  is  ','  sign  '})
-//@>
-//@@Tests
-//@$exact#y1=deblank(x1)
-//@{ test_deblank_1.m
-//function x = test_deblank_1
-//   x = isempty(deblank('   '));
-//@}
 //@@Signature
 //function deblank DeblankFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK string_deblank
 struct OpDeblank {
     static inline Array func(const Array& arg) {
 	QString txt(arg.asString());
@@ -1339,39 +1059,11 @@ ArrayVector DeblankFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(DeBlank(arg[0]));
 }
 
-//!
-//@Module STRTRIM Trim Spaces from a String
-//@@Section STRING
-//@@Usage
-//Removes the white-spaces at the beginning and end of a string (or a 
-//cell array of strings). See @|isspace| for a definition of a white-space.
-//There are two forms for the @|strtrim| function.  The first is for
-//single strings
-//@[
-//   y = strtrim(strng)
-//@]
-//where @|strng| is a string.  The second form operates on a cell array
-//of strings
-//@[
-//   y = strtrim(cellstr)
-//@]
-//and trims each string in the cell array.
-//@@Example
-//Here we apply @|strtrim| to a simple string
-//@<
-//strtrim('  lot of blank spaces    ');
-//@>
-//and here we apply it to a cell array
-//@<
-//strtrim({'  space','enough ',' for ',''})
-//@>
-//@@Tests
-//@$exact#y1=strtrim(x1)
 //@@Signature
 //function strtrim StrTrimFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK string_strtrim
 
 struct OpStrTrim {
     static inline Array func(const Array& arg) {
@@ -1395,42 +1087,11 @@ ArrayVector StrTrimFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(StringOp<OpStrTrim>(arg[0]));
 }
 
-//!
-//@Module STRFIND Find Substring in a String
-//@@Section STRING
-//@@Usage
-//Searches through a string for a pattern, and returns the starting
-//positions of the pattern in an array.  There are two forms for 
-//the @|strfind| function.  The first is for single strings
-//@[
-//   ndx = strfind(string, pattern)
-//@]
-//the resulting array @|ndx| contains the starting indices in @|string|
-//for the pattern @|pattern|.  The second form takes a cell array of 
-//strings
-//@[
-//   ndx = strfind(cells, pattern)
-//@]
-//and applies the search operation to each string in the cell array.
-//@@Example
-//Here we apply @|strfind| to a simple string
-//@<
-//a = 'how now brown cow?'
-//b = strfind(a,'ow')
-//@>
-//Here we search over multiple strings contained in a cell array.
-//@<
-//a = {'how now brown cow','quick brown fox','coffee anyone?'}
-//b = strfind(a,'ow')
-//@>
-//@@Tests
-//@$exact#y1 = strfind(x1,'ow')
-//@$exact#y1 = strfind(x1,'er')
 //@@Signature
 //function strfind StrFindFunction
 //inputs x pattern
 //outputs y
-//!
+//DOCBLOCK string_strfind
 static Array StrFindFunc(const Array &r, const QString &pattern) {
     if (!r.isString()) return EmptyConstructor();
     QString x = r.asString();
@@ -1464,42 +1125,11 @@ ArrayVector StrFindFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module NUM2STR Convert Numbers To Strings
-//@@Section ARRAY
-//@@Usage
-//Converts an array into its string representation.  The general syntax
-//for this function is
-//@[
-//   s = num2str(X)
-//@]
-//where @|s| is a string (or string matrix) and @|X| is an array.  By
-//default, the @|num2str| function uses 4 digits of precision and an 
-//exponent if required.  If you want more digits of precision, you can 
-//specify the precition via the form
-//@[
-//   s = num2str(X, precision)
-//@]
-//where @|precision| is the number of digits to include in the string
-//representation.  For more control over the format of the output, you 
-//can also specify a format specifier (see @|printf| for more details).
-//@[
-//   s = num2str(X, format)
-//@]
-//where @|format| is the specifier string.
-//@@Tests
-//@$exact#y1=num2str(x1)
-//@{ test_num2str1.m
-//function x = test_num2str1
-//   % Added for bug 1918315
-//   inum = 100;
-//   x = all('100.data' == [num2str(inum),'.data']);
-//@}
 //@@Signature
 //function num2str Num2StrFunction
 //inputs x format
 //outputs string
-//!
+//DOCBLOCK array_num2str
 
 static void StripLeadingSpaces(StringVector& all_rows) {
     // Trim out leading spaces
@@ -2064,31 +1694,11 @@ ArrayVector ScanfHelperFunction( QFile *fp, const ArrayVector& arg )
 }
 
 
-//!
-//@Module SSCANF Formated String Input Function (C-Style)
-//@@Section IO
-//@@Usage
-//Reads values from a string.  The general syntax for its use is
-//@[
-//  [a, count, errmsg, nextind] = sscanf(text,format,[size])
-//@]
-//Here @|format| is the format string, which is a string that
-//controls the format of the input, @|size| specifies the amount of data to be read. Values that are parsed
-//from the @|text| are stored in a. Note that sscanf is vectorized - the format string is reused as long as
-//there are entries in the @|text| string. See @|printf|
-//for a description of the format.
-//@@Tests
-//@{ test_sscanf1.m
-//function test_val = test_sscanf1
-//A = sscanf('1.34 54 5.67','%g');
-//B = [1.34;54;5.67];
-//test_val = issame(A,B);
-//@}
 //@@Signature
 //function sscanf SscanfFunction
 //inputs varargin
 //outputs varargout
-//!
+//DOCBLOCK io_sscanf
 ArrayVector SscanfFunction(int nargout, const ArrayVector& arg) {
     if ((arg.size() > 3) || (arg.size() < 2) || (!arg[0].isString()) || (!arg[1].isString()))
 	throw Exception("incorrect number or types or the parameters");

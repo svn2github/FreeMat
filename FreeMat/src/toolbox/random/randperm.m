@@ -1,17 +1,4 @@
-%!
-%@Module RANDPERM Random permutation
-%@@Section RANDOM
-%@@USAGE
-%@[
-%   y = randperm(n)
-%@]
-%@|y| is a random permutation of integers from 1 to @|n|.
-%@|randperm| calls @|rand| and changes its state.
-%@@Example
-%@<
-%y = randperm(10)
-%@>
-%!
+% DOCBLOCK random_randperm
 
 % Copyright (c) 2008 Samit Basu
 % Licensed under the GPL

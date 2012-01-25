@@ -25,59 +25,11 @@
 #include "FuncPtr.hpp"
 #include "AnonFunc.hpp"
 
-//!
-//@Module PERMUTE Array Permutation Function
-//@@Section ARRAY
-//@@Usage
-//The @|permute| function rearranges the contents of an array according
-//to the specified permutation vector.  The syntax for its use is
-//@[
-//    y = permute(x,p)
-//@]
-//where @|p| is a permutation vector - i.e., a vector containing the 
-//integers @|1...ndims(x)| each occuring exactly once.  The resulting
-//array @|y| contains the same data as the array @|x|, but ordered
-//according to the permutation.  This function is a generalization of
-//the matrix transpose operation.
-//@@Example
-//Here we use @|permute| to transpose a simple matrix (note that permute
-//also works for sparse matrices):
-//@<
-//A = [1,2;4,5]
-//permute(A,[2,1])
-//A'
-//@>
-//Now we permute a larger n-dimensional array:
-//@<
-//A = randn(13,5,7,2);
-//size(A)
-//B = permute(A,[3,4,2,1]);
-//size(B)
-//@>
-//@@Tests
-//@$exact#y1=permute(x1,[2,1])
-//@$exact#y1=size(permute(x1,[3,4,2,1]))
-//@{ test_permute1.m
-//function test_val = test_permute1
-//z = rand(3,5,2,4,7);
-//perm = [3,5,1,4,2];
-//sizez = size(z);
-//y = permute(z,perm);
-//sizey = size(y);
-//test_val = all(sizey == sizez(perm));
-//@}
-//@{ test_permute2.m
-//function test_val = test_permute2
-//z = rand(3,5,2,4,7);
-//perm = [3,5,1,4,2];
-//y = ipermute(permute(z,perm),perm);
-//test_val = all(y == z);
-//@}
 //@@Signature
 //function permute PermuteFunction jitsafe
 //inputs x p
 //outputs y
-//!
+//DOCBLOCK array_permute
 ArrayVector PermuteFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) throw Exception("permute requires 2 inputs, the array to permute, and the permutation vector");
   Array permutation(arg[1].asDenseArray().toClass(UInt32));
@@ -100,75 +52,11 @@ ArrayVector PermuteFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Permute(arg[0],perm));
 }
 
-//!
-//@Module REPMAT Array Replication Function
-//@@Section ARRAY
-//@@Usage
-//The @|repmat| function replicates an array the specified
-//number of times.  The source and destination arrays may
-//be multidimensional.  There are three distinct syntaxes for
-//the @|repmap| function.  The first form:
-//@[
-//  y = repmat(x,n)
-//@]
-//replicates the array @|x| on an @|n-times-n| tiling, to create
-//a matrix @|y| that has @|n| times as many rows and columns
-//as @|x|.  The output @|y| will match @|x| in all remaining
-//dimensions.  The second form is
-//@[
-//  y = repmat(x,m,n)
-//@]
-//And creates a tiling of @|x| with @|m| copies of @|x| in the
-//row direction, and @|n| copies of @|x| in the column direction.
-//The final form is the most general
-//@[
-//  y = repmat(x,[m n p...])
-//@]
-//where the supplied vector indicates the replication factor in 
-//each dimension.  
-//@@Example
-//Here is an example of using the @|repmat| function to replicate
-//a row 5 times.  Note that the same effect can be accomplished
-//(although somewhat less efficiently) by a multiplication.
-//@<
-//x = [1 2 3 4]
-//y = repmat(x,[5,1])
-//@>
-//The @|repmat| function can also be used to create a matrix of scalars
-//or to provide replication in arbitrary dimensions.  Here we use it to
-//replicate a 2D matrix into a 3D volume.
-//@<
-//x = [1 2;3 4]
-//y = repmat(x,[1,1,3])
-//@>
-//@@Tests
-//@$exact#y1=repmat(x1,[1,1,3])
-//@$exact#y1=repmat(x1,[5,1])
-//@$exact#y1=repmat(x1,1,2)
-//@$exact#y1=repmat(x1,2,1)
-//@{ test_repmat1.m
-//function test_val = test_repmat1
-//  s = ones(2,2,1);
-//  p = repmat(s,[2 2]);
-//  test_val = all(p == ones(4));
-//@}
-//@{ test_repmat2.m
-//function test_val = test_repmat2
-//  s = ones(2,2);
-//  p = repmat(s,[2 2 1]);
-//  test_val = all(p == ones(4));
-//@}
-//@{ test_repmat3.m
-//function test_val = test_repmat3
-//  s = ones(2,2,2);
-//  p = repmat(s,[2 2 1]);
-//  test_val = all(p == ones(4,4,2));
-//@}
 //@@Signature
 //function repmat RepMatFunction jitsafe
 //inputs x rows cols
 //outputs y
-//!
+//DOCBLOCK array_repmat
 
 template <typename T>
 static BasicArray<T> RepMat(const BasicArray<T> &dp, const NTuple &outdim, const NTuple &repcount) {
@@ -307,91 +195,11 @@ ArrayVector RepMatFunction(int nargout, const ArrayVector& arg) {
   }
 }
 
-//!
-//@Module DIAG Diagonal Matrix Construction/Extraction
-//@@Section ARRAY
-//@@Usage
-//The @|diag| function is used to either construct a 
-//diagonal matrix from a vector, or return the diagonal
-//elements of a matrix as a vector.  The general syntax
-//for its use is
-//@[
-//  y = diag(x,n)
-//@]
-//If @|x| is a matrix, then @|y| returns the @|n|-th 
-//diagonal.  If @|n| is omitted, it is assumed to be
-//zero.  Conversely, if @|x| is a vector, then @|y|
-//is a matrix with @|x| set to the @|n|-th diagonal.
-//@@Examples
-//Here is an example of @|diag| being used to extract
-//a diagonal from a matrix.
-//@<
-//A = int32(10*rand(4,5))
-//diag(A)
-//diag(A,1)
-//@>
-//Here is an example of the second form of @|diag|, being
-//used to construct a diagonal matrix.
-//@<
-//x = int32(10*rand(1,3))
-//diag(x)
-//diag(x,-1)
-//@>
-//@@Tests
-//@{ test_diag1.m
-//% Test the diagonal extraction function
-//function test_val = test_diag1
-//a = [1,2,3,4;5,6,7,8;9,10,11,12];
-//b = diag(a);
-//test_val = test(b == [1;6;11]);
-//@}
-//@{ test_diag2.m
-//% Test the diagonal extraction function with a non-zero diagonal
-//function test_val = test_diag2
-//a = [1,2,3,4;5,6,7,8;9,10,11,12];
-//b = diag(a,1);
-//test_val = test(b == [2;7;12]);
-//@}
-//@{ test_diag3.m
-//% Test the diagonal creation function
-//function test_val = test_diag3
-//a = [2,3];
-//b = diag(a);
-//test_val = test(b == [2,0;0,3]);
-//@}
-//@{ test_diag4.m
-//% Test the diagonal creation function with a non-zero diagonal
-//function test_val = test_diag4
-//a = [2,3];
-//b = diag(a,-1);
-//test_val = test(b == [0,0,0;2,0,0;0,3,0]);
-//@}
-//@{ test_diag5.m
-//% Test the diagonal creation function with no arguments (bug 1620051)
-//function test_val = test_diag5
-//test_val = 1;
-//try
-//  b = diag;
-//catch
-//  test_val = 1;
-//end
-//@}
-//@@Tests
-//@{ test_sparse74.m
-//% Test sparse matrix array diagonal extraction
-//function x = test_sparse74
-//[yi1,zi1] = sparse_test_mat('int32',300,400);
-//[yf1,zf1] = sparse_test_mat('float',300,400);
-//[yd1,zd1] = sparse_test_mat('double',300,400);
-//[yc1,zc1] = sparse_test_mat('complex',300,400);
-//[yz1,zz1] = sparse_test_mat('dcomplex',300,400);
-//x = testeq(diag(yi1,30),diag(zi1,30)) & testeq(diag(yf1,30),diag(zf1,30)) & testeq(diag(yd1,30),diag(zd1,30)) & testeq(diag(yc1,30),diag(zc1,30)) & testeq(diag(yz1,30),diag(zz1,30));
-//@}
 //@@Signature
 //function diag DiagFunction jitsafe
 //inputs x n
 //outputs y
-//!
+//DOCBLOCK array_diag
 ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
   // First, get the diagonal order, and synthesize it if it was
   // not supplied
@@ -420,58 +228,11 @@ ArrayVector DiagFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(GetDiagonal(arg[0],diagonalOrder));
 }
 
-//!
-//@Module CELLFUN Appy a Function To Elements of a Cell Array
-//@@Section ARRAY
-//@@Usage
-//The @|cellfun| function is used to apply a function handle
-//(or anonymous function) to each element of a cell array and to
-//collect the outputs into an array.  The general syntax for its
-//use is 
-//@[
-//   y = cellfun(fun, x)
-//@]
-//where @|x| is an N-dimensional array.  In this case, each
-//element of the output @|y_i| is defined as @|fun(x{i})|.  You can
-//also supply multiple arguments to @|cellfun|, provided all of the
-//arguments are the same size
-//@[
-//   y = cellfun(fun, x, z, ...)
-//@]
-//in which case each output @|y_i| is defined as @|fun(x{i},z{i},...)|.
-//Note that unlike @|arrayfun|, the @|cellfun| function will allow for
-//different types (if there are overloaded versions of the function
-//@|fun|) for each element.
-//
-//If the function returns multiple outputs, then @|arrayfun| can be
-//called with multiple outputs, in which case each output goes to
-//a separate array output
-//@[
-//   [y1,y2,...] = cellfun(fun, x, z, ...)
-//@]
-//The assumption is that the output types for each call to @|fun| is
-//the same across the inputs.
-//
-//Finally, some hints can be provided to @|cellfun| using the syntax
-//@[
-//   [y1,y2,...] = cellfun(fun, x, z, ..., 'param', value, 'param', value)
-//@]
-//where @|param| and @|value| take on the following possible values:
-//\begin{itemize}
-//  \item @|'UniformOutput'| - if the @|value| is @|true| then each output of @|fun|
-//   must be a scalar, and the outputs are concatenated into an array the same size
-//   as the input arrays.  If the @|value| is @|false| then the outputs are encapsulated
-//   into a cell array, with each entry in the cell array containing the call to 
-//   @|fun(x_i,z_i,...)|.
-//  \item @|'ErrorHandler'| - in this case @|value| is a function handle that gets called
-//  when @|fun| throws an error.  If @|'ErrorHandler'| is not specified, then @|arrayfun|
-//  allows the error to propogate (i.e., and exception is thrown).
-//\end{itemize}
 //@@Signature
 //sfunction cellfun CellFunFunction
 //inputs varargin
 //output varargout
-//!
+//DOCBLOCK array_cellfun
 static ArrayVector CellFunNonuniformAnon(int nargout, const ArrayVector &arg,
 					  Interpreter *eval, NTuple argdims,
 					  int argcount, Array fun)
@@ -641,54 +402,11 @@ ArrayVector CellFunFunction(int nargout, const ArrayVector& arg,
 }
 
 
-//!
-//@Module ARRAYFUN Apply a Function To Elements of an Array
-//@@Section ARRAY
-//@@Usage
-//The @|arrayfun| function is used to apply a function handle
-//to each element of an input array (or arrays), and to collect
-//the outputs into an array.  The general syntax for its use is
-//@[
-//   y = arrayfun(fun, x)
-//@]
-//where @|x| is an N-dimensional array.  In this case, each 
-//element of the output @|y_i| is defined as @|fun(x_i)|.  You can
-//also supply multiple arguments to @|arrayfun|, provided all of the
-//arguments are the same size
-//@[
-//   y = arrayfun(fun, x, z,...)
-//@]
-//in which case each output @|y_i = fun(x_i,z_i,...)|.
-//
-//If the function returns multiple outputs, then @|arrayfun| can be
-//called with multiple outputs, in which case each output goes to
-//a separate array output
-//@[
-//   [y1,y2,...] = arrayfun(fun, x, z, ...)
-//@]
-//The assumption is that the output types for each call to @|fun| is
-//the same across the inputs.
-//
-//Finally, some hints can be provided to @|arrayfun| using the syntax
-//@[
-//   [y1,y2,...] = arrayfun(fun, x, z, ..., 'param', value, 'param', value)
-//@]
-//where @|param| and @|value| take on the following possible values:
-//\begin{itemize}
-//  \item @|'UniformOutput'| - if the @|value| is @|true| then each output of @|fun|
-//   must be a scalar, and the outputs are concatenated into an array the same size
-//   as the input arrays.  If the @|value| is @|false| then the outputs are encapsulated
-//   into a cell array, with each entry in the cell array containing the call to 
-//   @|fun(x_i,z_i,...)|.
-//  \item @|'ErrorHandler'| - in this case @|value| is a function handle that gets called
-//  when @|fun| throws an error.  If @|'ErrorHandler'| is not specified, then @|arrayfun|
-//  allows the error to propogate (i.e., and exception is thrown).
-//\end{itemize}
 //@@Signature
 //sfunction arrayfun ArrayFunFunction
 //inputs varargin
 //output varargout
-//!
+//DOCBLOCK array_arrayfun
 
 static ArrayVector ArrayFunNonuniformAnon(int nargout, const ArrayVector &arg,
 					  Interpreter *eval, NTuple argdims,

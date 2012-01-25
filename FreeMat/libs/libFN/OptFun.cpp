@@ -56,94 +56,11 @@ void fcnstub(double *p, double *hx, int m, int n, void *adata) {
   }
 }
 
-//!
-//@Module FITFUN Fit a Function
-//@@Section CURVEFIT
-//@@Usage
-//Fits @|n| (non-linear) functions of @|m| variables using least squares
-//and the Levenberg-Marquardt algorithm.  The general syntax for its usage
-//is
-//@[
-//  [xopt,yopt] = fitfun(fcn,xinit,y,weights,tol,params...)
-//@]
-//Where @|fcn| is the name of the function to be fit, @|xinit| is the
-//initial guess for the solution (required), @|y| is the right hand side,
-//i.e., the vector @|y| such that:
-//\[
-//   xopt = \arg \min_{x} \|\mathrm{diag}(weights)*(f(x) - y)\|_2^2,
-//\]
-//the output @|yopt| is the function @|fcn| evaluated at @|xopt|.  
-//The vector @|weights| must be the same size as @|y|, and contains the
-//relative weight to assign to an error in each output value.  Generally,
-//the ith weight should reflect your confidence in the ith measurement.
-//The parameter @|tol| is the tolerance used for convergence.
-//The function @|fcn| must return a vector of the same size as @|y|,
-//and @|params| are passed to @|fcn| after the argument @|x|, i.e.,
-//\[
-//  y = fcn(x,param1,param2,...).
-//\]
-//Note that both @|x| and @|y| (and the output of the function) must all
-//be real variables.  Complex variables are not handled yet.
-//@@Tests
-//@{ test_fitfun1.m
-//% Test the fitfun bug (bug 1514605)
-//function test_val = test_fitfun1
-//O = 3/4*pi;
-//y0 = cos(O);
-//[x y] = fitfun('cos',3.5/4*pi,y0,1,0.0001);
-//test_val = abs((x-O)/O*100)<.1;
-//@}
-//@{ test_fitfun2.m
-//% Test the nested fitfun bug (bug 1741350)
-//function test_val = test_fitfun2
-//a = 2;
-//b = 0;
-//init = [a,b];
-//y = [1:100];
-//weights = y*0+1;
-//tol = 1.e-08;
-//junk = rand(100);
-//[xopt,yopt] = fitfun('fitfunc_func1',init,y,weights,tol,junk);
-//test_val = abs(xopt(1)-1) < 1e-6;
-//@}
-//@{ fitfunc_func1.m
-//function y = fitfunc_func1(init,junk)
-// c = 2;
-// d = 0;
-// init2 = [c,d];
-// y2 = [1:100]*3;
-// weights2 = y2*0+1;
-// tol2 = 1.e-08;
-// junk2 = rand(100);
-// [xopt2,yopt2] = fitfun('fitfunc_func2',init2,y2,weights2,tol2,junk2);
-// a = init(1);
-// b = init(2);
-// x = [1:100];
-// y = a*x + b;
-//@}
-//@{ fitfunc_func2.m
-//function y = fitfunc_func2(init,junk);
-// a = init(1);
-// b = init(2);
-// x = [1:100];
-// y = a*x+b;
-//@}
-//@{ test_fitfun3.m
-//% Test the fitfun with a local function
-//function test_val = test_fitfun3
-//O = 3/4*pi;
-//y0 = cos(O);
-//[x y] = fitfun(@locos,3.5/4*pi,y0,1,0.0001);
-//test_val = abs((x-O)/O*100)<.1;
-//
-//function y = locos(x)
-//  y = cos(x);
-//@}
 //@@Signature
 //sfunction fitfun FitFunFunction
 //inputs fcn xinit y weights tol varargin
 //outputs xopt yopt
-//!
+//DOCBLOCK curvefit_fitfun
 ArrayVector FitFunFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size()<4) 
     throw Exception("fitfun requires at least four arguments");

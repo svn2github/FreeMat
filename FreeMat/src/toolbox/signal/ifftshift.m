@@ -1,25 +1,4 @@
-%!
-%@Module IFFTSHIFT Inverse Shift FFT Output
-%@@Section TRANSFORMS
-%@@Usage
-%The @|ifftshift| function shifts the DC component (zero-frequency)
-%of the output from the center of the array back to the first position
-%and iseffectively the inverse of @|fftshift|.  For vectors
-%this means swapping the two halves of the vector.  For matrices,
-%the first and third quadrants are swapped.  So on for N-dimensional
-%arrays.  The syntax for its use is
-%@[
-%     y = ifftshift(x).
-%@]
-%Alternately, you can specify that only one dimension be shifted
-%@[
-%     y = ifftshift(x,dim).
-%@]
-%@@Tests
-%@$near#y1=ifftshift(x1)
-%@$near#y1=ifftshift(x1,2)
-%@$near#y1=ifftshift(x1,3)
-%!
+% DOCBLOCK transforms_ifftshift
 
 % Copyright (c) 2002-2006 Samit Basu
 % Licensed under the GPL

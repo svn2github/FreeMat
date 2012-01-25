@@ -1,13 +1,4 @@
-%!
-%@Module LINE Line Display Function
-%@@Section HANDLE
-%@@Usage
-%The @|line| command has the following general syntax
-%@[
-%   handle = line(x,y,z,properties...)
-%@]
-%where...
-%!
+% DOCBLOCK handle_line
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

@@ -25,54 +25,11 @@
 #include <QtCore>
 #include "Algorithms.hpp"
 
-//!
-//@Module CD Change Working Directory Function
-//@@Section OS
-//@@Usage
-//Changes the current working directory to the one specified as the argument.  The general syntax for its use is
-//@[
-//  cd('dirname')
-//@]
-//but this can also be expressed as
-//@[
-//  cd 'dirname'
-//@]
-//or 
-//@[
-//  cd dirname
-//@]
-//Examples of all three usages are given below.
-//Generally speaking, @|dirname| is any string that would be accepted 
-//by the underlying OS as a valid directory name.  For example, on most 
-//systems, @|'.'| refers to the current directory, and @|'..'| refers 
-//to the parent directory.  Also, depending on the OS, it may be necessary 
-//to ``escape'' the directory seperators.  In particular, if directories 
-//are seperated with the backwards-slash character @|'\\'|, then the 
-//path specification must use double-slashes @|'\\\\'|. Note: to get 
-//file-name completion to work at this time, you must use one of the 
-//first two forms of the command.
-//
-//@@Example
-//The @|pwd| command returns the current directory location.  First, 
-//we use the simplest form of the @|cd| command, in which the directory 
-//name argument is given unquoted.
-//@<
-//pwd
-//cd ..
-//pwd
-//@>
-//Next, we use the ``traditional'' form of the function call, using 
-//both the parenthesis and a variable to store the quoted string.
-//@<
-//a = pwd;
-//cd(a)
-//pwd
-//@>
 //@@Signature
 //sfunction cd ChangeDirFunction
 //inputs path
 //outputs none
-//!
+//DOCBLOCK os_cd
 ArrayVector ChangeDirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() != 1)
     throw Exception("cd function requires exactly one argument");
@@ -110,29 +67,11 @@ static void TabledOutput(StringVector sysresult, Interpreter* eval) {
   eval->outputMessage("\n");
 }
 
-//!
-//@Module WHAT List FreeMat Files In Directory
-//@@Section INSPECTION
-//@@Usage
-//Lists files in a directory (or the current directory if no
-//argument is supplied) that are relevant to FreeMat.  These
-//are @|M|-files, @|MAT|-files, and class directories.  There
-//are several syntaxes for its use.  The first is
-//@[
-//   what
-//@]
-//which lists the aforementioned items.  If you provide a 
-//path instead
-//@[
-//   what path-to-folder
-//@]
-//then @|what| will list the relevant FreeMat items in the specified
-//directory.
 //@@Signature
 //sfunction what WhatFunction
 //inputs folder
 //outputs none
-//!
+//DOCBLOCK inspection_what
 ArrayVector WhatFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   QDir pdir(QDir::current());
   if (arg.size() > 0)
@@ -175,46 +114,11 @@ ArrayVector WhatFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 }
 
 
-//!
-//@Module DIR List Files Function
-//@@Section OS
-//@@Usage
-//In some versions of FreeMat (pre 3.1), the @|dir| function was aliased
-//to the @|ls| function.  Starting with version @|3.1|, the @|dir| function
-//has been rewritten to provide compatibility with MATLAB.  The general syntax
-//for its use is
-//@[
-//  dir
-//@]
-//in which case, a listing of the files in the current directory are output to the
-//console.  Alternately, you can specify a target via
-//@[
-//  dir('name')
-//@]
-//or using the string syntax
-//@[
-//  dir name
-//@]
-//If you want to capture the output of the @|dir| command, you can assign the output
-//to an array
-//@[
-//  result = dir('name')
-//@]
-//(or you can omit @|'name'| to get a directory listing of the current directory.  The
-//resulting array @|result| is a structure array containing the fields:
-//\begin{itemize}
-//   \item @|name| the filename as a string
-//   \item @|date| the modification date and time stamp as a string
-//   \item @|bytes| the size of the file in bytes as a @|uint64|
-//   \item @|isdir| a logical that is @|1| if the file corresponds to a directory.
-//\end{itemize}
-//Note that @|'name'| can also contain wildcards (e.g., @|dir *.m| to get a listing of
-//all FreeMat scripts in the current directory.
 //@@Signature
 //sfunction dir DirFunction
 //inputs name
 //outputs array
-//!
+//DOCBLOCK os_dir
 ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   // Check for the case that the given name 
   QString dirarg;
@@ -268,46 +172,11 @@ ArrayVector DirFunction(int nargout, const ArrayVector& arg, Interpreter* eval) 
 }
 
 
-//!
-//@Module LS List Files Function
-//@@Section OS
-//@@Usage
-//Lists the files in a directory or directories.  The general syntax for its use is
-//@[
-//  ls('dirname1','dirname2',...,'dirnameN')
-//@]
-//but this can also be expressed as
-//@[
-//  ls 'dirname1' 'dirname2' ... 'dirnameN'
-//@]
-//or 
-//@[
-//  ls dirname1 dirname2 ... dirnameN
-//@]
-//For compatibility with some environments, the function @|dir| can also be used instead of @|ls|.  Generally speaking, @|dirname| is any string that would be accepted by the underlying OS as a valid directory name.  For example, on most systems, @|'.'| refers to the current directory, and @|'..'| refers to the parent directory.  Also, depending on the OS, it may be necessary to ``escape'' the directory seperators.  In particular, if directories are seperated with the backwards-slash character @|'\\'|, then the path specification must use double-slashes @|'\\\\'|. Two points worth mentioning about the @|ls| function:
-//\begin{itemize}
-//  \item To get file-name completion to work at this time, you must use one of the first two forms of the command.
-//  \item If you want to capture the output of the @|ls| command, use the @|system| function instead.
-//\end{itemize}
-//
-//@@Example
-//First, we use the simplest form of the @|ls| command, in which the directory name argument is given unquoted.
-//@<
-//ls m*.m
-//@>
-//Next, we use the ``traditional'' form of the function call, using both the parenthesis and the quoted string.
-//@<
-//ls('m*.m')
-//@>
-//In the third version, we use only the quoted string argument without parenthesis.  
-//@<
-//ls 'm*.m'
-//@>
 //@@Signature
 //sfunction ls ListFilesFunction
 //inputs varargin
 //outputs none
-//!
+//DOCBLOCK os_ls
 ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   StringVector sysresult;
   QString buffer;
@@ -334,115 +203,29 @@ ArrayVector ListFilesFunction(int nargout, const ArrayVector& arg, Interpreter* 
   return ArrayVector();
 }
 
-//!
-//@Module DIRSEP Director Seperator
-//@@Section OS
-//@@Usage
-//Returns the directory seperator character for the current platform.  The 
-//general syntax for its use is
-//@[
-//   y = dirsep
-//@]
-//This function can be used to build up paths (or see @|fullfile| for another
-//way to do this.
 //@@Signature
 //function dirsep DirSepFunction
 //inputs none
 //outputs y
-//!
+//DOCBLOCK os_dirsep
 ArrayVector DirSepFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(QString(QDir::separator())));
 }
 
-//!
-//@Module PWD Print Working Directory Function
-//@@Section OS
-//@@Usage
-//Returns a @|string| describing the current working directory.  The general syntax for its use is
-//@[
-//  y = pwd
-//@]
-//
-//@@Example
-//The @|pwd| function is fairly straightforward.
-//@<
-//pwd
-//@>
 //@@Signature
 //function pwd PrintWorkingDirectoryFunction
 //inputs none
 //outputs y
-//!
+//DOCBLOCK os_pwd
 ArrayVector PrintWorkingDirectoryFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(QDir::toNativeSeparators(QDir::currentPath())));
 }
 
-//!
-//@Module FILEATTRIB Get and Set File or Directory Attributes
-//@@Section OS
-//@@Usage
-//Retrieves information about a file or directory. The first version
-//uses the syntax
-//@[
-//   y = fileattrib(filename)
-//@]
-//where @|filename| is the name of a file or directory.  The returned
-//structure contains several entries, corresponding to the attributes
-//of the file.  Here is a list of the entries, and their meaning:
-//\begin{itemize}
-//  \item @|Name| - the full pathname for the file
-//  \item @|archive| - not used, set to @|0|
-//  \item @|system| - not used, set to @|0|
-//  \item @|hidden| - set to @|1| for a hidden file, and @|0| else.
-//  \item @|directory| - set to @|1| for a directory, and @|0| for a file.
-//  \item @|UserRead| - set to @|1| if the user has read permission, @|0| otherwise.
-//  \item @|UserWrite| - set to @|1| if the user has write permission, @|0| otherwise.
-//  \item @|UserExecute| - set to @|1| if the user has execute permission, @|0| otherwise.
-//  \item @|GroupRead| - set to @|1| if the group has read permission, @|0| otherwise.
-//  \item @|GroupWrite| - set to @|1| if the group has write permission, @|0| otherwise.
-//  \item @|GroupExecute| - set to @|1| if the group has execute permission, @|0| otherwise.
-//  \item @|OtherRead| - set to @|1| if the world has read permission, @|0| otherwise.
-//  \item @|OtherWrite| - set to @|1| if the world has write permission, @|0| otherwise.
-//  \item @|OtherExecute| - set to @|1| if the world has execute permission, @|0| otherwise.
-//\end{itemize}
-//You can also provide a wildcard filename to get the attributes for a set of files
-//e.g.,
-//@[
-//   y = fileattrib('foo*')
-//@]
-//
-//You can also use @|fileattrib| to change the attributes of a file and/or directories.
-//To change attributes, use one of the following syntaxes
-//@[
-//   y = fileattrib(filename,attributelist)
-//   y = fileattrib(filename,attributelist,userlist)
-//   y = fileattrib(filename,attributelist,userlist,'s')
-//@]
-//where @|attributelist| is a string that consists of a list of attributes, each preceeded by 
-//a @|+| to enable the attribute, and @|-| to disable the attribute. The valid list of
-//attributes that can be changed are
-//\begin{itemize}
-// \item @|'w'| - change write permissions
-// \item @|'r'| - change read permissions
-// \item @|'x'| - change execute permissions
-//\end{itemize}
-//for example, @|'-w +r'| would indicate removal of write permissions and addition of read
-//permissions.  The @|userlist| is a string that lists the realm of the permission changes.
-//If it is not specified, it defaults to @|'u'|.
-//\begin{itemize}
-//  \item @|'u'| - user or owner permissions
-//  \item @|'g'| - group permissions
-//  \item @|'o'| - other permissions ("world" in normal Unix terminology)
-//  \item @|'a'| - equivalent to 'ugo'.
-//\end{itemize}
-//Finally, if you specify a @|'s'| for the last argument, the attribute change is applied
-//recursively, so that setting the attributes for a directory will apply to all the entries
-//within the directory.
 //@@Signature
 //function fileattrib FileAttribFunction
 //inputs filename attribset userset recursiveflag
 //outputs attribs
-//!
+//DOCBLOCK os_fileattrib
 
 static Array FileAttrib(QString filename)
 {
@@ -622,25 +405,11 @@ ArrayVector FileAttribFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module RMDIR Remove Directory
-//@@Section OS
-//@@Usage
-//Deletes a directory.  The general syntax for its use is
-//@[
-//  rmdir('dirname')
-//@]
-//which removes the directory @|dirname| if it is empty.  If you
-//want to delete the directory and all subdirectories and files
-//in it, use the syntax
-//@[
-//  rmdir('dirname','s')
-//@]
 //@@Signature
 //function rmdir RMDirFunction
 //inputs dirname flag
 //outputs none
-//!
+//DOCBLOCK os_rmdir
 inline void RemoveDirectory(QString dirname) {
   QDir::current().rmdir(dirname);
 }
@@ -688,24 +457,11 @@ ArrayVector MKDirCoreFunction(int nargout, const ArrayVector& arg) {
     return ArrayVector(Array(bool(false)));
 }
 
-//!
-//@Module FILEPARTS Extract Filename Parts
-//@@Section OS
-//@@Usage
-//The @|fileparts| takes a filename, and returns the path, filename, extension, and
-//(for MATLAB-compatibility) an empty version number of the file.  The syntax for its use is
-//@[
-//    [path,name,extension,version] = fileparts(filename)
-//@]
-//where @|filename| is a string containing the description of the file, and @|path|
-//is the @|path| to the file, 
-//@@Tests
-//@$exact#[y1,y2,y3,y4]=fileparts('/home/basu/testfile.mgz')
 //@@Signature
 //function fileparts FilePartsFunction
 //inputs filename
 //outputs path name extension version
-//!
+//DOCBLOCK os_fileparts
 ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("fileparts requires a filename");
@@ -723,25 +479,11 @@ ArrayVector FilePartsFunction(int nargout, const ArrayVector& arg) {
 		       << Array(StringArray);
 }
 
-//!
-//@Module DELETE Delete a File
-//@@Section OS
-//@@Usage
-//Deletes a file.  The general syntax for its use is
-//@[
-//  delete('filename')
-//@]
-//or alternately
-//@[
-//  delete filename
-//@]
-//which removes the file described by @|filename| which must
-//be relative to the current path.
 //@@Signature
 //function delete DeleteFunction
 //inputs filename
 //outputs none
-//!
+//DOCBLOCK os_delete
 ArrayVector DeleteFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("delete requires at least one argument");
@@ -757,49 +499,11 @@ ArrayVector DeleteFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module COPYFILE Copy Files
-//@@Section OS
-//@@Usage
-//Copies a file or files from one location to another.  There are 
-//several syntaxes for this function that are acceptable:
-//@[
-//   copyfile(file_in,file_out)
-//@]
-//copies the file from @|file_in| to @|file_out|.  Also, the second
-//argument can be a directory name:
-//@[
-//   copyfile(file_in,directory_out)
-//@]
-//in which case @|file_in| is copied into the directory specified by
-//@|directory_out|.  You can also use @|copyfile| to copy entire directories
-//as in
-//@[
-//   copyfile(dir_in,dir_out)
-//@]
-//in which case the directory contents are copied to the destination directory
-//(which is created if necessary).  Finally, the first argument to @|copyfile| can
-//contain wildcards
-//@[
-//   copyfile(pattern,directory_out)
-//@]
-//in which case all files that match the given pattern are copied to the output
-//directory.   Note that to remain compatible with the MATLAB API, this function
-//will delete/replace destination files that already exist, unless they are marked
-//as read-only.  If you want to force the copy to succeed, you can append a @|'f'|
-//argument to the @|copyfile| function:
-//@[
-//   copyfile(arg1,arg2,'f')
-//@]
-//or equivalently
-//@[
-//   copyfile arg1 arg2 f
-//@]
 //@@Signature
 //function copyfile CopyFileFunction
 //inputs pattern directory_out forceflag
 //outputs none
-//!
+//DOCBLOCK os_copyfile
 static void CopyFile(QString source, QString dest, bool override) {
   QFileInfo destInfo(dest);
   if (destInfo.exists() && (override || destInfo.isWritable()))

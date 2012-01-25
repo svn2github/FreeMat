@@ -1,42 +1,4 @@
-%!
-%@Module CSVWRITE Write Comma Separated Value (CSV) File
-%@@Section IO
-%@@Usage
-%The @|csvwrite| function writes a given matrix to a text
-%file using comma separated value (CSV) notation.  Note that
-%you can create CSV files with arbitrary sized matrices, but
-%that @|csvread| has limits on line length.  If you need to
-%reliably read and write large matrices, use @|rawwrite| and
-%@|rawread| respectively.  The syntax for @|csvwrite| is 
-%@[
-%   csvwrite('filename',x)
-%@]
-%where @|x| is a numeric array.  The contents of @|x| are written
-%to @|filename| as comma-separated values.  You can also specify
-%a row and column offset to @|csvwrite| to force @|csvwrite| to
-%write the matrix @|x| starting at the specified location in the 
-%file.  This syntax of the function is
-%@[
-%   csvwrite('filename',x,startrow,startcol)
-%@]
-%where @|startrow| and @|startcol| are the offsets in zero-based
-%indexing.  
-%@@Example
-%Here we create a simple matrix, and write it to a CSV file
-%@<
-%x = [1,2,3;5,6,7]
-%csvwrite('csvwrite.csv',x)
-%csvread('csvwrite.csv')
-%@>
-%Next, we do the same with an offset.
-%@<
-%csvwrite('csvwrite.csv',x,1,2)
-%csvread('csvwrite.csv')
-%@>
-%Note the extra zeros.
-%@@Tests
-%@$exact#csvwrite('test_csvwrite.csv',[1,2,3;5,6,7]);y1=csvread('test_csvwrite.csv')
-%!
+% DOCBLOCK io_csvwrite
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

@@ -1,20 +1,4 @@
-%!
-%@Module CAT Concatenation of Arrays
-%@@Section CLASS
-%@@Usage
-%This function concatenates arrays in a given
-%dimension.  The syntax for its use is
-%@[
-%   cat (DIM, A, B)
-%   cat (DIM, A, B, C ...)
-%@]
-%to return the concatenation along the dimension @|DIM| of all arguments. 
-%@|cat(1, A, B, C)| is the same as @|[A; B; C]| or @|vertcat(A, B, C)|.
-%@|cat(2, A, B, C)| is the same as @|[A, B, C]| or @|horzcat(A, B, C)|.
-%@@Tests
-%@$exact#y1=cat(1,x1,x2)
-%@$exact#y1=cat(2,x1,x2)
-%!
+% DOCBLOCK class_cat
 
 function ret = cat(varargin)
     if nargin < 2

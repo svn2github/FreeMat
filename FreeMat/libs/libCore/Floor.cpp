@@ -32,42 +32,11 @@ struct OpFloor {
   }
 };
 
-//!
-//@Module FLOOR Floor Function
-//@@Section ELEMENTARY
-//@@Usage
-//Computes the floor of an n-dimensional array elementwise.  The
-//floor of a number is defined as the smallest integer that is
-//less than or equal to that number. The general syntax for its use
-//is
-//@[
-//   y = floor(x)
-//@]
-//where @|x| is a multidimensional array of numerical type.  The @|floor| 
-//function preserves the type of the argument.  So integer arguments 
-//are not modified, and @|float| arrays return @|float| arrays as 
-//outputs, and similarly for @|double| arrays.  The @|floor| function 
-//is not defined for complex types.
-//@@Example
-//The following demonstrates the @|floor| function applied to various
-//(numerical) arguments.  For integer arguments, the floor function has
-//no effect:
-//@<
-//floor(3)
-//floor(-3)
-//@>
-//Next, we take the @|floor| of a floating point value:
-//@<
-//floor(3.023)
-//floor(-2.341)
-//@>
-//@@Tests
-//@$exact#y1=floor(x1)
 //@@Signature
 //function floor FloorFunction jitsafe
 //input x
 //output y
-//!
+//DOCBLOCK elementary_floor
 ArrayVector FloorFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("floor requires one argument");
@@ -105,31 +74,11 @@ struct OpFix {
 
 JitScalarFunc1(fix,OpFix::func);
 
-//!
-//@Module FIX Round Towards Zero
-//@@Section MATHFUNCTIONS
-//@@Usage
-//Rounds the argument array towards zero.  The syntax for its use is
-//@[
-//   y = fix(x)
-//@]
-//where @|x| is a numeric array.  For positive elements of @|x|, the output
-//is the largest integer smaller than @|x|.  For negative elements of @|x|
-//the output is the smallest integer larger than @|x|.  For complex @|x|,
-//the operation is applied seperately to the real and imaginary parts.
-//@@Example
-//Here is a simple example of the @|fix| operation on some values
-//@<
-//a = [-1.8,pi,8,-pi,-0.001,2.3+0.3i]
-//fix(a)
-//@>
-//@@Tests
-//@$exact#y1=fix(x1)
 //@@Signature
 //function fix FixFunction
 //input x
 //output y
-//!
+//DOCBLOCK mathfunctions_fix
 ArrayVector FixFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("fix requires one argument");

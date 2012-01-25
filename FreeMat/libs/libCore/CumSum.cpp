@@ -58,50 +58,11 @@ struct OpVecCumSum {
   }
 };
 
-//!
-//@Module CUMSUM Cumulative Summation Function
-//@@Section ELEMENTARY
-//@@Usage
-//Computes the cumulative sum of an n-dimensional array along a given
-//dimension.  The general syntax for its use is
-//@[
-//  y = cumsum(x,d)
-//@]
-//where @|x| is a multidimensional array of numerical type, and @|d|
-//is the dimension along which to perform the cumulative sum.  The
-//output @|y| is the same size of @|x|.  Integer types are promoted
-//to @|int32|. If the dimension @|d| is not specified, then the
-//cumulative sum is applied along the first non-singular dimension.
-//@@Function Internals
-//The output is computed via
-//\[
-//  y(m_1,\ldots,m_{d-1},j,m_{d+1},\ldots,m_{p}) = 
-//  \sum_{k=1}^{j} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}).
-//\]
-//@@Example
-//The default action is to perform the cumulative sum along the
-//first non-singular dimension.
-//@<
-//A = [5,1,3;3,2,1;0,3,1]
-//cumsum(A)
-//@>
-//To compute the cumulative sum along the columns:
-//@<
-//cumsum(A,2)
-//@>
-//The cumulative sum also works along arbitrary dimensions
-//@<
-//B(:,:,1) = [5,2;8,9];
-//B(:,:,2) = [1,0;3,0]
-//cumsum(B,3)
-//@>
-//@@Tests
-//@$exact#y1=cumsum(x1)
 //@@Signature
 //function cumsum CumsumFunction jitsafe
 //inputs x dimension
 //outputs y
-//!  
+//DOCBLOCK elementary_cumsum
 ArrayVector CumsumFunction(int nargout, const ArrayVector& arg) {
   // Get the data argument
   if (arg.size() < 1)

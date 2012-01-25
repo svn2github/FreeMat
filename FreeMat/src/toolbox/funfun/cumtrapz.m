@@ -1,26 +1,4 @@
-%!
-%@Module CUMTRAPZ Trapezoidal Rule Cumulative Integration
-%@@Section NUM
-%@@Usage
-% 
-% The cumtrapz routine has the following syntax
-% @[
-%      [z] = cumtrapz(x,y)
-% @]
-% where |x| is a dependent vector and |y| an m-by-n matrix equal in
-%  at least one dimension to x. (e.g.:x = time samples, y = f(t))
-% 
-% Alternatively, you can enter 
-%@[
-%      [z] = cumtrapz(y) 
-%@]
-% for a unit integration of |y|. 
-%
-% If |y| is a matrix, m must be equal to length(x) (e.g.:
-% y must have the same number of rows as x has elements).
-% In this case, integrals are taken for each row, returned in a
-% resulting vector z of dimension (1,n)
-%!
+% DOCBLOCK num_cumtrapz
 
 % Copyright (c) 2008 Timothy Cyders
 % Licensed under the GPL

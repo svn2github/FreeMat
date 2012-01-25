@@ -179,68 +179,11 @@ static Array Conv2FunctionRCX(Array hcol, Array hrow, Array X, QString type) {
   return rvec;
 }
 
-//!
-//@Module CONV2 Matrix Convolution
-//@@Section SIGNAL
-//@@Usage
-//The @|conv2| function performs a two-dimensional convolution of
-//matrix arguments.  The syntax for its use is
-//@[
-//    Z = conv2(X,Y)
-//@]
-//which performs the full 2-D convolution of @|X| and @|Y|.  If the 
-//input matrices are of size @|[xm,xn]| and @|[ym,yn]| respectively,
-//then the output is of size @|[xm+ym-1,xn+yn-1]|.  Another form is
-//@[
-//    Z = conv2(hcol,hrow,X)
-//@]
-//where @|hcol| and @|hrow| are vectors.  In this form, @|conv2|
-//first convolves @|Y| along the columns with @|hcol|, and then 
-//convolves @|Y| along the rows with @|hrow|.  This is equivalent
-//to @|conv2(hcol(:)*hrow(:)',Y)|.
-//
-//You can also provide an optional @|shape| argument to @|conv2|
-//via either
-//@[
-//    Z = conv2(X,Y,'shape')
-//    Z = conv2(hcol,hrow,X,'shape')
-//@]
-//where @|shape| is one of the following strings
-//\begin{itemize}
-//\item @|'full'| - compute the full convolution result - this is the default if no @|shape| argument is provided.
-//\item @|'same'| - returns the central part of the result that is the same size as @|X|.
-//\item @|'valid'| - returns the portion of the convolution that is computed without the zero-padded edges.  In this situation, @|Z| has 
-//size @|[xm-ym+1,xn-yn+1]| when @|xm>=ym| and @|xn>=yn|.  Otherwise
-//@|conv2| returns an empty matrix.
-//\end{itemize}
-//@@Function Internals
-//The convolution is computed explicitly using the definition:
-//\[
-//  Z(m,n) = \sum_{k} \sum_{j} X(k,j) Y(m-k,n-j)
-//\]
-//If the full output is requested, then @|m| ranges over @|0 <= m < xm+ym-1|
-//and @|n| ranges over @|0 <= n < xn+yn-1|.  For the case where @|shape|
-//is @|'same'|, the output ranges over @|(ym-1)/2 <= m < xm + (ym-1)/2|
-//and @|(yn-1)/2 <= n < xn + (yn-1)/2|.
-//@@Tests
-//@$near#y1=conv2(x1,x2)#(any(loopi==[50:52])||any(loopj==[50:52]))
-//@$near#y1=conv2(x1,x2,'same')#(any(loopi==[50:52])||any(loopj==[50:52]))
-//@$near#y1=conv2(x1,x2,'valid')#(any(loopi==[50:52])||any(loopj==[50:52]))
-//@{ test_conv2_1.m
-//function x = test_conv2_1
-//   % In response to 1928542
-//   A = [1,3;4,5]+i*[5,2;7,8];
-//   B = [0,2;5,0]+i*[9,3;5,2];
-//   C = conv2(A,B);
-//   D = conv2(real(A),real(B))-conv2(imag(A),imag(B));
-//   E = conv2(real(A),imag(B))+conv2(imag(A),real(B));
-//   x = wbtest_near(C,D+E*i);
-//@}
 //@@Signature
 //function conv2 Conv2Function jitsafe
 //inputs hcol hrow X shape
 //outputs Z
-//!
+//DOCBLOCK signal_conv2
 ArrayVector Conv2Function(int nargout, const ArrayVector& arg) {
   // Call the right function based on the arguments
   if (arg.size() < 2) 

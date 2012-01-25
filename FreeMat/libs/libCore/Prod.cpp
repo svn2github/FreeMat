@@ -85,48 +85,11 @@ struct OpVecProd {
   }
 };
 
-//!
-//@Module PROD Product Function
-//@@Section ELEMENTARY
-//@@Usage
-//Computes the product of an array along a given dimension.  The general
-//syntax for its use is
-//@[
-//   y = prod(x,d)
-//@]
-//where @|x| is an @|n|-dimensions array of numerical type.
-//The output is of the same numerical type as the input, except 
-//for integer types, which are automatically promoted to @|int32|.
-// The argument @|d| is optional, and denotes the dimension along 
-//which to take the product.  The output is computed via
-//\[
-//  y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = 
-//    \prod_{k} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
-//\]
-//If @|d| is omitted, then the product is taken along the 
-//first non-singleton dimension of @|x|. Note that by definition
-//(starting with FreeMat 2.1) @|prod([]) = 1|.
-//@@Example
-//The following piece of code demonstrates various uses of the product
-//function
-//@<
-//A = [5,1,3;3,2,1;0,3,1]
-//@>
-//We start by calling @|prod| without a dimension argument, in which case it defaults to the first nonsingular dimension (in this case, along the columns or @|d = 1|).
-//@<
-//prod(A)
-//@>
-//Next, we take the product along the rows.
-//@<
-//prod(A,2)
-//@>
-//@@Tests
-//@$exact#y1=prod(x1)
 //@@Signature
 //function prod ProdFunction jitsafe
 //inputs x dimension
 //outputs y
-//!
+//DOCBLOCK elementary_prod
 ArrayVector ProdFunction(int nargout, const ArrayVector& arg) {
   // Get the data argument
   if (arg.size() < 1)

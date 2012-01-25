@@ -141,40 +141,11 @@ static double doubleRecipCond(int m, int n, double *a) {
   return rcond;
 }
 
-//!
-//@Module RCOND Reciprocal Condition Number Estimate
-//@@Section ARRAY
-//@@Usage
-//The @|rcond| function is a FreeMat wrapper around LAPACKs
-//function @|XGECON|, which estimates the 1-norm condition
-//number (reciprocal).  For the details of the algorithm see
-//the LAPACK documentation.  The syntax for its use is
-//@[
-//   x = rcond(A)
-//@]
-//where @|A| is a matrix.
-//@@Example
-//Here is the reciprocal condition number for a random square
-//matrix
-//@<
-//A = rand(30);
-//rcond(A)
-//@>
-//And here we calculate the same value using the definition of
-//(reciprocal) condition number
-//@<
-//1/(norm(A,1)*norm(inv(A),1))
-//@>
-//Note that the values are very similar.  LAPACKs @|rcond|
-//function is far more efficient than the explicit calculation
-//(which is also used by the @|cond| function.
-//@@Tests
-//@$near#y1=rcond(x1)
 //@@Signature
 //function rcond RcondFunction jitsafe
 //inputs A
 //outputs x
-//!
+//DOCBLOCK array_rcond
 ArrayVector RcondFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("rcond function requires at least one argument - the matrix to compute the condition number for.");

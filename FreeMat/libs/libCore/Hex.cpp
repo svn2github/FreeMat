@@ -21,32 +21,11 @@
 #include "Algorithms.hpp"
 #include <QString>
 
-//!
-//@Module HEX2DEC Convert Hexadecimal Numbers To Decimal
-//@@Section ELEMENTARY
-//@@Usage
-//Converts a hexadecimal number (encoded as a string matrix) into integers.
-//The syntax for its use is
-//@[
-//   y = hex2dec(x)
-//@]
-//where @|x| is a character matrix where each row represents an integer
-//in hexadecimal form.  The output is of type @|Double|.
-//@@Examples
-//@<
-//hex2dec('3ff')
-//@>
-//Or for a more complex example
-//@<
-//hex2dec(['0ff';'2de';'123'])
-//@>
-//@@Tests
-//@$exact#y1=hex2dec(x1)
 //@@Signature
 //function hex2dec Hex2DecFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK elementary_hex2dec
 ArrayVector Hex2DecFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("hex2dec requires an argument");
@@ -68,38 +47,11 @@ ArrayVector Hex2DecFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module DEC2HEX Convert Decimal Number to Hexadecimal
-//@@Section ELEMENTARY
-//@@Usage
-//Converts an integer value into its hexadecimal representation.  The syntax
-//for its use is
-//@[
-//   y = dec2hex(x)
-//@]
-//where @|x| is an integer (and is promoted to a 64-bit integer if it is not).
-//The returned value @|y| is a string containing the hexadecimal representation
-//of that integer.  If you require a minimum length for the hexadecimal
-//representation, you can specify an optional second argument
-//@[
-//   y = dec2hex(x,n)
-//@]
-//where @|n| indicates the minimum number of digits in the representation.
-//@@Example
-//Here are some simple examples:
-//@<
-//dec2hex(1023)
-//@>
-//@<
-//dec2hex(58128493)
-//@>
-//@@Tests
-//@$exact#y1=dec2hex(x1)
 //@@Signature
 //function dec2hex Dec2HexFunction
 //inputs x digits
 //outputs y
-//!
+//DOCBLOCK elementary_dec2hex
 ArrayVector Dec2HexFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1)
     throw Exception("dec2hex requires at least one argument");
@@ -124,34 +76,11 @@ ArrayVector Dec2HexFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module NUM2HEX Convert Numbers to IEEE Hex Strings
-//@@Section ELEMENTARY
-//@@Usage
-//Converts single and double precision arrays to IEEE hex strings.  The
-//syntax for its use is
-//@[
-//   y = num2hex(x)
-//@]
-//where @|x| is either a @|float| or @|double| array.  The output @|y| is
-//a @|n-by-p| character array, where @|n| is the number of elements in @|x|,
-//and @|p| is 16 for @|double| arrays, and 8 for @|single| arrays.
-//@@Example
-//Some interesting numbers
-//@<
-//num2hex([1 0 0.1 -pi inf nan])
-//@>
-//The same in single precision
-//@<
-//num2hex(float([1 0 0.1 -pi inf nan]))
-//@>
-//@@Tests
-//@$exact#y1=num2hex(x1)
 //@@Signature
 //function num2hex Num2HexFunction
 //inputs x
 //outputs y
-//!
+//DOCBLOCK elementary_num2hex
 
 template <typename T>
 static inline Array Num2HexFunction(const BasicArray<T> &data) {

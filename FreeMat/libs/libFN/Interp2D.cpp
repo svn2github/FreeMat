@@ -172,39 +172,11 @@ static BasicArray<T> Minterp2(const BasicArray<T> &z, const BasicArray<T> &xi, c
   return zi;
 }
 
-//!
-//@Module INTERP2 2-D Interpolation
-//@@Section CURVEFIT
-//@@Usage
-//Given a set of monotonically increasing @|x| coordinates and a 
-//corresponding set of @|y| values, performs simple linear 
-//interpolation to a new set of @|x| coordinates. The general syntax
-//for its usage is
-//@[
-//   zi = interp2(z,xi,yi)
-//@]
-//where @|xi| and @|yi| are vectors of the same length. The output
-//vector @|zi| is the same size as the input vector @|xi|.
-//For each element of @|xi|, the values in @|zi| are linearly interpolated
-//by default. Interpolation method can be selected as:
-//@[
-//   zi = interp2(z,xi,yi,method)
-//@]
-//Default interpolation method is @|'linear'|. Other methods are
-// @|'nearest'|, and @|'cubic'|.
-//For values in @|xi, yi| that are outside the size of @|z|,
-//the default value returned is NaN.  To change this behavior,
-//you can specify the extrapolation value:
-//@[
-//   zi = interp2(z,xi,yi,method,extrapval)
-//@]
-//The @|z| and @|xi,yi| vectors must be real, although complex types
-//are allowed for @|z|.
 //@@Signature
 //function interp2 Interp2Function jitsafe
 //inputs z xi yi method extrapflag
 //outputs zi
-//!
+//DOCBLOCK curvefit_interp2
 ArrayVector Interp2Function(int nargout, const ArrayVector& arg) {
   if (arg.size() < 3)
     throw Exception("interp2 requires at least three arguments (z,xi,yi)");

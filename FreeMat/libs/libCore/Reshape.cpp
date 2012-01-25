@@ -19,81 +19,11 @@
 #include "Array.hpp"
 #include "Utils.hpp"
 
-//!
-//@Module RESHAPE Reshape An Array
-//@@Section ARRAY
-//@@Usage
-//Reshapes an array from one size to another. Two seperate 
-//syntaxes are possible.  The first syntax specifies the array 
-//dimensions as a sequence of scalar dimensions:
-//@[
-//   y = reshape(x,d1,d2,...,dn).
-//@]
-//The resulting array has the given dimensions, and is filled with
-//the contents of @|x|.  The type of @|y| is the same as @|x|.
-//
-//As a special case, you can specify exactly one of the dimensions
-//as an empty matrix @|[]|, in which case FreeMat will compute the
-//size required in that dimension to make the reshape work.  The
-//syntax for this version is
-//@[
-//   y = reshape(x,d1,...,da,[],db,...,dn)
-//@]
-//
-//The second syntax specifies the array dimensions as a vector,
-//where each element in the vector specifies a dimension length:
-//@[
-//   y = reshape(x,[d1,d2,...,dn]).
-//@]
-//This syntax is more convenient for calling @|reshape| using a 
-//variable for the argument. The
-//@|reshape| function requires that the length of @|x| equal the product
-//of the @|di| values.
-//Note that arrays are stored in column format, 
-//which means that elements in @|x| are transferred to the new array
-//@|y| starting with the first column first element, then proceeding to 
-//the last element of the first column, then the first element of the
-//second column, etc.
-//@@Example
-//Here are several examples of the use of @|reshape| applied to
-//various arrays.  The first example reshapes a row vector into a 
-//matrix.
-//@<
-//a = uint8(1:6)
-//reshape(a,2,3)
-//@>
-//The second example reshapes a longer row vector into a volume with 
-//two planes.
-//@<
-//a = uint8(1:12)
-//reshape(a,[2,3,2])
-//@>
-//The third example reshapes a matrix into another matrix.
-//@<
-//a = [1,6,7;3,4,2]
-//reshape(a,3,2)
-//@>
-//@@Tests
-//@{ test_reshape1.m
-//function test_val = test_reshape1
-//  a = [1,6,7;3,4,2]; 
-//  b = [1,4;3,7;6,2];
-//  c = reshape(a,3,2);
-//  test_val = issame(b,c);
-//@} 
-//@{ test_reshape2.m
-//function test_val = test_reshape2
-//  a = rand(3,4);
-//  b = reshape(a,6,2);
-//  c = reshape(a,6,[]);
-//  d = reshape(a,[],2);
-//  test_val = issame(b,c) && issame(b,d);
-//@}
 //@@Signature
 //function reshape ReshapeFunction jitsafe
 //inputs x varargin
 //outputs y
-//!
+//DOCBLOCK array_reshape
 ArrayVector ReshapeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     throw Exception("reshape function requires at least one argument");

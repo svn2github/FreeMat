@@ -1,33 +1,4 @@
-%!
-%@Module PATCH Patch Graphics Function
-%@@Section HANDLE
-%@@Usage
-%This routine is used to create a patch object that can be plotting 2D and 3D surfaces.  A 
-%patch is a polygon defined by the xyz coordinates
-%of its vertices and optionally by the color at the vertices.
-%There are several forms for the @|patch| function:
-%@[
-%  h = patch(X,Y,C,properties...)
-%  h = patch(X,Y,Z,C,properties...)
-%  h = patch(properties...)
-%  h = patch(V)
-%@]
-%Where @|X|, @|Y| and @|Z| are matrices or vectors of @|x|, @|y| or @|z| coordinates
-%and @|C| is a matrix or vector of color values (the colormap
-%for the current fig is applied).  
-%@@Example
-%Here we generate a surface specifying all four components.
-%@<
-%x = [ 0 1 0 1]';
-%y = [ 0 0 1 1]';
-%c = [ 1 1 1 ];
-%patch(x,y,c)
-%axis equal
-%view(3)
-%mprint patch1
-%@>
-%@figure patch1
-%!
+% DOCBLOCK handle_patch
 
 % Copyright (c) 2002-2008 Samit Basu, Eugene Ingerman
 % Licensed under the GPL

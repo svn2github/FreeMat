@@ -20,55 +20,11 @@
 #include "Array.hpp"
 #include "Utils.hpp"
 
-//!
-//@Module ONES Array of Ones
-//@@Section ARRAY
-//@@Usage
-//Creates an array of ones of the specified size.  Two seperate 
-//syntaxes are possible.  The first syntax specifies the array 
-//dimensions as a sequence of scalar dimensions:
-//@[
-//   y = ones(d1,d2,...,dn).
-//@]
-//The resulting array has the given dimensions, and is filled with
-//all ones.  The type of @|y| is @|float|, a 32-bit floating
-//point array.  To get arrays of other types, use the typecast 
-//functions (e.g., @|uint8|, @|int8|, etc.).
-//    
-//The second syntax specifies the array dimensions as a vector,
-//where each element in the vector specifies a dimension length:
-//@[
-//   y = ones([d1,d2,...,dn]).
-//@]
-//This syntax is more convenient for calling @|ones| using a 
-//variable for the argument.  In both cases, specifying only one
-//dimension results in a square matrix output.
-//@@Example
-//The following examples demonstrate generation of some arrays of ones
-//using the first form.
-//@<
-//ones(2,3,2)
-//ones(1,3)
-//@>
-//The same expressions, using the second form.
-//@<
-//ones([2,6])
-//ones([1,3])
-//@>
-//Finally, an example of using the type casting function @|uint16| to generate an array of 16-bit unsigned integers with a value of 1.
-//@<
-//uint16(ones(3))
-//@>
-//@@Tests
-//@{ test_ones1.m
-//function test_val = test_ones1
-//  test_val = issame(ones(3),zeros(3)+1);
-//@}
 //@@Signature
 //function ones OnesFunction
 //inputs varargin
 //outputs x
-//!
+//DOCBLOCK array_ones
 ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
   NTuple dims(ArrayVectorAsDimensions(arg));
   Array r(Double,dims);
@@ -77,30 +33,11 @@ ArrayVector OnesFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(r);
 }
 
-//!
-//@Module TRUE Logical TRUE
-//@@Section CONSTANTS
-//@@Usage
-//Returns a logical 1.  The syntax for its use is
-//@[
-//   y = true
-//@]
-//You can also create an array of logical ones using
-//the syntax
-//@[
-//   y = true(d1,d2,...,dn)
-//@]none
-//or the syntax
-//@[
-//   y = true([d1,d2,...,dn])
-//@]
-//@@Tests
-//@$exact#y1=true
 //@@Signature
 //function true TrueFunction
 //inputs varargin
 //outputs y
-//!
+//DOCBLOCK constants_true
 ArrayVector TrueFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0)
     return ArrayVector(Array(bool(true)));

@@ -88,60 +88,11 @@ struct OpVecVar {
   }
 };
 
-//!
-//@Module VAR Variance Function
-//@@Section ELEMENTARY
-//@@Usage
-//Computes the variance of an array along a given dimension.  The general
-//syntax for its use is
-//@[
-//  y = var(x,d)
-//@]
-//where @|x| is an @|n|-dimensions array of numerical type.
-//The output is of the same numerical type as the input.  The argument
-//@|d| is optional, and denotes the dimension along which to take
-//the variance.  The output @|y| is the same size as @|x|, except
-//that it is singular along the mean direction.  So, for example,
-//if @|x| is a @|3 x 3 x 4| array, and we compute the mean along
-//dimension @|d=2|, then the output is of size @|3 x 1 x 4|.
-//@@Function Internals
-//The output is computed via
-//\[
-//y(m_1,\ldots,m_{d-1},1,m_{d+1},\ldots,m_{p}) = \frac{1}{N-1}
-//\sum_{k=1}^{N} \left(x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p}) 
-// - \bar{x}\right)^2,
-//\]
-//where 
-//\[
-//\bar{x}  = \frac{1}{N}
-//\sum_{k=1}^{N} x(m_1,\ldots,m_{d-1},k,m_{d+1},\ldots,m_{p})
-//\]
-//If @|d| is omitted, then the mean is taken along the 
-//first non-singleton dimension of @|x|. 
-//@@Example
-//The following piece of code demonstrates various uses of the var
-//function
-//@<
-//A = [5,1,3;3,2,1;0,3,1]
-//@>
-//We start by calling @|var| without a dimension argument, in which 
-//case it defaults to the first nonsingular dimension (in this case, 
-//along the columns or @|d = 1|).
-//@<
-//var(A)
-//@>
-//Next, we take the variance along the rows.
-//@<
-//var(A,2)
-//@>
-//@@Tests
-//@$near#y1=var(x1)
-//@$near#y1=var(x1,2)
 //@@Signature
 //function var VarFunction jitsafe
 //inputs x dim
 //outputs y
-//!
+//DOCBLOCK elementary_var
 ArrayVector VarFunction(int nargout, const ArrayVector& arg) {
   // Get the data argument
   if (arg.size() < 1)

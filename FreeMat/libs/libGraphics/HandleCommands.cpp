@@ -187,23 +187,11 @@ static void DoDrawNow() {
   in_DoDrawNow = false;
 }
 
-//!
-//@Module DRAWNOW Flush the Event Queue
-//@@Section HANDLE
-//@@Usage
-//The @|drawnow| function can be used to process the events in the
-//event queue of the FreeMat application.  The syntax for its use
-//is
-//@[
-//   drawnow
-//@]
-//Now that FreeMat is threaded, you do not generally need to call this
-//function, but it is provided for compatibility.
 //@@Signature
 //gfunction drawnow DrawNowFunction
 //input none
 //output none
-//!
+//DOCBLOCK handle_drawnow
 ArrayVector DrawNowFunction(int nargout, const ArrayVector& arg) {
   GfxEnableRepaint();
   DoDrawNow();
@@ -252,34 +240,11 @@ void FreeHandleObject(unsigned handle) {
 }
 
 
-//!
-//@Module FIGURE Figure Window Select and Create Function
-//@@Section HANDLE
-//@@Usage
-//Changes the active figure window to the specified figure
-//number.  The general syntax for its use is 
-//@[
-//  figure(number)
-//@]
-//where @|number| is the figure number to use. If the figure window 
-//corresponding to @|number| does not already exist, a new 
-//window with this number is created.  If it does exist
-//then it is brought to the forefront and made active.
-//You can use @|gcf| to obtain the number of the current figure.
-//
-//Note that the figure number is also the handle for the figure.
-//While for most graphical objects (e.g., axes, lines, images), the
-//handles are large integers, for figures, the handle is the same
-//as the figure number.  This means that the figure number can be
-//passed to @|set| and @|get| to modify the properties of the
-//current figure, (e.g., the colormap).  So, for figure @|3|, for 
-//example, you can use @|get(3,'colormap')| to retrieve the colormap
-//for the current figure.
 //@@Signature
 //sgfunction figure HFigureFunction
 //input number
 //output handle
-//!
+//DOCBLOCK handle_figure
 ArrayVector HFigureFunction(int nargout,const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() == 0) {
     NewFig(eval);
@@ -310,37 +275,11 @@ void AddToCurrentFigChildren(unsigned handle, Interpreter *eval) {
   cp->Data(children);
 }
 
-//!
-//@Module AXES Create Handle Axes
-//@@Section HANDLE
-//@@Usage
-//This function has three different syntaxes.  The first takes
-//no arguments,
-//@[
-//  h = axes
-//@]
-//and creates a new set of axes that are parented to the current
-//figure (see @|gcf|).  The newly created axes are made the current
-//axes (see @|gca|) and are added to the end of the list of children 
-//for the current figure.
-//The second form takes a set of property names and values
-//@[
-//  h = axes(propertyname,value,propertyname,value,...)
-//@]
-//Creates a new set of axes, and then sets the specified properties
-//to the given value.  This is a shortcut for calling 
-//@|set(h,propertyname,value)| for each pair.
-//The third form takes a handle as an argument
-//@[
-//  axes(handle)
-//@]
-//and makes @|handle| the current axes, placing it at the head of
-//the list of children for the current figure.
 //@@Signature
 //sgfunction axes HAxesFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_axes
 ArrayVector HAxesFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() != 1) {
     HandleObject *fp = new HandleAxis;
@@ -417,22 +356,11 @@ void HSetChildrenFunction(HandleObject *fp, Array children, Interpreter *eval) {
 }
 
 
-//!
-//@Module SIZEFIG Set Size of Figure
-//@@Section HANDLE
-//@@Usage
-//The @|sizefig| function changes the size of the currently
-//selected fig window.  The general syntax for its use is
-//@[
-//   sizefig(width,height)
-//@]
-//where @|width| and @|height| are the dimensions of the fig
-//window.
 //@@Signature
 //sgfunction sizefig SizeFigFunction
 //input width height
 //output none
-//!
+//DOCBLOCK handle_sizefig
 ArrayVector SizeFigFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() < 2)
     throw Exception("sizefig requires width and height");
@@ -447,25 +375,11 @@ ArrayVector SizeFigFunction(int nargout, const ArrayVector& arg, Interpreter *ev
   return ArrayVector();
 }
 
-//!
-//@Module SET Set Object Property
-//@@Section HANDLE
-//@@Usage
-//This function allows you to change the value associated
-//with a property.  The syntax for its use is
-//@[
-//  set(handle,property,value,property,value,...)
-//@]
-//where @|property| is a string containing the name of the
-//property, and @|value| is the value for that property. The
-//type of the variable @|value| depends on the property being
-//set.  See the help for the properties to see what values
-//you can set.
 //@@Signature
 //sgfunction set HSetFunction
 //input varargin
 //output none
-//!
+//DOCBLOCK handle_set
 
 static HandleObject* LookupObject(int handle, Interpreter * eval) {
   if (handle <= 0)
@@ -525,25 +439,11 @@ ArrayVector HSetFunction(int nargout, const ArrayVector& arg, Interpreter * eval
   return ArrayVector();
 }
 
-//!
-//@Module GET Get Object Property
-//@@Section HANDLE
-//@@Usage
-//This function allows you to retrieve the value associated
-//with a property.  The syntax for its use is
-//@[
-//  value = get(handle,property)
-//@]
-//where @|property| is a string containing the name of the
-//property, and @|value| is the value for that property. The
-//type of the variable @|value| depends on the property being
-//set.  See the help for the properties to see what values
-//you can set.
 //@@Signature
 //sgfunction get HGetFunction
 //input handle property
 //output value
-//!
+//DOCBLOCK handle_get
 
 ArrayVector HGetFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (arg.size() != 2)
@@ -601,65 +501,29 @@ static unsigned GenericConstructor(HandleObject* fp, const ArrayVector& arg, Int
 }
 
 
-//!
-//@Module HLINE Create a line object
-//@@Section HANDLE
-//@@Usage
-//Creates a line object and parents it to the current axis.  The
-//syntax for its use is 
-//@[
-//  handle = hline(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current axis.
 //@@Signature
 //sgfunction hline HLineFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_hline
 ArrayVector HLineFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   return ArrayVector(Array(double(GenericConstructor(new HandleLineSeries,arg,eval))));
 }
 
-//!
-//@Module HCONTOUR Create a contour object
-//@@Section HANDLE
-//@@Usage
-//Creates a contour object and parents it to the current axis.  The
-//syntax for its use is 
-//@[
-//  handle = hcontour(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current axis.
 //@@Signature
 //sgfunction hcontour HContourFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_hcontour
 ArrayVector HContourFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   return ArrayVector(Array(double(GenericConstructor(new HandleContour,arg, eval))));
 }
 
-//!
-//@Module UICONTROL Create a UI Control object
-//@@Section HANDLE
-//@@Usage
-//Creates a UI control object and parents it to the current figure.  The
-//syntax for its use is
-//@[
-//  handle = uicontrol(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current figure.
 //@@Signature
 //sgfunction uicontrol HUIControlFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_uicontrol
 ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   HandleUIControl *o = new HandleUIControl;
   o->SetEvalEngine(eval);
@@ -674,109 +538,48 @@ ArrayVector HUIControlFunction(int nargout, const ArrayVector& arg, Interpreter 
   return ArrayVector(Array(double(handleID)));
 }
 
-//!
-//@Module HIMAGE Create a image object
-//@@Section HANDLE
-//@@Usage
-//Creates a image object and parents it to the current axis.  The
-//syntax for its use is 
-//@[
-//  handle = himage(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current axis.
 //@@Signature
 //sgfunction himage HImageFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_himage
 ArrayVector HImageFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   return ArrayVector(Array(double(GenericConstructor(new HandleImage,arg, eval))));
 }
 
-//!
-//@Module HTEXT Create a text object
-//@@Section HANDLE
-//@@Usage
-//Creates a text object and parents it to the current axis.  The
-//syntax for its use is 
-//@[
-//  handle = htext(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current axis.
 //@@Signature
 //sgfunction htext HTextFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_htext
 ArrayVector HTextFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   return ArrayVector(Array(double(GenericConstructor(new HandleText,arg, eval))));
 }
 
-//!
-//@Module HSURFACE Create a surface object
-//@@Section HANDLE
-//@@Usage
-//Creates a surface object and parents it to the current axis.  The
-//syntax for its use is 
-//@[
-//  handle = hsurface(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current axis.
 //@@Signature
 //sgfunction surface HSurfaceFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_hsurface
 ArrayVector HSurfaceFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   return ArrayVector(Array(double(GenericConstructor(new HandleSurface,arg, eval))));
 }
 
-//!
-//@Module HPATCH Create a patch object
-//@@Section HANDLE
-//@@Usage
-//Creates a patch object and parents it to the current axis.  The
-//syntax for its use is 
-//@[
-//  handle = hpatch(property,value,property,value,...)
-//@]
-//where @|property| and @|value| are set.  The handle ID for the
-//resulting object is returned.  It is automatically added to
-//the children of the current axis.
 //@@Signature
 //sgfunction hpatch HPatchFunction
 //input varargin
 //output handle
-//!
+//DOCBLOCK handle_hpatch
 ArrayVector HPatchFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   return ArrayVector(Array(double(GenericConstructor(new HandlePatch,arg,eval))));
 }
 
 
-//!
-//@Module FIGRAISE Raise a Figure Window
-//@@Section HANDLE
-//@@Usage
-//Raises a figure window indicated by the figure number.  The syntax for
-//its use is
-//@[
-//  figraise(fignum)
-//@]
-//where @|fignum| is the number of the figure to raise.  The figure will
-//be raised to the top of the GUI stack (meaning that it we be visible).
-//Note that this function does not cause @|fignum| to become the current
-//figure, you must use the @|figure| command for that.
 //@@Signature
 //sgfunction figraise FigRaiseFunction
 //input handle
 //output none
-//!
+//DOCBLOCK handle_figraise
 ArrayVector FigRaiseFunction(int nargout, const ArrayVector& args, Interpreter * eval) {
   if (args.size() == 0)
     CurrentWindow(eval)->raise();
@@ -795,26 +598,11 @@ ArrayVector FigRaiseFunction(int nargout, const ArrayVector& args, Interpreter *
   return ArrayVector();
 }
 
-//!
-//@Module FIGLOWER Lower a Figure Window
-//@@Section HANDLE
-//@@Usage
-//Lowers a figure window indicated by the figure number.  The syntax for
-//its use is
-//@[
-//  figlower(fignum)
-//@]
-//where @|fignum| is the number of the figure to lower.  The figure will
-//be lowerd to the bottom of the GUI stack (meaning that it we be behind other
-//windows).  Note that this function does not cause @|fignum| to 
-//become the current  figure, you must use the @|figure| command for that.
-//Similarly, if @|fignum| is the current figure, it will remain the current
-//figure (even though the figure is now behind others).
 //@@Signature
 //sgfunction figlower FigLowerFunction
 //input handle
 //output none
-//!
+//DOCBLOCK handle_figlower
 ArrayVector FigLowerFunction(int nargout, const ArrayVector& args, Interpreter *eval) {
   if (args.size() == 0)
     CurrentWindow(eval)->lower();
@@ -833,53 +621,22 @@ ArrayVector FigLowerFunction(int nargout, const ArrayVector& args, Interpreter *
   return ArrayVector();
 }
 
-//!
-//@Module GCF Get Current Figure
-//@@Section HANDLE
-//@@Usage
-//Returns the figure number for the current figure (which is also its handle,
-//and can be used to set properties of the current figure using @|set|).  
-//The syntax for its use
-//is
-//@[
-//  figure_number = gcf
-//@]
-//where @|figure_number| is the number of the active figure (also the handle of
-//the figure).
-//
-//Note that figures have handles, just like axes, images, plots, etc.  However
-//the handles for figures match the figure number (while handles for other 
-//graphics objects tend to be large, somewhat arbitrary integers).  So, to 
-//retrieve the colormap of the current figure, you could 
-//use @|get(gcf,'colormap')|, or to obtain the colormap for figure 3, 
-//use @|get(3,'colormap')|.
 //@@Signature
 //sgfunction gcf HGCFFunction
 //input none
 //output handle
-//!
+//DOCBLOCK handle_gcf
 ArrayVector HGCFFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   if (HcurrentFig == -1)
     NewFig(eval);      
   return ArrayVector(Array(double(HcurrentFig+1)));
 }
 
-//!
-//@Module GCA Get Current Axis
-//@@Section HANDLE
-//@@Usage
-//Returns the handle for the current axis.  The syntax for its use
-//is
-//@[
-//  handle = gca
-//@]
-//where @|handle| is the handle of the active axis.  All object
-//creation functions will be children of this axis.
 //@@Signature
 //sgfunction gca HGCAFunction
 //input none
 //output handle
-//!
+//DOCBLOCK handle_gca
 ArrayVector HGCAFunction(int nargout, const ArrayVector& arg, Interpreter *eval) {
   // Get the current figure...
   if (HcurrentFig == -1)
@@ -894,32 +651,11 @@ ArrayVector HGCAFunction(int nargout, const ArrayVector& arg, Interpreter *eval)
   return ArrayVector(Array(double(current)));
 }
 
-//!
-//@Module PVALID Validate Property Name
-//@@Section HANDLE
-//@@Usage
-//This function checks to see if the given string is a valid
-//property name for an object of the given type.  The syntax
-//for its use is
-//@[
-//  b = pvalid(type,propertyname)
-//@]
-//where @|string| is a string that contains the name of a 
-// valid graphics object type, and
-//@|propertyname| is a string that contains the name of the
-//property to test for.
-//@@Example
-//Here we test for some properties on an @|axes| object.
-//@<
-//pvalid('axes','type')
-//pvalid('axes','children')
-//pvalid('axes','foobar')
-//@>
 //@@Signature
 //gfunction pvalid HPropertyValidateFunction
 //input type property
 //output bool
-//!
+//DOCBLOCK handle_pvalid
 ArrayVector HPropertyValidateFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 2)
     throw Exception("pvalid requires two arguments, an object type name and a property name");
@@ -1007,32 +743,11 @@ void CloseHelper(int fig) {
     HcurrentFig = -1;
 }
 
-//!
-//@Module CLOSE Close Figure Window
-//@@Section HANDLE
-//@@Usage
-//Closes a figure window, either the currently active window, a 
-//window with a specific handle, or all figure windows.  The general
-//syntax for its use is
-//@[
-//   close(handle)
-//@]
-//in which case the figure window with the speicified @|handle| is
-//closed.  Alternately, issuing the command with no argument
-//@[
-//   close
-//@]
-//is equivalent to closing the currently active figure window.  Finally
-//the command
-//@[
-//   close('all')
-//@]
-//closes all figure windows currently open.
 //@@Signature
 //gfunction close HCloseFunction
 //input handle
 //output none
-//!
+//DOCBLOCK handle_close
 ArrayVector HCloseFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() > 1)
     throw Exception("close takes at most one argument - either the string 'all' to close all figures, or a scalar integer indicating which figure is to be closed.");
@@ -1068,22 +783,11 @@ ArrayVector HCloseFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module COPY Copy Figure Window
-//@@Section HANDLE
-//@@Usage
-//Copies the currently active figure window to the clipboard.
-//The syntax for its use is:
-//@[
-//   copy
-//@]
-//The resulting figure is copied as a bitmap to the clipboard, 
-//and can then be pasted into any suitable application.
 //@@Signature
 //gfunction copy HCopyFunction
 //input none 
 //output none
-//!
+//DOCBLOCK handle_copy
 ArrayVector HCopyFunction(int nargout, const ArrayVector& arg) {
   if (HcurrentFig == -1)
     return ArrayVector();
@@ -1116,54 +820,11 @@ QString FormatListAsString() {
   return ret_text;
 }
 
-//!
-//@Module PRINT Print a Figure To A File
-//@@Section HANDLE
-//@@Usage
-//This function ``prints'' the currently active fig to a file.  The 
-//generic syntax for its use is
-//@[
-//  print(filename)
-//@]
-//or, alternately,
-//@[
-//  print filename
-//@]
-//where @|filename| is the (string) filename of the destined file.  The current
-//fig is then saved to the output file using a format that is determined
-//by the extension of the filename.  The exact output formats may vary on
-//different platforms, but generally speaking, the following extensions
-//should be supported cross-platform:
-//\begin{itemize}
-//\item @|jpg|, @|jpeg|  --  JPEG file 
-//\item @|pdf| -- Portable Document Format file
-//\item @|png| -- Portable Net Graphics file
-//\item @|svg| -- Scalable Vector Graphics file
-//\end{itemize}
-//Postscript (PS, EPS) is supported on non-Mac-OSX Unix only.
-//Note that only the fig is printed, not the window displaying
-//the fig.  If you want something like that (essentially a window-capture)
-//use a seperate utility or your operating system's built in screen
-//capture ability.
-//@@Example
-//Here is a simple example of how the figures in this manual are generated.
-//@<
-//x = linspace(-1,1);
-//y = cos(5*pi*x);
-//plot(x,y,'r-');
-//print('printfig1.eps')
-//print('printfig1.jpg')
-//print('printfig1.png')
-//@>
-//which creates three plots @|printfig.eps|, which is an Encapsulated PostScript
-//file, @|printfig1.png|, which is a Portable
-//Net Graphics file, and @|printfig1.jpg| which is a JPEG file.
-//@figure printfig1
 //@@Signature
 //gfunction print HPrintFunction
 //input varargin
 //output none
-//!
+//DOCBLOCK handle_print
 ArrayVector HPrintFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() != 1)
     throw Exception("print function takes a single, string argument");
@@ -1189,22 +850,11 @@ ArrayVector HPrintFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module HTEXTBITMAP Get Text Rendered as a Bitmap
-//@@Section HANDLE
-//@@Usage
-//This function takes a fontname, a size, and a text string
-//and returns a bitmap containing the text.  The generic syntax
-//for its use is
-//@[
-//  bitmap = htextbitmap(fontname,size,text)
-//@]
-//where the output bitmap contains the text rendered into a matrix.
 //@@Signature
 //gfunction htextbitmap HTextBitmapFunction
 //input fontname size text
 //output bitmap
-//!
+//DOCBLOCK handle_htextbitmap
 const int m_pad = 10;
 ArrayVector HTextBitmapFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 3) throw Exception("htextbitmap requires three arguments");
@@ -1236,41 +886,11 @@ ArrayVector HTextBitmapFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(M);
 }
 
-//!
-//@Module HRAWPLOT Generate a Raw Plot File
-//@@Section HANDLE
-//@@Usage
-//This function takes a sequence of commands, and generates
-//a raw plot (to a file) that renders the commands.  It is 
-//a useful tool for creating high quality fully customized 
-//PDF plots from within FreeMat scripts that are portable.  The
-//syntax for its use 
-//@[
-//  hrawplot(filename,commands)
-//@]
-//where @|filename| is the name of the file to plot to, 
-//and @|commands| is a cell array of strings.  Each entry in the 
-//cell array contains a string with a command text.  The
-//commands describe a simple mini-language for describing
-//plots.  The complete dictionary of commands is given
-//\begin{itemize}
-//\item @|LINE x1 y1 x2 y2| -- draw a line
-//\item @|FONT name size| -- select a font of the given name and size
-//\item @|TEXT x1 y1 string| -- draw the given text string at the given location
-//\item @|STYLE style| -- select line style ('solid' or 'dotted')
-//\item @|PAGE| -- force a new page
-//\item @|SIZE x1 y1| -- Set the page mapping
-//\item @|BOX x1 y1 x2 y2| -- draw a filled box covering the given coordinates
-//\item @|HTEXTBOX x1 y1 x2 y2 string| -- Draw a horizontal box with the given string centered in it
-//\item @|VTEXTBOX x1 y1 x2 y2 string| -- Draw a vertical box with the given string centered in it (rotated 90 degrees)
-//\item @|BRUSH string| -- Set the brush color ('red','blue', etc)
-//\item @|PEN string| -- Set the pen color
-//\end{itemize}
 //@@Signature
 //gfunction hrawplot HRawPlotFunction
 //input filename commands
 //output none
-//!
+//DOCBLOCK handle_hrawplot
 ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) throw Exception("hrawplot requires 4 arguments");
   QString filename(arg[0].asString());
@@ -1383,21 +1003,11 @@ ArrayVector HRawPlotFunction(int nargout, const ArrayVector& arg) {
 }
 
 
-//!
-//@Module HPOINT Get Point From Window
-//@@Section HANDLE
-//@@Usage
-//This function waits for the user to click on the current figure
-//window, and then returns the coordinates of that click.  The
-//generic syntax for its use is
-//@[
-//  [x,y] = hpoint
-//@]
 //@@Signature
 //gfunction hpoint HPointFunction
 //input none
 //output coords
-//!
+//DOCBLOCK handle_hpoint
 ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
   if (HcurrentFig == -1)
     return ArrayVector();
@@ -1415,22 +1025,11 @@ ArrayVector HPointFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector(Array(retvec));
 }
 
-//!
-//@Module IS2DVIEW Test Axes For 2D View
-//@@Section HANDLE
-//@@Usage
-//This function returns @|true| if the current axes are in a
-//2-D view, and false otherwise.  The generic syntax for its
-//use is
-//@[
-//  y = is2dview(x)
-//@]
-//where @|x| is the handle of an axes object.
 //@@Signature
 //gfunction is2dview HIs2DViewFunction
 //input handle
 //output bool
-//!
+//DOCBLOCK handle_is2dview
 ArrayVector HIs2DViewFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() == 0) throw Exception("is2DView expects a handle to axes");
   unsigned int handle = (unsigned int) (arg[0].asInteger());

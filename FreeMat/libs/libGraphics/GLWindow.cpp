@@ -270,25 +270,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 
 HandleList<GLWidget*> glHandles;
 
-//!
-//@Module GLDEFMATERIAL Defines a GL Material
-//@@Section GLWIN
-//@@Usage
-//Define a material.  The syntax for its use is
-//@[
-//  gldefmaterial(name,ambient,diffuse,specular,shininess)
-//@]
-//where @|name| is the name of the material, and @|ambient|
-//is a @|4 x 1| vector containing the ambient component of 
-//the material property, and @|diffuse| is a @|4 x 1| vector
-//and @|specular| is a @|4 x 1| vector containing the specular
-//component of the material properties and @|shininess| is
-//the exponent that governs the shinines of the material.
 //@@Signature
 //gfunction gldefmaterial GLDefMaterialFunction
 //input name ambient diffuse specular shininess
 //output none
-//!
+//DOCBLOCK glwin_gldefmaterial
 ArrayVector GLDefMaterialFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 5) 
     throw Exception("gldefmaterial requires 5 parameters");
@@ -314,28 +300,11 @@ ArrayVector GLDefMaterialFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module GLLINES Create a GL Lineset
-//@@Section GLWIN
-//@@Usage
-//Defines a set of lines that can be treated as a node.
-//A GL Lines is defined by a vector consisting of the
-//following elements:
-//@[
-//   [m1 x1 y1 z1 ... xn yn zn m2 x1 y1 z1 .... ]
-//@]
-//i.e., a point count followed by that number of triplets.
-//The usage of this function is 
-//@[
-//  gllines(name,vector,color)
-//@]
-//where @|name| is the name of the lineset and @|vector|
-//is the aforementioned vector of points.
 //@@Signature
 //gfunction gllines GLLinesFunction
 //inputs name vector color
 //outputs none
-//!
+//DOCBLOCK glwin_gllines
 ArrayVector GLLinesFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 3) throw Exception("gllines requires three arguments: the object name, the vector and color");
   QString name = arg[0].asString();
@@ -354,29 +323,11 @@ ArrayVector GLLinesFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module GLCLUMP Create a GL Clump
-//@@Section GLWIN
-//@@Usage
-//Defines an aggregate clump of objects that can be treated
-//as a node.  A GL Clump is defined by a vector consisting
-//of the following elements:
-//@[
-//   [r1 g1 b1 n1 p1 p2 p3 ... r2 g2 b2 n2 p1 p2 p3 ... ]
-//@]
-//i.e., an RGB color spec, followed by a point count @|ni|, followed
-//by a length @|ni| vector of coordinates that are @|x,y,z| triplets.
-//The usage of this function is
-//@[
-//   glclump(name,vector)
-//@]
-//where @|name| is the name of the clump and @|vector| is the aforementioned
-//vector of points.
 //@@Signature
 //gfunction glclump GLClumpFunction
 //inputs name vector
 //outputs none
-//!
+//DOCBLOCK glwin_glclump
 ArrayVector GLClumpFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 2) throw Exception("glclump requires two arguments: the object name and the clump vector");
   QString name = arg[0].asString();
@@ -390,32 +341,7 @@ ArrayVector GLClumpFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module GLASSEMBLY Create a GL Assembly
-//@@Section GLWIN
-//@@Usage
-//Define a GL Assembly.  A GL Assembly consists of one or more
-//GL Nodes or GL Assemblies that are placed relative to the 
-//coordinate system of the assembly.  For example, if we have
-//@|glnode| definitions for @|'bread'| and @|'cheese'|, then
-//a @|glassembly| of sandwich would consist of placements of
-//two @|'bread'| nodes with a @|'cheese'| node in between.
-//Furthermore, a @|'lunch'| assembly could consist of a @|'sandwich'|
-//a @|'chips'| and @|'soda'|.  Hopefully, you get the idea.  The
-//syntax for the @|glassembly| command is
-//@[
-//   glassembly(name,part1,transform1,part2,transform2,...)
-//@]
-//where @|part1| is the name of the first part, and could be
-//either a @|glnode| or itself be another @|glassembly|.  
-//Here @|transform1| is the @|4 x 4 matrix| that transforms
-//the part into the local reference coordinate system.
-//
-//WARNING!! Currently FreeMat does not detect or gracefully handle 
-//self-referential assemblies (i.e, if you try to make a @|sandwich| 
-//contain a @|sandwich|, which you can do by devious methods that I 
-//refuse to explain).  Do not do this!  You have been warned.
-//!
+//DOCBLOCK glwin_glassembly
 //@@Signature
 //gfunction glassembly GLAssemblyFunction
 //inputs name varargin
@@ -444,32 +370,11 @@ ArrayVector GLAssemblyFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module GLNODE Create a GL Node
-//@@Section GLWIN
-//@@Usage
-//Define a GL Node.  A GL Node is an object that can be displayed
-//in a GL Window.  It is defined by a triangular mesh of vertices.
-//It must also have a material that defines its appearance (i.e.
-//color, shininess, etc.).  The syntax for the @|glnode| command
-//is 
-//@[
-//  glnode(name,material,pointset)  
-//@]
-//where @|material| is the name of a material that has already been
-//defined with @|gldefmaterial|, @|pointset| is a @|3 x N| matrix
-//of points that define the geometry of the object.  Note that the points
-//are assumed to be connected in triangular facts, with the points
-//defined counter clock-wise as seen from the outside of the facet.
-//@|FreeMat| will compute the normals.  The @|name| argument must
-//be unique.  If you want multiple instances of a given @|glnode|
-//in your GLWindow, that is fine, as instances of a @|glnode| are
-//created through a @|glassembly|.  
 //@@Signature
 //gfunction glnode GLNodeFunction
 //input name material pointset
 //output none
-//!
+//DOCBLOCK glwin_glnode
 ArrayVector GLNodeFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 3) throw Exception("glnode requires four arguments");
   QString name = arg[0].asString();
@@ -491,24 +396,11 @@ ArrayVector GLNodeFunction(int nargout, const ArrayVector& arg) {
   return ArrayVector();
 }
 
-//!
-//@Module GLSHOW Show a GL Assembly in a GL Window
-//@@Section HANDLE
-//@@Usage
-//Shows a GL Assembly in a GL Window.  The syntax for its
-//use is
-//@[
-//  glshow(name,scale)
-//@]
-//which shows the @|glassembly| named @|name| in a new GL
-//window, with the scale set to @|scale|.  Roughly speaking
-//@|scale| should represent the radial size of the object
-//that you want to see in the window.
 //@@Signature
 //gfunction glshow GLShowFunction
 //input name scale
 //output none
-//!
+//DOCBLOCK handle_glshow
 ArrayVector GLShowFunction(int nargout, const ArrayVector& arg) {
   if (arg.size() < 1) return ArrayVector();
   QString name = arg[0].asString();

@@ -1,25 +1,4 @@
-%!
-%@Module ZPLANE Zero-pole plot
-%@@Section HANDLE
-%@@Usage
-% This function makes a zero-pole plot of a discrete-time
-% system defined by its zeros and poles. The various syntaxes
-% are
-%@[
-%    zplane(z,p)
-%@] 
-% where @|z| and @|p| are the zeros and the poles of the system
-% stored as column vectors, or
-%@[ 
-%    zplane(b,a)
-%@] 
-% where @|a| and @|b| are the polynomial coefficients of the
-% numerator and denominator stored as line vectors (@|roots| is
-% used to find the zeros and poles). The symbol @|'o'| represents
-% a zero and the symbol @|'x'| represents a pole. The plot includes
-% the unit circle for reference.
-%Contributed by Paulo Xavier Candeias under GPL
-%!
+% DOCBLOCK handle_zplane
 function zplane(zer,pol)
    figure;
    axis equal;

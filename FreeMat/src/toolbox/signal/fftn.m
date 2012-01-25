@@ -1,26 +1,4 @@
-%!
-%@Module FFTN N-Dimensional Forward FFT 
-%@@Section TRANSFORMS
-%@@Usage
-%Computes the DFT of an N-dimensional numerical array along all
-%dimensions.  The general syntax for its use is
-%@[
-%  y = fftn(x)
-%@]
-%which computes the same-size FFTs for each dimension of @|x|.
-%Alternately, you can specify the size vector
-%@[
-%  y = fftn(x,dims)
-%@]
-%where @|dims| is a vector of sizes.  The array @|x| is zero padded
-%or truncated as necessary in each dimension so that the output
-%is of size @|dims|. The @|fftn| function is implemented by a sequence
-%of calls to @|fft|.
-%@@Tests
-%@$near#y1=fftn(x1)
-%@$near#y1=fftn(x1,2)
-%@$near#y1=fftn(x1,3)
-%!
+% DOCBLOCK transforms_fftn
 
 % Copyright (c) 2002-2007 Samit Basu
 % Licensed under the GPL

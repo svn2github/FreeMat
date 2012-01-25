@@ -1,0 +1,9 @@
+--> pwd
+
+ans = 
+/home/sbasu/Devel/FreeMat/doc/fragments
+--> cd ..
+--> pwd
+
+ans = 
+/home/sbasu/Devel/FreeMat/doc

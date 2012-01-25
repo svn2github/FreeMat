@@ -1,0 +1,33 @@
+--> a = threadnew;
+--> global count                   % register the global variable count
+--> count = 0;
+--> threadstart(a,'freecount',0)   % start the thread
+--> count                          % it is counting
+
+ans = 
+ 6 
+
+--> sleep(1)                       % Wait a bit
+--> count                          % it is still counting
+
+ans = 
+ 394053 
+
+--> threadkill(a)                  % kill the counter
+--> threadwait(a,1000)             % wait for it to finish
+
+ans = 
+ 1 
+
+--> count                          % The count will no longer increase
+
+ans = 
+ 394103 
+
+--> sleep(1)
+--> count
+
+ans = 
+ 394103 
+
+--> threadfree(a)

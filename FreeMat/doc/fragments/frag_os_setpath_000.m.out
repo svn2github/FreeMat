@@ -1,0 +1,9 @@
+--> getpath
+
+ans = 
+/home/sbasu/Devel/FreeMat
+--> setpath('/usr/local/FreeMat/MFiles:/localhome/basu/MFiles')
+--> getpath
+
+ans = 
+/usr/local/FreeMat/MFiles:/localhome/basu/MFiles

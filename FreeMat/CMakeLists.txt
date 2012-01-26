@@ -436,7 +436,7 @@ ENDIF(NOT MSVC)
 
 INCLUDE_DIRECTORIES( libs/libFreeMat libs/libGraphics
 libs/libMex libs/libXP libs/libCore libs/libFN libs/libMatC
-libs/libMath/libDynBlas ${QT_LIBRARIES} src src/toolbox/jit)
+libs/libMath/libDynBlas ${QT_LIBRARIES} src toolbox/jit)
 
 
 ##############################################################################

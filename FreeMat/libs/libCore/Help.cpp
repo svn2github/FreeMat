@@ -26,6 +26,9 @@
 #include "MainApp.hpp"
 
 extern MainApp *m_app;
+bool inBundleMode();
+QString GetRootPath();
+
 
 //@@Signature
 //sfunction help HelpFunction
@@ -34,15 +37,16 @@ extern MainApp *m_app;
 //DOCBLOCK freemat_help
 ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 {
-  PathSearcher psearch(eval->getTotalPath());
+  PathSearcher psearch(GetRootPath()+"/help/txt");
 
   if (arg.size() != 1)
     throw Exception("help function requires a single argument (the function or script name)");
   QString fname = arg[0].asString();
+  bool mdcexists = !(psearch.ResolvePath(fname+".mdc").isNull());
   bool isFun;
   FuncPtr val;
   isFun = eval->getContext()->lookupFunction(fname,val);
-  if (isFun && (val->type() == FM_M_FUNCTION)) {
+  if (isFun && (val->type() == FM_M_FUNCTION) && !mdcexists) {
     MFunctionDef *mptr;
     mptr = (MFunctionDef *) val;
     mptr->updateCode(eval);
@@ -53,10 +57,10 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
     // Check for a mdc file with the given name
     QString mdcname = fname + ".mdc";
     mdcname = psearch.ResolvePath(mdcname);
-	if( mdcname.isNull() )
-		throw Exception("no help available on " + fname);
-
-	QFile fp(mdcname);
+    if( mdcname.isNull() )
+      throw Exception("no help available on " + fname);
+    
+    QFile fp(mdcname);
     if (!fp.open(QIODevice::ReadOnly))
       throw Exception(QString("No help available on ") + fname);
     QTextStream io(&fp);
@@ -84,9 +88,6 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 }
 
 static HelpWindow *m_helpwin=0;
-
-bool inBundleMode();
-QString GetRootPath();
 
 //@@Signature
 //sgfunction helpwin HelpWinFunction

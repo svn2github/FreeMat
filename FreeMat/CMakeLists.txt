@@ -539,14 +539,14 @@ INCLUDE(CPack)
 
 #TODO Handle gfortran vs g77 issue: libgfortran vs libg2c
 
-add_custom_target( helpgen
-	COMMENT "Building help files"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
-	COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/help/tmp"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
-	VERBATIM
-	)
+#add_custom_target( helpgen
+#	COMMENT "Building help files"
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
+#	COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/help/tmp"
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
+#	VERBATIM
+#	)
 
 add_custom_target( fragdb
   COMMENT "Building fragment database"
@@ -554,19 +554,19 @@ add_custom_target( fragdb
   VERBATIM
   )
 
-add_custom_target( helpgen_fast
-	COMMENT "Building help files (no fragment generation)"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
-	VERBATIM
-	)
+#add_custom_target( helpgen_fast
+#	COMMENT "Building help files (no fragment generation)"
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergefragments.py ${CMAKE_SOURCE_DIR}/help
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/mergemfiles.py ${CMAKE_SOURCE_DIR}/src
+#	VERBATIM
+#	)
 
-add_custom_target( helpgen_only
-	COMMENT "Building help files"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
-	VERBATIM
-	)
+#add_custom_target( helpgen_only
+#	COMMENT "Building help files"
+#	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/helpgen.py ${CMAKE_SOURCE_DIR}
+#	VERBATIM
+#	)
 
 add_custom_target( mergem
 	COMMENT "Merging M files"
@@ -583,11 +583,21 @@ add_custom_target( jitgen
 add_custom_target( fraggen
 	COMMENT "Extracting fragments"
 	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/extract_fragments.py ${CMAKE_SOURCE_DIR}
+	COMMENT "Building fragment database"
+	COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/doc/fragments"
 	VERBATIM
 	)
 
 WRITE_OUT_ALL_VARIABLES()
 
-#add_subdirectory(tests/suite)
 ENABLE_TESTING()
 add_subdirectory(tests)
+
+find_package(Doxygen)
+
+if (DOXYGEN_FOUND)
+add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR/doc/Doxyfile} 
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc
+  COMMENT "Generating documentation"
+)
+endif(DOXYGEN_FOUND)

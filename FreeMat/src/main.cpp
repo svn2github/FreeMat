@@ -122,6 +122,7 @@ int main(int argc, char *argv[]) {
   bool testMode = parseFlagArg(argc,argv,"-t",false);
 
   signal(SIGINT,sigDoNothing);
+  signal(SIGFPE,sigDoNothing);
   
   if (testMode)
     __global_return_value = 1;

@@ -949,7 +949,7 @@ int MainApp::Run() {
   // Assign this to the main thread
   m_eval = m_threadHandles.lookupHandle(m_mainID);
   m_eval->setLiveUpdateFlag(true);
-  m_eval->setJITControl(true);
+  m_eval->setJITControl(JITOn);
   m_keys->SetCompletionContext(m_eval->getContext());
   FuncPtr doCLI;
   if (!m_eval->lookupFunction("docli",doCLI))

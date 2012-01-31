@@ -20,10 +20,11 @@ protected:
   bool compile(const std::string &filename,
 	       const std::string &funcname);
   Interpreter* m_eval;
+  JITControlFlag m_flag;
 public:
   CJitFuncClang(Interpreter* eval);
   ~CJitFuncClang();
-  bool compile(const Tree & t);
+  bool compile(const Tree & t, JITControlFlag flag);
   int run();
 };
 

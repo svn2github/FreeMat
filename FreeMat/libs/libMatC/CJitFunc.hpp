@@ -5,6 +5,7 @@
 #include "Tree.hpp"
 #include <string>
 #include <sstream>
+#include <set>
 
 typedef enum _CType {
   CUNKNOWN,
@@ -120,6 +121,7 @@ protected:
   int m_tmp;
   bool m_functionmode;
   std::vector<CSymbol> m_symbols;
+  std::set<MFunctionDef*> m_prereqs;
   bool exists_symbol(std::string name);
   void cast_symbol(std::string name, CTypeInfo type);
   void use_function(std::string name);

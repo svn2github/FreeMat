@@ -7,7 +7,7 @@
 class JITFuncBase
 {
 public:
-  virtual bool compile(const Tree &t) = 0;
+  virtual bool compile(const Tree &t, JITControlFlag flag) = 0;
   virtual int run() = 0;
 };
 

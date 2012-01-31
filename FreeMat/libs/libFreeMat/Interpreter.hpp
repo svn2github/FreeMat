@@ -41,6 +41,13 @@ class InterpreterRetallException : public exception {};
 class InterpreterQuitException : public exception {};
 class InterpreterKillException : public exception {};
 
+enum JITControlFlag
+  {
+    JITOff = 0,
+    JITOn = 1,
+    JITTrace = 2
+  };
+
 class stackentry {
 public:
   QString cname;
@@ -126,7 +133,7 @@ class Interpreter : public QThread {
   /**
    * jit control flag
    */
-  bool jitcontrol;
+  JITControlFlag jitcontrol;
   /**
    * jit instance for this interpreter
    */
@@ -515,8 +522,8 @@ public:
   /**
    * Set the JITControl flag
    */
-  inline bool JITControl() {return jitcontrol;}
-  inline void setJITControl(bool a) {jitcontrol = a;}
+  inline JITControlFlag JITControl() {return jitcontrol;}
+  inline void setJITControl(JITControlFlag a) {jitcontrol = a;}
   /**
    * Set the print limit (number of element printed prior to truncation).
    */

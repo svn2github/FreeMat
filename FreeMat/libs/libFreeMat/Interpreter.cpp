@@ -1206,14 +1206,14 @@ void Interpreter::ifStatement(const Tree & t) {
     block(t.last().first());
 }
 
-static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref) {
+static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref, JITControlFlag jitflag) {
   delete ref.JITFunction();
   ref.setJITState(JITInfo::FAILED);
   JITFuncBase *cg = JITFactory::GetJITFunc(interp);
   if (!cg) return false;
   bool success = false;
   try {
-    if (!cg->compile(t))
+    if (!cg->compile(t,jitflag))
       {
 	delete cg;
 	success = false;
@@ -1243,7 +1243,7 @@ bool Interpreter::tryJitCode(const Tree & t) {
     int UID = t.node().UID();
     JITInfo & ref = m_codesegments[UID];
     if (ref.JITState() == JITInfo::UNTRIED) {
-      bool success = compileJITBlock(this,t,ref);
+      bool success = compileJITBlock(this,t,ref,jitcontrol);
       if (success)
 	{
 	  if (ref.JITFunction()->run() == CJIT_Success)
@@ -1262,7 +1262,7 @@ bool Interpreter::tryJitCode(const Tree & t) {
       dbout << "Prep failed for JIT block retrying\n";
       if (stat == CJIT_Prepfail)
 	{
-	  bool success = compileJITBlock(this,t,ref);
+	  bool success = compileJITBlock(this,t,ref,jitcontrol);
 	  if (success)
 	    {
 	      if (ref.JITFunction()->run() == CJIT_Success)
@@ -2833,7 +2833,7 @@ Interpreter::Interpreter(Context* aContext) {
   printLimit = 1000;
   autostop = false;
   intryblock = false;
-  jitcontrol = false;
+  jitcontrol = JITOff;
   stopoverload = false;
   m_skipflag = false;
   m_noprompt = false;

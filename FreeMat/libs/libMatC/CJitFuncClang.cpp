@@ -146,16 +146,27 @@ bool CJitFuncClang::compile(const std::string &filename,
   return false;
 }
 
-bool CJitFuncClang::compile(const Tree & t)
+bool CJitFuncClang::compile(const Tree & t, JITControlFlag flag)
 {
+  m_flag = flag;
   CJitFunc mcomp;
   mcomp.set_interpreter(m_eval);
   mcomp.compile_tree(t,std::string("testfunc"));
-  QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
-  file.open();
-  std::string codename = file.fileName().toStdString();
-  mcomp.writeCode(codename);
-  return compile(codename,"testfunc");
+  if (m_flag == JITOn)
+    {
+      QTemporaryFile file(QDir::tempPath()+"/jitXXXXXX.cpp");
+      file.open();
+      std::string codename = file.fileName().toStdString();
+      mcomp.writeCode(codename);
+      return compile(codename,"testfunc");
+    }
+  if (m_flag == JITTrace)
+    {
+      QString name = QDir::tempPath()+"/jittrace.cpp";
+      std::string codename = name.toStdString();
+      mcomp.writeCode(codename);
+      return compile(codename,"testfunc");
+    }
 }
 
 int CJitFuncClang::run()

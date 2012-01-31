@@ -505,6 +505,8 @@ bool CJitFunc::compile_mfunction(QString symname, std::vector<CTypeInfo> argtype
       FuncPtr fptr;
       if (!m_eval->lookupFunction(symname,fptr)) return false;
       MFunctionDef *mptr = (MFunctionDef*) (fptr);
+      if (m_prereqs.count(mptr)) return true;
+      m_prereqs.insert(mptr);
       ret = cfunc.compile_inline_function(symname,mptr,argtypes);
       cs.AddPrereq(cfunc.GetCode());
       return true;

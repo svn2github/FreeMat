@@ -1,4 +1,4 @@
-function tjit13
+function C = tjit13
 C = 0;
 for j=1:1000;
   B = j;

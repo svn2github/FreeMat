@@ -1,4 +1,4 @@
-function tjit25
+function A = tjit25
 A = zeros(1,10000);
 for j=1:10
   for i=1:10000;

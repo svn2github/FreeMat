@@ -1,4 +1,4 @@
-function tjit3
+function A = tjit3
 A = zeros(1000,1000);
 k = 5;
 m = 0;

@@ -1,6 +1,6 @@
-function tjit7
-A = 1:100;
-B = zeros(1,100);
-for i=1:100; 
+function A = tjit7
+A = 1:10000;
+B = zeros(1,10000);
+for i=1:10000; 
   B(i) = A(i); 
 end

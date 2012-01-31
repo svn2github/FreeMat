@@ -1,4 +1,4 @@
-function tjit23
+function A = tjit23
 A = zeros(1,1000);
 for l=1:1000
 j = 4;

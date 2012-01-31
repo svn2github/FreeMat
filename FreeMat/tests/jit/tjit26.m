@@ -1,4 +1,4 @@
-function tjit26
+function A = tjit26
 A = zeros(1,10000);
 for j=1:10
   for i=1:10000;
@@ -6,7 +6,6 @@ for j=1:10
     A(i) = tjit_sum26(A(i),i);
   end
 end
-  A(1:50)
 
 function  y = tjit_sum26(a,b)
   y = a + tjit_double26(b);

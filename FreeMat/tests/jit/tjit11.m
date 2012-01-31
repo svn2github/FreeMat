@@ -1,4 +1,4 @@
-function tjit11
+function A=tjit11
 N = 500;
 A = zeros(N,N);
 for i=1:500

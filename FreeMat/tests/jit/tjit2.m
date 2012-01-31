@@ -1,4 +1,4 @@
-function tjit2
+function A = tjit2
 A = zeros(1,1000);
 j = 4;
 p = 1f;

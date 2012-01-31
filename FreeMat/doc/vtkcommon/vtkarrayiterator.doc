@@ -14,15 +14,15 @@ Section: \ref sec_vtkcommon "Visualization Toolkit Common Classes"
  vtkArrayIteratorIncludes.h header file to provide for extending of this macro
  by addition of new iterators.
 
- Example usage:
- \begin{verbatim}
+Example usage:
+\verbatim
  vtkArrayIter* iter = array->NewIterator();
  switch(array->GetDataType())
    {
    vtkArrayIteratorTemplateMacro(myFunc(static_cast<VTK_TT*>(iter), arg2));
    }
  iter->Delete();
- \end{verbatim}
+\endverbatim
 
 To create an instance of class vtkArrayIterator, simply
 invoke its constructor as follows

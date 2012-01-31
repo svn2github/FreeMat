@@ -12,11 +12,14 @@ of three operators, all of which have the same general syntax:
 where <tt>a</tt> and <tt>b</tt> are arrays of numerical type.  The result <tt>y</tt> depends
 on which of the following three situations applies to the arguments
 <tt>a</tt> and <tt>b</tt>:
-\begin{enumerate}
-  \item <tt>a</tt> is a scalar, <tt>b</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is the element-wise product of <tt>b</tt> with the scalar <tt>a</tt>.
-  \item <tt>b</tt> is a scalar, <tt>a</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is the element-wise product of <tt>a</tt> with the scalar <tt>b</tt>.
-  \item <tt>a,b</tt> are conformant matrices, i.e., <tt>a</tt> is of size <tt>M x K</tt>, and <tt>b</tt> is of size <tt>K x N</tt>, in which case the output is of size <tt>M x N</tt> and is the matrix product of <tt>a</tt>, and <tt>b</tt>.
-\end{enumerate}
+<OL>
+  <LI> <tt>a</tt> is a scalar, <tt>b</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is the element-wise product of <tt>b</tt> with the scalar <tt>a</tt>.
+</LI>
+  <LI> <tt>b</tt> is a scalar, <tt>a</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is the element-wise product of <tt>a</tt> with the scalar <tt>b</tt>.
+</LI>
+  <LI> <tt>a,b</tt> are conformant matrices, i.e., <tt>a</tt> is of size <tt>M x K</tt>, and <tt>b</tt> is of size <tt>K x N</tt>, in which case the output is of size <tt>M x N</tt> and is the matrix product of <tt>a</tt>, and <tt>b</tt>.
+</LI>
+</OL>
 Matrix multiplication is only defined for matrices of type <tt>double</tt> 
 and <tt>single</tt>.
 \section Function Internals

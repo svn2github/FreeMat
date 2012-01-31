@@ -51,5 +51,5 @@ mprint('atan2plot');
 \image latex atan2plot.eps "atan2plot" width=12cm
 Note how the two-argument <tt>atan2</tt> function (green line) 
 correctly ``unwraps'' the phase of the angle, while the <tt>atan</tt> 
-function (red line) wraps the angle to the interval <tt>[-\pi/2,\pi/2]</tt>.
+function (red line) wraps the angle to the interval \f$[-\pi/2,\pi/2]\f$.
 */

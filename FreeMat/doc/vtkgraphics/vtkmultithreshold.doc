@@ -65,19 +65,6 @@ Section: \ref sec_vtkgraphics "Visualization Toolkit Graphics Classes"
  If we had also called <code>thr->OutputSet( intervalSets[0] );</code>, there would be two child meshes and
  one would contain all cells with T < 320 [K].
  In that case, the output can be represented by this graph
- \dot
- digraph MultiThreshold {
-   set0 [shape=rect,style=filled,label="point T(0) in [-Inf,320["]
-   set1 [shape=rect,label="cell P(0) in ]101,Inf]"]
-   set2 [shape=rect,label="point s(0) in [-Inf,0.1["]
-   set3 [shape=rect,label="OR"]
-   set4 [shape=rect,style=filled,label="AND"]
-   set0 -> set4
-   set1 -> set3
-   set2 -> set3
-   set3 -> set4
- }
- \enddot
  The filled rectangles represent sets that are output.
 
 To create an instance of class vtkMultiThreshold, simply

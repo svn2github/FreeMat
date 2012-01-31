@@ -16,11 +16,14 @@ to the vector <tt>x</tt> so that each element <tt>x_i</tt> is between <tt>0</tt>
 vector (different base for each element of <tt>x</tt>).
 
 Note that the following are defined behaviors:
-\begin{enumerate}
-\item <tt>mod(x,0) = x</tt>@
-\item <tt>mod(x,x) = 0</tt>@
-\item <tt>mod(x,n)</tt>@ has the same sign as <tt>n</tt> for all other cases.
-\end{enumerate}
+<OL>
+<LI> <tt>mod(x,0) = x</tt>@
+</LI>
+<LI> <tt>mod(x,x) = 0</tt>@
+</LI>
+<LI> <tt>mod(x,n)</tt>@ has the same sign as <tt>n</tt> for all other cases.
+</LI>
+</OL>
 \section Example
 The following examples show some uses of <tt>mod</tt>
 arrays.

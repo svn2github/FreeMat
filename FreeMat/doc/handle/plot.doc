@@ -7,11 +7,11 @@ Section: \ref sec_handle "Handle-Based Graphics"
 This is the basic plot command for FreeMat.  The general syntax for its
 use is
 \verbatim
-  plot(<data 1>,{linespec 1},<data 2>,{linespec 2}...,properties...)
+  plot(\<data 1\>,{linespec 1},\<data 2\>,{linespec 2}...,properties...)
 \endverbatim
-where the <tt><data></tt> arguments can have various forms, and the
+where the <tt>\<data\></tt> arguments can have various forms, and the
 <tt>linespec</tt> arguments are optional.  We start with the
-<tt><data></tt> term, which can take on one of multiple forms:
+<tt>\<data\></tt> term, which can take on one of multiple forms:
 <UL>
 <LI>  Vector Matrix Case -- In this case the argument data is a pair
     of variables.  A set of <tt>x</tt> coordinates in a numeric vector, and a 
@@ -32,7 +32,7 @@ where the <tt><data></tt> arguments can have various forms, and the
     styles.
  </LI>
 </UL>
-Multiple data arguments in a single plot command are treated as a \emph{sequence}, meaning
+Multiple data arguments in a single plot command are treated as a <STRONG>sequence</STRONG>, meaning
 that all of the plots are overlapped on the same set of axes.
 The <tt>linespec</tt> is a string used to change the characteristics of the line.  In general,
 the <tt>linespec</tt> is composed of three optional parts, the <tt>colorspec</tt>, the 

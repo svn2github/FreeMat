@@ -85,10 +85,10 @@ In the methods listed below, <tt>obj</tt> is an instance of the vtkMutableDirect
 <LI>  <tt>vtkIdType = obj.AddChild (vtkIdType parent, vtkVariantArray propertyArr)</tt> -  Convenience method for creating trees.
  Returns the newly created vertex id.
  Shortcut for
- \begin{verbatim}
+ \verbatim
  vtkIdType v = g->AddVertex();
  g->AddEdge(parent, v);
- \end{verbatim}
+ \endverbatim
  If non-null, \p propertyArr provides edge properties
  for the newly-created edge. The values in \p propertyArr must match
  up with the arrays in the edge data returned by GetEdgeData().

@@ -16,11 +16,14 @@ to the vector <tt>x</tt> so that each element <tt>x_i</tt> is between <tt>0</tt>
 vector (different base for each element of <tt>x</tt>).
 
 Note that the following are defined behaviors:
-\begin{enumerate}
-\item <tt>rem(x,0) = nan</tt>@
-\item <tt>rem(x,x) = 0</tt>@ for nonzero <tt>x</tt>
-\item <tt>rem(x,n)</tt>@ has the same sign as <tt>x</tt> for all other cases.
-\end{enumerate}
+<OL>
+<LI> <tt>rem(x,0) = nan</tt>@
+</LI>
+<LI> <tt>rem(x,x) = 0</tt>@ for nonzero <tt>x</tt>
+</LI>
+<LI> <tt>rem(x,n)</tt>@ has the same sign as <tt>x</tt> for all other cases.
+</LI>
+</OL>
 Note that <tt>rem</tt> and <tt>mod</tt> return the same value if <tt>x</tt> and <tt>n</tt>
 are of the same sign.  But differ by <tt>n</tt> if <tt>x</tt> and <tt>y</tt> have 
 different signs.

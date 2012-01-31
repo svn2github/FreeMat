@@ -16,7 +16,7 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
 
  .SECTION User API
  A user would use this class as follows.
- \begin{verbatim}
+ \verbatim
  vtkWidgetSet *set = vtkWidgetSet::New();
  vtkParallelopipedWidget *w1 = vtkParallelopipedWidget::New();
  set->AddWidget(w1);
@@ -28,7 +28,7 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
  set->AddWidget(w3);
  w3->SetInteractor(sagittalRenderWindow->GetInteractor());
  set->SetEnabled(1);
- \end{verbatim}
+ \endverbatim
 
  .SECTION Motivation
  The motivation for this class is really to provide a usable API to tie 
@@ -36,23 +36,23 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
  of vtkAbstractWidget, must be written as follows:
    They will generally have callback methods mapped to some user 
  interaction such as:
- \begin{verbatim}
+ \verbatim
  this->CallbackMapper->SetCallbackMethod(vtkCommand::LeftButtonPressEvent,
                          vtkEvent::NoModifier, 0, 0, NULL, 
                          vtkPaintbrushWidget::BeginDrawStrokeEvent,
                          this, vtkPaintbrushWidget::BeginDrawCallback);
- \end{verbatim}
+ \endverbatim
    The callback invoked when the left button is pressed looks like: 
- \begin{verbatim}
+ \verbatim
  void vtkPaintbrushWidget::BeginDrawCallback(vtkAbstractWidget *w)
  {
    vtkPaintbrushWidget *self = vtkPaintbrushWidget::SafeDownCast(w);
    self->WidgetSet->DispatchAction(self, &vtkPaintbrushWidget::BeginDrawAction);
  }
- \end{verbatim}
+ \endverbatim
    The actual code for handling the drawing is written in the BeginDrawAction 
  method.
- \begin{verbatim}
+ \verbatim
  void vtkPaintbrushWidget::BeginDrawAction( vtkPaintbrushWidget *dispatcher)
  {
  // Do stuff to draw... 
@@ -70,7 +70,7 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
  //       this->WidgetRep->IncrementSizeByDelta();
  //       }
  }
- \end{verbatim}
+ \endverbatim
  
 
 To create an instance of class vtkWidgetSet, simply

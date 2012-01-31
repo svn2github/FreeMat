@@ -11,12 +11,12 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
  desired between two node points by setting the modes of the this filter.
  For instance:
 
- \begin{verbatim}
+ \verbatim
  contourRepresentation->SetLineInterpolator(interpolator);
  interpolator->SetImageData( demDataFile );
  interpolator->GetProjector()->SetProjectionModeToHug();
  interpolator->SetHeightOffset(25.0);
- \end{verbatim}
+ \endverbatim
 
  You are required to set the ImageData to this class as the height-field 
  image.

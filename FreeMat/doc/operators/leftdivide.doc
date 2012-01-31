@@ -12,19 +12,21 @@ operators, all of which have the same general syntax:
 where <tt>A</tt> and <tt>B</tt> are arrays of numerical type.  The result <tt>Y</tt> depends
 on which of the following three situations applies to the arguments
 <tt>A</tt> and <tt>B</tt>:
-\begin{enumerate}
-  \item <tt>A</tt> is a scalar, <tt>B</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is each element of <tt>B</tt> divided by the scalar <tt>A</tt>.
-  \item <tt>A,B</tt> are matrices with the same number of rows, i.e., <tt>A</tt> is of size <tt>M x K</tt>, and <tt>B</tt> is of size <tt>M x L</tt>, in which case the output is of size <tt>K x L</tt>.
-\end{enumerate}
+<OL>
+  <LI> <tt>A</tt> is a scalar, <tt>B</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is each element of <tt>B</tt> divided by the scalar <tt>A</tt>.
+</LI>
+  <LI> <tt>A,B</tt> are matrices with the same number of rows, i.e., <tt>A</tt> is of size <tt>M x K</tt>, and <tt>B</tt> is of size <tt>M x L</tt>, in which case the output is of size <tt>K x L</tt>.
+</LI>
+</OL>
 The output follows the standard type promotion rules, although in the first two cases, if <tt>A</tt> and <tt>B</tt> are integers, the output is an integer also, while in the third case if <tt>A</tt> and <tt>B</tt> are integers, the output is of type <tt>double</tt>.
 
-A few additional words about the third version, in which <tt>A</tt> and <tt>B</tt> are matrices.  Very loosely speaking, <tt>Y</tt> is the matrix that satisfies <tt>A * Y = B</tt>.  In cases where such a matrix exists.  If such a matrix does not exist, then a matrix <tt>Y</tt> is returned that approximates <tt>A * Y \approx B</tt>.
+A few additional words about the third version, in which <tt>A</tt> and <tt>B</tt> are matrices.  Very loosely speaking, <tt>Y</tt> is the matrix that satisfies \f$A * Y = B\f$.  In cases where such a matrix exists.  If such a matrix does not exist, then a matrix <tt>Y</tt> is returned that approximates \f$A * Y \approx B\f$.
 \section Function Internals
 There are three formulae for the times operator.  For the first form
 \f[
 Y(m_1,\ldots,m_d) = \frac{B(m_1,\ldots,m_d)}{A}.
 \f]
-In the second form, the calculation of the output depends on the size of <tt>A</tt>. Because each column of <tt>B</tt> is treated independantly, we can rewrite the equation <tt>A Y = B</tt> as
+In the second form, the calculation of the output depends on the size of <tt>A</tt>. Because each column of <tt>B</tt> is treated independantly, we can rewrite the equation \f$A Y = B\f$ as
 \f[
   A [y_1, y_2,\ldots, y_l] = [b_1, b_2, \ldots, b_l]
 \f]
@@ -38,7 +40,7 @@ and each column is thus the Least Squares solution of <tt>A y = b_i</tt>.  On th
 \f[
   y_i = \arg \min_{A y = b_i} \| y \|_2
 \f]
-and each column is thus the Minimum Norm vector <tt>y_i</tt> that satisfies <tt>A y_i = b_i</tt>.  
+and each column is thus the Minimum Norm vector <tt>y_i</tt> that satisfies \f$A y_i = b_i\f$.  
 In the event that the matrix <tt>A</tt> is neither full row rank nor full column rank, a solution is returned, that is the minimum norm least squares solution.  The solution is computed using an orthogonal factorization technique that is documented in the LAPACK User's Guide (see the References section for details).
 \section Examples
 Here are some simple examples of the divide operator.  We start with a simple example of a full rank, square matrix:

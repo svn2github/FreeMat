@@ -23,7 +23,7 @@ Section: \ref sec_vtkimaging "Visualization Toolkit Imaging Classes"
  input is not used in the blending computation, instead it is copied
  directly to the output.
 
- \begin{verbatim}
+ \verbatim
  output <- input[0]
  foreach input i {
    foreach pixel px {
@@ -32,7 +32,7 @@ Section: \ref sec_vtkimaging "Visualization Toolkit Imaging Classes"
      output(px) <- output(px) * f + input(px) * r
    }
  }
- \end{verbatim}
+ \endverbatim
 
  \em Compound :
  Images are compounded together and each component is scaled by the sum of
@@ -43,7 +43,7 @@ Section: \ref sec_vtkimaging "Visualization Toolkit Imaging Classes"
  value of the output.  The output always has the same number of components
  and the same extent as the first input.
 
- \begin{verbatim}
+ \verbatim
  output <- 0
  foreach pixel px {
    sum <- 0
@@ -56,7 +56,7 @@ Section: \ref sec_vtkimaging "Visualization Toolkit Imaging Classes"
    }
    output(px) <- output(px) / sum
  }
- \end{verbatim}
+ \endverbatim
 
 To create an instance of class vtkImageBlend, simply
 invoke its constructor as follows

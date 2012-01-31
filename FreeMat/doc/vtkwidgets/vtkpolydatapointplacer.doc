@@ -10,9 +10,9 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
  .SECTION Usage
  The actors that render polygonal data and wish to be considered 
  for placement by this placer are added to the list as
- \begin{verbatim}
+ \verbatim
  placer->AddProp( polyDataActor );
- \end{verbatim}
+ \endverbatim
 
 
 To create an instance of class vtkPolyDataPointPlacer, simply

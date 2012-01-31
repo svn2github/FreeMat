@@ -38,20 +38,20 @@ name for all unix platforms.
 <LI>  <tt>ATLAS64</tt> - name of the library as it will appear in the list when you
 type blaslib command in FreeMat.
  </LI>
-<LI>  <tt>ATLAS64\libname</tt> - path to the library. It has to be a shared library
+<LI>  <tt>ATLAS64\\libname</tt> - path to the library. It has to be a shared library
 (Linux), DLL (Windows), Bundle (? OSX). This library has to be a Fortran
 BLAS library, not cblas!
  </LI>
-<LI>  <tt>ATLAS64\capfnames</tt> - does the library use capital letters for function
+<LI>  <tt>ATLAS64\\capfnames</tt> - does the library use capital letters for function
 names (usually false).
  </LI>
-<LI>  <tt>ATLAS64\prefix</tt> - prefix (characters that are put in front of) for all
+<LI>  <tt>ATLAS64\\prefix</tt> - prefix (characters that are put in front of) for all
 blas functions in the library (e.g. <tt>ATL_</tt> or <tt>AMD_</tt>).
  </LI>
-<LI>  <tt>ATLAS64\suffix</tt> - suffix (characters that are put after) for all blas
+<LI>  <tt>ATLAS64\\suffix</tt> - suffix (characters that are put after) for all blas
 function in the library (e.g. <tt>_</tt>)
  </LI>
-<LI>  <tt>ATLAS64\desc</tt> - text description of the library.
+<LI>  <tt>ATLAS64\\desc</tt> - text description of the library.
  </LI>
 </UL>
 

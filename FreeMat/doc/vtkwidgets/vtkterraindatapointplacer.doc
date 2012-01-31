@@ -11,11 +11,11 @@ Section: \ref sec_vtkwidgets "Visualization Toolkit Widget Classes"
 
  .SECTION Usage
  A typical usage of this class is as follows:
- \begin{verbatim}
+ \verbatim
  pointPlacer->AddProp(demActor);    // the actor(s) containing the terrain.
  rep->SetPointPlacer(pointPlacer);
  pointPlacer->SetHeightOffset( 100 );
- \end{verbatim}
+ \endverbatim
 
 
 To create an instance of class vtkTerrainDataPointPlacer, simply

@@ -50,7 +50,7 @@ we have to compute the intermediate values
 \f[
   [a, a+b, a+2*b, \ldots, a+n*b]
 \f]
-but one can readily verify for themselves that this may \emph{not} be
+but one can readily verify for themselves that this may <strong>not</strong> be
 the same as the vector
 \f[
   \mathrm{fliplr} [c, c-b, c-2*b, \ldots, c-n*b]
@@ -62,13 +62,15 @@ even for the case where
 for some n.  The reason is that the roundoff in the calculations may
 be different depending on the nature of the sum.  FreeMat uses the
 following strategy to compute the double-colon vector:
-\begin{enumerate}
-\item The value <tt>n</tt> is computed by taking the floor of the larger
+<OL>
+<LI> The value <tt>n</tt> is computed by taking the floor of the larger
  value in the interval defined above.
-\item If <tt>n</tt> falls inside the interval defined above, then it is
+</LI>
+<LI> If <tt>n</tt> falls inside the interval defined above, then it is
 assumed that the user intended <tt>c = a + n*b</tt>, and the symmetric
 algorithm is used.  Otherwise, the nonsymmetric algorithm is used.
-\item The symmetric algorithm computes the vector via
+</LI>
+<LI> The symmetric algorithm computes the vector via
 \f[
   [a, a+b, a+2b,\ldots,c-2b,c-b,c]
 \f]
@@ -79,11 +81,13 @@ working symmetrically from both ends of the vector
 \f]
 In practice, the entries are computed by repeated accumulation instead
 of multiplying the step size by an integer.
-\item The real interval calculation is modified so that we get the
+</LI>
+<LI> The real interval calculation is modified so that we get the
 exact same result with <tt>a:b:c</tt> and <tt>c:-b:a</tt> (which basically means
 that instead of moving towards infinity, we move towards the signed
 infinity where the sign is inherited from <tt>b</tt>).
-\end{enumerate}
+</LI>
+</OL>
 If you think this is all very obscure, it is.  But without it, you will
 be confronted by mysterious vectors where the last entry is dropped,
 or where the values show progressively larger amounts of accumulated

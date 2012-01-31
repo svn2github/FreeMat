@@ -9,11 +9,14 @@ Raises one numerical array to another array (elementwise).  There are three oper
   y = a .^ b
 \endverbatim
 The result <tt>y</tt> depends on which of the following three situations applies to the arguments <tt>a</tt> and <tt>b</tt>:
-\begin{enumerate}
-  \item <tt>a</tt> is a scalar, <tt>b</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is <tt>a</tt> raised to the power of each element of <tt>b</tt>, and the output is the same size as <tt>b</tt>.
-  \item <tt>a</tt> is an <tt>n</tt>-dimensional numerical array, and <tt>b</tt> is a scalar, then the output is the same size as <tt>a</tt>, and is defined by each element of <tt>a</tt> raised to the power <tt>b</tt>.
-  \item <tt>a</tt> and <tt>b</tt> are both <tt>n</tt>-dimensional numerical arrays of \emph{the same size}.  In this case, each element of the output is the corresponding element of <tt>a</tt> raised to the power defined by the corresponding element of <tt>b</tt>.
-\end{enumerate}
+<OL>
+  <LI> <tt>a</tt> is a scalar, <tt>b</tt> is an arbitrary <tt>n</tt>-dimensional numerical array, in which case the output is <tt>a</tt> raised to the power of each element of <tt>b</tt>, and the output is the same size as <tt>b</tt>.
+</LI>
+  <LI> <tt>a</tt> is an <tt>n</tt>-dimensional numerical array, and <tt>b</tt> is a scalar, then the output is the same size as <tt>a</tt>, and is defined by each element of <tt>a</tt> raised to the power <tt>b</tt>.
+</LI>
+  <LI> <tt>a</tt> and <tt>b</tt> are both <tt>n</tt>-dimensional numerical arrays of <strong>the same size</strong>.  In this case, each element of the output is the corresponding element of <tt>a</tt> raised to the power defined by the corresponding element of <tt>b</tt>.
+</LI>
+</OL>
 
 The rules for manipulating types has changed in FreeMat 4.0.  See <tt>typerules</tt>
 for more details.

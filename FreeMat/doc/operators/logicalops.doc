@@ -75,7 +75,7 @@ d = a & b
 
 \verbinclude frag_operators_logicalops_002.m.out 
 
-At this point, we can modify the contents of <tt>c</tt> in two ways -- the Boolean way is to AND <tt>\sim d</tt> with <tt>c</tt>, like so
+At this point, we can modify the contents of <tt>c</tt> in two ways -- the Boolean way is to AND \f$\sim d\f$ with <tt>c</tt>, like so
 
 \if FRAGMENT
 frag_operators_logicalops_003.m

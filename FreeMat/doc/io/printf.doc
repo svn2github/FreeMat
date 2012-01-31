@@ -23,7 +23,7 @@ produce any output.  In fact, it does produce the text, but it then
 gets overwritten by the prompt.  To see the text, you need 
 <tt>printf('Hello\n')</tt>.  This seems odd, but allows you to assemble a
 line using multiple <tt>printf</tt> commands, including the <tt>'\n'</tt> when
-you are done with the line.  You can also use the <tt>'\r'</tt> character
+you are done with the line.  You can also use the <tt>'\\r'</tt> character
 as an explicit carriage return (with no line feed).  This allows you
 to write to the same line many times (to show a progress string, for
 example).

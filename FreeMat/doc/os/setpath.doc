@@ -14,7 +14,7 @@ to be searched for M files and libraries.
 The delimiter between the paths depends on the system being used.  For Win32, the
 delimiter is a semicolon.  For all other systems, the delimiter is a colon.
 
-@Example
+\section Example
 The <tt>setpath</tt> function is straightforward.
 
 \if FRAGMENT

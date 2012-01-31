@@ -30,7 +30,7 @@ A.'
 
 \verbinclude frag_operators_transpose_000.m.out 
 
-Here, we use a complex matrix to demonstrate how the transpose does \emph{not} conjugate the entries.
+Here, we use a complex matrix to demonstrate how the transpose does <strong>not</strong> conjugate the entries.
 
 \if FRAGMENT
 frag_operators_transpose_001.m

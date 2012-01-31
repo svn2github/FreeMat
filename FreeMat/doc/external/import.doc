@@ -47,7 +47,7 @@ is a string consisting of entries of the form:
 Here is a list of various scenarios (expressed in 'C'), and the corresponding
 entries, along with snippets of code.
 
-\emph{Scalar variable passed by value:}
+<H2>Scalar variable passed by value</H2>
 Suppose a function is defined in the library as
 \verbatim
   int fooFunction(float t),
@@ -71,7 +71,7 @@ function.  For example, if we call a function expecting a <tt>float</tt>
 with a <tt>double</tt> or <tt>int16</tt> argument, then FreeMat will automatically
 apply type promotion rules prior to calling the function.
 
-\emph{Scalar variable passed by reference:}
+<H2>Scalar variable passed by reference:</H2>
 Suppose a function is defined in the library as
 \verbatim
   int fooFunction(float *t),
@@ -84,7 +84,7 @@ the corresponding argument string would be
 If the function <tt>fooFunction</tt> modifies <tt>t</tt>, then the argument
 passed in FreeMat will also be modified.
 
-\emph{Array variable passed by value:}
+<H2>Array variable passed by value:</H2>
 In <tt>C</tt>, it is impossible to distinguish an array being passed from
 a simple pointer being passed.  More often than not, another argument
 indicates the length of the array.  FreeMat has the ability to perform
@@ -102,7 +102,7 @@ Note that because the argument is marked as not being passed by reference,
 that if <tt>sub_onehundred_ints</tt> modifies the array <tt>t</tt>, this
 will not affect the FreeMat argument.  Note that the bounds-check expression
 can be any legal scalar expression that evaluates to an integer, and can be
-a function of the arguments.  For example to pass a square $N \times N$ 
+a function of the arguments.  For example to pass a square \f$N \times N\f$ 
 matrix to the following function:
 \verbatim
   float determinantmatrix(int N, float *A),
@@ -112,11 +112,11 @@ we can use the following argument to <tt>import</tt>:
   'int32 N, float[N*N] t'.
 \endverbatim
 
-\emph{Array variable passed by reference:}
+<H2>Array variable passed by reference:</H2>
 If the function in <tt>C</tt> modifies an array, and we wish this to be
 reflected in the FreeMat side, we must pass that argument by reference.
 Hence, consider the following hypothetical function that squares the
-elements of an array (functionally equivalent to $x.^2$):
+elements of an array (functionally equivalent to \f$x.^2\f$):
 \verbatim
   void squarearray(int N, float *A)
 \endverbatim
@@ -129,7 +129,7 @@ are not allowed to return pointers.  As a result, as a general operating
 mechanism, the FreeMat code must allocate the proper arrays, and then
 pass them by reference to the external function.
 
-\emph{Sending text to the FreeMat console:}
+<H2>Sending text to the FreeMat console:</H2>
 Starting with FreeMat 4.0, it is possible for external code that is 
 called using the <tt>import</tt> statement to send text to the FreeMat console.
 To do so, you must define in each library that wants to send text a 

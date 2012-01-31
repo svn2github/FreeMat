@@ -15,19 +15,19 @@ Section: \ref sec_vtkrendering "Visualization Toolkit Rendering Classes"
  the vtkRenderWindow is not sufficient.  Usually you have to call Render
  before the actual OpenGL context is created.  You can specify the
  RenderWindow with the SetRenderWindow method.
- \begin{verbatim}
+\verbatim
  vtkOpenGLExtensionManager *extensions = vtkOpenGLExtensionManager::New();
  extensions->SetRenderWindow(renwin);
- \end{verbatim}
+\endverbatim
  If no vtkRenderWindow is specified, the current OpenGL context (if any)
  is used.
 
  Generally speaking, when using OpenGL extensions, you will need an
  vtkOpenGLExtensionManager and the prototypes defined in vtkgl.h.
- \begin{verbatim}
+ \verbatim
  #include "vtkOpenGLExtensionManager.h"
  #include "vtkgl.h"
- \end{verbatim}
+ \endverbatim
  The vtkgl.h include file contains all the constants and function
  pointers required for using OpenGL extensions in a portable and
  namespace safe way.  vtkgl.h is built from parsed glext.h, glxext.h, and
@@ -47,28 +47,28 @@ Section: \ref sec_vtkrendering "Visualization Toolkit Rendering Classes"
  functions for OpenGL versions for which the gl.h header file is of an
  older version than the driver.
 
- \begin{verbatim}
+ \verbatim
  if (   !extensions->ExtensionSupported("GL_VERSION_1_2")
      || !extensions->ExtensionSupported("GL_ARB_multitexture") ) {
    {
    vtkErrorMacro("Required extensions not supported!");
    }
- \end{verbatim}
+ \endverbatim
 
  Once you have verified that the extensions you want exist, before you
  use them you have to load them with the LoadExtension method.
 
- \begin{verbatim}
+ \verbatim
  extensions->LoadExtension("GL_VERSION_1_2");
  extensions->LoadExtension("GL_ARB_multitexture");
- \end{verbatim}
+ \endverbatim
 
  Alternatively, you can use the LoadSupportedExtension method, which checks
  whether the requested extension is supported and, if so, loads it. The
  LoadSupportedExtension method will not raise any errors or warnings if it
  fails, so it is important for callers to pay attention to the return value.
 
- \begin{verbatim}
+ \verbatim
  if (   extensions->LoadSupportedExtension("GL_VERSION_1_2")
      && extensions->LoadSupportedExtension("GL_ARB_multitexture") ) {
    {
@@ -78,7 +78,7 @@ Section: \ref sec_vtkrendering "Visualization Toolkit Rendering Classes"
    {
    vtkErrorMacro("Required extensions could not be loaded!");
    }
- \end{verbatim}
+ \endverbatim
 
  Once you have queried and loaded all of the extensions you need, you can
  delete the vtkOpenGLExtensionManager.  To use a constant of an extension,
@@ -86,11 +86,11 @@ Section: \ref sec_vtkrendering "Visualization Toolkit Rendering Classes"
  "gl" prefix of functions with "vtkgl::".  In rare cases, an extension will
  add a type. In this case, add vtkgl:: to the type (i.e. vtkgl::GLchar).
 
- \begin{verbatim}
+ \verbatim
  extensions->Delete();
  ...
  vtkgl::ActiveTexture(vtkgl::TEXTURE0_ARB);
- \end{verbatim}
+ \endverbatim
 
  For wgl extensions, replace the "WGL_" and "wgl" prefixes with
  "vtkwgl::".  For glX extensions, replace the "GLX_" and "glX" prefixes
@@ -159,7 +159,7 @@ In the methods listed below, <tt>obj</tt> is an instance of the vtkOpenGLExtensi
  This method avoids the use of if statements everywhere in implementations
  using core-promoted extensions.
  Without this method, the implementation code should look like:
- \begin{verbatim}
+ \verbatim
  int opengl_1_3=extensions->ExtensionSupported("GL_VERSION_1_3");
  if(opengl_1_3)
  {
@@ -185,9 +185,9 @@ In the methods listed below, <tt>obj</tt> is an instance of the vtkOpenGLExtensi
  {
   vtkgl::ActiveTextureARB(vtkgl::TEXTURE0_ARB)
  }
- \end{verbatim}
+ \endverbatim
  Thanks to this method, the code looks like:
- \begin{verbatim}
+ \verbatim
  int opengl_1_3=extensions->ExtensionSupported("GL_VERSION_1_3");
  if(opengl_1_3)
  {
@@ -206,7 +206,7 @@ In the methods listed below, <tt>obj</tt> is an instance of the vtkOpenGLExtensi
  }
  ...
  vtkgl::ActiveTexture(vtkgl::TEXTURE0);
- \end{verbatim}
+ \endverbatim
  </LI>
 </UL>
 */

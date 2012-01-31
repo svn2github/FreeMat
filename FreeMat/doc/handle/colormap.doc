@@ -9,7 +9,7 @@ for its use is
 \verbatim
   colormap(map)
 \endverbatim
-where <tt>map</tt> is a an array organized as <tt>3 \times N</tt>),
+where <tt>map</tt> is a an array organized as \f$3 \times N\f$),
 which defines the RGB (Red Green Blue) coordinates for each color in the
 colormap.  You can also use the function with no arguments to recover
 the current colormap

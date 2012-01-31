@@ -11,9 +11,6 @@ Section: \ref sec_vtkgeovis "Visualization Toolkit Geo Vis Classes"
  imperfect near the poles as implmented.  It should really reduce the
  longitude resolution as the triangles become slivers.
 
- \image html vtkGlobeSourceSphericalToCartesianFigure.png
- \image latex vtkGlobeSourceSphericalToCartesianFigure.eps
-
 To create an instance of class vtkGlobeSource, simply
 invoke its constructor as follows
 \verbatim

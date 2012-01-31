@@ -16,7 +16,7 @@ Section: \ref sec_vtkcommon "Visualization Toolkit Common Classes"
 
  To enable garbage collection for a class, add these members:
 
- \begin{verbatim}
+ \verbatim
 
   public:
    virtual void Register(vtkObjectBase* o)
@@ -36,7 +36,7 @@ Section: \ref sec_vtkcommon "Visualization Toolkit Common Classes"
      this->Superclass::ReportReferences(collector);
      vtkGarbageCollectorReport(collector, this->OtherObject, "Other Object");
      }
- \end{verbatim}
+ \endverbatim
 
  The implementations should be in the .cxx file in practice.
  It is important that the reference be reported using the real
@@ -52,11 +52,11 @@ Section: \ref sec_vtkcommon "Visualization Toolkit Common Classes"
  but then "this->Object" will be left as a dangling pointer.  Instead
  use code like
 
- \begin{verbatim}
+ \verbatim
    vtkObjectBase* obj = this->Object;
    this->Object = 0;
    obj->UnRegister(this);
- \end{verbatim}
+ \endverbatim
 
  so that the reported reference maintains the invariant.
 

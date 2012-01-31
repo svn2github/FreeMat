@@ -82,11 +82,11 @@ You must use '\ ' and '\#' to match spaces and comment characters, respectively.
 Note the following behavior differences between MATLABs regexp and FreeMats:
 <UL>
 <LI>  If you have an old version of <tt>pcre</tt> installed, then named tokens must use the
-older <tt><?P<name></tt> syntax, instead of the new <tt><?<name></tt> syntax.  
+older <tt><?P\<name\></tt> syntax, instead of the new <tt><?\<name\></tt> syntax.  
  </LI>
 <LI>  The <tt>pcre</tt> library is pickier about named tokens and their appearance in 
 expressions.  So, for example, the regexp from the MATLAB 
-manual <tt>'(?<first>\\w+)\\s+(?<last>\\w+)</tt>(?<last>\\w+),\\s+(?<first>\\w+)'|
+manual <tt>'(?\<first\>\\w+)\\s+(?\<last\>\\w+)</tt>(?\<last\>\\w+),\\s+(?\<first\>\\w+)'|
 does not work correctly (as of this writing) because the same named 
 tokens appear multiple
 times.  The workaround is to assign different names to each token, and then collapse

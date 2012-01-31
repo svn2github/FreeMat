@@ -36,9 +36,6 @@ Section: \ref sec_vtkrendering "Visualization Toolkit Rendering Classes"
  The gradient computation happens per component (R,G,B). A is arbitrarly set
  to 1 (full opacity).
 
- \image html vtkSobelGradientMagnitudePassFigure.png
- \image latex vtkSobelGradientMagnitudePassFigure.eps
-
 To create an instance of class vtkSobelGradientMagnitudePass, simply
 invoke its constructor as follows
 \verbatim

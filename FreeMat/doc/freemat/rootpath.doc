@@ -14,7 +14,7 @@ a different root path location, or to specify a particular one.
 Note that on the Mac OS platform, FreeMat is installed as a bundle,
 and will use the toolbox that is installed in the bundle regardless of
 the setting for <tt>rootpath</tt>.
-For Linux, FreeMat will typically use <tt>/usr/local/share/FreeMat-<Version>/</tt>
+For Linux, FreeMat will typically use <tt>/usr/local/share/FreeMat-\<Version\>/</tt>
 for the root path.  Installations from source code will generally work,
 but binary installations (e.g., from an <tt>RPM</tt>) may need to have the
 rootpath set.

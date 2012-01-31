@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QMainWindow>
 #include <QDockWidget>
-#include <QTextBrowser>
+#include <QWebView>
 #include <QMenu>
 #include <QToolBar>
 #include <QAction>
@@ -80,7 +80,7 @@ private:
   void readSettings();
   void closeEvent(QCloseEvent* ce);
 
-  QTextBrowser *tb;
+  QWebView *tb;
   HelpWidget *m_helpwidget;
   QMenu *fileMenu, *editMenu, *goMenu, *helpMenu;
   QToolBar *editToolBar;

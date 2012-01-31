@@ -85,7 +85,7 @@ void HelpWindow::activateModule(QListWidgetItem* item) {
   QRegExp modname_pattern("^\\s*(\\b\\w+\\b)\\s*\\((\\b\\w+\\b)\\)");
   if (modname_pattern.indexIn(name_and_section) < 0)
     return;
-  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
+  tb->load(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
 }
 
 void HelpWindow::activateModuleSearch(QListWidgetItem* item) {
@@ -93,25 +93,11 @@ void HelpWindow::activateModuleSearch(QListWidgetItem* item) {
   QRegExp modname_pattern("^\\s*(\\b\\w+\\b)\\s*\\((\\b\\w+\\b)\\)");
   if (modname_pattern.indexIn(name_and_section) < 0)
     return;
-  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
+  tb->load(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
 
   /* Highlight search text*/
-  if (!searchString.isEmpty()) {
-    QTextDocument *document = tb->document();
-    QTextCursor highlightCursor(document);
-    QTextCursor cursor(document);
-    cursor.beginEditBlock();
-    QTextCharFormat highLightFormat;
-    while (!highlightCursor.isNull() && !highlightCursor.atEnd()) {
-      highlightCursor = document->find(searchString, highlightCursor, QTextDocument::FindWholeWords);
-      if (!highlightCursor.isNull()) {
-        highLightFormat = highlightCursor.charFormat();
-        highLightFormat.setBackground(Qt::yellow);
-        highlightCursor.setCharFormat(highLightFormat);
-      }
-    }
-    cursor.endEditBlock();
-  }
+  if (!searchString.isEmpty())
+    tb->findText(searchString,QWebPage::HighlightAllOccurrences);
 }
 
 void HelpWindow::activateModule(QTreeWidgetItem* item, int) {
@@ -120,7 +106,7 @@ void HelpWindow::activateModule(QTreeWidgetItem* item, int) {
   if (modname.indexIn(fulltext) < 0)
     return;
   QString module(modname.cap(1).toLower());
-  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+item->text(1)+"_"+module+".html"));
+  tb->load(QUrl::fromLocalFile(m_initial+"/"+item->text(1)+"_"+module+".html"));
 }
 
 void HelpWindow::helpText(QString fulltext) {
@@ -136,7 +122,7 @@ void HelpWindow::helpText(QString fulltext) {
   QRegExp modname_pattern("^\\s*(\\b\\w+\\b)\\s*\\((\\b\\w+\\b)\\)");
   if (modname_pattern.indexIn(name_and_section) < 0)
     return;
-  tb->setSource(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
+  tb->load(QUrl::fromLocalFile(m_initial+"/"+modname_pattern.cap(2) + "_" + modname_pattern.cap(1)+".html"));
   m_helpwidget->m_flist->setCurrentItem(item);
 }
 
@@ -146,7 +132,7 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
   setWidget(m_browser);
   m_flist = new QListWidget;
   // Populate the list widget
-  QFile *file = new QFile(url + "/modules.txt");
+  QFile *file = new QFile(url + "/../modules.txt");
   if (!file->open(QFile::ReadOnly | QIODevice::Text))
     QMessageBox::warning(this,"Cannot Find Module List","The file modules.txt is missing from the directory "+url+" where I think help files should be.  The Topic List widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else {
@@ -163,35 +149,6 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
 	  mgr,SLOT(activateModule(QListWidgetItem*)));
   
   m_browser->addTab(m_flist,"Topic List");
-
-
-  QTreeWidget *m_tindex = new QTreeWidget;
-
-  connect(m_tindex,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-	  mgr,SLOT(activateModule(QTreeWidgetItem*,int)));
-  connect(m_tindex,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
-	  mgr,SLOT(activateModule(QTreeWidgetItem*,int)));
-
-  m_tindex->setColumnCount(1);
-  m_tindex->setHeaderLabels(QStringList() << Interpreter::getVersionString());
-  file = new QFile(url + "/sectable.txt");
-  QRegExp reg("\\+\\s*\\((\\b\\w+\\b)\\)\\s*(\\b.*)");
-  if (!file->open(QFile::ReadOnly | QIODevice::Text))
-    QMessageBox::warning(this,"Cannot Find Section Index","The file sectable.txt is missing from the directory "+url+" where I think help files should be.  The Index widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
-  else {
-    QTextStream t(file);
-    QTreeWidgetItem *prev = NULL;
-    while (!t.atEnd()) {
-      QString line(t.readLine());
-      if (reg.indexIn(line) < 0)
-	prev = new QTreeWidgetItem(m_tindex,QStringList() << line);
-      else {
-	new QTreeWidgetItem(prev,QStringList() << reg.cap(2) << reg.cap(1));
-      }
-    }
-  }
-  delete file;
-  m_browser->addTab(m_tindex,"Index");
   m_browser->addTab(new HelpSearcher(m_browser,url,mgr),"Search");
 }
 
@@ -199,8 +156,8 @@ HelpWindow::HelpWindow(QString url) {
   setWindowIcon(QPixmap(":/images/freemat_help_small_mod_64.png"));
   setWindowTitle(QString(Interpreter::getVersionString()) + " Online Help");
   m_initial = url;
-  tb = new QTextBrowser(this);
-  tb->setSource(QUrl::fromLocalFile(m_initial+"/index.html"));
+  tb = new QWebView(this);
+  tb->load(QUrl::fromLocalFile(m_initial+"/index.html"));
   setCentralWidget(tb);
   m_helpwidget = new HelpWidget(url,this);
   addDockWidget(Qt::LeftDockWidgetArea,m_helpwidget);
@@ -258,7 +215,7 @@ void HelpWindow::createActions() {
   connect(forwardAct,SIGNAL(triggered()),tb,SLOT(forward()));
   backAct = new QAction(QIcon(":/images/previous.png"),"&Previous",this);
   backAct->setShortcut(Qt::Key_Left | Qt::Key_Alt); 
-  connect(backAct,SIGNAL(triggered()),tb,SLOT(backward()));
+  connect(backAct,SIGNAL(triggered()),tb,SLOT(back()));
   homeAct = new QAction(QIcon(":/images/home.png"),"&Home",this);
   homeAct->setShortcut(Qt::Key_Home | Qt::CTRL); 
   connect(homeAct,SIGNAL(triggered()),tb,SLOT(home()));
@@ -310,7 +267,7 @@ void HelpWindow::createStatusBar() {
 }
 
 void HelpWindow::execSelected() {
-  QString executeText = tb->textCursor().selectedText();
+  QString executeText = tb->selectedText();
   executeText.remove("--> ");
   executeText.remove("-> ");
   executeText = executeText.trimmed();
@@ -319,7 +276,7 @@ void HelpWindow::execSelected() {
 }
 
 void HelpWindow::helpOnSelection() {
-  QString executeText = tb->textCursor().selectedText();
+  QString executeText = tb->selectedText();
   executeText = executeText.trimmed();
   if (!executeText.isEmpty())
     helpText(executeText);

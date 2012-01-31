@@ -27,18 +27,23 @@
 //DOCBLOCK freemat_jitcontrol
 ArrayVector JITControlFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
   if (arg.size() < 1) {
-    if (eval->JITControl())
-      return ArrayVector(Array(QString("on")));
-    else
-      return ArrayVector(Array(QString("off")));
+    JITControlFlag flag = eval->JITControl();
+    switch (flag)
+      {
+      case JITOff: return ArrayVector(Array(QString("off")));
+      case JITOn: return ArrayVector(Array(QString("on")));
+      case JITTrace: return ArrayVector(Array(QString("trace")));
+      }
   } else {
     if (!arg[0].isString())
       throw Exception("jitcontrol function takes only a single, string argument");
     QString txt = arg[0].asString().toUpper();
     if (txt == "ON")
-      eval->setJITControl(true);
+      eval->setJITControl(JITOn);
     else if (txt == "OFF")
-      eval->setJITControl(false);
+      eval->setJITControl(JITOff);
+    else if (txt == "TRACE")
+      eval->setJITControl(JITTrace);
     else
       throw Exception("jitcontrol function argument needs to be 'on/off'");
   }

@@ -54,6 +54,7 @@ GLWindow.cpp
 trackball.cpp
 VTKWindow.cpp
 VTKWrap.cpp
+QTWrap.cpp
 )
 
 add_custom_command(

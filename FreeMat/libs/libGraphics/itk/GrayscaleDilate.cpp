@@ -12,6 +12,8 @@ static Array TGrayscaleDilateBallFunction(const ArrayVector & arg)
   typename FilterType::Pointer filter = FilterType::New();
   if (arg.size() > 2)
     kernel.SetRadius(arg[2].asInteger());
+  else
+    kernel.SetRadius(1);    
   kernel.CreateStructuringElement();
   filter->SetKernel(kernel);
   filter->SetInput(imageIn);

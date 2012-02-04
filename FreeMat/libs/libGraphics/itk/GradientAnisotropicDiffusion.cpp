@@ -23,7 +23,8 @@ static Array GradientAnisotropicDiffusionFilter(const ArrayVector & arg)
 
 
 //try a = randn(16)*.1, a(4:10,4:10) = 5 + randn(7)*.2, b = gradient(a,30,1/30,.1)
-//@@Signature
+//Disabled for now.
+//Signature
 //gfunction gradientanisotropicdiffusionfilter GradientAnisotropicDiffusionFilterFunction
 //input x iterations timestep conductance
 //output y

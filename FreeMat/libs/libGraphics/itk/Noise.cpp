@@ -11,8 +11,16 @@ static Array NoiseFilter(const ArrayVector & arg)
   typedef itk::NoiseImageFilter<ITKType, ITKType> FilterType;
   typename FilterType::Pointer filter = FilterType::New();
   typename ITKType::SizeType radius;
-  for (int i=0;i<dims;i++)
-    radius[i] = arg[1].get(i+1).asDouble();
+  if (arg[1].isScalar())
+    {
+      for (int i=0;i<dims;i++)
+	radius[i] = arg[1].asDouble();
+    }
+  else
+    {
+      for (int i=0;i<dims;i++)
+	radius[i] = arg[1].get(i+1).asDouble();
+    }
   filter->SetRadius(radius);
   filter->SetInput(imageIn);
   filter->Update();

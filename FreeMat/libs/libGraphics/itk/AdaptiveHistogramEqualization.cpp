@@ -12,10 +12,20 @@ static Array AdaptiveHistogramEqualizationFilter(const ArrayVector &arg)
   if (arg.size() > 2) filter->SetBeta(arg[2].asDouble());
   if (arg.size() > 3) 
     {
-      typename ITKType::SizeType radius;
-      for (int i=0;i<dims;i++)
-	radius[i] = arg[3].get(i+1).asDouble();
-      filter->SetRadius(radius);
+      if (arg[3].isScalar())
+	{
+	  typename ITKType::SizeType radius;
+	  for (int i=0;i<dims;i++)
+	    radius[i] = arg[3].asDouble();
+	  filter->SetRadius(radius);
+	}
+      else
+	{
+	  typename ITKType::SizeType radius;
+	  for (int i=0;i<dims;i++)
+	    radius[i] = arg[3].get(i+1).asDouble();
+	  filter->SetRadius(radius);
+	}
     }
   if (arg.size() > 4) filter->SetUseLookupTable(arg[4].asInteger() != 0);
   filter->SetInput(imageIn);

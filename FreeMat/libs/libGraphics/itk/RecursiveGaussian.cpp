@@ -13,23 +13,29 @@ static Array RecursiveGaussianFilter(const ArrayVector & arg)
   if (arg.size() >= 4) order = arg[3].asInteger();
   if (order < 0 || order > 2) 
     throw Exception("Invalid order for convolution -- must be between 0 and 2 (inclusive)");
+  if (direction < 1 || direction > dims)
+    throw Exception("Invalid direction argument");
   if (arg.size() >= 5) normalizeflag = arg[4].asInteger();
   typedef itk::Image<PixelClass, dims> ITKType;
   typename ITKType::Pointer imageIn = CreateITKFromArray<dims,dataclass,PixelClass>(arg[0]);
   typedef itk::RecursiveGaussianImageFilter<ITKType, ITKType> FilterType;
   typename FilterType::Pointer filter = FilterType::New();
-  filter->SetInput(imageIn);
-  filter->SetSigma(sigma);
-  filter->SetDirection(direction);
-  switch (order)
+  try
     {
-    case 0: filter->SetOrder(FilterType::ZeroOrder); break;
-    case 1: filter->SetOrder(FilterType::FirstOrder); break;
-    case 2: filter->SetOrder(FilterType::SecondOrder); break;
-    }
-  filter->SetNormalizeAcrossScale(normalizeflag);
-  filter->Update();
-  return CreateArrayFromITK<dims,dataclass,PixelClass>(filter->GetOutput());
+      filter->SetInput(imageIn);
+      filter->SetSigma(sigma);
+      filter->SetDirection(direction-1);
+      switch (order)
+	{
+	case 0: filter->SetOrder(FilterType::ZeroOrder); break;
+	case 1: filter->SetOrder(FilterType::FirstOrder); break;
+	case 2: filter->SetOrder(FilterType::SecondOrder); break;
+	}
+      filter->SetNormalizeAcrossScale(normalizeflag);
+      filter->Update();
+      return CreateArrayFromITK<dims,dataclass,PixelClass>(filter->GetOutput());
+    } 
+  CATCH_ITK;
 }
 
 // Add a "asBoolean" method to the Array class

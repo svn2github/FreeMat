@@ -13,6 +13,8 @@ static Array TErodeBallFunction(Array A, int radius)
   kernel.SetRadius(radius);
   kernel.CreateStructuringElement();
   filter->SetKernel(kernel);
+  std::cout << "IN Func\n";
+  PrintITK<dims,PixelClass>(imageIn);
   filter->SetInput(imageIn);
   filter->Update();
   return CreateArrayFromITK<dims,dataclass,PixelClass>(filter->GetOutput());

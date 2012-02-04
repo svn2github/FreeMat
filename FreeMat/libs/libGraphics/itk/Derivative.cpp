@@ -10,6 +10,7 @@ static Array TDerivativeFilter(const ArrayVector &arg)
   typedef itk::DerivativeImageFilter<ITKType, ITKType> FilterType;
   typename FilterType::Pointer filter = FilterType::New();
   filter->SetOrder(arg[1].asInteger());
+  if (arg[2].asInteger() < 1) throw Exception("derivative direction must be >= 1");
   filter->SetDirection(arg[2].asInteger()-1);
   filter->SetInput(imageIn);
   filter->Update();

@@ -17,7 +17,7 @@ static Array HConvexFunction(const ArrayVector &arg)
 }
 
 //@@Signature
-//gfunction hconcave HConvexFilterFunction
+//gfunction hconvex HConvexFilterFunction
 //input x height
 //output y
 ArrayVector HConvexFilterFunction(int nargout, const ArrayVector& arg)

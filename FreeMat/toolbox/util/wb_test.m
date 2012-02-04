@@ -1,5 +1,4 @@
-function retval = wb_test(text,testname,refloc)
-  retval = 0;
+function wb_test(text,testname,refloc)
   v = regexp(text,'@\$([^#]*)#([^#]*)#?(.*)','tokens');
   ttype = v{1}{1};
   expr = v{1}{2};
@@ -80,5 +79,4 @@ function retval = wb_test(text,testname,refloc)
       end
     end
   end
-  retval = 1;
-  return;
+  saveretvalue(0);

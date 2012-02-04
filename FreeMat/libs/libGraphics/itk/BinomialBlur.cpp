@@ -7,6 +7,7 @@ static Array BinomialBlurFunction(const ArrayVector &arg)
   if (arg.size() == 0) return Array();
   int repcount = 1;
   if (arg.size() >= 2) repcount = arg[1].asInteger();
+  if (repcount < 0) throw Exception("Invalid repcount");
   typedef itk::Image<PixelClass, dims> ITKType;
   typename ITKType::Pointer imageIn = CreateITKFromArray<dims,dataclass,PixelClass>(arg[0]);
   typedef itk::BinomialBlurImageFilter<ITKType, ITKType> FilterType;

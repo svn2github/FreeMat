@@ -2,6 +2,7 @@
 #define __ITKWrap_hpp__
 
 #include <itkImportImageFilter.h>
+#include <itkCastImageFilter.h>
 #include <itkBinaryBallStructuringElement.h>
 #include <itkBinaryCrossStructuringElement.h>
 #include "Array.hpp"
@@ -25,6 +26,7 @@ void PrintITK(typename itk::Image<pixelclass,dims>::Pointer p)
 template <int dims, int dataclass, typename pixelclass>
 typename itk::Image<pixelclass, dims>::Pointer CreateITKFromArray(const Array& z)
 {
+  typename itk::Image<pixelclass, dims>::Pointer vol;
   Array p = z.toClass(static_cast<DataClass>(dataclass));
   p.ensureNotScalarEncoded();
   typedef itk::Image<pixelclass, dims> ITKType;
@@ -44,16 +46,17 @@ typename itk::Image<pixelclass, dims>::Pointer CreateITKFromArray(const Array& z
   importer->SetOrigin(vol_origin);
   importer->SetImportPointer(reinterpret_cast<pixelclass*>(p.getVoidPointer()), p.length(), false);
   importer->Update();
-  std::cout << "CIFA\n";
-  PrintITK<dims,pixelclass>(importer->GetOutput());
-  return importer->GetOutput();
+  typedef itk::CastImageFilter<ITKType,ITKType> CastType;
+  typename CastType::Pointer caster = CastType::New();
+  caster->SetInput(importer->GetOutput());
+  caster->Update();
+  vol = caster->GetOutput();
+  return vol;
 }
 
 template <int dims, int dataclass, typename pixelclass>
 Array CreateArrayFromITK(typename itk::Image<pixelclass,dims>::Pointer p)
 {
-  std::cout << "CAFI\n";
-  PrintITK<dims,pixelclass>(p);
   NTuple d;
   for (int i=0;i<dims;i++)
     d.set(i,p->GetLargestPossibleRegion().GetSize()[i]);
@@ -114,8 +117,11 @@ Array CreateArrayFromITK(typename itk::Image<pixelclass,dims>::Pointer p)
   default:						\
     throw Exception("Unhandle ITK volume type (only float or double types allowed for this operation).");	\
   }
- 
 
-
+#define CATCH_ITK \
+  catch(itk::ExceptionObject &err) \
+    {									\
+      throw Exception(QString("ITK Exception Caught %1").arg(err.GetDescription())); \
+    }
 
 #endif

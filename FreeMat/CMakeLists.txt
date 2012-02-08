@@ -621,6 +621,7 @@ add_custom_target(textdoc
   COMMENT "Text generation"
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/help/maketxt.sh"
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/help
+  DEPENDS doc
 )
 
 add_custom_target(fulldoc

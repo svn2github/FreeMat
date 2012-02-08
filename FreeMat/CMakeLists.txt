@@ -16,7 +16,11 @@ ENDMACRO(WRITE_OUT_ALL_VARIABLES)
 PROJECT(FreeMat CXX C )
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "4")
-SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_MINOR "2")
+SET(CPACK_PACKAGE_VERSION_PATCH "")
+SET(CPACK_PACKAGE_FILE_NAME "FreeMat-4.2")
+SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "FreeMat 4.2")
+SET(CPACK_PACKAGE_VERSION "4.2")
 SET(VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
@@ -553,7 +557,7 @@ INCLUDE(CPack)
 
 add_custom_target( fragdb
   COMMENT "Building fragment database"
-  COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/doc/fragments"
+  COMMAND ${FreeMat_Loc} "-nogui" "-r" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/doc/fragments"
   VERBATIM
   )
 
@@ -583,13 +587,6 @@ add_custom_target( jitgen
 	VERBATIM
 	)
 
-add_custom_target( fraggen
-	COMMENT "Extracting fragments"
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/extract_fragments.py ${CMAKE_SOURCE_DIR}
-	COMMENT "Building fragment database"
-	COMMAND ${FreeMat_Loc} "-nogui" "-p" ${CMAKE_SOURCE_DIR} "-f" "fraggen ${CMAKE_SOURCE_DIR}/doc/fragments"
-	VERBATIM
-	)
 
 WRITE_OUT_ALL_VARIABLES()
 
@@ -601,6 +598,7 @@ find_package(Doxygen)
 if (DOXYGEN_FOUND)
 add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR/doc/Doxyfile} 
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc
+  DEPENDS fragdb
   COMMENT "Generating documentation"
 )
 endif(DOXYGEN_FOUND)
@@ -608,5 +606,23 @@ endif(DOXYGEN_FOUND)
 add_custom_target(index
   COMMENT "Building index"
   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/makeindex.py ${CMAKE_SOURCE_DIR}/help/xml/index.xml ${CMAKE_SOURCE_DIR}/help/modules.txt
+  DEPENDS doc
   VERBATIM
+)
+
+add_custom_target(latexdoc
+  COMMENT "LaTeX Documentation"
+  COMMAND make
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/help/latex
+  DEPENDS doc
+)
+
+add_custom_target(textdoc
+  COMMENT "Text generation"
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/help/maketxt.sh"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/help
+)
+
+add_custom_target(fulldoc
+  DEPENDS fragdb doc index latexdoc textdoc
 )

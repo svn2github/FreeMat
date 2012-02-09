@@ -605,7 +605,7 @@ endif(DOXYGEN_FOUND)
 
 add_custom_target(index
   COMMENT "Building index"
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/makeindex.py ${CMAKE_SOURCE_DIR}/help/xml/index.xml ${CMAKE_SOURCE_DIR}/help/modules.txt
+  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tools/makeindex.py ${CMAKE_SOURCE_DIR}/help/xml/index.xml ${CMAKE_SOURCE_DIR}/help/html/modules.txt
   DEPENDS doc
   VERBATIM
 )
@@ -614,6 +614,7 @@ add_custom_target(latexdoc
   COMMENT "LaTeX Documentation"
   COMMAND make
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/help/latex
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/help/latex/refman.pdf ${CMAKE_CURRENT_SOURCE_DIR}/help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf
   DEPENDS doc
 )
 

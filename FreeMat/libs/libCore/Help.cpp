@@ -37,7 +37,7 @@ QString GetRootPath();
 //DOCBLOCK freemat_help
 ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
 {
-  PathSearcher psearch(GetRootPath()+"/help/txt");
+  PathSearcher psearch(GetRootPath()+"/help/text");
 
   if (arg.size() != 1)
     throw Exception("help function requires a single argument (the function or script name)");

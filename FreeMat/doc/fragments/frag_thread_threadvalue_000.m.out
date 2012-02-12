@@ -5,6 +5,6 @@
 --> size(c)                                % It is large!
 
 ans = 
-  1 21 
+  1 28 
 
 --> threadfree(a);

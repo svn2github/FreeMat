@@ -15,7 +15,7 @@ ans =
  -1 
 
 --> keyfunc(4,/operation='*',/printit) % error as b is unspecified
-In /home/sbasu/Devel/FreeMat/doc/fragments/keyfunc.m(keyfunc) at line 3
+In /home/sbasu/Devel/FreeMat4/doc/fragments/keyfunc.m(keyfunc) at line 3
     In scratch() at line 1
     In base(base)
     In base()

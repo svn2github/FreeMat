@@ -5,13 +5,13 @@
 --> count                          % it is counting
 
 ans = 
- 6 
+ 0 
 
 --> sleep(1)                       % Wait a bit
 --> count                          % it is still counting
 
 ans = 
- 394053 
+ 225458 
 
 --> threadkill(a)                  % kill the counter
 --> threadwait(a,1000)             % wait for it to finish
@@ -22,12 +22,12 @@ ans =
 --> count                          % The count will no longer increase
 
 ans = 
- 394103 
+ 225497 
 
 --> sleep(1)
 --> count
 
 ans = 
- 394103 
+ 225497 
 
 --> threadfree(a)

@@ -64,23 +64,10 @@ ArrayVector HelpFunction(int nargout, const ArrayVector& arg, Interpreter* eval)
     if (!fp.open(QIODevice::ReadOnly))
       throw Exception(QString("No help available on ") + fname);
     QTextStream io(&fp);
-    int outputWidth = eval->getTerminalWidth() - 20;
     while (!io.atEnd()) {
       QString cp = io.readLine();
-      eval->outputMessage("\n          ");
-      int charsRemaining = outputWidth - 10;
-      QStringList words = cp.split(" ");
-      for (int i=0;i<words.size();i++) {
-	QString word = words[i] + " ";
-	if ((word.size() >= outputWidth) || (word.size() < charsRemaining)) {
-	  eval->outputMessage(word);
-	  charsRemaining -= word.size();
-	} else {
-	  eval->outputMessage("\n          ");
-	  charsRemaining = outputWidth-word.size();
-	  eval->outputMessage(word);
-	}
-      }
+      eval->outputMessage("\n       ");
+      eval->outputMessage(cp);
     }
     return ArrayVector();
   }

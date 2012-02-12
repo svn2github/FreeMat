@@ -132,7 +132,7 @@ HelpWidget::HelpWidget(QString url, HelpWindow *mgr) {
   setWidget(m_browser);
   m_flist = new QListWidget;
   // Populate the list widget
-  QFile *file = new QFile(url + "/../modules.txt");
+  QFile *file = new QFile(url + "/modules.txt");
   if (!file->open(QFile::ReadOnly | QIODevice::Text))
     QMessageBox::warning(this,"Cannot Find Module List","The file modules.txt is missing from the directory "+url+" where I think help files should be.  The Topic List widget will not function properly.",QMessageBox::Ok,QMessageBox::NoButton,QMessageBox::NoButton);
   else {

@@ -44,21 +44,23 @@ HandleList<Interpreter*> m_threadHandles;
 extern MainApp *m_app;
 static FMEditor *edit = NULL;
 
-#ifdef Q_WS_X11 
 #include "FuncTerminal.hpp"
 #include "DumbTerminal.hpp"
+//#include <qsocketnotifier.h>
+#include <QSocketNotifier>
 #include "Terminal.hpp"
+
+Terminal* gterm;
+
+#ifdef Q_WS_X11
 #include <unistd.h>
 #include <fcntl.h>
-#include <qsocketnotifier.h>
 #include <signal.h>
 #include <unistd.h>
 #include <iostream>
 
 sig_t signal_suspend_default;
 sig_t signal_resume_default;
-
-Terminal* gterm;
 
 void signal_suspend(int a) {
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);
@@ -221,6 +223,28 @@ void MainApp::SetupInteractiveTerminalCase() {
   signal(SIGWINCH, signal_resize);
   m_term = myterm;
   QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
+#else
+    GUIHack = true;
+    Terminal *myterm = new Terminal;
+    m_win = NULL;
+    gterm = myterm;
+    m_keys->RegisterTerm(myterm);
+    //fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+    try {
+      myterm->Initialize();
+    } catch(Exception &e) {
+      fprintf(stderr,"Unable to initialize terminal.  Try to start FreeMat with the '-e' option.");
+      exit(1);
+    }
+    QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+    QObject::connect(notify, SIGNAL(activated(int)), myterm, SLOT(DoRead()));
+    myterm->ResizeEvent();
+    //signal_suspend_default = signal(SIGTSTP,signal_suspend);
+    //signal_resume_default = signal(SIGCONT,signal_resume);
+    //signal(SIGWINCH, signal_resize);
+    m_term = myterm;
+    QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
+
 #endif
 }
 
@@ -243,6 +267,18 @@ void MainApp::SetupDumbTerminalCase() {
   signal_suspend_default = signal(SIGTSTP,signal_suspend);
   signal_resume_default = signal(SIGCONT,signal_resume);
   signal(SIGWINCH, signal_resize);
+  m_term = myterm;
+  QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
+#else
+  GUIHack = true;
+  DumbTerminal *myterm = new DumbTerminal;
+  m_keys->RegisterTerm(myterm);
+//  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
+  QSocketNotifier *notify = new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read);
+  QObject::connect(notify, SIGNAL(activated(int)), myterm, SLOT(DoRead()));
+//  signal_suspend_default = signal(SIGTSTP,signal_suspend);
+//  signal_resume_default = signal(SIGCONT,signal_resume);
+//  signal(SIGWINCH, signal_resize);
   m_term = myterm;
   QObject::connect(this,SIGNAL(Shutdown()),qApp,SLOT(quit()));
 #endif
@@ -348,11 +384,11 @@ void MainApp::Quit() {
 }
 
 void MainApp::TerminalReset() {
-#ifdef Q_WS_X11
+//#ifdef Q_WS_X11
   Terminal *tptr = dynamic_cast<Terminal*>(gterm);
   if (tptr)
     tptr->RestoreOriginalMode();
-#endif  
+//#endif
 }
 
 void MainApp::UpdateTermWidth(int w) {

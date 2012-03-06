@@ -504,7 +504,7 @@ IF(WIN32)
   SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\freemat.sf.net")
   SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\freemat.sf.net")
   #SET(CPACK_NSIS_CONTACT "me@my-personal-home-page.com")
-  SET(CPACK_NSIS_MODIFY_PATH ON)
+  #SET(CPACK_NSIS_MODIFY_PATH ON)
   INSTALL(FILES
 	${QT_LIBRARY_DIR}/QtCore4.dll
 	${QT_LIBRARY_DIR}/QtGui4.dll

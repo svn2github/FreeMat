@@ -463,10 +463,10 @@ ADD_SUBDIRECTORY( src )
 
 ####################################################################################
 #Install section
-IF( MSVC )
+IF( WIN32 )
 	FILE(GLOB INST_DLL "dependencies/bin/*.dll" )
 	INSTALL(FILES ${INST_DLL} DESTINATION bin )
-ENDIF( MSVC )
+ENDIF( WIN32 )
 
 ####################################################################################
 #Setup section
@@ -524,7 +524,7 @@ IF(WIN32)
 
   INSTALL(DIRECTORY toolbox DESTINATION . PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
   INSTALL(DIRECTORY help/html DESTINATION help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
-  INSTALL(DIRECTORY help/text DESTINATION help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
+  #INSTALL(DIRECTORY help/text DESTINATION help PATTERN "*" PATTERN ".svn" EXCLUDE PERMISSIONS WORLD_READ )
   INSTALL(FILES "help/latex/FreeMat-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.pdf" DESTINATION help/pdf )
 
 ENDIF(WIN32)

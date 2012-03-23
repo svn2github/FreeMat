@@ -6,7 +6,8 @@
 
 #ifdef _WIN32
     #define EXPORT __declspec(dllexport)
-    //extern __declspec(dllexport) void *__cxa_allocate_exception(size_t thrown_size) throw();
+    //extern "C" __declspec(dllexport) void* __cxa_allocate_exception(unsigned);
+    //extern "C" __declspec(dllexport) void *__cxa_allocate_exception(size_t thrown_size) throw();
 #else
     #define EXPORT
 #endif

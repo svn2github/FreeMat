@@ -1238,41 +1238,47 @@ static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref, 
 }
 
 bool Interpreter::tryJitCode(const Tree & t) {
-  // Try to compile this block to an instruction stream
-  if (jitcontrol) {
-    int UID = t.node().UID();
-    JITInfo & ref = m_codesegments[UID];
-    if (ref.JITState() == JITInfo::UNTRIED) {
-      bool success = compileJITBlock(this,t,ref,jitcontrol);
-      if (success)
-	{
-	  if (ref.JITFunction()->run() == CJIT_Success)
-	    {
-	      ref.setJITState(JITInfo::SUCCEEDED);
-	      return true;
-	    }
-	  ref.setJITState(JITInfo::FAILED);
-	  return false;
-	}
-    } else if (ref.JITState() == JITInfo::SUCCEEDED) {
-      int stat = ref.JITFunction()->run();
-      if (stat == CJIT_Success)
-	return true;
-      // If the prep stage failed, we can try to recompile
-      dbout << "Prep failed for JIT block retrying\n";
-      if (stat == CJIT_Prepfail)
-	{
-	  bool success = compileJITBlock(this,t,ref,jitcontrol);
-	  if (success)
-	    {
-	      if (ref.JITFunction()->run() == CJIT_Success)
-		return true;
-	    }
-	}
+    // Try to compile this block to an instruction stream
+    if (jitcontrol) {
+        int UID = t.node().UID();
+        JITInfo & ref = m_codesegments[UID];
+        try{
+            if (ref.JITState() == JITInfo::UNTRIED) {
+                bool success = compileJITBlock(this,t,ref,jitcontrol);
+                if (success)
+                {
+                    if (ref.JITFunction()->run() == CJIT_Success)
+                    {
+                        ref.setJITState(JITInfo::SUCCEEDED);
+                        return true;
+                    }
+                    ref.setJITState(JITInfo::FAILED);
+                    return false;
+                }
+            } else if (ref.JITState() == JITInfo::SUCCEEDED) {
+                int stat = ref.JITFunction()->run();
+                if (stat == CJIT_Success)
+                    return true;
+                // If the prep stage failed, we can try to recompile
+                dbout << "Prep failed for JIT block retrying\n";
+                if (stat == CJIT_Prepfail)
+                {
+                    bool success = compileJITBlock(this,t,ref,jitcontrol);
+                    if (success)
+                    {
+                        if (ref.JITFunction()->run() == CJIT_Success)
+                            return true;
+                    }
+                }
+            }
+        }catch(Exception &e){
+            errorMessage(e.msg());
+            //errorMessage("Fatal Error. Please restart FreeMat.");
+        }
+
+        ref.setJITState(JITInfo::FAILED);
     }
-    ref.setJITState(JITInfo::FAILED);
-  }
-  return false;
+    return false;
 }
 
 //DOCBLOCK flow_while

@@ -24,6 +24,8 @@
 #include "llvm/ExecutionEngine/GenericValue.h"
 #include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/ErrorHandling.h"
+
 #ifdef LLVM_28
 #include "llvm/System/Host.h"
 #include "llvm/System/Path.h"
@@ -171,13 +173,21 @@ bool CJitFuncClang::compile(const Tree & t, JITControlFlag flag)
 
 int CJitFuncClang::run()
 {
-  std::vector<llvm::GenericValue> args(1);
-  args[0].PointerVal = m_eval;
-  llvm::GenericValue ret = EE->runFunction(func,args);
-  int retval = ret.IntVal.getSExtValue();
-  if (retval == CJIT_Runfail)
-    throw Exception(m_eval->getLastErrorString());
-  return retval;
+    std::vector<llvm::GenericValue> args(1);
+    args[0].PointerVal = m_eval;
+    int retval;
+    try{
+        llvm::GenericValue ret = EE->runFunction(func,args);
+        retval = ret.IntVal.getSExtValue();
+    }
+    catch (JITException &e) {
+        retval = CJIT_Runfail;
+    }
+
+    if (retval == CJIT_Runfail)
+        throw Exception(m_eval->getLastErrorString());
+
+    return retval;
 }
 
 void force_linkage()

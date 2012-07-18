@@ -18,7 +18,7 @@ Array MakeQTPointer(QObject *p, Interpreter *eval)
   return Array(hsap);
 }
 
-//@@Signature
+//Signature
 //sgfunction qtnew QtNewFunction
 //input classname
 //output ptr

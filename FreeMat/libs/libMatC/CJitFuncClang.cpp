@@ -33,9 +33,14 @@
 #include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
 #endif
+
+#ifndef LLVM_30
 #include "llvm/Target/TargetSelect.h"
 #include "llvm/Target/TargetOptions.h"
-
+#else
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetOptions.h"
+#endif
 
 
 #include "llvm/Constants.h"
@@ -67,6 +72,76 @@ CJitFuncClang::~CJitFuncClang()
 }
 QString GetRootPath();
 
+#ifdef LLVM_30
+bool CJitFuncClang::compile(const std::string &filename, 
+			    const std::string &funcname) 
+{
+  llvm::InitializeNativeTarget();
+  TextDiagnosticPrinter *DiagClient =
+    new TextDiagnosticPrinter(llvm::errs(), DiagnosticOptions());
+  llvm::IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
+  DiagnosticsEngine Diags(DiagID, DiagClient);
+  Driver TheDriver("", llvm::sys::getHostTriple(),
+                   "a.out", /*IsProduction=*/false,
+                   Diags);
+  TheDriver.setTitle("FreeMat JIT");
+  llvm::SmallVector<const char *, 16> Args;
+  Args.push_back("FreeMat");
+  Args.push_back(filename.c_str());
+  Args.push_back("-fsyntax-only");
+  Args.push_back("-O3");
+  Args.push_back("-v");
+  llvm::OwningPtr<Compilation> C(TheDriver.BuildCompilation(Args));
+  if (!C) return false;
+  const driver::JobList &Jobs = C->getJobs();
+  if (Jobs.size() != 1 || !isa<driver::Command>(*Jobs.begin())) {
+    llvm::SmallString<256> Msg;
+    llvm::raw_svector_ostream OS(Msg);
+    C->PrintJob(OS, C->getJobs(), "; ", true);
+    Diags.Report(diag::err_fe_expected_compiler_job) << OS.str();
+    return false;
+  }
+  const driver::Command *Cmd = cast<driver::Command>(*Jobs.begin());
+  if (llvm::StringRef(Cmd->getCreator().getName()) != "clang") {
+    Diags.Report(diag::err_fe_expected_clang_command);
+    return false;
+  }
+  // Initialize a compiler invocation object from the clang (-cc1) arguments.
+  const driver::ArgStringList &CCArgs = Cmd->getArguments();
+  llvm::OwningPtr<CompilerInvocation> CI(new CompilerInvocation);
+  CompilerInvocation::CreateFromArgs(*CI,
+                                     const_cast<const char **>(CCArgs.data()),
+                                     const_cast<const char **>(CCArgs.data()) +
+                                       CCArgs.size(),
+                                     Diags);
+  QString path = GetRootPath() + "/toolbox/jit";
+  CI->getHeaderSearchOpts().AddPath(path.toStdString().c_str(),frontend::Quoted,true,false,false);
+
+  // FIXME: This is copied from cc1_main.cpp; simplify and eliminate.
+  // Create a compiler instance to handle the actual work.
+  comp = new clang::CompilerInstance;
+  comp->setInvocation(CI.take());
+  // Create the compilers actual diagnostics engine.
+  comp->createDiagnostics(int(CCArgs.size()),const_cast<char**>(CCArgs.data()));
+  if (!comp->hasDiagnostics()) return false;
+  // Create and execute the frontend to generate an LLVM bitcode module.
+  // Pass the LLVM context to the code gen action.  Otherwise, the action
+  // creates a new context and then promptly deletes it when it goes out
+  // of scope. :P
+  llvm::OwningPtr<CodeGenAction> Act(new EmitLLVMOnlyAction(ctxt));
+  if (!comp->ExecuteAction(*Act)) return false;
+  llvm::JITExceptionHandling = true;
+  if (llvm::Module *Module = Act->takeModule())
+    {
+      std::string Error;
+      EE = llvm::ExecutionEngine::createJIT(Module,&Error);
+      if (!EE) return false;
+      func =  Module->getFunction(funcname);
+      return true;
+    }
+  return false;
+}
+#else
 bool CJitFuncClang::compile(const std::string &filename, 
 			    const std::string &funcname) 
 {
@@ -75,13 +150,22 @@ bool CJitFuncClang::compile(const std::string &filename,
     new TextDiagnosticPrinter(llvm::errs(), DiagnosticOptions());
 #ifdef LLVM_28
   Diagnostic Diags(DiagClient);
-#else
-  llvm::IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
-  Diagnostic Diags(DiagID, DiagClient);
-#endif
   Driver TheDriver("", llvm::sys::getHostTriple(),
                    "a.out", /*IsProduction=*/false, /*CXXIsProduction=*/false,
                    Diags);
+#elifdef LLVM_30
+  llvm::IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
+  DiagnosticEngine Diags(DiagID, DiagClient);
+  Driver TheDriver("", llvm::sys::getHostTriple(),
+                   "a.out", /*IsProduction=*/false,
+                   Diags);
+#else
+  llvm::IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
+  Diagnostic Diags(DiagID, DiagClient);
+  Driver TheDriver("", llvm::sys::getHostTriple(),
+                   "a.out", /*IsProduction=*/false, /*CXXIsProduction=*/false,
+                   Diags);
+#endif
   TheDriver.setTitle("FreeMat JIT");
   llvm::SmallVector<const char *, 16> Args;
   Args.push_back("FreeMat");
@@ -147,6 +231,7 @@ bool CJitFuncClang::compile(const std::string &filename,
     }
   return false;
 }
+#endif
 
 bool CJitFuncClang::compile(const Tree & t, JITControlFlag flag)
 {

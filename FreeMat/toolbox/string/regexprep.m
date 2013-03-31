@@ -9,7 +9,7 @@ if (iscellstr(instring))
   for i=1:numel(instring)
      outputs = [outputs,regexprep_helper(instring{i},pattern,replacement,varargin{:})];
   end;
-  outputs = reshape(outpus,size(instring));
+  outputs = reshape(outputs,size(instring));
 elseif (isstr(instring))
   outputs = regexprep_helper(instring,pattern,replacement,varargin{:});
 else

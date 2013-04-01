@@ -203,6 +203,21 @@ public:
       if (m_data[i] != alt.m_data[i]) return false;
     return true;
   }
+  // Compare this NTuple to the given size.  Extension
+  // is defined as:
+  //  All dimensions are the same, except for the 
+  //  last non-singleton dimension
+  inline bool extends(const NTuple& size) const {
+    int firstDifferent = NDims;
+    int i = 0;
+    while (i < NDims && (size.m_data[i] == m_data[i])) i++;
+    firstDifferent = i;
+    if (firstDifferent == NDims) return false;
+    i = firstDifferent+1;
+    while (i < NDims && (size.m_data[i] == 1) && (m_data[i] == 1)) i++;
+    if (i == NDims) return true;
+    return false;
+  }
   NTuple permute(const NTuple& perm) const {
     NTuple ret;
     for (int i=0;i<NDims;i++)

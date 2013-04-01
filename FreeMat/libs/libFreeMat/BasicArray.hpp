@@ -240,6 +240,13 @@ public:
     m_count = m_dims.count();
   }
   void resize(const NTuple& pos) {
+    if (pos.extends(m_dims))
+      {
+	m_dims = pos;
+	m_count = pos.count();
+	m_data.resize(pos.count());
+	return;
+      }
     BasicArray<T> retval(pos);
     Transformer<BasicArray<T>,T> transform(&retval,this);
     while (transform.isValid()) {

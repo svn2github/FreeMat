@@ -513,6 +513,7 @@ Tree Parser::statement() {
   if (match(TOK_IDENT)) {
     try {
       Tree retval = assignmentStatement();
+      lastpos = 0;
       return retval;
     } catch (ParseException &e) {
       m_lex = save;
@@ -521,6 +522,7 @@ Tree Parser::statement() {
   if (match('[')) {
     try {
       Tree retval = multiFunctionCall();
+      lastpos = 0;
       return retval;
     } catch (ParseException &e) {
       m_lex = save;
@@ -529,6 +531,7 @@ Tree Parser::statement() {
   if (match(TOK_IDENT)) {
     try {
       Tree retval = specialFunctionCall();
+      lastpos = 0;
       return retval;
     } catch (ParseException &e) {
       m_lex = save;
@@ -539,6 +542,7 @@ Tree Parser::statement() {
       Tree retval = functionDefinition();
       retval.rename(TOK_NEST_FUNC);
       expect(TOK_END, "FUNCTION definition");
+      lastpos = 0;
       return retval;
     } catch (ParseException &e) {
       m_lex = save;
@@ -547,6 +551,7 @@ Tree Parser::statement() {
   try {
     Tree retval(TOK_EXPR,m_lex.contextNum());
     retval.addChild(expression());
+    lastpos = 0;
     return retval;
   } catch (ParseException &e) {
     m_lex = save;

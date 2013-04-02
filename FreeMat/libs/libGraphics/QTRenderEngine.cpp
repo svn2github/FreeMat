@@ -418,6 +418,7 @@ void QTRenderEngine::setupDirectDraw() {
 //   if (inDirect)
 //     qDebug("DirectDraw is not reentrant!!!");
   // save the relevant matrices
+  pnt->save();
   for (int i=0;i<16;i++) {
     save_model[i] = model[i];
     model[i] = 0;
@@ -437,6 +438,7 @@ void QTRenderEngine::setupDirectDraw() {
 void QTRenderEngine::releaseDirectDraw() {
 //   if (!inDirect)
 //     qDebug("releaseDirectDraw called unmatched!!!");
+  pnt->restore();
   for (int i=0;i<16;i++) {
     model[i] = save_model[i];
     proj[i] = save_proj[i];

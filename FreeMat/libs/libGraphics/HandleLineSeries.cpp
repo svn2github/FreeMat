@@ -111,7 +111,7 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
   RenderEngine::SymbolType typ = StringToSymbol(StringPropertyLookup("marker"));
   double sze = ScalarPropertyLookup("markersize")/2.0;
   // Make sure there's something to draw...
-  if ((typ != RenderEngine::None) || ec->IsNone() || fc->IsNone()) {
+  if ((typ != RenderEngine::None) && (ec->IsNone() || fc->IsNone())) {
     // Calculate the u/v coordinates (pixels)
     QVector<double> uc;
     QVector<double> vc;
@@ -122,11 +122,11 @@ void HandleLineSeries::PaintMe(RenderEngine& gc) {
       if (!clipped) {
 	uc.push_back(u); vc.push_back(v);
       }
+      gc.setupDirectDraw();
+      for (int i=0;i<uc.size();i++) 
+	DrawSymbol(gc,typ,uc[i],vc[i],0,sze,ec->Data(),fc->Data(),width);
+      gc.releaseDirectDraw();
     }
-    gc.setupDirectDraw();
-    for (int i=0;i<uc.size();i++) 
-      DrawSymbol(gc,typ,uc[i],vc[i],0,sze,ec->Data(),fc->Data(),width);
-    gc.releaseDirectDraw();
   }
 }
 

@@ -21,6 +21,14 @@
 #include "Array.hpp"
 
 //@@Signature
+//sfunction jitstat JITStatFunction
+//inputs none
+//outputs count
+ArrayVector JITStatFunction(int nargout, const ArrayVector& arg, Interpreter* eval) {
+  return ArrayVector(Array(double(eval->JITCounter())));
+}
+
+//@@Signature
 //sfunction jitcontrol JITControlFunction
 //inputs flag
 //outputs flag
@@ -44,8 +52,12 @@ ArrayVector JITControlFunction(int nargout, const ArrayVector& arg, Interpreter*
       eval->setJITControl(JITOff);
     else if (txt == "TRACE")
       eval->setJITControl(JITTrace);
+    else if (txt == "FLUSH")
+      {
+	ClearJITCache();
+      }
     else
-      throw Exception("jitcontrol function argument needs to be 'on/off'");
+      throw Exception("jitcontrol function argument needs to be 'on/off/trace/flush'");
   }
   return ArrayVector();
 }

@@ -103,6 +103,7 @@ void* carray_scalar(double data, int typecode)
 extern "C" EXPORT
 void* carray_create(void* interp, double rows, double cols, int typecode, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *p = new CArray;
@@ -182,6 +183,7 @@ bool carray_download_function(void *interp, void *dst, const char *name)
 
 void* carray_invoke_1(void* interp, void* func, void* arg, bool *flag)
 {
+  if (*flag) return NULL;
   Interpreter *eval = (Interpreter*) interp;
   try
     {
@@ -204,6 +206,7 @@ void* carray_invoke_1(void* interp, void* func, void* arg, bool *flag)
 
 void* carray_invoke_2(void* interp, void* func, void* arg1, void* arg2, bool *flag)
 {
+  if (*flag) return NULL;
   Interpreter *eval = (Interpreter*) interp;
   try
     {
@@ -485,6 +488,7 @@ bool carray_set_aa(void* interp, void* arg, void* ndxr, void* ndxc, void *val)
 extern "C" EXPORT
 void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *ap = cast(arg);
@@ -503,6 +507,7 @@ void* carray_get_a(void* interp, void* arg, void* ndx, bool *flag)
 extern "C" EXPORT
 void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *ap = cast(arg);
@@ -525,6 +530,7 @@ void* carray_get_aa(void* interp, void* arg, void* rndx, void* cndx, bool *flag)
 extern "C" EXPORT
 double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *cp = cast(arg);
@@ -559,6 +565,7 @@ double carray_get_ss(void* interp, void* arg, double row, double col, bool *flag
 extern "C" EXPORT
 double carray_get_s(void* interp, void* arg, double row, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *cp = cast(arg);
@@ -610,6 +617,7 @@ bool carray_duplicate(void *interp, void *a, void *b)
 extern "C" EXPORT
 void* carray_colon(void *interp, double a, double b, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *cp = cast(carray_empty());
@@ -628,6 +636,7 @@ void* carray_colon(void *interp, double a, double b, bool *flag)
 extern "C" EXPORT
 void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *cp = cast(carray_empty());
@@ -646,6 +655,7 @@ void* carray_dcolon(void *interp, double a, double b, double c, bool *flag)
 extern "C" EXPORT
 bool carray_any(void *interp, void *p, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *pp = cast(p);
@@ -662,6 +672,7 @@ bool carray_any(void *interp, void *p, bool *flag)
 extern "C" EXPORT
 bool carray_all(void *interp, void *p, bool *flag)
 {
+  if (*flag) return NULL;
   try
     {
       CArray *pp = cast(p);
@@ -678,6 +689,7 @@ bool carray_all(void *interp, void *p, bool *flag)
 #define WrapUnaryOp(wrapped,func)					\
   void* wrapped(void* interp, void *a, bool *flag)			\
   {									\
+    if (*flag) return NULL;						\
     try									\
       {									\
 	CArray *ap = cast(a);						\
@@ -704,6 +716,7 @@ WrapUnaryOp(carray_dottranspose,Transpose);
   extern "C" EXPORT								\
   void* wrapped(void* interp, void *a, void *b, bool *flag)		\
   {									\
+    if (*flag) return NULL;						\
     try									\
       {									\
 	CArray *ap = cast(a);						\

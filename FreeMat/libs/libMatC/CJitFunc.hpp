@@ -103,9 +103,12 @@ public:
   void BeginFunction(std::string funcname, std::string rettype);
   void WriteCode(std::string filename);
   std::string GetCode();
+  std::string GetInternalCode();
   void Push();
   void Pop();
   void AddPrereq(std::string txt);
+  void AddErrorCheck();
+  void BlockErrorCheck();
 };
 
 // This is the abstract base class for JIT functions.  It contains
@@ -158,6 +161,7 @@ public:
   void compile_tree(const Tree & t, std::string funcname);
   void writeCode(std::string filename);
   std::string GetCode();
+  std::string GetInternalCode();
 };
 
 #endif

@@ -173,9 +173,11 @@ void CWriter::DoubleValue(double t) {o << "((double)" << t << ")";}
 void CWriter::BeginScope() {Indent(); o << "{\n"; m_indent++; }
 void CWriter::BeginMemberFunction(CSymbol name, std::string member) {o << name.name() << "." << member << "(";}
 void CWriter::EndMemberFunction() {o << ")";}
-void CWriter::BeginAssign(CSymbol varname) { Indent(); o << "Set(interp," << varname.name() << ","; }
-void CWriter::EndAssign() { o << ");\n"; }
+void CWriter::BeginAssign(CSymbol varname) { Indent(); o << "if (!Set(interp," << varname.name() << ","; }
+void CWriter::EndAssign() { o << ")) return CJIT_Runfail;\n"; }
 void CWriter::BeginFuncCall(std::string funcname) {o << funcname << "(";}
+void CWriter::AddErrorCheck() {o << ",&_errorflag";}
+void CWriter::BlockErrorCheck() {o << "  if (_errorflag) return CJIT_Runfail;\n";}
 void CWriter::LookupVariable(CSymbol varname) {o << varname.name();}
 void CWriter::NextArg() {o << ",";}
 void CWriter::EndFuncCall() {o << ")";}
@@ -209,12 +211,17 @@ void CWriter::WriteCode(std::string filename)
   fp.close();
 }
 
-std::string CWriter::GetCode()
+std::string CWriter::GetInternalCode()
 {
   std::stringstream p;
-  p << "#include \"CArray.hpp\"\n\n";
   p << prereq << "\n" << q.str() + "\n" + o.str() + "\n";
   return p.str();
+}
+
+std::string CWriter::GetCode()
+{
+  return "#include \"CArray.hpp\"\n\nstatic bool _errorflag = false;\n" 
+    + GetInternalCode();
 }
 
 void CWriter::OperatorStatement(std::string keyword)
@@ -313,6 +320,7 @@ CTypeInfo CJitFunc::compile_unop(const Tree & t, std::string op) {
   cs.BeginParen(); 
   cs.EmitString("interp,");
   CTypeInfo ret = compile_expression(t);
+  cs.AddErrorCheck();
   cs.EndParen();
   return ret;
 }
@@ -322,6 +330,7 @@ CTypeInfo CJitFunc::compile_unop_logical(const Tree & t, std::string op) {
   cs.BeginParen();
   cs.EmitString("interp,");
   CTypeInfo ret = compile_expression(t);
+  cs.AddErrorCheck();
   cs.EndParen();
   return CTypeInfo(CBOOL,ret.isscalar());
 }
@@ -329,6 +338,7 @@ CTypeInfo CJitFunc::compile_unop_logical(const Tree & t, std::string op) {
 void CJitFunc::compile_if_statement(const Tree & t) {
   cs.BeginIf();
   compile_expression(t.first());
+  cs.AddErrorCheck();
   cs.EndIf();
   cs.BeginScope();
   compile_block(t.second());
@@ -337,6 +347,7 @@ void CJitFunc::compile_if_statement(const Tree & t) {
   while (n < t.numChildren() && t.child(n).is(TOK_ELSEIF)) {
     cs.BeginElseIf();
     compile_expression(t.child(n).first());
+    cs.AddErrorCheck();
     cs.EndElseIf();
     cs.BeginScope();
     compile_block(t.child(n).second());
@@ -361,6 +372,7 @@ CTypeInfo CJitFunc::compile_binop(const Tree & t_first,
   CTypeInfo A = compile_expression(t_first);
   cs.NextArg();
   CTypeInfo B = compile_expression(t_second);
+  cs.AddErrorCheck();
   cs.EndParen();
   bool scalar = A.isscalar() && B.isscalar();
   if (A.type() == CFLOAT || B.type() == CFLOAT)
@@ -377,6 +389,7 @@ CTypeInfo CJitFunc::compile_binop_logical(const Tree & t_first,
   CTypeInfo A = compile_expression(t_first);
   cs.NextArg();
   CTypeInfo B = compile_expression(t_second);
+  cs.AddErrorCheck();
   cs.EndParen();
   bool scalar = A.isscalar() && B.isscalar();
   return CTypeInfo(CBOOL,scalar);
@@ -488,7 +501,7 @@ CTypeInfo CJitFunc::compile_inline_function(QString symname, MFunctionDef *mptr,
       p << ", ";
       p << MapCTypeToC(argtypes[i]) << " " << mptr->arguments[i].toStdString();
     }
-  p << ")";
+  p << ",bool*)";
   cs.FuncSig(p.str());
   for (int i=0;i<m_symbols.size();i++)
     if (std::count(mptr->arguments.begin(),
@@ -508,7 +521,7 @@ bool CJitFunc::compile_mfunction(QString symname, std::vector<CTypeInfo> argtype
       if (m_prereqs.count(mptr)) return true;
       m_prereqs.insert(mptr);
       ret = cfunc.compile_inline_function(symname,mptr,argtypes);
-      cs.AddPrereq(cfunc.GetCode());
+      cs.AddPrereq(cfunc.GetInternalCode());
       return true;
     }
   catch (Exception &e)
@@ -536,7 +549,7 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
   if (symbol.retcount() < 1)
     throw Exception("function must return 1 value to be JIT compiled");
   // Check for the case of an MFunction
-  if (symbol.isMFunction())
+  if (symbol.isMFunction() && !isjitscalarfunc(symname))
     {
       std::vector<CTypeInfo> argtypes;
       if (t.numChildren() > 1)
@@ -564,6 +577,7 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
 		  compile_expression(q.child(i));
 		}
 	    }
+	  cs.AddErrorCheck();
 	  cs.EndFuncCall();
 	  return rettype;
 	}
@@ -631,6 +645,7 @@ CTypeInfo CJitFunc::compile_function_call(const Tree & t) {
 	    throw Exception("function calls only support double type arguments in JIT");
 	}
     }
+  cs.AddErrorCheck();  
   cs.EndFuncCall();
   return CTypeInfo(CDOUBLE,false);
 }
@@ -670,7 +685,8 @@ CTypeInfo CJitFunc::compile_rhs(const Tree &t) {
       CTypeInfo arg2 = compile_expression(s.second());
       rettype_scalar = rettype_scalar && arg2.isscalar();
     }
-  cs.EndMemberFunction();
+  cs.AddErrorCheck();
+  cs.EndFuncCall();
   CTypeInfo rettype = symbol.typeinfo();
   rettype.setIsScalar(rettype_scalar);
   return rettype;
@@ -683,6 +699,7 @@ CTypeInfo CJitFunc::compile_colon(const Tree & t) {
   CTypeInfo arg1 = compile_expression(t.first());
   cs.NextArg();
   CTypeInfo arg2 = compile_expression(t.second());
+  cs.AddErrorCheck();
   cs.EndFuncCall();
   if (!arg1.isscalar() || !arg2.isscalar())
     throw Exception("Arguments to colon operator must be scalars");
@@ -700,6 +717,7 @@ CTypeInfo CJitFunc::compile_dcolon(const Tree & t) {
   CTypeInfo arg2 = compile_expression(t.first().second());
   cs.NextArg();
   CTypeInfo arg3 = compile_expression(t.second());
+  cs.AddErrorCheck();
   cs.EndFuncCall();
   if (!arg1.isscalar() || !arg2.isscalar() || !arg3.isscalar())
     throw Exception("Arguments to colon operator must be scalars");
@@ -726,6 +744,7 @@ CTypeInfo CJitFunc::compile_rowdef(const Tree & t) {
     {
       cs.NextArg();
       compile_expression(t.child(i+1));
+      cs.AddErrorCheck();      
       cs.EndFuncCall();
     }  
   return CTypeInfo(CDOUBLE,false);
@@ -750,6 +769,7 @@ CTypeInfo CJitFunc::compile_matdef(const Tree & t) {
     {
       cs.NextArg();
       compile_rowdef(t.child(i+1));
+      cs.AddErrorCheck();
       cs.EndFuncCall();
     }
   return CTypeInfo(CDOUBLE,false);
@@ -862,6 +882,7 @@ void CJitFunc::compile_while_block(const Tree & t)
 {
   cs.BeginWhile();
   compile_expression(t.first());
+  cs.AddErrorCheck();
   cs.EndWhile();
   cs.BeginScope();
   compile_block(t.second());
@@ -918,6 +939,7 @@ void CJitFunc::compile_block(const Tree & t)
   const TreeList &statements(t.children());
   for (TreeList::const_iterator i=statements.begin();i!=statements.end();i++) 
     compile_statement(*i);  
+  cs.BlockErrorCheck();
 }
 
 void CJitFunc::compile_statement(const Tree & t) {
@@ -977,7 +999,7 @@ void CJitFunc::compile_tree(const Tree & t, std::string funcname)
 {
   RescanDisabler dis(m_eval);
   cs.FuncSig(" int " + funcname + "(void* interp)");
-  cs.EmitString("try {\n");
+  cs.EmitString("  _errorflag = false;\n");
   switch (t.token())
     {
     case TOK_FOR:
@@ -997,9 +1019,6 @@ void CJitFunc::compile_tree(const Tree & t, std::string funcname)
   for (int i=0;i<m_symbols.size();i++)
     cs.Upload(m_symbols[i]);
   cs.EmitString("  return CJIT_Success;\n");
-  cs.EmitString("} catch (JITException &e) {\n");
-  cs.EmitString("  return CJIT_Runfail;\n");
-  cs.EmitString("};\n");
   cs.EndScope();
 }
 
@@ -1011,4 +1030,9 @@ void CJitFunc::writeCode(std::string filename)
 std::string CJitFunc::GetCode()
 {
   return cs.GetCode();
+}
+
+std::string CJitFunc::GetInternalCode()
+{
+  return cs.GetInternalCode();
 }

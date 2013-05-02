@@ -133,10 +133,6 @@ inline int MapTypeToDataClass(bool c) {return CArray_Bool;}
 // but is used by the CJIT code to wrap these carray functions.  I am
 // placing here to keep it in sync with the carray functions.
 
-class JITException
-{
-};
-
 template <class T>
 class JITArray
 {
@@ -170,249 +166,211 @@ public:
 };
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, const JITArray<T>& B)
+inline bool Set(void* interp, JITArray<T>& A, const JITArray<T>& B)
 {
-  if (!carray_duplicate(interp,A.data(),B.data())) throw JITException();
+  return carray_duplicate(interp,A.data(),B.data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B)
+inline bool Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B)
 {
-  if (!carray_set_a(interp,A.data(),B.data(),JITArray<double>(val).data())) throw JITException();
+  return carray_set_a(interp,A.data(),B.data(),JITArray<double>(val).data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, double B)
+inline bool Set(void* interp, JITArray<T>& A, const JITArray<double> &val, double B)
 {
-  if (!carray_set_a(interp,A.data(),JITArray<double>(B).data(),val.data())) throw JITException();
+  return carray_set_a(interp,A.data(),JITArray<double>(B).data(),val.data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B)
+inline bool Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B)
 {
-  if (!carray_set_a(interp,A.data(),B.data(),val.data())) throw JITException();
+  return carray_set_a(interp,A.data(),B.data(),val.data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B, const JITArray<double>& C)
+inline bool Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B, const JITArray<double>& C)
 {
-  if (!carray_set_aa(interp,A.data(),B.data(),C.data(),JITArray<double>(val).data())) throw JITException();
+  return carray_set_aa(interp,A.data(),B.data(),C.data(),JITArray<double>(val).data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, double val, double B, const JITArray<double>& C)
+inline bool Set(void* interp, JITArray<T>& A, double val, double B, const JITArray<double>& C)
 {
-  if (!carray_set_aa(interp,A.data(),JITArray<double>(B).data(),C.data(),JITArray<double>(val).data())) throw JITException();
+  return carray_set_aa(interp,A.data(),JITArray<double>(B).data(),C.data(),JITArray<double>(val).data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B, double C)
+inline bool Set(void* interp, JITArray<T>& A, double val, const JITArray<double>& B, double C)
 {
-  if (!carray_set_aa(interp,A.data(),B.data(),JITArray<double>(C).data(),JITArray<double>(val).data())) throw JITException();
+  return carray_set_aa(interp,A.data(),B.data(),JITArray<double>(C).data(),JITArray<double>(val).data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B, const JITArray<double>& C)
+inline bool Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B, const JITArray<double>& C)
 {
-  if (!carray_set_aa(interp,A.data(),B.data(),C.data(),val.data())) throw JITException();
+  return carray_set_aa(interp,A.data(),B.data(),C.data(),val.data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, double B, const JITArray<double>& C)
+inline bool Set(void* interp, JITArray<T>& A, const JITArray<double> &val, double B, const JITArray<double>& C)
 {
-  if (!carray_set_aa(interp,A.data(),JITArray<double>(B).data(),C.data(),val.data())) throw JITException();
+  return carray_set_aa(interp,A.data(),JITArray<double>(B).data(),C.data(),val.data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B, double C)
+inline bool Set(void* interp, JITArray<T>& A, const JITArray<double> &val, const JITArray<double>& B, double C)
 {
-  if (!carray_set_aa(interp,A.data(),B.data(),JITArray<double>(C).data(),val.data())) throw JITException();
+  return carray_set_aa(interp,A.data(),B.data(),JITArray<double>(C).data(),val.data());
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T> &A, double val, double row, double col)
+inline bool Set(void* interp, JITArray<T> &A, double val, double row, double col)
 {
-  if (!carray_set_ss(interp,A.data(),row,col,val)) throw JITException();
+  return carray_set_ss(interp,A.data(),row,col,val);
 }
 
 template <class T>
-inline void Set(void* interp, JITArray<T> &A, double val, double row)
+inline bool Set(void* interp, JITArray<T> &A, double val, double row)
 {
-  if (!carray_set_s(interp,A.data(),row,val)) throw JITException();
+  return carray_set_s(interp,A.data(),row,val);
 }
 
 template <class T>
-void Set(void*, T& A, T val)
+bool Set(void*, T& A, T val)
 {
   A = val;
+  return true;
 }
 
 template <class T>
-inline T Get(void*interp, const JITArray<T> & A, double row, double col)
+inline T Get(void*interp, const JITArray<T> & A, double row, double col, bool *error)
 {
-  bool flag = false;
-  T val = carray_get_ss(interp,A.data(),row,col,&flag);
-  if (flag) throw JITException();
-  return val;
+  return carray_get_ss(interp,A.data(),row,col,error);
 }
 
 template <class T>
-inline T Get(void*interp, const JITArray<T> & A, double row)
+inline T Get(void*interp, const JITArray<T> & A, double row, bool *error)
 {
-  bool flag = false;
-  T val = carray_get_s(interp,A.data(),row,&flag);
-  if (flag) throw JITException();
-  return val;
+  return carray_get_s(interp,A.data(),row,error);
 }
 
 template <class T>
-inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx)
+inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx, bool *error)
 {
-  bool flag = false;
-  void* ret = carray_get_a(interp,A.data(),rndx.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return JITArray<T>(carray_get_a(interp,A.data(),rndx.data(),error));
 }
 
 template <class T>
-inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx, const JITArray<double> &cndx)
+inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx, const JITArray<double> &cndx, bool *error)
 {
-  bool flag = false;
-  void* ret = carray_get_aa(interp,A.data(),rndx.data(),cndx.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return JITArray<T>(carray_get_aa(interp,A.data(),rndx.data(),cndx.data(),error));
 }
 
 template <class T>
-inline JITArray<T> Get(void*interp, const JITArray<T> & A, double rndx, const JITArray<double> &cndx)
+inline JITArray<T> Get(void*interp, const JITArray<T> & A, double rndx, const JITArray<double> &cndx, bool *error)
 {
-  return Get(interp,A,JITArray<double>(rndx),cndx);
+  return Get(interp,A,JITArray<double>(rndx),cndx,error);
 }
 
 template <class T>
-inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx, double cndx)
+inline JITArray<T> Get(void*interp, const JITArray<T> & A, const JITArray<double> &rndx, double cndx, bool *error)
 {
-  return Get(interp,A,rndx,JITArray<double>(cndx));
+  return Get(interp,A,rndx,JITArray<double>(cndx),error);
 }
 
-inline JITArray<double> Invoke(void *interp, void *ptr, double a)
+inline JITArray<double> Invoke(void *interp, void *ptr, double a, bool *error)
 {
-  bool flag = false;
-  void *ret = carray_invoke_1(interp,ptr,JITArray<double>(a).data(),&flag); 
-  if (flag) throw JITException();
- return JITArray<double>(ret);
+  return JITArray<double>(carray_invoke_1(interp,ptr,JITArray<double>(a).data(),error));
 }
 
-inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &a)
+inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &a, bool *error)
 {
-  bool flag = false;
-  void *ret = carray_invoke_1(interp,ptr,a.data(),&flag);
-  if (flag) throw JITException();  
-  return JITArray<double>(ret);
+  return JITArray<double>(carray_invoke_1(interp,ptr,a.data(),error));
 }
 
-inline JITArray<double> Invoke(void *interp, void *ptr, double a, const JITArray<double> &b)
+inline JITArray<double> Invoke(void *interp, void *ptr, double a, const JITArray<double> &b, bool *error)
 {
-  bool flag = false;
-  void *ret = carray_invoke_2(interp,ptr,JITArray<double>(a).data(),b.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<double>(ret);
+  return JITArray<double>(carray_invoke_2(interp,ptr,JITArray<double>(a).data(),b.data(),error));
 }
 
-inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &a, double b)
+inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &a, double b, bool *error)
 {
-  bool flag = false;
-  void *ret = carray_invoke_2(interp,ptr,a.data(),JITArray<double>(b).data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<double>(ret);
+  return JITArray<double>(carray_invoke_2(interp,ptr,a.data(),JITArray<double>(b).data(),error));
 }
 
-inline JITArray<double> Invoke(void *interp, void *ptr, double a, double b)
+inline JITArray<double> Invoke(void *interp, void *ptr, double a, double b, bool *error)
 {
-  bool flag = false;
-  void *ret = carray_invoke_2(interp,ptr,JITArray<double>(a).data(),JITArray<double>(b).data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<double>(ret);
+  return JITArray<double>(carray_invoke_2(interp,ptr,JITArray<double>(a).data(),JITArray<double>(b).data(),error));
 }
 
-inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &a, const JITArray<double> &b)
+inline JITArray<double> Invoke(void *interp, void *ptr, const JITArray<double> &a, const JITArray<double> &b, bool *error)
 {
-  bool flag = false;
-  void *ret = carray_invoke_2(interp,ptr,a.data(),b.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<double>(ret);
+  return JITArray<double>(carray_invoke_2(interp,ptr,a.data(),b.data(),error));
 }
 
-template <class T> bool Any(void*, T a) {return ((bool) a);}
-template <class T> bool All(void*, T a) {return ((bool) a);}
-template <class T> bool Not(void*, T a) {return !((bool) a);}
-template <class T> T Neg(void*, T a) {return -a;}
-template <class T> T Pos(void*, T a) {return a;}
-template <class T> T Transpose(void*, T a) {return a;}
-template <class T> T DotTranspose(void*, T a) {return a;}
-template <class T> T Power(void*, T a, T b) {return pow(a,b);}
-template <class T> T DotPower(void*, T a, T b) {return pow(a,b);}
-template <class T> T Add(void*, T a, T b) {return a+b;}
-template <class T> T Sub(void*, T a, T b) {return a-b;}
-template <class T> T Times(void*, T a, T b) {return a*b;}
-template <class T> T DotTimes(void*, T a, T b){return a*b;}
-template <class T> T RightDivide(void*, T a, T b) {return a/b;}
-template <class T> T LeftDivide(void*, T a, T b) {return b/a;}
-template <class T> T DotRightDivide(void*, T a, T b) {return a/b;}
-template <class T> T DotLeftDivide(void*, T a, T b) {return b/a;}
-template <class T> bool Or(void*, T a, T b) {return (a || b);}
-template <class T> bool And(void*, T a, T b) {return (a && b);}
-template <class T> bool LT(void*, T a, T b) {return (a < b);}
-template <class T> bool LE(void*, T a, T b) {return (a <= b);}
-template <class T> bool GT(void*, T a, T b) {return (a > b);}
-template <class T> bool GE(void*, T a, T b) {return (a >= b);}
-template <class T> bool EQ(void*, T a, T b) {return (a == b);}
-template <class T> bool NEQ(void*, T a, T b) {return (a != b);}
-template <class T> JITArray<T> Colon(void* interp, T a, T b) {
-  bool flag = false;
-  void *ret = carray_colon(interp,a,b,&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+template <class T> bool Any(void*, T a, bool *error) {return ((bool) a);}
+template <class T> bool All(void*, T a, bool *error) {return ((bool) a);}
+template <class T> bool Not(void*, T a, bool *error) {return !((bool) a);}
+template <class T> T Neg(void*, T a, bool *error) {return -a;}
+template <class T> T Pos(void*, T a, bool *error) {return a;}
+template <class T> T Transpose(void*, T a, bool *error) {return a;}
+template <class T> T DotTranspose(void*, T a, bool *error) {return a;}
+template <class T> T Power(void*, T a, T b, bool *error) {return pow(a,b);}
+template <class T> T DotPower(void*, T a, T b, bool *error) {return pow(a,b);}
+template <class T> T Add(void*, T a, T b, bool *error) {return a+b;}
+template <class T> T Sub(void*, T a, T b, bool *error) {return a-b;}
+template <class T> T Times(void*, T a, T b, bool *error) {return a*b;}
+template <class T> T DotTimes(void*, T a, T b, bool *error){return a*b;}
+template <class T> T RightDivide(void*, T a, T b, bool *error) {return a/b;}
+template <class T> T LeftDivide(void*, T a, T b, bool *error) {return b/a;}
+template <class T> T DotRightDivide(void*, T a, T b, bool *error) {return a/b;}
+template <class T> T DotLeftDivide(void*, T a, T b, bool *error) {return b/a;}
+template <class T> bool Or(void*, T a, T b, bool *error) {return (a || b);}
+template <class T> bool And(void*, T a, T b, bool *error) {return (a && b);}
+template <class T> bool LT(void*, T a, T b, bool *error) {return (a < b);}
+template <class T> bool LE(void*, T a, T b, bool *error) {return (a <= b);}
+template <class T> bool GT(void*, T a, T b, bool *error) {return (a > b);}
+template <class T> bool GE(void*, T a, T b, bool *error) {return (a >= b);}
+template <class T> bool EQ(void*, T a, T b, bool *error) {return (a == b);}
+template <class T> bool NEQ(void*, T a, T b, bool *error) {return (a != b);}
+template <class T> JITArray<T> Colon(void* interp, T a, T b, bool *error) {
+  return JITArray<T>(carray_colon(interp,a,b,error));
 }
-template <class T> JITArray<T> DoubleColon(void* interp, T a, T b, T c) {
-  bool flag = false;
-  void *ret = carray_dcolon(interp,a,b,c,&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+template <class T> JITArray<T> DoubleColon(void* interp, T a, T b, T c, bool *error) {
+  return JITArray<T>(carray_dcolon(interp,a,b,c,error));
 }
 
 #define OpCases(name,mappedname)					\
   template <class T>							\
-  inline JITArray<T> name(void *interp, const JITArray<T> &a, const JITArray<T> &b) \
+  inline JITArray<T> name(void *interp, const JITArray<T> &a, const JITArray<T> &b, bool *error) \
   {									\
-    bool flag = false;							\
-    void* ret = mappedname(interp,a.data(),b.data(),&flag);		\
-    if (flag) throw JITException();					\
-    return JITArray<T>(ret);						\
+    return JITArray<T>(mappedname(interp,a.data(),b.data(),error));	\
   }									\
 									\
   template <class T>							\
-  inline JITArray<T> name(void *interp, const JITArray<T> &a, T b)	\
+  inline JITArray<T> name(void *interp, const JITArray<T> &a, T b, bool *error)	\
   {									\
-    return name(interp,a,JITArray<T>(b));				\
+    return name(interp,a,JITArray<T>(b), error);				\
   }									\
 									\
   template <class T>							\
-  inline JITArray<T> name(void *interp,T a, const JITArray<T> &b)	\
+  inline JITArray<T> name(void *interp,T a, const JITArray<T> &b, bool *error)	\
   {									\
-    return name(interp,JITArray<T>(a),b);				\
+    return name(interp,JITArray<T>(a),b, error);				\
   }
 
 template <class T>
-inline JITArray<T> VCat(void* interp,T a, T b)
+inline JITArray<T> VCat(void* interp,T a, T b, bool *error)
 {
-  return VCat(interp,JITArray<T>(a),JITArray<T>(b));
+  return VCat(interp,JITArray<T>(a),JITArray<T>(b),error);
 }
 
 template <class T>
-inline JITArray<T> HCat(void* interp,T a, T b)
+inline JITArray<T> HCat(void* interp,T a, T b, bool *error)
 {
-  return HCat(interp,JITArray<T>(a),JITArray<T>(b));
+  return HCat(interp,JITArray<T>(a),JITArray<T>(b),error);
 }
 
 OpCases(VCat,carray_vcat);
@@ -430,24 +388,21 @@ OpCases(DotLeftDivide,carray_dldiv);
 
 #define BinOpCases(name,mappedname)					\
   template <class T>							\
-  inline JITArray<bool> name(void *interp, const JITArray<T> &a, const JITArray<T> &b) \
+  inline JITArray<bool> name(void *interp, const JITArray<T> &a, const JITArray<T> &b, bool *error) \
   {									\
-    bool flag = false;							\
-    void *ret = mappedname(interp,a.data(),b.data(),&flag);		\
-    if (flag) throw JITException();					\
-    return JITArray<bool>(ret);						\
+  return JITArray<bool>(mappedname(interp,a.data(),b.data(),error)); \
   }									\
   									\
   template <class T>							\
-  inline JITArray<bool> name(void *interp, const JITArray<T> &a, T b)	\
+  inline JITArray<bool> name(void *interp, const JITArray<T> &a, T b, bool *error)	\
   {									\
-    return name(interp, a,JITArray<T>(b));				\
+    return name(interp, a,JITArray<T>(b),error);				\
   }									\
 									\
   template <class T>							\
-  inline JITArray<bool> name(void *interp, T a, const JITArray<T> &b)	\
+  inline JITArray<bool> name(void *interp, T a, const JITArray<T> &b, bool *error)	\
   {									\
-    return name(interp, JITArray<T>(a),b);				\
+    return name(interp, JITArray<T>(a),b,error);				\
   }
 
 BinOpCases(Or,carray_or);
@@ -459,60 +414,39 @@ BinOpCases(GE,carray_ge);
 BinOpCases(EQ,carray_eq);
 BinOpCases(NEQ,carray_neq);
 
-template <class T> bool Any(void *interp, const JITArray<T> &a) 
+template <class T> bool Any(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  bool ret = carray_any(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return ret;
+  return carray_any(interp,a.data(),error);
 }
 
-template <class T> bool All(void *interp, const JITArray<T> &a) 
+template <class T> bool All(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  bool ret = carray_all(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return ret;
+  return carray_all(interp,a.data(),error);
 }
 
-template <class T> JITArray<bool> Not(void *interp, const JITArray<T> &a) 
+template <class T> JITArray<bool> Not(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  void* ret = carray_not(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return carray_not(interp,a.data(),error);
 }
 
-template <class T> JITArray<T> Neg(void *interp, const JITArray<T> &a) 
+template <class T> JITArray<T> Neg(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  void* ret = carray_neg(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return JITArray<T>(carray_neg(interp,a.data(),error));
 }
 
-template <class T> JITArray<T> Pos(void *interp, const JITArray<T> &a) 
+template <class T> JITArray<T> Pos(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  void* ret = carray_pos(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return JITArray<T>(carray_pos(interp,a.data(),error));
 }
 
-template <class T> JITArray<T> Transpose(void *interp, const JITArray<T> &a) 
+template <class T> JITArray<T> Transpose(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  void* ret = carray_transpose(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return JITArray<T>(carray_transpose(interp,a.data(),error));
 }
 
-template <class T> JITArray<T> DotTranspose(void *interp, const JITArray<T> &a) 
+template <class T> JITArray<T> DotTranspose(void *interp, const JITArray<T> &a, bool *error) 
 {
-  bool flag = false;
-  void* ret = carray_dottranspose(interp,a.data(),&flag);
-  if (flag) throw JITException();
-  return JITArray<T>(ret);
+  return JITArray<T>(carray_dottranspose(interp,a.data(),error));
 }
 
 #endif

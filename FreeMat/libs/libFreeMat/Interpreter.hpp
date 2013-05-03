@@ -135,6 +135,10 @@ class Interpreter : public QThread {
    */
   JITControlFlag jitcontrol;
   /**
+   * jit counter - increments each time we successfully jit something
+   */
+  int jitcount;
+  /**
    * jit instance for this interpreter
    */
   JIT *m_jit;
@@ -522,8 +526,13 @@ public:
   /**
    * Set the JITControl flag
    */
-  inline JITControlFlag JITControl() {return jitcontrol;}
+  inline JITControlFlag JITControl() const {return jitcontrol;}
   inline void setJITControl(JITControlFlag a) {jitcontrol = a;}
+  /**
+   * Increment the JIT block counter
+   */
+  inline void incrementJITCounter() {jitcount++;}
+  inline int JITCounter() const {return jitcount;}
   /**
    * Set the print limit (number of element printed prior to truncation).
    */
@@ -1143,6 +1152,8 @@ private:
   friend ArrayVector AnonFuncSubsrefFunction(int, const ArrayVector&, Interpreter*);
   friend ArrayVector AnonFuncFevalFunction(int, const ArrayVector&, Interpreter*);
 };
+
+void ClearJITCache();
 
 void sigInterrupt(int arg);
 QString TrimFilename(QString);

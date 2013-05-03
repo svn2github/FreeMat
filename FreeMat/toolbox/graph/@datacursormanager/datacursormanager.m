@@ -102,7 +102,7 @@ function c = datacursormanager( a )
                 end
             end
             %[xlims(1)+p(1)*(xlims(2)-xlims(1)) ylims(1)+p(2)*(ylims(2)-ylims(1))]
-            ht=htext('string','','position',[tpos(1) tpos(2)],'boundingbox',[20 20 20 20] ...
+		ht=htext('string','','position',[tpos(1) tpos(2)],'boundingbox',[20 20 20 20], ...
             'edgecolor',[0 0 0],'backgroundcolor',[0 0 0]);
 
             if strcmp( get( children(i),'xscale'), 'linear')            

@@ -68,6 +68,11 @@ const int max_line_count = 1000000;
  */
 QMap<int,JITInfo> m_codesegments;
 
+
+void ClearJITCache() {
+  m_codesegments.clear();
+}
+
 /**
  * The file system watcher -- watches for changes to the file system
  * Only one interpreter thread should use this watcher at a time.
@@ -1223,6 +1228,7 @@ static bool compileJITBlock(Interpreter *interp, const Tree & t, JITInfo & ref, 
     success = true;
     ref.setJITState(JITInfo::SUCCEEDED);
     ref.setJITFunction(cg);
+    interp->incrementJITCounter();
     dbout << "Block JIT compiled at line "
 	  << LineNumber(interp->getContext()->scopeTokenID())
 	  << " of " << interp->getContext()->scopeName() << "\n";
@@ -1267,7 +1273,9 @@ bool Interpreter::tryJitCode(const Tree & t) {
                     if (success)
                     {
                         if (ref.JITFunction()->run() == CJIT_Success)
+			  {
                             return true;
+			  }
                     }
                 }
             }
@@ -2840,6 +2848,7 @@ Interpreter::Interpreter(Context* aContext) {
   autostop = false;
   intryblock = false;
   jitcontrol = JITOff;
+  jitcount = 0;
   stopoverload = false;
   m_skipflag = false;
   m_noprompt = false;

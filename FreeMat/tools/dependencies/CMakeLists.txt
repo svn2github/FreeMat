@@ -18,7 +18,7 @@ FIND_PACKAGE(PythonInterp REQUIRED)
 
 include(ExternalProject)
 
-SET(external_base "" CACHE PATH "Path where external dependencies that are built will be installed (e.g., /usr/local or $HOME/FM_deps")
+SET(external_base ${CMAKE_CURRENT_BINARY_DIR}/base CACHE PATH "Path where external dependencies that are built will be installed (e.g., /usr/local or $HOME/FM_deps")
 
 if (external_base STREQUAL "")
   message(SEND_ERROR "You must set the external_base variable to the root of the directory where external depenencies are to be installed, e.g., $HOME/FM_deps")
@@ -309,7 +309,7 @@ endif ()
 
 OPTION(FORCE_EXTERNAL_SUITESPARSE "Force use of external SuiteSparse" OFF)
 
-FIND_PACKAGE(SuiteSparse)
+FIND_PACKAGE(SUITESPARSE)
 
 if (FORCE_EXTERNAL_SUITESPARSE OR NOT SUITESPARSE_FOUND)
   MESSAGE("Will build SuiteSparse from external sources")

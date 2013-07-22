@@ -254,7 +254,7 @@ if (FORCE_EXTERNAL_ARPACK OR NOT ARPACK_FOUND)
 #    URL http://forge.scilab.org/index.php/p/arpack-ng/downloads/get/arpack-ng-3.1.3.tar.gz
     URL file:///home/sbasu/Downloads/cache/arpack-ng-3.1.3.tar.gz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
-    PATCH_COMMAND patch -p1 ${external_base}/ARPACK-3-1-3/TESTS/Makefile.am /home/sbasu/arpack.patch
+    PATCH_COMMAND patch -p1 ${external_base}/ARPACK-3-1-3/TESTS/Makefile.am ${CMAKE_SOURCE_DIR}/arpack.patch
     SOURCE_DIR ${external_base}/ARPACK-3-1-3
     DEPENDS LAPACK
     CONFIGURE_COMMAND ${external_base}/ARPACK-3-1-3/configure ${configure_args}

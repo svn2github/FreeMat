@@ -473,6 +473,8 @@ CSymbol CJitFunc::lookup_symbol(QString name, bool createIfNotDefined)
     throw Exception("Cannot JIT strings or reference types:" + name);
   if (ptr->isComplex())
     throw Exception("Cannot JIT complex arrays:" + name);
+  if (ptr->isSparse())
+    throw Exception("Cannot JIT with sparse array:" + name);
   CTypeInfo typ(MapDataClassToCType(ptr->dataClass()),ptr->isScalar());
   CSymbol res(name.toStdString(),typ);
   m_symbols.push_back(res);

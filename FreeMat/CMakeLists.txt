@@ -83,9 +83,8 @@ OPTION( FORCE_SYSTEM_LIBS "Only use system libraries. Don't build third party li
 ######################################################################
 
 include(ExternalProject)
-SET(external_base "${CMAKE_BINARY_DIR}/ExternalProjects")
-SET_PROPERTY(DIRECTORY PROPERTY EP_BASE ${external_base})
-SET(external_install_dir "${external_base}/Install")
+SET(external_base ${CMAKE_CURRENT_BINARY_DIR}/deps/base CACHE PATH "Path where external dependencies that were built are installed")
+SET(CMAKE_FIND_ROOT_PATH ${external_base}/Install ${CMAKE_FIND_ROOT_PATH})
 
 ######################################################################
 # PCRE Package
@@ -151,22 +150,31 @@ endif()
 ######################################################################
 # FFI Package
 ######################################################################
+include(FindPkgConfig)
 
-FIND_PACKAGE(FFI)
+message("Searching for libffi package (required)")
+pkg_check_modules(FFI REQUIRED libffi)
+ADD_DEFINITIONS(-DHAVE_FFI)
+SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LDFLAGS})
+INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIRS})
+message("Found libffi version ${FFI_VERSION} here ${FFI_LIBDIR}")
 
-if (FFI_FOUND)
-  ADD_DEFINITIONS(-DHAVE_FFI)
-  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LIBS})
-  INCLUDE_DIRECTORIES(${FFI_INCLUDE})
-else ()
-  message(FATAL_ERROR "FreeMat requires libFFI to compile")
-endif()
+#
+#FIND_PACKAGE(FFI)
+#
+#if (FFI_FOUND)
+#
+#  
+#  INCLUDE_DIRECTORIES(${FFI_INCLUDE})
+#else ()
+#  message(FATAL_ERROR "FreeMat requires libFFI to compile")
+#endif()
 
 ######################################################################
 # SuiteSparse Package
 ######################################################################
 
-FIND_PACKAGE(SuiteSparse)
+FIND_PACKAGE(SUITESPARSE)
 
 if (SuiteSparse_FOUND)
   ADD_DEFINITIONS(-DHAVE_SUITESPARSE)
@@ -179,10 +187,10 @@ endif ()
 # PORTAUDIO Package
 ######################################################################
 
-FIND_PACKAGE(PortAudio)
+FIND_PACKAGE(PORTAUDIO)
 
-if (PortAudio_FOUND)
-  ADD_DEFINTIONS(-DHAVE_PORTAUDIO19)
+if (PORTAUDIO_FOUND)
+  ADD_DEFINITIONS(-DHAVE_PORTAUDIO19)
   SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${PORTAUDIO_LIBS})
   INCLUDE_DIRECTORIES(${PORTAUDIO_INCLUDE})
 endif()
@@ -324,22 +332,23 @@ IF(WIN32)
   #SET(CPACK_NSIS_MODIFY_PATH ON)
 
   INSTALL(FILES
-	${QT_BINARY_DIR}/QtCore4.dll
-	${QT_BINARY_DIR}/QtGui4.dll
-	${QT_BINARY_DIR}/QtNetwork4.dll
-	${QT_BINARY_DIR}/QtOpenGL4.dll
-	${QT_BINARY_DIR}/QtXml4.dll
-	${QT_BINARY_DIR}/QtSvg4.dll
-	${QT_BINARY_DIR}/QtWebKit4.dll
+	${QT_LIBRARY_DIR}/QtCore4.dll
+	${QT_LIBRARY_DIR}/QtGui4.dll
+	${QT_LIBRARY_DIR}/QtNetwork4.dll
+	${QT_LIBRARY_DIR}/QtOpenGL4.dll
+	${QT_LIBRARY_DIR}/QtXml4.dll
+	${QT_LIBRARY_DIR}/QtSvg4.dll
+	${QT_LIBRARY_DIR}/QtWebKit4.dll
 	DESTINATION bin 
 	PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
 	COMPONENT Runtime)
 
   INSTALL(FILES
-	${QT_LIBRARY_DIR}/qt4/plugins/imageformats/qjpeg4.dll
-	${QT_LIBRARY_DIR}/qt4/plugins/imageformats/qgif4.dll
-	${QT_LIBRARY_DIR}/qt4/plugins/imageformats/qsvg4.dll
-	${QT_LIBRARY_DIR}/qt4/plugins/imageformats/qtiff4.dll
+# Hackish hack because of current discovery problems.
+	${QT_LIBRARY_DIR}/../lib/qt4/plugins/imageformats/qjpeg4.dll
+	${QT_LIBRARY_DIR}/../lib/qt4/plugins/imageformats/qgif4.dll
+	${QT_LIBRARY_DIR}/../lib/qt4/plugins/imageformats/qsvg4.dll
+	${QT_LIBRARY_DIR}/../lib/qt4/plugins/imageformats/qtiff4.dll
 	DESTINATION bin/imageformats 
 	PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE 
 	COMPONENT Runtime)

@@ -48,7 +48,6 @@ ENDIF(MINGW)
 
 ADD_DEFINITIONS(-D__STDC_CONSTANT_MACROS -D__STDC_LIMIT_MACROS)
 
-FIND_PACKAGE(OpenGL REQUIRED)
 
 SET(QT_USE_QTNETWORK TRUE)
 SET(QT_USE_QTXML TRUE)
@@ -60,8 +59,19 @@ FIND_PACKAGE(Qt4 REQUIRED)
 
 FIND_PACKAGE(PythonInterp REQUIRED)
 
+
 ADD_DEFINITIONS( ${QT_DEFINITIONS} )
 INCLUDE_DIRECTORIES( ${QT_INCLUDES} )
+
+FIND_PACKAGE(OpenGL REQUIRED)
+
+message("OpenGL include path is ${OPENGL_INCLUDE_DIR}")
+if (APPLE)
+# Broken
+INCLUDE_DIRECTORIES("${OPENGL_INCLUDE_DIR}/Headers") 
+else ()
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR}) 
+endif ()
 
 MACRO (QT4_GENERATE_UI infile outfile )
      GET_FILENAME_COMPONENT(infile ${infile} ABSOLUTE)
@@ -150,25 +160,24 @@ endif()
 ######################################################################
 # FFI Package
 ######################################################################
-include(FindPkgConfig)
 
-message("Searching for libffi package (required)")
-pkg_check_modules(FFI REQUIRED libffi)
-ADD_DEFINITIONS(-DHAVE_FFI)
-SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LDFLAGS})
-INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIRS})
-message("Found libffi version ${FFI_VERSION} here ${FFI_LIBDIR}")
-
-#
-#FIND_PACKAGE(FFI)
-#
-#if (FFI_FOUND)
-#
-#  
-#  INCLUDE_DIRECTORIES(${FFI_INCLUDE})
-#else ()
-#  message(FATAL_ERROR "FreeMat requires libFFI to compile")
-#endif()
+if (APPLE)
+  FIND_PACKAGE(FFI)
+  if (FFI_FOUND)
+    SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LIBS})
+    INCLUDE_DIRECTORIES(${FFI_INCLUDE})
+  else ()
+    message(FATAL_ERROR "FreeMat requires libFFI to compile")
+  endif()
+else()
+  include(FindPkgConfig)
+  message("Searching for libffi package (required)")
+  pkg_check_modules(FFI REQUIRED libffi)
+  ADD_DEFINITIONS(-DHAVE_FFI)
+  SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${FFI_LDFLAGS})
+  INCLUDE_DIRECTORIES(${FFI_INCLUDE_DIRS})
+  message("Found libffi version ${FFI_VERSION} here ${FFI_LIBDIR}")
+endif()
 
 ######################################################################
 # SuiteSparse Package
@@ -420,7 +429,7 @@ find_package(Doxygen)
 if (DOXYGEN_FOUND)
 add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR/doc/Doxyfile} 
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc
-  DEPENDS fragdb
+#  DEPENDS fragdb
   COMMENT "Generating documentation"
 )
 endif(DOXYGEN_FOUND)

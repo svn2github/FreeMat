@@ -23,7 +23,7 @@
 #include <QtGui>
 #include "Common.hpp"
 #include "MainApp.hpp"
-
+#include "Editor.hpp"
 #include "KeyManager.hpp"
 #include "File.hpp"
 #include "Module.hpp"

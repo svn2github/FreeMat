@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QMainWindow>
 #include "QTTerm.hpp"
-#include "Editor.hpp"
+//#include "Editor.hpp"
 #include "HistoryWidget.hpp"
 #include "VariablesTool.hpp"
 #include "FileTool.hpp"

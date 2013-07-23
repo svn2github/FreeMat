@@ -59,3 +59,17 @@ mkdir deps
 cd deps
 cmake -DCMAKE_TOOLCHAIN_FILE=<Path to freemat
 source>/cmake/Toolchain-cross-mingw32-fedora-linux <path to freemat>/tools/dependencies
+
+********************************************************************************
+
+Mac native
+
+Install brew
+
+brew install qt cmake autoconf automake gfortran portaudio doxygen 
+
+install http://www.tug.org/mactex/
+
+
+
+

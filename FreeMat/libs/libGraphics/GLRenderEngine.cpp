@@ -22,7 +22,7 @@
 #include <QtOpenGL>
 #include <math.h>
 #include "IEEEFP.hpp"
-#include <GL/glu.h>
+#include <glu.h>
 
 GLRenderEngine::GLRenderEngine(QGLWidget *widget, double x1, double y1,
 			       double width, double height) {

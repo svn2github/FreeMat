@@ -73,8 +73,7 @@ if (FORCE_EXTERNAL_FFTW_FFTWF OR NOT FFTW_FOUND OR NOT FFTWF_FOUND)
   
   ExternalProject_Add(
     FFTW-3-3-3-Fetch
-#    URL http://www.fftw.org/fftw-3.3.3.tar.gz
-    URL file:///home/sbasu/Downloads/cache/fftw-3.3.3.tar.gz
+    URL http://www.fftw.org/fftw-3.3.3.tar.gz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
     SOURCE_DIR ${external_base}/FFTW
     CONFIGURE_COMMAND ""
@@ -121,7 +120,6 @@ if (FORCE_EXTERNAL_PORTAUDIO OR NOT PORTAUDIO_FOUND)
   ExternalProject_Add(
     PORTAUDIO-V19-20111121
     URL http://www.portaudio.com/archives/pa_stable_v19_20111121.tgz
-#    URL file:///home/sbasu/Downloads/pa_stable_v19_20111121.tgz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
     SOURCE_DIR ${external_base}/PORTAUDIO
     CONFIGURE_COMMAND ${external_base}/PORTAUDIO/configure ${configure_args}
@@ -194,8 +192,7 @@ if (FORCE_EXTERNAL_BLAS OR NOT BLAS_FOUND)
   SET(make_args libs BINARY=64)
   ExternalProject_Add(
     OpenBLAS-0-2-6
-#    URL https://github.com/xianyi/OpenBLAS/archive/v0.2.6.tar.gz
-    URL file:///home/sbasu/Downloads/cache/v0.2.6.tar.gz
+    URL https://github.com/xianyi/OpenBLAS/archive/v0.2.6.tar.gz
     SOURCE_DIR ${external_base}/OpenBLAS
     CONFIGURE_COMMAND ""
     BUILD_IN_SOURCE 1
@@ -223,8 +220,7 @@ if (FORCE_EXTERNAL_LAPACK OR NOT LAPACK_FOUND)
 
   ExternalProject_Add(
     LAPACK
-#    URL http://www.netlib.org/lapack/lapack-3.4.2.tgz
-    URL file:///home/sbasu/Downloads/cache/lapack-3.4.2.tgz
+    URL http://www.netlib.org/lapack/lapack-3.4.2.tgz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
     SOURCE_DIR ${external_base}/LAPACK
     CMAKE_ARGS ${cmake_args}
@@ -246,24 +242,49 @@ if (FORCE_EXTERNAL_ARPACK OR NOT ARPACK_FOUND)
   set(configure_args --prefix=${external_install_dir})
   if (CMAKE_CROSSCOMPILING)
     # Not ideal
-    set(configure_args ${configure_args} --host=${cross_host} --with-blas=${external_install_dir}/lib/libblas.a --with-lapack=${external_install_dir}/lib/liblapack.a --disable-shared --enable-static)
+    set(configure_args ${configure_args} --host=${cross_host}
+  --with-blas=${external_install_dir}/lib/libblas.a
+  --with-lapack=${external_install_dir}/lib/liblapack.a
+  --disable-shared --enable-static)
   endif ()
 
+if (APPLE)
+# Broken
+  set (configure_args --disable-shared)
+endif()
+
+  if (NOT LAPACK_FOUND)
   ExternalProject_Add(
     ARPACK-NG-3-1-3
-#    URL http://forge.scilab.org/index.php/p/arpack-ng/downloads/get/arpack-ng-3.1.3.tar.gz
-    URL file:///home/sbasu/Downloads/cache/arpack-ng-3.1.3.tar.gz
+    URL http://forge.scilab.org/index.php/p/arpack-ng/downloads/get/arpack-ng-3.1.3.tar.gz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
     PATCH_COMMAND patch -p1 ${external_base}/ARPACK-3-1-3/TESTS/Makefile.am ${CMAKE_SOURCE_DIR}/arpack.patch
     SOURCE_DIR ${external_base}/ARPACK-3-1-3
     DEPENDS LAPACK
     CONFIGURE_COMMAND ${external_base}/ARPACK-3-1-3/configure ${configure_args}
     )  
+   else ()
+  ExternalProject_Add(
+    ARPACK-NG-3-1-3
+    URL http://forge.scilab.org/index.php/p/arpack-ng/downloads/get/arpack-ng-3.1.3.tar.gz
+    DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
+    PATCH_COMMAND patch -p1 ${external_base}/ARPACK-3-1-3/TESTS/Makefile.am ${CMAKE_SOURCE_DIR}/arpack.patch
+    SOURCE_DIR ${external_base}/ARPACK-3-1-3
+    CONFIGURE_COMMAND ${external_base}/ARPACK-3-1-3/configure ${configure_args}
+    )  
+   endif ()
+
+    ExternalProject_Add_Step(ARPACK-NG-3-1-3 automake
+    COMMAND automake --add-missing
+    WORKING_DIRECTORY ${external_base}/ARPACK-3-1-3
+    DEPENDEES patch
+    )
+
 
     ExternalProject_Add_Step(ARPACK-NG-3-1-3 autoreconf
     COMMAND autoreconf
     WORKING_DIRECTORY ${external_base}/ARPACK-3-1-3
-    DEPENDEES patch
+    DEPENDEES automake
     DEPENDERS configure
     )
 
@@ -291,8 +312,7 @@ if (FORCE_EXTERNAL_LLVM_CLANG OR NOT LLVM_FOUND OR NOT CLANG_FOUND)
   # Fetch LLVM
   ExternalProject_Add(
     LLVM-3-2-Fetch
-#    URL http://llvm.org/releases/3.2/llvm-3.2.src.tar.gz
-    URL file:///home/sbasu/Downloads/cache/llvm-3.2.src.tar.gz
+    URL http://llvm.org/releases/3.2/llvm-3.2.src.tar.gz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
     SOURCE_DIR ${external_base}/LLVM
     CONFIGURE_COMMAND ""
@@ -301,8 +321,7 @@ if (FORCE_EXTERNAL_LLVM_CLANG OR NOT LLVM_FOUND OR NOT CLANG_FOUND)
     )
   ExternalProject_Add(
     CLANG-3-2-Fetch
-#    URL http://llvm.org/releases/3.2/clang-3.2.src.tar.gz
-    URL file:///home/sbasu/Downloads/cache/clang-3.2.src.tar.gz
+    URL http://llvm.org/releases/3.2/clang-3.2.src.tar.gz
     DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/Downloads
     SOURCE_DIR ${external_base}/LLVM/tools/clang
     DEPENDS LLVM-3-2-Fetch

@@ -70,7 +70,7 @@ if (APPLE)
 # Broken
 INCLUDE_DIRECTORIES("${OPENGL_INCLUDE_DIR}/Headers") 
 else ()
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR}) 
+INCLUDE_DIRECTORIES("${OPENGL_INCLUDE_DIR}/GL") 
 endif ()
 
 MACRO (QT4_GENERATE_UI infile outfile )
@@ -429,7 +429,6 @@ find_package(Doxygen)
 if (DOXYGEN_FOUND)
 add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR/doc/Doxyfile} 
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc
-#  DEPENDS fragdb
   COMMENT "Generating documentation"
 )
 endif(DOXYGEN_FOUND)
@@ -457,7 +456,7 @@ add_custom_target(textdoc
 )
 
 add_custom_target(fulldoc
-  DEPENDS fragdb doc index latexdoc textdoc
+  DEPENDS doc index latexdoc textdoc
 )
 
 INCLUDE(CPack)

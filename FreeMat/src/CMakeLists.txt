@@ -38,6 +38,8 @@ ${CMAKE_CURRENT_BINARY_DIR}/Loader.cpp
 Terminal.cpp
 ${FreeMat_qrc}
 freemat.rc
+# Added per: http://www.cmake.org/pipermail/cmake/2010-July/038172.html
+dummy.f
 )
 
 #${X86TARGET_OBJ}

@@ -80,6 +80,7 @@ Mex
 MatC
 levmar
 lapack_c
+arpack_c
 dynblas
 blasref
 ${QT_QTCORE_LIBRARY}

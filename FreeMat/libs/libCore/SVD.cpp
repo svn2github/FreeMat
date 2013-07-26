@@ -26,39 +26,39 @@
 template <typename T>
 static void Tgesvd(char* JOBU, char *JOBV, int* M, int *N, T* A, int *LDA, T *S, 
 		   T *U, int *LDU, T *VT, int *LDVT, T *WORK,
-		   int *LWORK, int *INFO);
+		   int *LWORK, int *INFO, ftnlen l1, ftnlen l2);
 
 template <>
 void Tgesvd(char* JOBU, char* JOBV, int* M, int *N, float* A, int *LDA, float *S, 
 		   float *U, int *LDU, float *VT, int *LDVT, float *WORK,
-		   int *LWORK, int *INFO) {
-  sgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,INFO);
+		   int *LWORK, int *INFO, ftnlen l1, ftnlen l2) {
+  sgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,INFO,l1,l2);
 }
 
 template <>
 void Tgesvd(char* JOBU, char* JOBV, int* M, int *N, double* A, int *LDA, double *S, 
 		   double *U, int *LDU, double *VT, int *LDVT, double *WORK,
-		   int *LWORK, int *INFO) {
-  dgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,INFO);
+		   int *LWORK, int *INFO, ftnlen l1, ftnlen l2) {
+  dgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,INFO,l1,l2);
 }
 
 template <typename T>
 static void Tgesvd(char* JOBU, char *JOBV, int* M, int *N, T* A, int *LDA, T *S, 
 		   T *U, int *LDU, T *VT, int *LDVT, T *WORK,
-		   int *LWORK, T *RWORK, int *INFO);
+		   int *LWORK, T *RWORK, int *INFO, ftnlen l1, ftnlen l2);
 
 template <>
 void Tgesvd(char* JOBU, char *JOBV, int* M, int *N, float* A, int *LDA, float *S, 
 		   float *U, int *LDU, float *VT, int *LDVT, float *WORK,
-		   int *LWORK, float *RWORK, int *INFO) {
-  cgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,RWORK,INFO);
+		   int *LWORK, float *RWORK, int *INFO, ftnlen l1, ftnlen l2) {
+  cgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 template <>
 void Tgesvd(char* JOBU, char *JOBV, int* M, int *N, double* A, int *LDA, double *S, 
 		   double *U, int *LDU, double *VT, int *LDVT, double *WORK,
-		   int *LWORK, double *RWORK, int *INFO) {
-  zgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,RWORK,INFO);
+		   int *LWORK, double *RWORK, int *INFO, ftnlen l1, ftnlen l2) {
+  zgesvd_(JOBU,JOBV,M,N,A,LDA,S,U,LDU,VT,LDVT,WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 
@@ -219,14 +219,15 @@ static void TSVD(int nrows, int ncols, BasicArray<T> &U, BasicArray<T> &VT,
   //*                superdiagonals of an intermediate bidiagonal form B
   //*                did not converge to zero. See the description of WORK
   //*                above for details.
+
   int INFO;
   LWORK = -1;
-  Tgesvd(&JOBU,&JOBVT,&M,&N,A.data(),&LDA,S.data(),U.data(),&LDU,VT.data(),&LDVT,&WORKSIZE,&LWORK,&INFO);
+  Tgesvd(&JOBU,&JOBVT,&M,&N,A.data(),&LDA,S.data(),U.data(),&LDU,VT.data(),&LDVT,&WORKSIZE,&LWORK,&INFO,1,1);
   if (INFO < 0)
     WarningMessage(QString("svd (real) had illegal value for parameter (workspace) %1").arg(-INFO));
   LWORK = (int) WORKSIZE;
   MemBlock<T> WORK(LWORK);
-  Tgesvd(&JOBU,&JOBVT,&M,&N,A.data(),&LDA,S.data(),U.data(),&LDU,VT.data(),&LDVT,&WORK,&LWORK,&INFO);
+  Tgesvd(&JOBU,&JOBVT,&M,&N,A.data(),&LDA,S.data(),U.data(),&LDU,VT.data(),&LDVT,&WORK,&LWORK,&INFO,1,1);
   if (INFO > 0)
     WarningMessage(QString("svd did not converge"));
   if (INFO < 0)
@@ -404,11 +405,11 @@ static void TSVD(int nrows, int ncols, BasicArray<T> &U, BasicArray<T> &VT,
   int INFO;
   LWORK = -1;
   Tgesvd( &JOBU, &JOBVT, &M, &N, A.data(), &LDA, S.data(), U.data(), &LDU, VT.data(), &LDVT, 
-	  WORKSIZE, &LWORK, &RWORK, &INFO);
+	  WORKSIZE, &LWORK, &RWORK, &INFO, 1, 1);
   LWORK = (int) WORKSIZE[0];
   MemBlock<T> WORK(LWORK*2);
   Tgesvd( &JOBU, &JOBVT, &M, &N, A.data(), &LDA, S.data(), U.data(), &LDU, VT.data(), &LDVT, 
-	  &WORK, &LWORK, &RWORK, &INFO);
+	  &WORK, &LWORK, &RWORK, &INFO, 1, 1);
   if (INFO > 0)
     WarningMessage(QString("svd did not converge"));
   if (INFO < 0)
@@ -535,6 +536,19 @@ ArrayVector SVDFunction(int nargout, const ArrayVector& arg) {
       return SVDFunction(A.real<float>(),computevectors,compactform);
     else
       return SVDFunction(A.real<float>(),A.imag<float>(),computevectors,compactform);
+    /*
+    // Hack to address apparent bug in single precision SVD routines??
+    Array Ad = A.toClass(Double);
+    ArrayVector retvec;
+    if (Ad.allReal())
+    retvec = SVDFunction(Ad.real<double>(),computevectors,compactform);
+    else
+    retvec = SVDFunction(Ad.real<double>(),A.imag<double>(),computevectors,compactform);
+    // Convert the results 
+    for (int i=0;i<retvec.size();i++)
+    retvec[i] = retvec[i].toClass(Float);
+    return retvec;
+    }*/
   case Double:
     if (A.allReal())
       return SVDFunction(A.real<double>(),computevectors,compactform);

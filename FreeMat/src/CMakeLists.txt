@@ -77,7 +77,6 @@ XP
 Mex
 MatC
 levmar
-arpack_c
 lapack_c
 dynblas
 blasref

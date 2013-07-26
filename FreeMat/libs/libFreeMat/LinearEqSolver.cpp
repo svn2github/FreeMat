@@ -42,17 +42,19 @@ static void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS,
 		   int * IPIV, char * EQUED, T * R, T * C, 
 		   T * B, int * LDB, T * X, int * LDX, 
 		   T * RCOND, T * FERR, T * BERR,
-		   T * WORK, int * IWORK, int * INFO);
+		   T * WORK, int * IWORK, int * INFO, 
+		   ftnlen l1, ftnlen l2, ftnlen l3);
 
 template <>
 void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS, 
-		   float *A, int * LDA, float * AF, int * LDAF, 
-		   int * IPIV, char * EQUED, float * R, float * C, 
-		   float * B, int * LDB, float * X, int * LDX, 
-		   float * RCOND, float * FERR, float * BERR,
-		   float * WORK, int * IWORK, int * INFO) {
+	    float *A, int * LDA, float * AF, int * LDAF, 
+	    int * IPIV, char * EQUED, float * R, float * C, 
+	    float * B, int * LDB, float * X, int * LDX, 
+	    float * RCOND, float * FERR, float * BERR,
+	    float * WORK, int * IWORK, int * INFO,
+	    ftnlen l1, ftnlen l2, ftnlen l3) {
   return sgesvx_(FACT,TRANS,N,NRHS,A,LDA,AF,LDAF,IPIV,EQUED,R,C,B,
-		 LDB,X,LDX,RCOND,FERR,BERR,WORK,IWORK,INFO);
+		 LDB,X,LDX,RCOND,FERR,BERR,WORK,IWORK,INFO,l1,l2,l3);
 }
 
 template <>
@@ -61,9 +63,9 @@ void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS,
 		   int * IPIV, char * EQUED, double * R, double * C, 
 		   double * B, int * LDB, double * X, int * LDX, 
 		   double * RCOND, double * FERR, double * BERR,
-		   double * WORK, int * IWORK, int * INFO) {
+	    double * WORK, int * IWORK, int * INFO, ftnlen l1, ftnlen l2, ftnlen l3) {
   return dgesvx_(FACT,TRANS,N,NRHS,A,LDA,AF,LDAF,IPIV,EQUED,R,C,B,
-		 LDB,X,LDX,RCOND,FERR,BERR,WORK,IWORK,INFO);
+		 LDB,X,LDX,RCOND,FERR,BERR,WORK,IWORK,INFO,l1,l2,3);
 }
 
 template <typename T>
@@ -72,7 +74,7 @@ static void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS,
 		   int * IPIV, char * EQUED, T * R, T * C, 
 		   T * B, int * LDB, T * X, int * LDX, 
 		   T * RCOND, T * FERR, T * BERR,
-		   T * WORK, T * RWORK, int * INFO);
+		   T * WORK, T * RWORK, int * INFO, ftnlen l1, ftnlen l2, ftnlen l3);
 
 template <>
 void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS, 
@@ -80,9 +82,9 @@ void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS,
 		   int * IPIV, char * EQUED, float * R, float * C, 
 		   float * B, int * LDB, float * X, int * LDX, 
 		   float * RCOND, float * FERR, float * BERR,
-		   float * WORK, float * RWORK, int * INFO) {
+		   float * WORK, float * RWORK, int * INFO, ftnlen l1, ftnlen l2, ftnlen l3) {
   return cgesvx_(FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV, EQUED, R, C, B,
-		 LDB, X, LDX, RCOND, FERR, BERR, WORK, RWORK, INFO);
+		 LDB, X, LDX, RCOND, FERR, BERR, WORK, RWORK, INFO, l1, l2, l3);
 }
 
 template <>
@@ -91,9 +93,9 @@ void Tgesvx(char* FACT, char* TRANS, int * N, int * NRHS,
 		   int * IPIV, char * EQUED, double * R, double * C, 
 		   double * B, int * LDB, double * X, int * LDX, 
 		   double * RCOND, double * FERR, double * BERR,
-		   double * WORK, double * RWORK, int * INFO) {
+		   double * WORK, double * RWORK, int * INFO, ftnlen l1, ftnlen l2, ftnlen l3) {
   return zgesvx_(FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV, EQUED, R, C, B,
-		 LDB, X, LDX, RCOND, FERR, BERR, WORK, RWORK, INFO);
+		 LDB, X, LDX, RCOND, FERR, BERR, WORK, RWORK, INFO, l1, l2, l3);
 }
 
 // Solve A*C = B, where A is m x m, and B is m x n, all quantities are real.
@@ -400,7 +402,7 @@ static void realSolveLinEq(int m, int n, T *c, T* a, T *b) {
   int INFO;
 
   Tgesvx(&FACT, &TRANS, &N, &NRHS, A, &LDA, &AF, &LDAF, &IPIV, &EQUED, &R, &C, B,
-	 &LDB, X, &LDX, &RCOND, &FERR, &BERR, &WORK, &IWORK, &INFO);
+	 &LDB, X, &LDX, &RCOND, &FERR, &BERR, &WORK, &IWORK, &INFO,1,1,1);
   if ((INFO == N) || (INFO == N+1) || (RCOND < lamch<T>()))
     WarningMessage(QString("Matrix is singular to working precision.  RCOND = %1\n").arg(RCOND));
 }
@@ -710,7 +712,7 @@ static void complexSolveLinEq(int m, int n, T *c, T* a, T* b) {
   int INFO;
 
   Tgesvx(&FACT, &TRANS, &N, &NRHS, A, &LDA, &AF, &LDAF, &IPIV, &EQUED, &R, &C, B,
-	 &LDB, X, &LDX, &RCOND, &FERR, &BERR, &WORK, &RWORK, &INFO);
+	 &LDB, X, &LDX, &RCOND, &FERR, &BERR, &WORK, &RWORK, &INFO, 1, 1, 1);
   if ((INFO == N) || (INFO == N+1) || (RCOND < lamch<T>())) {
     WarningMessage(QString("Matrix is singular to working precision.  RCOND = %1\n").arg(RCOND));
   }

@@ -21,13 +21,13 @@
 
 double getEPS() {
   char CMACH = 'E';
-  return dlamch_(&CMACH);
+  return dlamch_(&CMACH,1);
 }
 
 
 float getFloatEPS() {
   char CMACH = 'E';
-  return slamch_(&CMACH);
+  return slamch_(&CMACH,1);
 }
 
 template <>

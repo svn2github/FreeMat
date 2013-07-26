@@ -456,7 +456,16 @@ add_custom_target(textdoc
 )
 
 add_custom_target(fulldoc
+  COMMENT "Build full HTML documentation, LaTeX and Text versions"
   DEPENDS doc index latexdoc textdoc
 )
+
+add_custom_target(packhelp
+  COMMENT "Package documentation for commit to SVN"
+  DEPENDS fulldoc
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/help/packhelp.sh"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/help
+)
+  
 
 INCLUDE(CPack)

@@ -37,7 +37,7 @@ static float complexRecipCond(int m, int n, float *a) {
   float rcond = 0;
   {
     char NORM = '1';
-    Anorm = clange_(&NORM,&m,&n,a,&m,NULL);
+    Anorm = clange_(&NORM,&m,&n,a,&m,NULL,1);
   }
   //    2. Compute the LU-decomposition of a
   {
@@ -51,7 +51,7 @@ static float complexRecipCond(int m, int n, float *a) {
     int info;
     MemBlock<float> work(4*n);
     MemBlock<float> rwork(2*n);
-    cgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&rwork,&info);
+    cgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&rwork,&info,1);
   }
   return rcond;
 }
@@ -65,7 +65,7 @@ static float floatRecipCond(int m, int n, float *a) {
   float rcond = 0;
   {
     char NORM = '1';
-    Anorm = slange_(&NORM,&m,&n,a,&m,NULL);
+    Anorm = slange_(&NORM,&m,&n,a,&m,NULL,1);
   }
   //    2. Compute the LU-decomposition of a
   {
@@ -79,7 +79,7 @@ static float floatRecipCond(int m, int n, float *a) {
     int info;
     MemBlock<float> work(4*n);
     MemBlock<int> iwork(n);
-    sgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&iwork,&info);
+    sgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&iwork,&info,1);
   }
   return rcond;
 }
@@ -94,7 +94,7 @@ static double dcomplexRecipCond(int m, int n, double *a) {
   double rcond = 0;
   {
     char NORM = '1';
-    Anorm = zlange_(&NORM,&m,&n,a,&m,NULL);
+    Anorm = zlange_(&NORM,&m,&n,a,&m,NULL,1);
   }
   //    2. Compute the LU-decomposition of a
   {
@@ -108,7 +108,7 @@ static double dcomplexRecipCond(int m, int n, double *a) {
     int info;
     MemBlock<double> work(4*n);
     MemBlock<double> rwork(2*n);
-    zgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&rwork,&info);
+    zgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&rwork,&info,1);
   }
   return rcond;
 }
@@ -122,7 +122,7 @@ static double doubleRecipCond(int m, int n, double *a) {
   double rcond = 0;
   {
     char NORM = '1';
-    Anorm = dlange_(&NORM,&m,&n,a,&m,NULL);
+    Anorm = dlange_(&NORM,&m,&n,a,&m,NULL,1);
   }
   //    2. Compute the LU-decomposition of a
   {
@@ -136,7 +136,7 @@ static double doubleRecipCond(int m, int n, double *a) {
     int info;
     MemBlock<double> work(4*n);
     MemBlock<int> iwork(n);
-    dgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&iwork,&info);
+    dgecon_(&NORM,&n,a,&m,&Anorm,&rcond,&work,&iwork,&info,1);
   }
   return rcond;
 }

@@ -37,18 +37,21 @@ extern "C" {
 
 template <typename T>
 void Tsyev(char *JOBZ, char *UPLO, int *N, T *A, int *LDA, 
-	   T *W, T *WORK, int *LWORK, int *INFO);
+	   T *W, T *WORK, int *LWORK, int *INFO, 
+	   ftnlen jobz_len, ftnlen uplo_len);
 
 template <>
 void Tsyev(char *JOBZ, char *UPLO, int *N, float *A, int *LDA, 
-	   float *W, float *WORK, int *LWORK, int *INFO) {
-  return ssyev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,INFO);
+	   float *W, float *WORK, int *LWORK, int *INFO, 
+	   ftnlen jobz_len, ftnlen uplo_len) {
+  return ssyev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,INFO,jobz_len,uplo_len);
 }
 
 template <>
 void Tsyev(char *JOBZ, char *UPLO, int *N, double *A, int *LDA, 
-	   double *W, double *WORK, int *LWORK, int *INFO) {
-  return dsyev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,INFO);
+	   double *W, double *WORK, int *LWORK, int *INFO, 
+	      ftnlen jobz_len, ftnlen uplo_len) {
+  return dsyev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,INFO,jobz_len,uplo_len);
 }
 
 template <typename T>
@@ -57,7 +60,8 @@ static void Tgeevx(char * BALANC, char* JOBVL, char* JOBVR, char* SENSE,
 		   int *LDVL, T* VR, int *LDVR, int *ILO,
 		   int *IHI, T* SCALE, T* ABNRM, T* RCONDE,
 		   T* RCONDV, T *WORK, int *LWORK, T *RWORK,
-		   int *INFO);
+		   int *INFO, ftnlen balanc_len, 
+		   ftnlen jobvl_len, ftnlen jobvr_len, ftnlen sense_len);
 
 template <>
 void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE, 
@@ -65,10 +69,12 @@ void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE,
 	    int *LDVL, float* VR, int *LDVR, int *ILO,
 	    int *IHI, float* SCALE, float* ABNRM, float* RCONDE,
 	    float* RCONDV, float *WORK, int *LWORK, float *RWORK,
-	    int *INFO) {
+	    int *INFO, ftnlen balanc_len, 
+	    ftnlen jobvl_len, ftnlen jobvr_len, ftnlen sense_len) {
   return cgeevx_( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, W,
 		  VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
-		  RCONDE, RCONDV, WORK, LWORK, RWORK, INFO );
+		  RCONDE, RCONDV, WORK, LWORK, RWORK, INFO, 
+		  balanc_len, jobvl_len, jobvr_len, sense_len );
 }
 
 template <>
@@ -77,10 +83,12 @@ void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE,
 	    int *LDVL, double* VR, int *LDVR, int *ILO,
 	    int *IHI, double* SCALE, double* ABNRM, double* RCONDE,
 	    double* RCONDV, double *WORK, int *LWORK, double *RWORK,
-	    int *INFO) {
+	    int *INFO, ftnlen balanc_len, 
+	    ftnlen jobvl_len, ftnlen jobvr_len, ftnlen sense_len) {
   return zgeevx_( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, W,
 		  VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,
-		  RCONDE, RCONDV, WORK, LWORK, RWORK, INFO );
+		  RCONDE, RCONDV, WORK, LWORK, RWORK, INFO, 
+		  balanc_len, jobvl_len, jobvr_len, sense_len );
 }
 
 template <typename T>
@@ -89,7 +97,8 @@ static void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE,
 		   T* VL, int *LDVL, T* VR, int *LDVR, int *ILO,
 		   int *IHI, T* SCALE, T* ABNRM, T* RCONDE,
 		   T* RCONDV, T *WORK, int *LWORK, int *IWORK,
-		   int *INFO);
+		   int *INFO, ftnlen balanc_len, 
+		   ftnlen jobvl_len, ftnlen jobvr_len, ftnlen sense_len);
 
 template <>
 void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE, 
@@ -97,10 +106,12 @@ void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE,
 	    float* VL, int *LDVL, float* VR, int *LDVR, int *ILO,
 	    int *IHI, float* SCALE, float* ABNRM, float* RCONDE,
 	    float* RCONDV, float *WORK, int *LWORK, int *IWORK,
-	    int *INFO) {
+	    int *INFO, ftnlen balanc_len, 
+	    ftnlen jobvl_len, ftnlen jobvr_len, ftnlen sense_len) {
   return sgeevx_(BALANC,JOBVL,JOBVR,SENSE,N,A,LDA,WR,WI,
 		 VL,LDVL,VR,LDVR,ILO,IHI,SCALE,ABNRM,RCONDE,
-		 RCONDV,WORK,LWORK,IWORK,INFO);
+		 RCONDV,WORK,LWORK,IWORK,INFO, 
+		 balanc_len, jobvl_len, jobvr_len, sense_len);
 }
 
 template <>
@@ -109,112 +120,114 @@ void Tgeevx(char* BALANC, char* JOBVL, char* JOBVR, char* SENSE,
 	    double* VL, int *LDVL, double* VR, int *LDVR, int *ILO,
 	    int *IHI, double* SCALE, double* ABNRM, double* RCONDE,
 	    double* RCONDV, double *WORK, int *LWORK, int *IWORK,
-	    int *INFO) {
+	    int *INFO, ftnlen balanc_len, 
+	       ftnlen jobvl_len, ftnlen jobvr_len, ftnlen sense_len) {
   return dgeevx_(BALANC,JOBVL,JOBVR,SENSE,N,A,LDA,WR,WI,
 		 VL,LDVL,VR,LDVR,ILO,IHI,SCALE,ABNRM,RCONDE,
-		 RCONDV,WORK,LWORK,IWORK,INFO);
+		 RCONDV,WORK,LWORK,IWORK,INFO, 
+		 balanc_len, jobvl_len, jobvr_len, sense_len);
 }
 
 template <typename T>
 void Tggev(char *JOBVL, char *JOBVR, int *N, T *A, int *LDA, 
 	   T *B, int *LDB, T *ALPHAR, T *ALPHAI,
 	   T *BETA, T *VL, int *LDVL, T *VR, 
-	   int *LDVR, T *WORK, int *LWORK, int *INFO );
+	   int *LDVR, T *WORK, int *LWORK, int *INFO, ftnlen l1, ftnlen l2 );
 
 template <>
 void Tggev(char *JOBVL, char *JOBVR, int *N, float *A, int *LDA, 
 	   float *B, int *LDB, float *ALPHAR, float *ALPHAI,
 	   float *BETA, float *VL, int *LDVL, float *VR, 
-	   int *LDVR, float *WORK, int *LWORK, int *INFO ) {
+	   int *LDVR, float *WORK, int *LWORK, int *INFO, ftnlen l1, ftnlen l2 ) {
   return sggev_(JOBVL,JOBVR,N,A,LDA,B,LDB,ALPHAR,ALPHAI,
-		BETA,VL,LDVL,VR,LDVR,WORK,LWORK,INFO);
+		BETA,VL,LDVL,VR,LDVR,WORK,LWORK,INFO,l1,l2);
 }
 
 template <>
 void Tggev(char *JOBVL, char *JOBVR, int *N, double *A, int *LDA, 
 	   double *B, int *LDB, double *ALPHAR, double *ALPHAI,
 	   double *BETA, double *VL, int *LDVL, double *VR, 
-	   int *LDVR, double *WORK, int *LWORK, int *INFO ) {
+	   int *LDVR, double *WORK, int *LWORK, int *INFO, ftnlen l1, ftnlen l2 ) {
   return dggev_(JOBVL,JOBVR,N,A,LDA,B,LDB,ALPHAR,ALPHAI,
-		BETA,VL,LDVL,VR,LDVR,WORK,LWORK,INFO);
+		BETA,VL,LDVL,VR,LDVR,WORK,LWORK,INFO,l1,l2);
 }
 
 template <typename T>
 void Tggev(char *JOBVL, char *JOBVR, int *N, T *A, int *LDA, 
 	   T *B, int *LDB, T *ALPHA, T *BETA, 
 	   T *VL, int *LDVL, T *VR, int *LDVR, 
-	   T *WORK, int *LWORK, T *RWORK, int *INFO );
+	   T *WORK, int *LWORK, T *RWORK, int *INFO, ftnlen l1, ftnlen l2 );
 
 template <>
 void Tggev(char *JOBVL, char *JOBVR, int *N, float *A, int *LDA, 
 	   float *B, int *LDB, float *ALPHA, float *BETA, 
 	   float *VL, int *LDVL, float *VR, int *LDVR, 
-	   float *WORK, int *LWORK, float *RWORK, int *INFO ) {
+	   float *WORK, int *LWORK, float *RWORK, int *INFO, ftnlen l1, ftnlen l2 ) {
   return cggev_(JOBVL,JOBVR,N,A,LDA,B,LDB,ALPHA,BETA,VL,LDVL,VR,LDVR,
-		WORK,LWORK,RWORK,INFO);
+		WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 template <>
 void Tggev(char *JOBVL, char *JOBVR, int *N, double *A, int *LDA, 
 	   double *B, int *LDB, double *ALPHA, double *BETA, 
 	   double *VL, int *LDVL, double *VR, int *LDVR, 
-	   double *WORK, int *LWORK, double *RWORK, int *INFO ) {
+	   double *WORK, int *LWORK, double *RWORK, int *INFO, ftnlen l1, ftnlen l2 ) {
   return zggev_(JOBVL,JOBVR,N,A,LDA,B,LDB,ALPHA,BETA,VL,LDVL,VR,LDVR,
-		WORK,LWORK,RWORK,INFO);  
+		WORK,LWORK,RWORK,INFO,l1,l2);  
 }
 
 template <typename T>
 static void Tsygv(int *ITYPE, char *JOBZ, char *UPLO, int *N, T *A, 
 		  int *LDA, T *B, int *LDB, T *W, T *WORK,
-		  int *LWORK, int *INFO );
+		  int *LWORK, int *INFO , ftnlen l1, ftnlen l2);
 
 template <>
 void Tsygv(int *ITYPE, char *JOBZ, char *UPLO, int *N, float *A, 
 	   int *LDA, float *B, int *LDB, float *W, float *WORK,
-	   int *LWORK, int *INFO ) {
-  return ssygv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,INFO);
+	   int *LWORK, int *INFO, ftnlen l1, ftnlen l2 ) {
+  return ssygv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,INFO,l1,l2);
 }
 
 template <>
 void Tsygv(int *ITYPE, char *JOBZ, char *UPLO, int *N, double *A, 
 	   int *LDA, double *B, int *LDB, double *W, double *WORK,
-	   int *LWORK, int *INFO ) {
-  return dsygv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,INFO);
+	   int *LWORK, int *INFO, ftnlen l1, ftnlen l2 ) {
+  return dsygv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,INFO,l1,l2);
 }
 
 template <typename T>
 static void Theev(char *JOBZ, char *UPLO, int *N, T *A, int *LDA, 
-		  T *W, T *WORK, int *LWORK, T *RWORK, int *INFO);
+		  T *W, T *WORK, int *LWORK, T *RWORK, int *INFO, ftnlen l1, ftnlen l2);
 
 template <>
 void Theev(char *JOBZ, char *UPLO, int *N, float *A, int *LDA, 
-		  float *W, float *WORK, int *LWORK, float *RWORK, int *INFO) {
-  return cheev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,RWORK,INFO);
+		  float *W, float *WORK, int *LWORK, float *RWORK, int *INFO, ftnlen l1, ftnlen l2) {
+  return cheev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 template <>
 void Theev(char *JOBZ, char *UPLO, int *N, double *A, int *LDA, 
-		  double *W, double *WORK, int *LWORK, double *RWORK, int *INFO) {
-  return zheev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,RWORK,INFO);
+		  double *W, double *WORK, int *LWORK, double *RWORK, int *INFO, ftnlen l1, ftnlen l2) {
+  return zheev_(JOBZ,UPLO,N,A,LDA,W,WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 template <typename T>
 static void Thegv(int *ITYPE, char *JOBZ, char *UPLO, int *N, T *A, 
 		  int *LDA, T *B, int *LDB, T *W, T *WORK,
-	   int *LWORK, T *RWORK, int *INFO );
+	   int *LWORK, T *RWORK, int *INFO , ftnlen l1, ftnlen l2);
 
 template <>
 void Thegv(int *ITYPE, char *JOBZ, char *UPLO, int *N, float *A, 
 		  int *LDA, float *B, int *LDB, float *W, float *WORK,
-	   int *LWORK, float *RWORK, int *INFO ) {
-  return chegv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,RWORK,INFO);
+	   int *LWORK, float *RWORK, int *INFO , ftnlen l1, ftnlen l2) {
+  return chegv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 template <>
 void Thegv(int *ITYPE, char *JOBZ, char *UPLO, int *N, double *A, 
 		  int *LDA, double *B, int *LDB, double *W, double *WORK,
-	   int *LWORK, double *RWORK, int *INFO ) {
-  return zhegv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,RWORK,INFO);
+	   int *LWORK, double *RWORK, int *INFO , ftnlen l1, ftnlen l2) {
+  return zhegv_(ITYPE,JOBZ,UPLO,N,A,LDA,B,LDB,W,WORK,LWORK,RWORK,INFO,l1,l2);
 }
 
 template <typename T>
@@ -233,10 +246,10 @@ static void realEigenDecomposeSymmetric(int n, T *v, T *d, T *a,
   T WORKSZE;
   int LWORK;
   LWORK = -1;
-  Tsyev(&JOBZ, &UPLO, &N, Ain, &LDA, d, &WORKSZE, &LWORK, &INFO);
+  Tsyev(&JOBZ, &UPLO, &N, Ain, &LDA, d, &WORKSZE, &LWORK, &INFO, 1, 1);
   LWORK = (int) WORKSZE;
   MemBlock<T> WORK(LWORK);
-  Tsyev(&JOBZ, &UPLO, &N, Ain, &LDA, d, &WORK, &LWORK, &INFO);
+  Tsyev(&JOBZ, &UPLO, &N, Ain, &LDA, d, &WORK, &LWORK, &INFO, 1, 1);
   if (eigenvectors)
     memcpy(v,a,n*n*sizeof(T));
 }
@@ -279,13 +292,13 @@ static void realEigenDecompose(int n, T *v, T *d, T *a,
   LWORK = -1;
   Tgeevx<T>( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, &WR, &WI,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, &SCALE, &ABNRM,
-	     &RCONDE, &RCONDV, &WORKSZE, &LWORK, &IWORK, &INFO );
+	     &RCONDE, &RCONDV, &WORKSZE, &LWORK, &IWORK, &INFO,1,1,1,1 );
 
   LWORK = (int) WORKSZE;
   MemBlock<T> WORK(LWORK);
   Tgeevx<T>( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, &WR, &WI,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, &SCALE, &ABNRM,
-	     &RCONDE, &RCONDV, &WORK, &LWORK, &IWORK, &INFO );
+	     &RCONDE, &RCONDV, &WORK, &LWORK, &IWORK, &INFO,1,1,1,1 );
   for (int i=0;i<N;i++) {
     d[2*i] = WR[i];
     d[2*i+1] = WI[i];
@@ -317,11 +330,11 @@ static void realGenEigenDecompose(int n, T *v, T *d, T *a,
   int LWORK = -1;
   int INFO;
   Tggev( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, &ALPHAR, &ALPHAI,
-	 &BETA, VL, &LDVL, VR, &LDVR, &WORKSZE, &LWORK, &INFO );
+	 &BETA, VL, &LDVL, VR, &LDVR, &WORKSZE, &LWORK, &INFO,1,1 );
   LWORK = (int) WORKSZE;
   MemBlock<T> WORK(LWORK);
   Tggev( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, &ALPHAR, &ALPHAI,
-	 &BETA, VL, &LDVL, VR, &LDVR, &WORK, &LWORK, &INFO );
+	 &BETA, VL, &LDVL, VR, &LDVR, &WORK, &LWORK, &INFO,1,1 );
   int i;
   for (i=0;i<n;i++) {
     d[2*i] = ALPHAR[i]/BETA[i];
@@ -349,11 +362,11 @@ static bool realGenEigenDecomposeSymmetric(int n, T *v, T *d,
   int LWORK = -1;
   int INFO;
   Tsygv( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORKSIZE, 
-	 &LWORK, &INFO );
+	 &LWORK, &INFO,1,1 );
   LWORK = (int) WORKSIZE;
   MemBlock<T> WORK(LWORK);
   Tsygv( &ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORK, 
-	 &LWORK, &INFO );
+	 &LWORK, &INFO,1,1 );
   if (INFO>N) return false;
   if (eigenvectors)
     memcpy(v,a,n*n*sizeof(T));
@@ -376,10 +389,10 @@ static void complexEigenDecomposeSymmetric(int n, T *v, T *d, T *a,
   int INFO;
   T WORKSZE[2];
   LWORK = -1;
-  Theev(&JOBZ,&UPLO,&N,a,&LDA,d,WORKSZE,&LWORK,&RWORK,&INFO);
+  Theev(&JOBZ,&UPLO,&N,a,&LDA,d,WORKSZE,&LWORK,&RWORK,&INFO,1,1);
   LWORK = (int) WORKSZE[0];
   MemBlock<T> WORK(2*LWORK);
-  Theev(&JOBZ,&UPLO,&N,a,&LDA,d,&WORK,&LWORK,&RWORK,&INFO);
+  Theev(&JOBZ,&UPLO,&N,a,&LDA,d,&WORK,&LWORK,&RWORK,&INFO,1,1);
   if (eigenvectors)
     memcpy(v,a,2*n*n*sizeof(T));
 }
@@ -420,12 +433,12 @@ static void complexEigenDecompose(int n, T *v, T *d, T *a,
   LWORK = -1;
   Tgeevx<T>( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, W,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, &SCALE, &ABNRM,
-	     &RCONDE, &RCONDV, WORKSZE, &LWORK, &RWORK, &INFO );
+	     &RCONDE, &RCONDV, WORKSZE, &LWORK, &RWORK, &INFO,1,1,1,1 );
   LWORK = (int) WORKSZE[0];
   MemBlock<T> WORK(2*LWORK);
   Tgeevx<T>( &BALANC, &JOBVL, &JOBVR, &SENSE, &N, Ain, &LDA, W,
 	     VL, &LDVL, VR, &LDVR, &ILO, &IHI, &SCALE, &ABNRM,
-	     &RCONDE, &RCONDV, &WORK, &LWORK, &RWORK, &INFO );
+	     &RCONDE, &RCONDV, &WORK, &LWORK, &RWORK, &INFO,1,1,1,1 );
 }
 
 template <typename T>
@@ -453,11 +466,11 @@ static void complexGenEigenDecompose(int n, T *v, T *d, T *a, T *b,
   int LWORK = -1;
   int INFO;
   Tggev( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, &ALPHA, &BETA,
-	 VL, &LDVL, VR, &LDVR, &WORKSIZE[0], &LWORK, &RWORK, &INFO );
+	 VL, &LDVL, VR, &LDVR, &WORKSIZE[0], &LWORK, &RWORK, &INFO,1,1 );
   LWORK = (int) WORKSIZE[0];
   MemBlock<T> WORK(LWORK*2);
   Tggev( &JOBVL, &JOBVR, &N, A, &LDA, B, &LDB, &ALPHA, &BETA,
-	 VL, &LDVL, VR, &LDVR, &WORK, &LWORK, &RWORK, &INFO );
+	 VL, &LDVL, VR, &LDVR, &WORK, &LWORK, &RWORK, &INFO,1,1 );
   int i;
   for (i=0;i<n;i++) 
     complex_divide<T>(ALPHA[2*i],ALPHA[2*i+1],
@@ -487,7 +500,7 @@ static bool complexGenEigenDecomposeSymmetric(int n, T *v, T *d, T *a, T *b,
   LWORK = MAX(1,2*N-1);
   MemBlock<T> WORK(2*LWORK);
   Thegv(&ITYPE, &JOBZ, &UPLO, &N, A, &LDA, B, &LDB, W, &WORK,
-	&LWORK, &RWORK, &INFO );    
+	&LWORK, &RWORK, &INFO,1,1 );    
   if (INFO>N) return false;
   if (eigenvectors)
     memcpy(v,a,2*n*n*sizeof(T));
@@ -1126,7 +1139,7 @@ static ArrayVector SparseEigDecomposeNonsymmetricReal(const SparseMatrix<double>
   // How many eigenvalues to compute
   char cmach = 'E';
   char *which_cstr = strdup(qPrintable(which));
-  double tol = dlamch_(&cmach);
+  double tol = dlamch_(&cmach,1);
   MacroBlockAlloc(double,n,residBlock,resid);
   int ncv = 2*nev+1;
   if (ncv > n) ncv = n;
@@ -1190,7 +1203,7 @@ static ArrayVector SparseEigDecomposeSymmetricReal(const SparseMatrix<double> &a
   int n = int(a.rows());
   // How many eigenvalues to compute
   char cmach = 'E';
-  double tol = dlamch_(&cmach);
+  double tol = dlamch_(&cmach,1);
   MacroBlockAlloc(double,n,residBlock,resid);
   int ncv = 2*nev+1;
   if (ncv > n) ncv = n;
@@ -1271,7 +1284,7 @@ ArrayVector SparseEigDecomposeNonsymmetricComplex(const SparseMatrix<double> &a_
   int n = int(a_real.rows());
   // How many eigenvalues to compute
   char cmach = 'E';
-  double tol = dlamch_(&cmach);
+  double tol = dlamch_(&cmach,1);
   MacroBlockAlloc(double,2*n,residBlock,resid);
   int ncv = 2*nev+1;
   if (ncv > n) ncv = n;

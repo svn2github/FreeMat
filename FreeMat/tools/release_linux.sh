@@ -13,8 +13,12 @@ cmake $SourceDir/tools/dependencies
 make
 cd $BuildDir
 cmake $SourceDir
+cd $BuildDir
 make
+cd $BuildDir
 cpack -G RPM
+cd $BuildDir
 cpack -G TGZ --config CPackSourceConfig.cmake
+cd $BuildDir
 cpack -G ZIP --config CPackSourceConfig.cmake
 

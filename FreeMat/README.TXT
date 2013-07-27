@@ -68,7 +68,6 @@ Install brew
 
 brew install qt cmake autoconf automake gfortran portaudio doxygen 
 
-install http://www.tug.org/mactex/
 
 
 

@@ -236,24 +236,13 @@ ENDIF(USE_ITK)
 ######################################################################
 # Boost Support
 ######################################################################
-if(UNIX)
-  find_package( Boost)
-  if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    add_definitions(-DHAVE_BOOST)
-  endif(Boost_FOUND)
-elseif( MINGW )
-	include_directories(${PROJECT_SOURCE_DIR}/dependencies)
-	#set(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${PROJECT_SOURCE_DIR}/dependencies/bin/libboost_math_c99f-mgw46-1_46_1.a ${PROJECT_SOURCE_DIR}/dependencies/bin/libboost_math_c99-mgw46-1_46_1.a)
-	add_definitions(-DHAVE_BOOST)
-else ()
-  find_package( Boost COMPONENTS math_c99 )
-  if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    add_definitions(-DHAVE_BOOST)
-    set(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${Boost_LIBRARIES})
-  endif()
-endif(UNIX)
+find_package( Boost COMPONENTS math_c99 )
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+  add_definitions(-DHAVE_BOOST)
+  set(OPTIONAL_LIBS ${OPTIONAL_LIBS} ${Boost_LIBRARIES})
+endif()
+
 ######################################################################
 # LLVM Support
 ######################################################################

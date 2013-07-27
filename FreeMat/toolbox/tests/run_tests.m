@@ -13,9 +13,7 @@ function run_tests
    myloc = which('run_tests');
    [pth,name,sfx] = fileparts(myloc);
    cd(pth);
-   testlist = filelist('bbtest_*.m');
-   testlist = [testlist;filelist('wbtest_*.m')];
-   testlist = [testlist;filelist('test_*.m')];
+   testlist = tlist(pth,{});
    exclude_list = {'bbtest_csvread','bbtest_source','bbtest_import'};
    spath = getpath;
    failed = {};
@@ -23,8 +21,11 @@ function run_tests
    for i=1:numel(testlist);
      cd(run_path);
      save run_tests.dat run_path testlist failed spath
+     printf('Running test %s...',testlist{i}(1:end-2));
      if (~any(strcmp(testlist{i}(1:end-2),exclude_list)))
-       success = eval(testlist{i}(1:end-2),'0');
+       [testpath,testname] = fileparts(testlist{i});
+       cd(testpath)
+       success = eval(testname,'0');
      else
        success = 1;
      end
@@ -32,7 +33,11 @@ function run_tests
      load run_tests.dat
      setpath(spath);
      if (isempty(success) || ~success) failed = [failed,testlist(i)]; end;
-     printf('Completed test %s\n',testlist{i}(1:end-2));
+     if (isempty(success) || ~success)
+        printf('failed!\n');
+     else
+        printf('success\n');
+     end
      close all
    end
    printf('****************************************\n');
@@ -51,12 +56,20 @@ function run_tests
    quiet normal;
    
 
-function list = filelist(pattern)
-   q = dir(pattern);
-   list = {};
-   for i=1:numel(q)
-      if (~q(i).isdir)
-         list = [list;{q(i).name}];
+function olist = tlist(root,ilist)
+  olist = ilist;
+  q = dir(root);
+  for i=1:numel(q)
+    if (q(i).isdir)
+      if (q(i).name(1) ~= '.' && ~strcmp(q(i).name,'class') && ~strcmp(q(i).name,'suite'))
+        printf('Dir name %s\n',q(i).name);
+        olist = [olist,tlist([root,dirsep,q(i).name],{})];
       end
-   end
-      
+    else
+      if (regexp(q(i).name,'^test_.*\.m$') || ... 
+	  regexp(q(i).name,'^wbtest_.*\.m$') ||  ...
+	  regexp(q(i).name,'^bbtest_.*\.m$'))
+	olist = [olist,[root,dirsep,q(i).name]];
+      end
+    end
+  end

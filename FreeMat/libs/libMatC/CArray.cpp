@@ -54,6 +54,7 @@ CArray* cast(void*p)
   return ((CArray*)p);
 }
 
+extern "C" EXPORT
 void* carray_read_ptr(void* p)
 {
   CArray* q = cast(p);
@@ -66,6 +67,7 @@ void validate_writes(CArray* q)
   q->valid_for_writes = true;
 }
 
+extern "C" EXPORT
 void* carray_write_ptr(void* p)
 {
   CArray* q = cast(p);
@@ -181,6 +183,7 @@ bool carray_download_function(void *interp, void *dst, const char *name)
     }
 }
 
+extern "C" EXPORT
 void* carray_invoke_1(void* interp, void* func, void* arg, bool *flag)
 {
   if (*flag) return NULL;
@@ -204,6 +207,7 @@ void* carray_invoke_1(void* interp, void* func, void* arg, bool *flag)
     }
 }
 
+extern "C" EXPORT
 void* carray_invoke_2(void* interp, void* func, void* arg1, void* arg2, bool *flag)
 {
   if (*flag) return NULL;
@@ -687,6 +691,7 @@ bool carray_all(void *interp, void *p, bool *flag)
 }
 
 #define WrapUnaryOp(wrapped,func)					\
+  extern "C" EXPORT                                                     \
   void* wrapped(void* interp, void *a, bool *flag)			\
   {									\
     if (*flag) return NULL;						\

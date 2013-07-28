@@ -31,6 +31,7 @@ function run_tests
      end
      cd(run_path);
      load run_tests.dat
+     delete run_tests.dat
      setpath(spath);
      if (isempty(success) || ~success) failed = [failed,testlist(i)]; end;
      if (isempty(success) || ~success)

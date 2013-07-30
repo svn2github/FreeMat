@@ -1,0 +1,3 @@
+sftp samitbasu@web.sourceforge.net
+cd /home/project-web/freemat/htdocs
+put index.html

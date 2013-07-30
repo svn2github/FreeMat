@@ -42,7 +42,7 @@ And it should build.
 
 ********************************************************************************
 
-Windows/Fedora cross
+Windows 64/Fedora cross
 
 Install the cross compiling dependencies.
 
@@ -50,6 +50,24 @@ yum install mingw64-gcc-c++ mingw64-gcc mingw64-qt mingw64-pcre
 yum install mingw64-libffi-static mingw64-gcc-gfortran
 yum install mingw32-nsiswrapper
 yum install wine
+
+Build the dependencies
+
+mkdir build
+cd build
+mkdir deps
+cd deps
+cmake -DCMAKE_TOOLCHAIN_FILE=<Path to freemat
+source>/cmake/Toolchain-cross-mingw64-fedora-linux <path to freemat>/tools/dependencies
+
+********************************************************************************
+
+Windows 32/Fedora cross
+
+Install the cross compiling dependencies.
+
+yum install mingw32-gcc-c++ mingw32-gcc mingw32-qt mingw32-pcre
+yum install mingw32-libffi-static mingw32-gcc-gfortran
 
 Build the dependencies
 

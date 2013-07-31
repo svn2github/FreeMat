@@ -268,7 +268,7 @@ void GLRenderEngine::getModelviewMatrix(double amodel[16]) {
   
 void GLRenderEngine::getProjectionMatrix(double aproj[16]) {
   for (int i=0;i<16;i++)
-    aproj[i] = proj[16];
+    aproj[i] = proj[i];
 }
 
 void GLRenderEngine::getViewport(int aviewp[4]) {

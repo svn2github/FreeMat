@@ -1,0 +1,25 @@
+Options:
+
+1. Take inspiration from python, and nothing else.
+   Pros: No concerns about shoe-horning
+   Cons: Lots of work - no real multiplicative effect
+
+2. Reimplement all of FreeMat in python
+   Pros: Build and maintenance becomes easier
+   Cons: Not clear how Matlab syntax fits with Python
+
+3. Add Python as an extension to FreeMat
+   Pros: Can use all of python ecosystem from within FreeMat
+   	 Can reimplement core functions in Python
+   Cons: Maintenance becomes harder, not easier.
+   	 No real speed advantage from using Python
+
+4. Keep front end parser in C++, generate Python code
+   Pros: Faster than 2
+   Cons: Still unclear how matlab and python interact.
+
+Let's try it...
+
+What about linking the two, and then gradually migrating stuff to Python?
+
+
